@@ -1,0 +1,22 @@
+import { resolve } from "path";
+import { defineConfig } from "vite";
+// @ts-ignore
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react()],
+  root: "src/renderer",
+  base: "./",
+  server: {
+    port: 5173,
+  },
+  build: {
+    outDir: "../../dist/renderer",
+    emptyOutDir: true,
+  },
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "src/renderer/src"),
+    },
+  },
+});

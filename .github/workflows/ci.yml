@@ -1,0 +1,174 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      - name: Install
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+
+  package:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get package version
+        run: echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install
+        run: npm ci
+      - name: Build and package (electron-builder)
+        run: |
+          npm run dist
+        env:
+          CSC_LINK: ${{ secrets.WIN_CERTIFICATE }}
+          CSC_KEY_PASSWORD: ${{ secrets.WIN_CERTIFICATE_PASSWORD }}
+      - id: normalize
+        name: Normalize artifact filenames and move into platform folder
+        run: |
+          set -euo pipefail
+          PLATFORM=$(node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const v = process.env.VERSION || '0.0.0';
+          const outDir = 'dist_electron';
+          if (!fs.existsSync(outDir)) { console.log('No dist_electron dir, skipping'); process.exit(0); }
+          const files = fs.readdirSync(outDir).filter(f => fs.statSync(path.join(outDir,f)).isFile());
+          let detected = 'unknown';
+          for (const f of files) {
+            const lc = f.toLowerCase();
+            let platform = 'unknown';
+            if (lc.endsWith('.exe') || lc.includes('win')) {
+              platform = /arm64|aarch64/.test(lc) ? 'win-arm64' : 'win-x64';
+            } else if (lc.endsWith('.dmg') || lc.endsWith('.pkg') || lc.includes('.app') || lc.includes('mac') || lc.includes('darwin')) {
+              platform = /arm64|aarch64/.test(lc) ? 'mac-arm64' : 'mac-x64';
+            } else if (lc.endsWith('.appimage') || lc.includes('linux') || lc.endsWith('.snap') || lc.endsWith('.deb') || lc.endsWith('.tar.gz')) {
+              platform = /arm64|aarch64/.test(lc) ? 'linux-arm64' : 'linux-x64';
+            }
+            detected = platform === 'unknown' ? detected : platform;
+            const platformDir = path.join(outDir, platform);
+            if (!fs.existsSync(platformDir)) fs.mkdirSync(platformDir, { recursive: true });
+            const newName = `${v}-${platform}-${f}`;
+            fs.renameSync(path.join(outDir,f), path.join(platformDir, newName));
+            console.log(`Moved ${f} -> ${platform}/${newName}`);
+          }
+          console.log(detected);
+          NODE
+          echo "platform=$PLATFORM" >> $GITHUB_OUTPUT
+      - name: Upload packaged artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-artifacts-${{ env.VERSION }}-${{ steps.normalize.outputs.platform }}
+          path: dist_electron/${{ steps.normalize.outputs.platform }}/
+      - name: Smoke test packaged app (best-effort)
+        run: |
+          set -euo pipefail
+          echo "VERSION=$VERSION"
+          ls -la dist_electron || true
+          ARTIFACT=$(find dist_electron -type f -name "*${VERSION}*" | head -n1 || true)
+          if [ -z "$ARTIFACT" ]; then
+            ARTIFACT=$(find dist_electron -type f | head -n1 || true)
+          fi
+          if [ -z "$ARTIFACT" ]; then
+            echo "No artifact found, skipping smoke test"
+            exit 0
+          fi
+          echo "Found artifact: $ARTIFACT"
+          case "${{ matrix.os }}" in
+            ubuntu-latest)
+              sudo apt-get update && sudo apt-get install -y xvfb || true
+              chmod +x "$ARTIFACT" || true
+              xvfb-run --auto-servernum "$ARTIFACT" --version || true
+              ;;
+            macos-latest)
+              if echo "$ARTIFACT" | grep -E '\\.dmg$' >/dev/null 2>&1; then
+                hdiutil attach "$ARTIFACT"
+                APP_PATH=$(find /Volumes -maxdepth 2 -name "*.app" | head -n1 || true)
+                if [ -n "$APP_PATH" ]; then
+                  echo "Running $APP_PATH binary"
+                  "$APP_PATH/Contents/MacOS/"* --version || true
+                fi
+                # attempt to detach
+                if [ -n "$APP_PATH" ]; then
+                  hdiutil detach "$(dirname "$APP_PATH")" || true
+                fi
+              else
+                echo "No dmg found, skipping mac smoke test"
+              fi
+              ;;
+            windows-latest)
+              powershell -Command "$exe = Get-ChildItem -Path dist_electron -Recurse -Filter '*.exe' | Select-Object -First 1; if ($exe) { Start-Process -FilePath $exe.FullName -ArgumentList '--version' -Wait -NoNewWindow }"
+              ;;
+          esac
+
+  release:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get package version
+        run: echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: electron-artifacts-${{ env.VERSION }}-*
+          path: release_artifacts
+          merge-multiple: true
+        continue-on-error: true
+      - name: List artifacts
+        run: |
+          ls -la release_artifacts || true
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.VERSION }}
+          release_name: "release-${{ env.VERSION }}"
+          draft: false
+          prerelease: false
+      - name: Upload release assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          UPLOAD_URL='${{ steps.create_release.outputs.upload_url }}'
+          # remove the template part like {?name,label}
+          UPLOAD_URL=${UPLOAD_URL%\{*}
+          echo "Uploading files to $UPLOAD_URL"
+          for f in $(find release_artifacts -type f); do
+            name=$(basename "$f")
+            echo "Uploading $name"
+            curl -s -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary @"$f" "${UPLOAD_URL}?name=$name" || echo "Upload failed for $f"
+          done
+        shell: bash
