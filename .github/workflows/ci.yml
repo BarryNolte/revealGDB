@@ -5,6 +5,10 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch: {}
+  schedule:
+    # Run daily at 00:00 UTC to produce nightly builds/artifacts
+    - cron: '0 0 * * *'
 
 jobs:
   build:
@@ -15,11 +19,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Cache node modules
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          # enable built-in npm cache support (works across platforms)
+          cache: 'npm'
       - name: Install
         run: npm ci
       - name: Lint

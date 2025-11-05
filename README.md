@@ -1,5 +1,7 @@
 # revealGDB
 
+[![CI](https://github.com/BarryNolte/revealGDB/actions/workflows/ci.yml/badge.svg)](https://github.com/BarryNolte/revealGDB/actions/workflows/ci.yml)
+
 Electron + React + TypeScript starter.
 
 Quick start
