@@ -4,4 +4,5 @@ dist/
 *.log
 /.idea/
 dist_electron/
-dist_electron/
+.eslintcache
+out/**

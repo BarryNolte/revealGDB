@@ -2,8 +2,8 @@ module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: ['./tsconfig.json', './tsconfig.main.json'],
-    tsconfigRootDir: __dirname
+    ecmaVersion: 2021,
+    sourceType: 'module'
   },
   plugins: ['@typescript-eslint', 'react', 'react-hooks'],
   extends: [
