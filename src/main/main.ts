@@ -6,17 +6,20 @@ function createWindow() {
     width: 1000,
     height: 700,
     webPreferences: {
-      preload: join(__dirname, "..", "..", "dist", "main", "preload.js"),
+      preload: join(__dirname, "..", "..", "out", "preload", "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
 
-  const devUrl = process.env.VITE_DEV_SERVER_URL;
+  const devUrl = process.env.ELECTRON_RENDERER_URL;
+  console.log("Env: ", process.env);
   if (devUrl) {
+    console.log("Loading URL:", devUrl);
     win.loadURL(devUrl);
   } else {
-    win.loadFile(join(__dirname, "..", "..", "dist", "renderer", "index.html"));
+    console.log("Loading file:", join(__dirname, "..", "..", "out", "renderer", "index.html"));
+    win.loadFile(join(__dirname, "..", "..", "out", "renderer", "index.html"));
   }
 }
 

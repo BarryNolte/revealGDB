@@ -1,6 +1,6 @@
 import { resolve } from "path";
 import { defineConfig } from "vite";
-// @ts-ignore
+// @ts-export-error
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
@@ -11,7 +11,7 @@ export default defineConfig({
     port: 5173,
   },
   build: {
-    outDir: "../../dist/renderer",
+    outDir: "../../out/renderer",
     emptyOutDir: true,
   },
   resolve: {

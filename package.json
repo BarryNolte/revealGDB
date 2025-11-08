@@ -4,18 +4,22 @@
   "private": true,
   "description": "A GDB debugger interface",
   "author": "Developer",
-  "main": "dist/main/main.js",
+  "main": "out/main/main.js",
   "scripts": {
     "dev": "concurrently \"tsc -p tsconfig.main.json -w\" \"vite\" \"wait-on http://localhost:5173 && electron .\"",
     "build:renderer": "vite build",
     "build:main": "tsc -p tsconfig.main.json",
     "build": "npm run build:renderer && npm run build:main",
-    "start": "electron .",
-    "lint": "eslint \"src/**/*.{ts,tsx,js,jsx}\" --cache --fix",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "start": "electron . --remote-debugging-port=9222",
+    "lint": "eslint \"src/**/*.{ts,tsx,js,jsx,cjs}\" \"./vite.config.ts\"  --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md,cjs}\"",
+    "format-build-tools": "prettier --write \"./vite.config.ts\"",
     "prepare": "husky install",
     "dist": "npm run build && electron-builder --publish never",
-    "publish": "electron-builder --publish always"
+    "publish": "electron-builder --publish always",
+    "endqemu": "wsl -e pkill qemu",
+    "vite-build": "electron-vite build",
+    "vite-watch": "electron-vite build --watch"
   },
   "build": {
     "appId": "com.example.revealgdb",
@@ -25,7 +29,7 @@
       "buildResources": "build"
     },
     "files": [
-      "dist/**",
+      "out/**",
       "package.json"
     ],
     "extraResources": [
@@ -60,14 +64,15 @@
     "concurrently": "^8.0.0",
     "electron": "^39.0.0",
     "electron-builder": "^24.0.0",
+    "electron-vite": "^4.0.1",
     "eslint": "^8.0.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-config-prettier": "^9.1.2",
+    "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.0.0",
     "eslint-plugin-react-hooks": "^4.0.0",
     "husky": "^8.0.0",
     "lint-staged": "^16.2.6",
-    "prettier": "^3.0.0",
+    "prettier": "3.6.2",
     "tslib": "^2.0.0",
     "typescript": "^5.9.3",
     "vite": "^7.1.12",
@@ -83,6 +88,10 @@
       "eslint --fix"
     ],
     "src/main/**/*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "src/preload/**/*.{ts}": [
       "prettier --write",
       "eslint --fix"
     ],
