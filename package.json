@@ -79,7 +79,12 @@
     "wait-on": "^7.0.0"
   },
   "dependencies": {
+    "@syncfusion/ej2-react-navigations": "^31.2.5",
+    "ace-builds": "^1.43.4",
+    "dockview": "^4.11.0",
+    "electron-settings": "^4.0.4",
     "react": "^18.2.0",
+    "react-ace": "^14.0.1",
     "react-dom": "^18.2.0"
   },
   "lint-staged": {
