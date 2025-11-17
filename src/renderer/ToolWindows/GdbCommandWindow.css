@@ -1,0 +1,60 @@
+.commandWindow {
+  font-family: "Courier New", Courier, monospace;
+  height: 100%;
+  width: 100%;
+  padding: 2px;
+  display: flex;
+  /* Makes the container a flex container */
+  flex-direction: column;
+  /* Stacks children vertically */
+}
+
+.outputRow {
+  height: auto;
+  width: 100%;
+  flex-grow: 1;
+  overflow: scroll;
+  background-color: black;
+  font-weight: bolder;
+}
+
+.historyRow {
+  height: 100px;
+  width: 100%;
+}
+
+.inputRow {
+  height: auto;
+  width: 98%;
+  font-size: large;
+  margin: 0px;
+  padding: 2px;
+  border: 1px solid black;
+  margin-top: 2px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
+
+.defaultRow {
+  position: relative;
+  line-height: normal;
+  white-space: nowrap;
+  padding-left: 10px;
+  width: 3500px;
+  display: inline-block;
+}
+
+.rowConsole {
+  background: var(--console-background-color);
+  color: var(--console-text-color);
+}
+
+.rowLog {
+  background: var(--log-background-color);
+  color: var(--log-text-color);
+}
+
+.rowError {
+  background: var(--error-background-color);
+  color: var(--error-text-color);
+}

@@ -114,17 +114,27 @@ app.on("ready", async () => {
   });
 
   // On the first idle, run all the startup commands
-  gdbInterface.once("gdb-idle", async () => {
-    console.error("GDB is idle (once)");
-    const ros: string[] = (await AppSettings.get("gdb.run.onStartup")) as string[];
-    console.log("** ON STARTUP COMMANDS **");
-    ros?.forEach(async (ros: string) => {
-      gdbInterface.send(ros);
-    });
-  });
+  // gdbInterface.once("gdb-idle", async () => {
+  //   console.error("GDB is idle (once)");
+  //   const ros: string[] = (await AppSettings.get("gdb.run.onStartup")) as string[];
+  //   console.log("** ON STARTUP COMMANDS **");
+  //   ros?.forEach(async (ros: string) => {
+  //     gdbInterface.send(ros);
+  //   });
+  // });
 
+  let needToRunStartupCmds = true;
   // When we stop, then run all the stop commands
   gdbInterface.on("gdb-stopped", async () => {
+    if (needToRunStartupCmds) {
+      console.error("GDB is idle (once)");
+      const ros: string[] = (await AppSettings.get("gdb.run.onStartup")) as string[];
+      console.log("** ON STARTUP COMMANDS **");
+      ros?.forEach(async (ros: string) => {
+        gdbInterface.send(ros);
+      });
+      needToRunStartupCmds = false;
+    }
     const ros: string[] = (await AppSettings.get("gdb.run.onStopped")) as string[];
     console.log(
       `***********************\nRunning ${ros?.length} Stop Commands\n***********************`,
@@ -209,8 +219,14 @@ ipcMain.on("notify-main", async (_event, msg: GdbAny) => {
         await AppSettings.set("gdb.gui.windowSize", winPos);
       }
       break;
+    case "renderStart":
+      {
+        console.log("Notifying GDB Interface that rendering is starting.");
+      }
+      break;
     case "renderEnd":
       {
+        console.log("Notifying GDB Interface that rendering is complete.");
         mainWindow.webContents.send("notify-render", {
           command: "command-entry",
         });

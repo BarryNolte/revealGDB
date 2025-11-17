@@ -4,3 +4,63 @@
   box-shadow: 0px 0px 1px 1px red inset;
   background: rgb(255, 0, 0, 0.3);
 }
+
+.ace_highlight_line {
+  position: absolute;
+  background: rgba(100, 200, 100, 0.5);
+  z-index: 20;
+}
+
+.file-name {
+  background: #aaa;
+  font-size: 14px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: normal;
+  color: black;
+  padding: 2px;
+  width: 100%;
+  border-bottom: #333 solid 2px;
+}
+.no-source {
+  background: #aaa;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: bold;
+}
+
+.no-source-table {
+  border-collapse: collapse;
+  border: 1px solid #333;
+  width: 100%;
+  padding: 3px;
+}
+
+.no-source {
+  color: #636363;
+  border: 1px solid #333;
+  font-weight: 500;
+}
+
+.no-source-row-header {
+  color: black;
+  border: 1px solid #333;
+  width: 20px;
+}
+
+.no-source-row-data {
+  color: black;
+  border: 1px solid #333;
+  font-weight: normal;
+}
+
+.no-source-header {
+  padding: 3px;
+  text-align: start;
+  background-color: #54585d;
+  color: #ddd;
+}
+
+.no-source-button {
+  width: 200px;
+  height: 60px;
+  margin: 15px;
+}

@@ -1,39 +1,98 @@
 @import "../../node_modules/@syncfusion/ej2-base/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-buttons/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-popups/styles/material.css";
+@import "../../node_modules/@syncfusion/ej2-calendars/styles/material.css";
+@import "../../node_modules/@syncfusion/ej2-dropdowns/styles/material.css";
+@import "../../node_modules/@syncfusion/ej2-inputs/styles/material.css";
+@import "../../node_modules/@syncfusion/ej2-navigations/styles/material.css";
+@import "../../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css";
+@import "../../node_modules/@syncfusion/ej2-notifications/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-react-navigations/styles/material.css";
+@import "../../node_modules/@syncfusion/ej2-react-grids/styles/material.css";
+@import "../../node_modules/@syncfusion/ej2-react-dropdowns/styles/material.css";
+
 @import "../../node_modules/dockview/dist/styles/dockview.css";
+
+:root {
+  --window-background: #606060;
+  --error-text-color: #f0f0f0;
+  --error-background-color: #ff3d3d;
+  --console-text-color: rgba(0, 255, 0, 0.85);
+  --console-background-color: black;
+  --log-text-color: grey;
+  --log-background-color: #ffffc0;
+
+  --tabbar-tab-background: #e5e5e5;
+  --tabbar-tab-active: white;
+  --tabbar-tab-not-active-hover: #f0f0f0;
+  --tabbar-tab-border: #c0c0c0;
+  --tabbar-tab-inactive: #303030;
+}
 
 .dv-groupview.dv-inactive-group
   > .dv-tabs-and-actions-container
   .dv-tabs-container
   > .dv-tab.dv-active-tab {
-  background-color: red;
-  color: yellow;
+  background-color: var(--tabbar-tab-inactive);
+  color: var(--tabbar-tab-background);
 }
 
 .dv-groupview.dv-active-group
   > .dv-tabs-and-actions-container
   .dv-tabs-container
   > .dv-tab.dv-active-tab {
-  background: blue;
-  color: yellow;
+  background-color: darkgray;
+  color: black;
+  font-weight: bold;
+}
+
+.dv-groupview.dv-inactive-group
+  > .dv-tabs-and-actions-container
+  .dv-tabs-container
+  > .dv-tab.dv-inactive-tab {
+  background-color: var(--tabbar-tab-inactive);
+  color: var(--tabbar-tab-background);
 }
 
 .dv-groupview.dv-active-group
   > .dv-tabs-and-actions-container
   .dv-tabs-container
   > .dv-tab.dv-inactive-tab {
-  background-color: green;
-  color: yellow;
-}
-
-.dv-tabs-and-actions-container .dv-void-container.dv-draggable {
-  background-color: orange;
+  background-color: #303030;
 }
 
 .dv-react-part {
   background-color: gray;
+}
+
+.e-grid.e-default .e-headercell,
+.e-grid.e-default .e-detailheadercell {
+  background-color: darkgray;
+}
+
+.e-grid .e-headercell,
+.e-grid .e-detailheadercell {
+  height: 24px;
+}
+
+.e-grid .e-gridheader .e-sortfilter .e-fltr-icon .e-headercelldiv {
+  font-family: "Segoe UI";
+  font-size: 16px;
+  font-weight: bold;
+  padding: 0px;
+}
+
+.e-grid .e-rowcell,
+.e-grid .e-detailcell {
+  padding: 1px 14px;
+  border: 0.5px solid #dcdcdc;
+}
+
+.e-grid {
+  font-family: "Courier New", Courier, monospace;
+  padding: 0px;
+  font-size: 16px;
+  font-weight: bolder;
 }
 
 html {
@@ -62,5 +121,10 @@ body {
 
 .main-page-container {
   height: calc(100% - 42px);
+  width: 100%;
+}
+
+.full-size {
+  height: 100%;
   width: 100%;
 }

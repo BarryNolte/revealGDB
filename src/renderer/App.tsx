@@ -36,13 +36,11 @@ const components = {
 export default function App() {
   wait(2500);
 
-  window.ipcToMain.notifyMain({ command: "renderStart" });
-
   const onReady = (event: DockviewReadyEvent) => {
     event.api.addPanel({
       id: "srcwin",
       component: "sourcewin",
-      title: "MySourceFile.cpp",
+      title: "Source",
     });
     event.api.addPanel({
       id: "locwin",
@@ -101,8 +99,6 @@ export default function App() {
 
     const layout = event.api.toJSON();
     console.log("Layout JSON: ", layout);
-
-    window.ipcToMain.notifyMain({ command: "renderEnd" });
   };
 
   return (

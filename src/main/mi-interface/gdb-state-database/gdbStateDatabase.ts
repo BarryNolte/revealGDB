@@ -128,7 +128,12 @@ export class gdbStateDatabase {
 
   // Registers
   addRegister(index: string, regName: string): void {
-    this.registers.set(index, { name: regName, value: "", changed: false });
+    const reg = this.registers.get(index);
+    if (reg) {
+      reg.name = regName;
+    } else {
+      this.registers.set(index, { name: regName, value: "", changed: false });
+    }
   }
   addRegisterValue(index: string, regValue: string): void {
     const reg = this.registers.get(index);

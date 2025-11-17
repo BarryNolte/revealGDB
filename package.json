@@ -79,6 +79,8 @@
     "wait-on": "^7.0.0"
   },
   "dependencies": {
+    "@syncfusion/ej2-react-grids": "^31.2.10",
+    "@syncfusion/ej2-react-inputs": "^31.2.10",
     "@syncfusion/ej2-react-navigations": "^31.2.5",
     "ace-builds": "^1.43.4",
     "dockview": "^4.11.0",
