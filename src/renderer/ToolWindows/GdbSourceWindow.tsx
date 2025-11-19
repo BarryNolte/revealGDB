@@ -121,24 +121,26 @@ function GdbSourceWindow() {
         <div className="no-source">
           <table className="no-source-table">
             <caption className="no-source-header">No Source Found:</caption>
-            <tr>
-              <td className="no-source-row-header">Filename:</td>
-              <td className="no-source-row-data">
-                <span className="no-source-filename">{filename}</span>
-              </td>
-            </tr>
-            <tr>
-              <td className="no-source-row-header">Line:</td>
-              <td className="no-source-row-data">
-                <span className="no-source-lineno">{line}</span>
-              </td>
-            </tr>
-            <tr>
-              <td className="no-source-row-header">Full Path:</td>
-              <td className="no-source-row-data">
-                <span className="no-source-fullpath">{fullpath}</span>
-              </td>
-            </tr>
+            <tbody>
+              <tr>
+                <td className="no-source-row-header">Filename:</td>
+                <td className="no-source-row-data">
+                  <span className="no-source-filename">{filename}</span>
+                </td>
+              </tr>
+              <tr>
+                <td className="no-source-row-header">Line:</td>
+                <td className="no-source-row-data">
+                  <span className="no-source-lineno">{line}</span>
+                </td>
+              </tr>
+              <tr>
+                <td className="no-source-row-header">Full Path:</td>
+                <td className="no-source-row-data">
+                  <span className="no-source-fullpath">{fullpath}</span>
+                </td>
+              </tr>
+            </tbody>
           </table>
           <div>
             <button className="no-source-button button-disassemble">Show Diassembly</button>

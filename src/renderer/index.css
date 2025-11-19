@@ -29,6 +29,41 @@
   --tabbar-tab-inactive: #303030;
 }
 
+.tb-icon {
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 24px;
+  padding-right: 16px;
+}
+
+.tb-step-over {
+  background-image: url("./icons/over.png");
+}
+
+.tb-step-in {
+  background-image: url("./icons/arrow-down.png");
+}
+
+.tb-step-out {
+  background-image: url("./icons/arrow-up.png");
+}
+
+.tb-go {
+  background-image: url("./icons/play.png");
+}
+
+.tb-pause {
+  background-image: url("./icons/pause.png");
+}
+
+.tb-stop {
+  background-image: url("./icons/stop.png");
+}
+
+.tb-connect {
+  background-image: url("./icons/plug-connection.png");
+}
+
 .dv-groupview.dv-inactive-group
   > .dv-tabs-and-actions-container
   .dv-tabs-container

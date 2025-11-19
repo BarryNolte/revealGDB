@@ -25,14 +25,14 @@
 
 .inputRow {
   height: auto;
-  width: 98%;
   font-size: large;
-  margin: 0px;
   padding: 2px;
   border: 1px solid black;
+  margin-left: 2px;
+  margin-right: 3px;
   margin-top: 2px;
-  margin-bottom: 5px;
-  border-radius: 5px;
+  margin-bottom: 1px;
+  border-radius: 6px;
 }
 
 .defaultRow {

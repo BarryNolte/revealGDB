@@ -101,7 +101,6 @@ app.on("ready", async () => {
   /**
    * UI is now up and running, now we can interact with GDB
    */
-
   gdbInterface = await new miInterface();
   gdbInterface.on("console-stream", (line: string) => {
     mainWindow.webContents.send("console-message", line);
@@ -112,16 +111,6 @@ app.on("ready", async () => {
   gdbInterface.on("error-stream", (line: string) => {
     mainWindow.webContents.send("error-message", line);
   });
-
-  // On the first idle, run all the startup commands
-  // gdbInterface.once("gdb-idle", async () => {
-  //   console.error("GDB is idle (once)");
-  //   const ros: string[] = (await AppSettings.get("gdb.run.onStartup")) as string[];
-  //   console.log("** ON STARTUP COMMANDS **");
-  //   ros?.forEach(async (ros: string) => {
-  //     gdbInterface.send(ros);
-  //   });
-  // });
 
   let needToRunStartupCmds = true;
   // When we stop, then run all the stop commands
