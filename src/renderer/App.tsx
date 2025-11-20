@@ -92,6 +92,15 @@ export default function App() {
           },
         });
         event.api.addPanel({
+          id: "callstkwin",
+          component: "callstackwin",
+          title: "Call Stack",
+          position: {
+            // direction: "below",
+            referencePanel: "locwin",
+          },
+        });
+        event.api.addPanel({
           id: "thrdwin",
           component: "threadswin",
           title: "Threads",

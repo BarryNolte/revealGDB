@@ -17,6 +17,8 @@ import "ace-builds/src-noconflict/theme-tomorrow_night";
 
 import "./GdbSourceWindow.css";
 import { gdbShowSourceInfo } from "../../main/mi-interface/mi-interface";
+import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
+import { GdbAny } from "../../common/gdb-common";
 
 ace.config.setModuleUrl("../../node_modules", "ace-builds"); // Set base path for ace
 
@@ -36,10 +38,21 @@ function GdbSourceWindow() {
     displayData(data);
   });
 
+  window.ipcToMain.dataBrkPts(async (data: gdbBreakpoint[]) => {
+    editorRef.current?.editor.getSession().clearBreakpoints();
+
+    data.forEach(async (bp) => {
+      if (bp.fullname === fullpath) {
+        const bpLine = parseInt(bp.line, 10) - 1;
+        const type = bp.enabled === "y" ? "ace_breakpoint_enabled" : "ace_breakpoint_disabled";
+        editorRef.current?.editor.getSession().setBreakpoint(bpLine, type);
+      }
+    });
+  });
+
   const onLoad = (editor: ace.Ace.Editor) => {
     editor.clearSelection();
     editor.getSession().addEventListener("changeBreakpoint", onChangeBreakpoint);
-    //editor.getSession().setBreakpoint(1, "ace_breakpoint");
   };
 
   // Delay the scrolling to the stack top until the source and stack top
@@ -48,6 +61,33 @@ function GdbSourceWindow() {
   useEffect(() => {
     editorRef.current?.editor.scrollToLine(currentMarker, true, true);
   }, [source, currentMarker]);
+
+  editorRef.current?.editor.on("gutterclick", function (e: GdbAny) {
+    const target = e.domEvent.target;
+
+    if (target.className.indexOf("ace_gutter-cell") == -1) {
+      return;
+    }
+
+    if (!editorRef.current?.editor.isFocused()) {
+      return;
+    }
+
+    if (e.clientX > 25 + target.getBoundingClientRect().left) {
+      return;
+    }
+
+    const row = e.getDocumentPosition().row;
+
+    // If there's a breakpoint already defined, it should be removed, offering the toggle feature
+    if (e.editor.getSession().getBreakpoints()[row] === undefined) {
+      window.ipcToMain.sendGdbCommand(`break ${fullpath}:${row + 1}`);
+    } else {
+      window.ipcToMain.sendGdbCommand(`clear ${fullpath}:${row + 1}`);
+    }
+
+    e.stop();
+  });
 
   function displayData(data: gdbShowSourceInfo) {
     if (data.contents) {
