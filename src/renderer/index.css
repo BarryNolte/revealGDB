@@ -1,11 +1,9 @@
 @import "../../node_modules/@syncfusion/ej2-base/styles/material.css";
-@import "../../node_modules/@syncfusion/ej2-buttons/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-popups/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-calendars/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-dropdowns/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-inputs/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-navigations/styles/material.css";
-@import "../../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-notifications/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-react-navigations/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-react-grids/styles/material.css";
@@ -68,7 +66,7 @@
   > .dv-tabs-and-actions-container
   .dv-tabs-container
   > .dv-tab.dv-active-tab {
-  background-color: var(--tabbar-tab-inactive);
+  background-color: #454545;
   color: var(--tabbar-tab-background);
 }
 
@@ -89,15 +87,16 @@
   color: var(--tabbar-tab-background);
 }
 
-.dv-groupview.dv-active-group
-  > .dv-tabs-and-actions-container
-  .dv-tabs-container
-  > .dv-tab.dv-inactive-tab {
-  background-color: #303030;
-}
-
 .dv-react-part {
   background-color: gray;
+}
+.dv-default-tab-action {
+  visibility: hidden !important;
+}
+
+.e-grid:not(.e-grid-min-height) .e-gridcontent tr td:not(.e-indentcell):first-child:empty,
+.e-grid:not(.e-grid-min-height) .e-gridcontent tr.e-row .e-rowcell:empty {
+  height: 18px;
 }
 
 .e-grid .e-headercell {
@@ -116,16 +115,58 @@
 }
 
 .e-grid .e-rowcell {
-  border: 0.5px solid #b0b0b0;
   background-color: #e0e0e0;
   padding: 1px 12px;
   margin: 0px;
   line-height: 13px;
 }
 
+/* .e-grid .e-table {
+  background-color: #202020 !important;
+} */
+
+.e-grid .e-table {
+  border-spacing: 1px !important;
+}
+
+.e-grid .e-content {
+  background-color: #c0c0c0;
+}
+
 .e-grid {
   font-family: "Courier New", Courier, monospace;
   font-size: 16px;
+}
+
+.e-grid .e-gridheader {
+  border-bottom-width: 0px;
+}
+
+.e-grid .e-summarycell,
+.e-grid .e-groupcaption {
+  background-color: #d3d3d3;
+  color: black;
+  padding-left: 25px;
+}
+
+.e-grid .e-toolbar-items .e-toolbar-item.e-search-wrapper {
+  padding: 0px;
+}
+
+.e-grid .e-toolbar-items .e-toolbar-item.e-search-wrapper .e-search {
+  margin-bottom: 0;
+  opacity: 1;
+  width: 230px;
+  height: 24px;
+}
+
+.e-toolbar.e-control[class*="e-toolbar"] {
+  min-height: 36px;
+}
+
+.e-grid .e-groupcaption {
+  padding: 0px;
+  padding-left: 5px;
 }
 
 html {

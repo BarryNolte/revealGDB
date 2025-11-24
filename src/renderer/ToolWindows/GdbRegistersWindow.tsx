@@ -8,10 +8,10 @@ import {
   Inject,
   QueryCellInfoEventArgs,
   Resize,
-  SearchSettingsModel,
+  //SearchSettingsModel,
   Sort,
   Toolbar,
-  ToolbarItems,
+  //ToolbarItems,
 } from "@syncfusion/ej2-react-grids";
 import React from "react";
 import { gdbRegisters } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
@@ -53,42 +53,46 @@ function GdbRegistersWindow() {
     },
   };
 
-  const toolbarOptions: ToolbarItems[] = ["Search"];
-  const searchOptions: SearchSettingsModel = {
-    fields: ["name", "value"],
-    ignoreCase: true,
-    key: "",
-    operator: "contains",
-  };
+  //const toolbarOptions: ToolbarItems[] = ["Search"];
+  // const searchOptions: SearchSettingsModel = {
+  //   fields: ["name", "value"],
+  //   ignoreCase: true,
+  //   key: "",
+  //   operator: "contains",
+  // };
 
   return (
-    <GridComponent
-      queryCellInfo={queryCellInfo}
-      allowResizing={true}
-      allowPaging={false}
-      allowSorting={true}
-      showColumnMenu={true}
-      allowFiltering={false}
-      editSettings={editSettings}
-      toolbar={toolbarOptions}
-      searchSettings={searchOptions}
-      ref={(g: GdbAny) => (grid = g)}
-      height="100%"
-    >
-      <ColumnsDirective>
-        <ColumnDirective
-          field="name"
-          headerText="Register"
-          width="20%"
-          textAlign="Left"
-          minWidth={100}
-          allowEditing={false}
-          isPrimaryKey={true}
-        />
-        <ColumnDirective field="value" headerText="Value" width="80%" edit={stringParams} />
-      </ColumnsDirective>
-      <Inject services={[Resize, Sort, Group, ColumnMenu, Edit, Toolbar]} />
-    </GridComponent>
+    <div className="full-size flex-container">
+      <GridComponent
+        className="flex-item"
+        queryCellInfo={queryCellInfo}
+        allowResizing={true}
+        allowPaging={false}
+        allowSorting={false}
+        showColumnMenu={true}
+        allowFiltering={false}
+        editSettings={editSettings}
+        //toolbar={toolbarOptions}
+        //searchSettings={searchOptions}
+        ref={(g: GdbAny) => (grid = g)}
+        gridLines="Both"
+        height="100%"
+      >
+        <ColumnsDirective>
+          <ColumnDirective
+            field="name"
+            headerText="Register"
+            width="20%"
+            textAlign="Left"
+            minWidth={100}
+            allowEditing={false}
+            isPrimaryKey={true}
+          />
+          <ColumnDirective field="value" headerText="Value" width="80%" edit={stringParams} />
+        </ColumnsDirective>
+        <Inject services={[Resize, Sort, Group, ColumnMenu, Edit, Toolbar]} />
+      </GridComponent>
+    </div>
   );
 }
 

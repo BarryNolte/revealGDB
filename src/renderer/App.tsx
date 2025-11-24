@@ -1,5 +1,5 @@
 import { ItemDirective, ItemsDirective, ToolbarComponent } from "@syncfusion/ej2-react-navigations";
-import { DockviewApi, DockviewReact, DockviewReadyEvent, IDockviewPanelProps } from "dockview";
+import { DockviewApi, DockviewReact, DockviewReadyEvent } from "dockview";
 import { GdbAny } from "../common/gdb-common";
 
 import GdbSourceWindow from "./ToolWindows/GdbSourceWindow";
@@ -13,18 +13,7 @@ import GdbThreadsWindow from "./ToolWindows/GdbThreadsWindow";
 import { fRendered } from "./main";
 import { useEffect, useState } from "react";
 
-const Default = (props: IDockviewPanelProps) => {
-  return (
-    <div>
-      {props.api.title}
-      <br />
-      <button>Hello Press Me</button>
-    </div>
-  );
-};
-
 const components = {
-  default: Default,
   sourcewin: GdbSourceWindow,
   localswin: GdbLocalsWindow,
   breakpointwin: GdbBreakPointWindow,

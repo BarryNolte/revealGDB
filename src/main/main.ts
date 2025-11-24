@@ -28,7 +28,7 @@ app.on("ready", async () => {
   const settingsFile = AppSettings.file();
   console.log(`Settings File: ${settingsFile}`);
   const displays = screen.getAllDisplays();
-  displays.forEach((display) => {
+  displays.forEach((display: GdbAny) => {
     console.log(
       `Display: (${Math.floor(
         display.scaleFactor * display.bounds.width,
@@ -169,7 +169,7 @@ ipcMain.handle("getSettings", async (): Promise<string[]> => {
 });
 
 // General messages from the UI
-ipcMain.on("notify-main", async (_event, msg: GdbAny) => {
+ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
   switch (msg?.command) {
     case "save-cmd-history":
       {
@@ -229,7 +229,7 @@ ipcMain.on("notify-main", async (_event, msg: GdbAny) => {
 /**
  * IPC *FROM* RENDERER
  */
-ipcMain.on("gdb-command", (_event, command: string) => {
+ipcMain.on("gdb-command", (_event: GdbAny, command: string) => {
   OnGdbCommand(command);
 });
 

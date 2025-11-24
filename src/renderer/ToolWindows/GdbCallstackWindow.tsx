@@ -5,9 +5,9 @@ import {
   GridComponent,
   Inject,
   Resize,
-  SearchSettingsModel,
+  //SearchSettingsModel,
   Toolbar,
-  ToolbarItems,
+  //ToolbarItems,
 } from "@syncfusion/ej2-react-grids";
 import React from "react";
 import { GdbAny } from "../../common/gdb-common";
@@ -38,39 +38,48 @@ function GdbCallStackWindow() {
     });
   });
 
-  const toolbarOptions: ToolbarItems[] = ["Search"];
-  const searchOptions: SearchSettingsModel = {
-    fields: ["func", "addr", "file", "fullName"],
-    ignoreCase: true,
-    key: "",
-    operator: "contains",
-  };
+  // const toolbarOptions: ToolbarItems[] = ["Search"];
+  // const searchOptions: SearchSettingsModel = {
+  //   fields: ["func", "addr", "file", "fullName"],
+  //   ignoreCase: true,
+  //   key: "",
+  //   operator: "contains",
+  // };
 
   return (
-    <GridComponent
-      allowResizing={true}
-      allowPaging={false}
-      allowSorting={false}
-      showColumnMenu={true}
-      allowFiltering={false}
-      toolbar={toolbarOptions}
-      searchSettings={searchOptions}
-      ref={(g: GdbAny) => (grid = g)}
-      height="100%"
-    >
-      <ColumnsDirective>
-        <ColumnDirective field="level" headerText="Depth" isPrimaryKey={true} textAlign="Left" />
-        <ColumnDirective field="func" headerText="Function" />
-        <ColumnDirective field="addr" headerText="Address" />
-        <ColumnDirective field="args" headerText="Arguments" />
-        <ColumnDirective field="file" headerText="File" />
-        <ColumnDirective field="fullName" headerText="Full Path" />
-        <ColumnDirective field="line" headerText="Line" />
-        <ColumnDirective field="from" headerText="From" />
-        <ColumnDirective field="arch" headerText="Architecture" />
-      </ColumnsDirective>
-      <Inject services={[Resize, ColumnMenu, Toolbar]} />
-    </GridComponent>
+    <div className="full-size flex-container">
+      <GridComponent
+        allowResizing={true}
+        allowPaging={false}
+        allowSorting={false}
+        showColumnMenu={true}
+        allowFiltering={false}
+        //toolbar={toolbarOptions}
+        //searchSettings={searchOptions}
+        ref={(g: GdbAny) => (grid = g)}
+        gridLines="Both"
+        height="100%"
+      >
+        <ColumnsDirective>
+          <ColumnDirective
+            field="level"
+            headerText="Depth"
+            isPrimaryKey={true}
+            textAlign="Left"
+            autoFit={true}
+          />
+          <ColumnDirective field="func" headerText="Function" autoFit={true} />
+          <ColumnDirective field="addr" headerText="Address" autoFit={true} />
+          <ColumnDirective field="args" headerText="Arguments" autoFit={true} />
+          <ColumnDirective field="file" headerText="File" autoFit={true} />
+          <ColumnDirective field="fullName" headerText="Full Path" autoFit={true} />
+          <ColumnDirective field="line" headerText="Line" autoFit={true} />
+          <ColumnDirective field="from" headerText="From" autoFit={true} />
+          <ColumnDirective field="arch" headerText="Architecture" autoFit={true} />
+        </ColumnsDirective>
+        <Inject services={[Resize, ColumnMenu, Toolbar]} />
+      </GridComponent>
+    </div>
   );
 }
 
