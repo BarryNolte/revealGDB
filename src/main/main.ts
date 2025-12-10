@@ -4,7 +4,7 @@ import settings from "electron-settings";
 import { GdbMenu } from "./menu";
 import { miInterface } from "./mi-interface/mi-interface";
 import { WslUtilities } from "./utilities/wsl-utilities";
-import { GdbAny } from "../common/gdb-common";
+import { GdbAny, wait } from "../common/gdb-common";
 
 console.log(`PRELOAD: ${path.resolve("./out/preload/preload.js")}`);
 
@@ -63,8 +63,13 @@ app.on("ready", async () => {
       autoHideMenuBar: true,
     });
     mainWindow.webContents.setDevToolsWebContents(debugWindow.webContents);
-    mainWindow.webContents.openDevTools({ mode: "detach" });
+    mainWindow.webContents.openDevTools({
+      mode: "detach",
+      title: "revealGDB - I'm Special, I know how to debug...",
+    });
   }
+
+  wait(5000);
 
   let devUrl = process.env.ELECTRON_RENDERER_URL;
 

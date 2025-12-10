@@ -1,6 +1,6 @@
 import { ItemDirective, ItemsDirective, ToolbarComponent } from "@syncfusion/ej2-react-navigations";
 import { DockviewApi, DockviewReact, DockviewReadyEvent } from "dockview";
-import { GdbAny } from "../common/gdb-common";
+import { GdbAny /*, wait */ } from "../common/gdb-common";
 
 import GdbSourceWindow from "./ToolWindows/GdbSourceWindow";
 import GdbMemoryWindow from "./ToolWindows/GdbMemoryWindow";
@@ -28,7 +28,7 @@ let dockView: DockviewApi | null = null;
 
 export default function App() {
   const [api, setApi] = useState<DockviewApi>();
-  wait(250);
+  //wait(250);
 
   const onReady = (event: DockviewReadyEvent) => {
     setApi(event.api);
@@ -224,18 +224,4 @@ window.addEventListener("beforeunload", () => {
 function saveDockLayout() {
   const layout = dockView?.toJSON();
   window.ipcToMain.notifyMain({ command: "save-dock-layout", data: layout });
-}
-
-/* Debug Only */
-function wait(ms: number): void {
-  console.log("Start waiting for " + ms + " milliseconds...");
-  let x,
-    y = 0;
-  const start = Date.now();
-  while (Date.now() - start < ms) {
-    // Do nothing, just wait
-    x = y++;
-    y = x++;
-  }
-  console.log("Waited for " + ms + " milliseconds.");
 }

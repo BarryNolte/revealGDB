@@ -1,5 +1,5 @@
 .commandWindow {
-  font-family: "Courier New", Courier, monospace;
+  font-family: monospace;
   height: 100%;
   width: 100%;
   padding: 2px;
@@ -19,7 +19,7 @@
 }
 
 .historyRow {
-  height: 100px;
+  height: 50%;
   width: 100%;
 }
 

@@ -1,6 +1,6 @@
 //import hljs from "highlight.js";
 import { readFile } from "fs/promises";
-import { GdbAny } from "src/common/gdb-common";
+import { GdbAny } from "../../../common/gdb-common";
 
 export class gdbSourceFileCache {
   private sourceFiles: Map<string, string> = new Map<string, string>();

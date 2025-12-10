@@ -26,5 +26,11 @@ module.exports = {
   rules: {
     "react/react-in-jsx-scope": "off",
     "linebreak-style": ["error", "windows"],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        argsIgnorePattern: "^_",
+      },
+    ],
   },
 };

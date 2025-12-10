@@ -1,0 +1,118 @@
+.editor-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  overflow-x: auto;
+}
+
+.hex-editor-table {
+  border-spacing: 0px;
+}
+
+.hex-editor-nopadding {
+  padding: 0px;
+}
+
+.editor-entry {
+  flex: 0 1 auto;
+  background-color: red;
+  width: 720px;
+}
+
+.editor-header {
+  flex: 0 1 auto;
+  background-color: rgb(73, 173, 206);
+  width: 720px;
+  cursor: default;
+}
+
+.col-offset-highlight {
+  background-color: yellow;
+}
+
+.edHeadH  {
+  margin: 2px 2px;
+  padding: 0px 2px;
+}
+
+.edHeadA {
+  margin: 0px;
+  padding: 0px 1px;
+}
+
+.ascii-char {
+  margin: 0px 1px;
+}
+
+.ascii-char-highlight {
+  background-color: pink;
+}
+
+.hex-char {
+  margin: 0px 2px;
+  padding: 0px 2px;
+}
+
+.hex-char-highlight {
+  background-color: beige;
+}
+
+.edHeadFrontPadding {
+  width: 66px;
+}
+
+.edHeadMiddlePadding {
+  width: 15px;
+}
+
+.editor-body-container {
+  flex: 1 1 auto;
+  background-color: yellow;
+  width: 720px;
+  overflow-y: auto;
+}
+
+.editor-footer {
+  flex: 0 1 auto;
+  background-color: green;
+  width: 720px;
+  padding-bottom: 3px;
+}
+
+.editor-font {
+  font-family: monospace;
+  font-size: 16px;
+}
+
+.editor-row-offset {
+  width: 60px;
+  background-color: lightgray;
+  cursor: default;
+}
+
+.row-offset {
+  padding: 0px 0px 0px 20px;
+}
+
+.row-offset-highlight {
+  background-color: gray;
+}
+
+.editor-hex-input-output {
+  background-color: lightcoral;
+  padding: 0px 10px;
+  width: 405px;
+  cursor: default;
+}
+
+.editor-ascii-column {
+  background-color: lightgreen;
+  padding: 0px 25px;
+  width: 185px;
+  cursor: default;
+}
+
+.edHeadATD {
+  padding-left: 20px;
+}
