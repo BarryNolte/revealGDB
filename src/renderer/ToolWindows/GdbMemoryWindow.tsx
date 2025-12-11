@@ -1,10 +1,22 @@
+import { Component } from "react";
 import RevealHexEditor from "../../../components/reveal-hex-editor/reveal-hex-editor";
-import React, { useState } from "react";
 
-function GdbMemoryWindow() {
-  const [datasource] = useState<Uint8Array>(window.crypto.getRandomValues(new Uint8Array(257)));
-
-  return <RevealHexEditor datasource={datasource} />;
+interface GdbMemoryWindowState {
+  datasource: Uint8Array;
 }
 
-export default GdbMemoryWindow;
+export default class GdbMemoryWindow extends Component<
+  Record<string, never>,
+  GdbMemoryWindowState
+> {
+  constructor(props: Record<string, never>) {
+    super(props);
+    this.state = {
+      datasource: window.crypto.getRandomValues(new Uint8Array(257)),
+    };
+  }
+
+  override render() {
+    return <RevealHexEditor datasource={this.state.datasource} />;
+  }
+}

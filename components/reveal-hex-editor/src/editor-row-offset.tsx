@@ -1,7 +1,7 @@
 import { Component, ReactElement } from "react";
 import { rowOffsetIdPrefix } from "./editor-input-objects";
 
-class EditorRowOffset extends Component<{ dataLength: number; radix: number }> {
+export default class EditorRowOffset extends Component<{ dataLength: number; radix: number }> {
   private readonly rowOffsetHighlight = "row-offset-highlight";
   private previousHighlightElement: HTMLElement | null = null;
 
@@ -26,7 +26,7 @@ class EditorRowOffset extends Component<{ dataLength: number; radix: number }> {
     for (let i = 0; i < totalRows; i++) {
       const address = (i * radix).toString(radix).toUpperCase().padStart(4, "0");
       el.push(
-        <div className="row-offset" id={`${rowOffsetIdPrefix}${i}`}>
+        <div className="row-offset" id={`${rowOffsetIdPrefix}${i}`} key={`${i}`}>
           {address}
         </div>,
       );
@@ -35,5 +35,3 @@ class EditorRowOffset extends Component<{ dataLength: number; radix: number }> {
     return <div className="editor-row editor-font">{el}</div>;
   }
 }
-
-export default EditorRowOffset;

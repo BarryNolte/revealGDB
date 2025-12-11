@@ -1,6 +1,7 @@
 {
   "name": "revealgdb",
   "version": "0.1.0",
+  "copyright": "© 2025",
   "private": true,
   "description": "A GDB debugger interface",
   "author": "Developer",
@@ -85,6 +86,7 @@
     "@syncfusion/ej2-react-grids": "^31.2.18",
     "@syncfusion/ej2-react-inputs": "^31.2.15",
     "@syncfusion/ej2-react-navigations": "^31.2.16",
+    "@syncfusion/ej2-react-popups": "^31.2.12",
     "ace-builds": "^1.43.5",
     "dockview": "^4.11.0",
     "electron-settings": "^4.0.4",

@@ -106,7 +106,7 @@ app.on("ready", async () => {
   /**
    * UI is now up and running, now we can interact with GDB
    */
-  gdbInterface = await new miInterface();
+  gdbInterface = new miInterface();
   gdbInterface.on("console-stream", (line: string) => {
     mainWindow.webContents.send("console-message", line);
   });
@@ -169,8 +169,8 @@ nativeTheme.on("updated", () => {
   mainWindow.webContents.send("theme-changed", nativeTheme);
 });
 
-ipcMain.handle("getSettings", async (): Promise<string[]> => {
-  return (await AppSettings.get("gdb")) as string[];
+ipcMain.handle("getVersionInfo", async (): Promise<string[]> => {
+  return ["one", "two", "three"];
 });
 
 // General messages from the UI

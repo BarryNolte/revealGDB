@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { colAscOffsetIdPrefix, colHexOffsetIdPrefix } from "./editor-input-objects";
 
-class EditorHeader extends Component<{ radix: number }> {
+export default class EditorHeader extends Component<{ radix: number }> {
   private readonly colOffsetHighlight = "col-offset-highlight";
   private previousHexHighlightElement: HTMLElement | null = null;
   private previousAscHighlightElement: HTMLElement | null = null;
@@ -146,5 +146,3 @@ class EditorHeader extends Component<{ radix: number }> {
     );
   }
 }
-
-export default EditorHeader;

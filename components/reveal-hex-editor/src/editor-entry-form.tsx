@@ -1,6 +1,6 @@
 import { Component, createRef } from "react";
 
-class EditorEntry extends Component<{
+export default class EditorEntry extends Component<{
   datalength: number;
   callback: (radix: number) => void;
 }> {
@@ -42,5 +42,3 @@ class EditorEntry extends Component<{
     );
   }
 }
-
-export default EditorEntry;

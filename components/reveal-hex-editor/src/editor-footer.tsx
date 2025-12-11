@@ -1,6 +1,6 @@
 import { Component } from "react";
 
-class EditorFooter extends Component {
+export default class EditorFooter extends Component {
   override render() {
     return (
       <div className="editor-footer editor-font">
@@ -9,5 +9,3 @@ class EditorFooter extends Component {
     );
   }
 }
-
-export default EditorFooter;

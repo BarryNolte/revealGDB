@@ -2,7 +2,7 @@ import { Component, createRef, MouseEvent } from "react";
 import { asciiClass, asciiIdPrefix, InputObjects } from "./editor-input-objects";
 import { HexEditorAsciiActionCallback } from "./editor-body";
 
-class HexEditorAscii extends Component<{
+export default class HexEditorAscii extends Component<{
   datasource?: Uint8Array;
   radix?: number;
   callback: HexEditorAsciiActionCallback;
@@ -103,5 +103,3 @@ class HexEditorAscii extends Component<{
     );
   }
 }
-
-export default HexEditorAscii;

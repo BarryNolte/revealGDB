@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld("ipcToMain", {
   errorMessage: (callback: GdbAny) =>
     ipcRenderer.on("error-message", (_event, value) => callback(value)),
 
+  // General poking of the render process from the main process
   notifyRender: (callback: GdbAny) =>
     ipcRenderer.on("notify-render", (_event, value) => callback(value)),
 

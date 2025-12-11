@@ -8,7 +8,7 @@ import EditorFooter from "./editor-footer";
 export type HexEditorAction = "hover" | "end-hover" | "changed";
 export type HexEditorAsciiActionCallback = (action: HexEditorAction, data: string) => void;
 
-class EditorBody extends Component<{ datasource: Uint8Array; radix: number }> {
+export default class EditorBody extends Component<{ datasource: Uint8Array; radix: number }> {
   private asciiRef = createRef<HexEditorAscii>();
   private hexRef = createRef<EditorHexInputOutput>();
   private headerRef = createRef<EditorHeader>();
@@ -115,5 +115,3 @@ class EditorBody extends Component<{ datasource: Uint8Array; radix: number }> {
     );
   }
 }
-
-export default EditorBody;

@@ -1,15 +1,14 @@
-* Global keyboard hooks
+* Global keyboard hooks (maybe??)
 * "Busy" screen during connect
 * Connection manager
 * Locals view
-* Move memory view/editor to source
+* Finish memory view
 * Save column widths with layout
 * Better Dock management (multiple source files in a Group)
   * Better source file management
 * Cleanup toolbar
 * Cleanup menus
 * Real Debug/Release builds
-* github workflow working
 * Better monospace font
 * DblClick on frame in callstack and set the proper context
 * Hookup register editing
@@ -17,7 +16,9 @@
 * About box
 * Code detection for source viewer
 * Settings page
-* Product Icon
+* Project Related
+  * github workflow working
+  * Product Icon
 
 # Documentation
   * Hotkey map

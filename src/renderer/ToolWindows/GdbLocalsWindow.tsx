@@ -1,5 +1,7 @@
-function GdbLocalsWindow() {
-  return <div>GdbLocalsWindow</div>;
-}
+import { Component } from "react";
 
-export default GdbLocalsWindow;
+export default class GdbLocalsWindow extends Component {
+  override render() {
+    return <div>GdbLocalsWindow</div>;
+  }
+}

@@ -55,15 +55,34 @@ export default defineConfig({
         output: {
           // Configure manual chunks for better control
           manualChunks(id) {
-            console.log(`Chunk: ${id}`);
-            // If the module is from node_modules, put it in a 'vendor' chunk
-            if (id.includes("node_modules/@syncfusion")) {
+            //console.log(`Chunk: ${id}`);
+            if (id.includes("syncfusion") && id.includes("grid")) {
+              //console.log("   Bundle: syncgrid")
+              return "syncgrid";
+              // } else if (id.includes("syncfusion") && id.includes("pdf")) {
+              //   //console.log("   Bundle: syncpdf");
+              //   return "syncpdf";
+            } else if (id.includes("node_modules/@syncfusion")) {
+              //console.log("   Bundle: syncfusion");
               return "syncfusion";
-            } else if(id.includes("node_modules/ace-builds")) {
+            } else if (
+              id.includes("node_modules/ace-builds") ||
+              id.includes("node_modules/react-ace")
+            ) {
+              //console.log("   Bundle: ace-editor");
               return "ace-editor";
             } else if (id.includes("node_modules/dockview")) {
+              //console.log("   Bundle: dockview");
               return "dockview";
+            } else if (
+              id.includes("node_modules/react") ||
+              id.includes("node_modules/prop-types") ||
+              id.includes("scheduler")
+            ) {
+              //console.log("   Bundle: react");
+              return "react";
             } else if (id.includes("node_modules")) {
+              //console.log("   Bundle: 3rdParty");
               return "3rdParty";
             }
           },

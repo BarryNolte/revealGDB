@@ -11,89 +11,100 @@ import {
   //SearchSettingsModel,
   Sort,
   Toolbar,
-  //ToolbarItems,
 } from "@syncfusion/ej2-react-grids";
-import React from "react";
-import { gdbRegisters } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
+import { Component } from "react";
 import { GdbAny } from "../../common/gdb-common";
+import { gdbRegisters } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
 import "./GdbRegisterWindow.css";
 
-function GdbRegistersWindow() {
-  let grid: GridComponent | null;
-  window.ipcToMain.dataRegisters((data: gdbRegisters[]) => {
-    grid!.dataSource = [];
-    data.forEach((reg) => {
-      ((grid as GridComponent).dataSource as object[]).push({
-        name: reg.name,
-        value: reg.value,
-        changed: reg.changed,
-      });
-    });
+export default class GdbRegistersWindow extends Component {
+  private grid: GridComponent | null = null;
 
-    (grid as GridComponent).setProperties({
-      dataSource: (grid as GridComponent).dataSource as object[],
-    });
-  });
-
-  function queryCellInfo(args: QueryCellInfoEventArgs): void {
-    if (args.column?.field === "value" && (args.data as gdbRegisters).changed === true) {
-      args.cell?.classList.add("register-changed-cell");
-    }
-  }
-
-  const editSettings = {
+  private editSettings = {
     allowEditing: true,
     allowAdding: false,
     allowDeleting: false,
   };
-  const stringParams = {
+  private stringParams = {
     params: {
       showClearButton: true,
     },
   };
 
-  //const toolbarOptions: ToolbarItems[] = ["Search"];
-  // const searchOptions: SearchSettingsModel = {
-  //   fields: ["name", "value"],
-  //   ignoreCase: true,
-  //   key: "",
-  //   operator: "contains",
-  // };
+  override componentDidMount() {
+    window.ipcToMain.dataRegisters((data: gdbRegisters[]) => {
+      if (this.grid) {
+        this.grid.dataSource = [];
+        data.forEach((reg) => {
+          ((this.grid as GridComponent).dataSource as object[]).push({
+            name: reg.name,
+            value: reg.value,
+            changed: reg.changed,
+          });
+        });
 
-  return (
-    <div className="full-size flex-container">
-      <GridComponent
-        className="flex-item"
-        queryCellInfo={queryCellInfo}
-        allowResizing={true}
-        allowPaging={false}
-        allowSorting={false}
-        showColumnMenu={true}
-        allowFiltering={false}
-        editSettings={editSettings}
-        //toolbar={toolbarOptions}
-        //searchSettings={searchOptions}
-        ref={(g: GdbAny) => (grid = g)}
-        gridLines="Both"
-        height="100%"
-      >
-        <ColumnsDirective>
-          <ColumnDirective
-            field="name"
-            headerText="Register"
-            width="20%"
-            textAlign="Left"
-            minWidth={100}
-            allowEditing={false}
-            isPrimaryKey={true}
-          />
-          <ColumnDirective field="value" headerText="Value" width="80%" edit={stringParams} />
-        </ColumnsDirective>
-        <Inject services={[Resize, Sort, Group, ColumnMenu, Edit, Toolbar]} />
-      </GridComponent>
-    </div>
-  );
+        (this.grid as GridComponent).setProperties({
+          dataSource: (this.grid as GridComponent).dataSource as object[],
+        });
+      }
+    });
+  }
+
+  override componentWillUnmount(): void {
+    this.grid?.columns.forEach((item) => {
+      console.log(`Register Columns: ${item}`);
+    });
+  }
+
+  private queryCellInfo = (args: QueryCellInfoEventArgs): void => {
+    if (args.column?.field === "value" && (args.data as gdbRegisters).changed === true) {
+      args.cell?.classList.add("register-changed-cell");
+    }
+  };
+
+  private setGridRef = (g: GdbAny) => {
+    this.grid = g;
+  };
+
+  override render() {
+    return (
+      <div className="full-size flex-container">
+        <GridComponent
+          className="flex-item"
+          queryCellInfo={this.queryCellInfo}
+          allowResizing={true}
+          allowPaging={false}
+          allowSorting={false}
+          showColumnMenu={true}
+          allowFiltering={false}
+          editSettings={this.editSettings}
+          //toolbar={toolbarOptions}
+          //searchSettings={searchOptions}
+          ref={this.setGridRef}
+          gridLines="Both"
+          height="100%"
+        >
+          <ColumnsDirective>
+            <ColumnDirective
+              field="name"
+              headerText="Register"
+              width="20%"
+              textAlign="Left"
+              minWidth={100}
+              allowEditing={false}
+              isPrimaryKey={true}
+            />
+            <ColumnDirective
+              field="value"
+              headerText="Value"
+              width="80%"
+              edit={this.stringParams}
+            />
+          </ColumnsDirective>
+          <Inject services={[Resize, Sort, Group, ColumnMenu, Edit, Toolbar]} />
+        </GridComponent>
+      </div>
+    );
+  }
 }
-
-export default GdbRegistersWindow;

@@ -17,7 +17,7 @@ interface IState {
   radix?: number;
 }
 
-class RevealHexEditor extends Component<IHexEditorProps, IState> {
+export default class RevealHexEditor extends Component<IHexEditorProps, IState> {
   constructor(props: IHexEditorProps) {
     super(props);
     this.state = {
@@ -39,5 +39,3 @@ class RevealHexEditor extends Component<IHexEditorProps, IState> {
     );
   }
 }
-
-export default RevealHexEditor;

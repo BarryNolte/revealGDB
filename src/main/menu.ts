@@ -10,7 +10,12 @@ export class GdbMenu {
             {
               label: app.name,
               submenu: [
-                { role: "about" },
+                {
+                  label: "about",
+                  click: () => {
+                    mainWindow.webContents.send("notify-render", { command: "about-box" });
+                  },
+                },
                 { type: "separator" },
                 { role: "services" },
                 { type: "separator" },
@@ -194,6 +199,15 @@ export class GdbMenu {
             label: "Learn More",
             click: async () => {
               await shell.openExternal("https://github.com/barrynolte/revealGDB");
+            },
+          },
+          {
+            type: "separator",
+          },
+          {
+            label: "About",
+            click: async () => {
+              mainWindow.webContents.send("notify-render", { command: "about-box" });
             },
           },
         ],

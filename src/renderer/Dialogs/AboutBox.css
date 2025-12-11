@@ -1,0 +1,62 @@
+div > .aboutBoxHeader {
+  background-color: blue;
+  color: lightblue;
+  font-size: medium;
+  margin: 0px;
+  border-bottom: none;
+  padding: 3px 10px 0px 10px;
+}
+
+div > .aboutBoxHeaderContainer > .e-dlg-header-content + .e-dlg-content {
+  padding: 0px;
+}
+
+div > .aboutBoxHeaderContainer > .e-dlg-header-content > .e-dlg-header {
+  width: calc(100% - 30px);
+}
+
+div > .aboutBoxHeaderContainer > .e-dlg-header-content {
+  padding: 0px;
+  border-bottom: 2px solid black;
+  width: 100%;
+}
+
+div > .aboutBoxContent {
+  display: flex;
+}
+div > .aboutBoxText {
+  padding: 6px;
+  flex-grow: 1;
+}
+
+div > .aboutBoxTitle {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: x-large;
+  font-weight: bolder;
+  border-bottom: 2px solid black;
+  margin-bottom: 8px;
+}
+
+div > .aboutBoxImportant {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  font-weight: lighter;
+}
+
+div > .aboutBoxGeneral {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  border-top: 2px solid black;
+  padding-top: 10px;
+}
+
+div > .aboutBox-background-div {
+  background-image: url("../icons/OpenRoad_small.png"); /* Path relative to the public/ folder */
+  width: 64px;
+  height: 64px;
+  margin: 6px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
