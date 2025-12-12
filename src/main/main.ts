@@ -5,6 +5,7 @@ import { GdbMenu } from "./menu";
 import { miInterface } from "./mi-interface/mi-interface";
 import { WslUtilities } from "./utilities/wsl-utilities";
 import { GdbAny, wait } from "../common/gdb-common";
+import os from "os";
 
 console.log(`PRELOAD: ${path.resolve("./out/preload/preload.js")}`);
 
@@ -21,6 +22,8 @@ let debugWindow: BrowserWindow;
 
 export let gdbInterface: miInterface;
 
+export const gdbAppInfo: Map<string, GdbAny> = new Map<string, GdbAny>();
+
 app.on("ready", async () => {
   /**
    * DEBUG: Usefull Information
@@ -36,6 +39,19 @@ app.on("ready", async () => {
     );
   });
   /* END DEBUG */
+
+  gdbAppInfo.set("Node Version", process.version);
+  gdbAppInfo.set("Architecture", os.arch());
+  gdbAppInfo.set("Platform", process.platform);
+  gdbAppInfo.set("OS Version", os.version());
+  gdbAppInfo.set("Machine", os.machine());
+  gdbAppInfo.set("Chrome Version", process.versions.chrome);
+  gdbAppInfo.set("Electron Version", process.versions.electron);
+  gdbAppInfo.set("v8 Version", process.versions.v8);
+  gdbAppInfo.set("System Version", process.getSystemVersion());
+  gdbAppInfo.set("Package Versions", process.versions);
+  console.log("Version Info\n------------");
+  console.log(gdbAppInfo);
 
   AppSettings.configure({
     atomicSave: true,
@@ -169,8 +185,12 @@ nativeTheme.on("updated", () => {
   mainWindow.webContents.send("theme-changed", nativeTheme);
 });
 
-ipcMain.handle("getVersionInfo", async (): Promise<string[]> => {
-  return ["one", "two", "three"];
+ipcMain.handle("getSettings", async (): Promise<string[]> => {
+  return (await AppSettings.get("gdb")) as string[];
+});
+
+ipcMain.handle("getVersionInfo", (): Promise<Map<string, GdbAny>> => {
+  return Promise.resolve(gdbAppInfo);
 });
 
 // General messages from the UI

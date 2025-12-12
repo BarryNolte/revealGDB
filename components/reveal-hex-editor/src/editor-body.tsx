@@ -20,7 +20,7 @@ export default class EditorBody extends Component<{ datasource: Uint8Array; radi
     switch (action) {
       case "hover":
         {
-          const idx: number = parseInt(data, 10) || -1;
+          const idx: number = parseInt(data, 10);
           this.asciiRef.current?.highlightAtIdx(idx);
           this.hexRef.current?.highlightAtIdx(idx);
           this.rowOffsetRef.current?.highlightAtIdx(idx);
@@ -50,7 +50,7 @@ export default class EditorBody extends Component<{ datasource: Uint8Array; radi
     switch (action) {
       case "hover":
         {
-          const idx: number = parseInt(data, 10) || -1;
+          const idx: number = parseInt(data, 10);
           this.hexRef.current?.highlightAtIdx(idx);
           this.asciiRef.current?.highlightAtIdx(idx);
           this.rowOffsetRef.current?.highlightAtIdx(idx);

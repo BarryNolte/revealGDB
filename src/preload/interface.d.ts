@@ -13,6 +13,7 @@ export interface IElectronAPI {
   dataMemory: (data: GdbAny) => void;
 
   getSettings: () => GdbAny;
+  getVersionInfo: () => Promise<Map<string, GdbAny>>;
   sendGdbCommand: (command: string) => void;
   notifyMain: (command: GdbAny) => void;
 }

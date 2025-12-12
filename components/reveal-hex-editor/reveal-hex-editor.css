@@ -17,13 +17,13 @@
 .editor-entry {
   flex: 0 1 auto;
   background-color: red;
-  width: 720px;
+  width: 723px;
 }
 
 .editor-header {
   flex: 0 1 auto;
   background-color: rgb(73, 173, 206);
-  width: 720px;
+  width: 723px;
   cursor: default;
 }
 
@@ -31,7 +31,7 @@
   background-color: yellow;
 }
 
-.edHeadH  {
+.edHeadH {
   margin: 2px 2px;
   padding: 0px 2px;
 }
@@ -59,7 +59,7 @@
 }
 
 .edHeadFrontPadding {
-  width: 66px;
+  width: 68px;
 }
 
 .edHeadMiddlePadding {
@@ -69,14 +69,13 @@
 .editor-body-container {
   flex: 1 1 auto;
   background-color: yellow;
-  width: 720px;
-  overflow-y: auto;
+  width: 723px;
 }
 
 .editor-footer {
   flex: 0 1 auto;
   background-color: green;
-  width: 720px;
+  width: 723px;
   padding-bottom: 3px;
 }
 
@@ -87,6 +86,7 @@
 
 .editor-row-offset {
   width: 60px;
+  padding-right: 3px;
   background-color: lightgray;
   cursor: default;
 }

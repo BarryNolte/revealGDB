@@ -3,6 +3,8 @@ import { DialogComponent } from "@syncfusion/ej2-react-popups";
 import { Component, JSX } from "react";
 import "./AboutBox.css";
 import packageInfo from "./../../../package.json";
+import React from "react";
+import { AppMainVersionInfo } from "../App";
 
 // import { GdbAny } from "../../common/gdb-common";
 
@@ -29,10 +31,6 @@ export class AboutBox extends Component<AboutProps, AboutState> {
     this.setState({ hideDialog: true });
   }
 
-  private tweak = () => {
-    this.setState({ version: "Hello" });
-  };
-
   // Function to close the dialog
   private dialogCloseFunc = () => {
     this.setState({ hideDialog: false });
@@ -45,9 +43,6 @@ export class AboutBox extends Component<AboutProps, AboutState> {
   private footer = (): JSX.Element => {
     return (
       <div>
-        <ButtonComponent className="aboutBoxButton" onClick={this.tweak}>
-          Tweak
-        </ButtonComponent>
         <ButtonComponent className="aboutBoxButton" onClick={this.dialogCloseFunc}>
           OK
         </ButtonComponent>
@@ -61,12 +56,27 @@ export class AboutBox extends Component<AboutProps, AboutState> {
         <div className="aboutBox-background-div"></div>
         <div className="aboutBoxText">
           <div className="aboutBoxTitle">revealGDB</div>
+          <hr />
           <div className="aboutBoxImportant">Version {packageInfo.version}</div>
-          <div className="aboutBoxImportant">Copyright {packageInfo.copyright}</div>
+          <div className="aboutBoxImportant">
+            Copyright {packageInfo.copyright} - {packageInfo.company}
+          </div>
           <div className="aboutBoxImportant">{packageInfo.description}</div>
-          <div className="aboutBoxImportant">Node Version: {this.state.version}</div>
-          <br />
-          <div className="aboutBoxGeneral">Hello</div>
+          <hr />
+          <div className="aboutBoxDetails">
+            Node Version: {AppMainVersionInfo.get("Node Version")}
+          </div>
+          <div className="aboutBoxDetails">
+            Electron Version: {AppMainVersionInfo.get("Electron Version")}
+          </div>
+          <div className="aboutBoxDetails">v8 Version: {AppMainVersionInfo.get("v8 Version")}</div>
+          <div className="aboutBoxDetails">
+            Architecture: {AppMainVersionInfo.get("Architecture")}
+          </div>
+          <div className="aboutBoxDetails">Plateform: {AppMainVersionInfo.get("Platform")}</div>
+          <div className="aboutBoxDetails">OS Version: {AppMainVersionInfo.get("OS Version")}</div>
+          <hr />
+          <div className="aboutBoxGeneral">What a place to be...</div>
         </div>
       </div>
     );

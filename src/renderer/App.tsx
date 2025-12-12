@@ -16,6 +16,8 @@ import { AboutBox } from "./Dialogs/AboutBox";
 import { fRendered } from "./main";
 
 let dockView: DockviewApi | null = null;
+export let AppMainVersionInfo: Map<string, GdbAny>;
+window.ipcToMain.getVersionInfo().then((e) => (AppMainVersionInfo = e));
 
 export default class App extends React.Component {
   private aboutBoxRef = React.createRef<AboutBox>();
@@ -52,7 +54,7 @@ export default class App extends React.Component {
       this.saveDockLayout();
     });
 
-    window.ipcToMain.getSettings().then(async (): Promise<void> => {});
+    //window.ipcToMain.getSettings().then(async (): Promise<void> => {});
   }
 
   override componentWillUnmount() {
