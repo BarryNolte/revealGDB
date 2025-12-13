@@ -1,8 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { GdbAny } from "../common/gdb-common";
 
-console.log("Running (start): preload.ts");
-
 /**
  * This should be kept in sync with .\src\preload\interface.d.ts
  * for code completion and better compiler diagnostics.
@@ -43,5 +41,3 @@ contextBridge.exposeInMainWorld("ipcToMain", {
 
   notifyMain: (command: GdbAny) => ipcRenderer.send("notify-main", command),
 });
-
-console.log("Running (end)  : preload.ts");

@@ -26,6 +26,10 @@ module.exports = {
   rules: {
     "react/react-in-jsx-scope": "off",
     "linebreak-style": ["error", "windows"],
+    "no-async-promise-executor": 2,
+    "no-await-in-loop": 2,
+    "require-await": 2,
+    "require-atomic-updates": 2,
     "@typescript-eslint/no-unused-vars": [
       "error",
       {

@@ -42,7 +42,7 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
       this.emit("gdb-error", new OutputAvailableEventArgs(text));
     });
 
-    return true;
+    return await Promise.resolve(true);
   }
 
   override Send(data: string): void {

@@ -6,28 +6,44 @@ import packageInfo from "./../../../package.json";
 import React from "react";
 import { AppMainVersionInfo } from "../App";
 
-// import { GdbAny } from "../../common/gdb-common";
-
 interface AboutProps {
   center?: boolean;
 }
 
 interface AboutState {
   hideDialog: boolean;
-  version: string;
+  nodeVersion: string;
+  electronVersion: string;
+  architecture: string;
+  v8Version: string;
+  platform: string;
+  osVersion: string;
 }
 
 export class AboutBox extends Component<AboutProps, AboutState> {
   constructor(props: AboutProps) {
     super(props);
 
-    this.state = { hideDialog: false, version: "" };
+    this.state = {
+      hideDialog: false,
+      nodeVersion: "",
+      electronVersion: "",
+      architecture: "",
+      v8Version: "",
+      platform: "",
+      osVersion: "",
+    };
   }
-
-  override componentDidMount() {}
 
   // Function to open the dialog
   public ShowDialog() {
+    this.setState({ nodeVersion: AppMainVersionInfo.get("Node Version") });
+    this.setState({ electronVersion: AppMainVersionInfo.get("Electron Version") });
+    this.setState({ architecture: AppMainVersionInfo.get("Architecture") });
+    this.setState({ v8Version: AppMainVersionInfo.get("v8 Version") });
+    this.setState({ platform: AppMainVersionInfo.get("Platform") });
+    this.setState({ osVersion: AppMainVersionInfo.get("OS Version") });
+
     this.setState({ hideDialog: true });
   }
 
@@ -37,7 +53,7 @@ export class AboutBox extends Component<AboutProps, AboutState> {
   };
 
   private header = (): JSX.Element => {
-    return <div className="aboutBoxHeader">revealGDB - A better way to debug, probably...</div>;
+    return <div className="aboutBoxHeader">About</div>;
   };
 
   private footer = (): JSX.Element => {
@@ -50,45 +66,12 @@ export class AboutBox extends Component<AboutProps, AboutState> {
     );
   };
 
-  private content = (): JSX.Element => {
-    return (
-      <div className="aboutBoxContent">
-        <div className="aboutBox-background-div"></div>
-        <div className="aboutBoxText">
-          <div className="aboutBoxTitle">revealGDB</div>
-          <hr />
-          <div className="aboutBoxImportant">Version {packageInfo.version}</div>
-          <div className="aboutBoxImportant">
-            Copyright {packageInfo.copyright} - {packageInfo.company}
-          </div>
-          <div className="aboutBoxImportant">{packageInfo.description}</div>
-          <hr />
-          <div className="aboutBoxDetails">
-            Node Version: {AppMainVersionInfo.get("Node Version")}
-          </div>
-          <div className="aboutBoxDetails">
-            Electron Version: {AppMainVersionInfo.get("Electron Version")}
-          </div>
-          <div className="aboutBoxDetails">v8 Version: {AppMainVersionInfo.get("v8 Version")}</div>
-          <div className="aboutBoxDetails">
-            Architecture: {AppMainVersionInfo.get("Architecture")}
-          </div>
-          <div className="aboutBoxDetails">Plateform: {AppMainVersionInfo.get("Platform")}</div>
-          <div className="aboutBoxDetails">OS Version: {AppMainVersionInfo.get("OS Version")}</div>
-          <hr />
-          <div className="aboutBoxGeneral">What a place to be...</div>
-        </div>
-      </div>
-    );
-  };
-
   override render() {
     return (
       <div className="App" id="dialog-target">
         <DialogComponent
           className="aboutBoxHeaderContainer"
           width="500px"
-          content={this.content}
           target=".App"
           visible={this.state.hideDialog}
           header={this.header}
@@ -97,7 +80,31 @@ export class AboutBox extends Component<AboutProps, AboutState> {
           showCloseIcon={true}
           close={this.dialogCloseFunc}
           isModal={true} // Makes the dialog modal
-        />
+        >
+          <div className="aboutBoxContent">
+            <div className="aboutBox-background-div"></div>
+            <div className="aboutBoxText">
+              <div className="aboutBoxTitle">revealGDB</div>
+              <hr />
+              <div className="aboutBoxImportant">Version {packageInfo.version}</div>
+              <div className="aboutBoxImportant">
+                Copyright {packageInfo.copyright} - {packageInfo.company}
+              </div>
+              <div className="aboutBoxImportant">{packageInfo.description}</div>
+              <hr />
+              <div className="aboutBoxDetails">Node Version: {this.state.nodeVersion}</div>
+              <div className="aboutBoxDetails">Electron Version: {this.state.electronVersion}</div>
+              <div className="aboutBoxDetails">v8 Version: {this.state.v8Version}</div>
+              <div className="aboutBoxDetails">Architecture: {this.state.architecture}</div>
+              <div className="aboutBoxDetails">Plateform: {this.state.platform}</div>
+              <div className="aboutBoxDetails">OS Version: {this.state.osVersion}</div>
+              <hr />
+              <div className="aboutBoxGeneral">What a place to be...</div>
+              <br />
+              <div className="aboutBoxGeneral">Icons by Icons8</div>
+            </div>
+          </div>
+        </DialogComponent>
       </div>
     );
   }

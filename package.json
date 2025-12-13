@@ -4,11 +4,20 @@
   "copyright": "© 2025",
   "private": true,
   "description": "A GDB debugger interface",
-  "categories": ["Debuggers", "Visualization"],
-  "keywords": ["Debugger", "GDB", "Graphical"],
+  "categories": [
+    "Debuggers",
+    "Visualization"
+  ],
+  "keywords": [
+    "Debugger",
+    "GDB",
+    "Graphical"
+  ],
   "author": "Barry Nolte (barry@barrynolte.com)",
   "company": "Open Road Electronics, LLC",
-  "maintainers": ["Barry Nolte (barry@barrynolte.com"],
+  "maintainers": [
+    "Barry Nolte (barry@barrynolte.com"
+  ],
   "contributors": [],
   "homepage": "https://github.com/barrynolte/revealGDB",
   "main": "out/main/main.js",
@@ -93,6 +102,7 @@
     "@syncfusion/ej2-react-inputs": "^31.2.15",
     "@syncfusion/ej2-react-navigations": "^31.2.16",
     "@syncfusion/ej2-react-popups": "^31.2.12",
+    "@syncfusion/react-buttons": "^31.2.12",
     "ace-builds": "^1.43.5",
     "dockview": "^4.11.0",
     "electron-settings": "^4.0.4",

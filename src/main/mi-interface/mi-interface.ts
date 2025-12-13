@@ -30,7 +30,7 @@ export class miInterface extends EventEmitter {
       console.log("GDB exited");
     });
 
-    this.conn.on("gdb-data", async (args: OutputAvailableEventArgs) => {
+    this.conn.on("gdb-data", (args: OutputAvailableEventArgs) => {
       console.log(`GDB Data (${miInterface.lnum++}): ${args.Output}`);
       const lines = args.Output.split("\n");
       lines.forEach(async (line: string) => {
@@ -110,7 +110,7 @@ export class miInterface extends EventEmitter {
     return true;
   }
 
-  private async parseStatusAsyncRecord(output: string): Promise<boolean> {
+  private parseStatusAsyncRecord(output: string): void {
     console.error(`StatusAsyncRecord: ${output}`);
     throw new Error("Method not implemented.");
   }
@@ -119,7 +119,7 @@ export class miInterface extends EventEmitter {
   rgxParamValue: RegExp = /^param="(?<cmdParam>.*?)",value="(?<value>.*?)"$/;
   rgxBkpt: RegExp =
     /^bkpt={number="(?<number>[^"]*)",type="(?<type>[^"]*)",disp="(?<disp>[^"]*)",enabled="(?<enabled>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",thread-groups=\[(?<tg>[^\]]*)\],times="(?<times>[^"]*)",original-location="(?<orgloc>[^"]*)"}$/;
-  private async parseNotifyAsyncRecord(output: string): Promise<boolean> {
+  private parseNotifyAsyncRecord(output: string): boolean {
     const chunks = this.rgxNotify.exec(output);
 
     const cmd = chunks?.groups?.cmd || "";
@@ -479,7 +479,7 @@ export class miInterface extends EventEmitter {
 
     return true;
   }
-  private async parseExecAsyncRecord(output: string): Promise<boolean> {
+  private parseExecAsyncRecord(output: string): boolean {
     const rgxExecAsyncRecord: RegExp = /^\*(?<result>[^,]*),?(?<data>.*)?$/;
     const chunks = rgxExecAsyncRecord.exec(output);
 
@@ -662,13 +662,13 @@ export class miInterface extends EventEmitter {
 
     return true;
   }
-  private async parseTargetStream(output: string): Promise<boolean> {
+  private parseTargetStream(output: string): boolean {
     //throw new Error(`Method not implemented. ${output}`);
     this.emit("log-error", `Target Stream: ${output}`);
     return true;
   }
 
-  private async parseLogStream(output: string): Promise<boolean> {
+  private parseLogStream(output: string): boolean {
     const rgxLogStream: RegExp = /^&"(?<line>.*?)"$/;
     const chunks = rgxLogStream.exec(output);
 
@@ -680,7 +680,7 @@ export class miInterface extends EventEmitter {
         lines.pop();
       }
 
-      lines.forEach(async (line: string) => {
+      lines.forEach((line: string) => {
         this.emit("log-stream", line);
       });
     }
@@ -689,7 +689,7 @@ export class miInterface extends EventEmitter {
   }
 
   private savedStr: string = "";
-  private async parseConsoleStream(output: string): Promise<boolean> {
+  private parseConsoleStream(output: string): boolean {
     // Get just the text between the quotes
     const rgxConsoleStream: RegExp = /^~"(?<line>.*?)"$/;
     const chunks = rgxConsoleStream.exec(output);
@@ -712,7 +712,7 @@ export class miInterface extends EventEmitter {
       }
 
       // Tell the world about what got sent
-      lines.forEach(async (line: string) => {
+      lines.forEach((line: string) => {
         this.emit("console-stream", line);
       });
 

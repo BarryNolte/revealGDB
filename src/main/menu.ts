@@ -206,7 +206,7 @@ export class GdbMenu {
           },
           {
             label: "About",
-            click: async () => {
+            click: () => {
               mainWindow.webContents.send("notify-render", { command: "about-box" });
             },
           },

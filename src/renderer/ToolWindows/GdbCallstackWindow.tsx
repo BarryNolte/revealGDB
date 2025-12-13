@@ -18,7 +18,7 @@ export default class GdbCallStackWindow extends Component {
   private grid: GridComponent | null = null;
 
   override componentDidMount() {
-    window.ipcToMain.stackFrames(async (data: gdbStackFrame[]) => {
+    window.ipcToMain.stackFrames((data: gdbStackFrame[]) => {
       if (!this.grid) return;
 
       this.grid.dataSource = [];

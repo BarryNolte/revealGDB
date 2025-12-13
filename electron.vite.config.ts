@@ -6,6 +6,7 @@ import { defineConfig } from "electron-vite";
 import { resolve } from "path";
 // @ts-export-error
 import react from "@vitejs/plugin-react";
+// import fs from "fs";
 
 export default defineConfig({
   preload: {
@@ -54,37 +55,69 @@ export default defineConfig({
       rollupOptions: {
         output: {
           // Configure manual chunks for better control
-          manualChunks(id) {
-            //console.log(`Chunk: ${id}`);
-            if (id.includes("syncfusion") && id.includes("grid")) {
-              //console.log("   Bundle: syncgrid")
-              return "syncgrid";
-              // } else if (id.includes("syncfusion") && id.includes("pdf")) {
-              //   //console.log("   Bundle: syncpdf");
-              //   return "syncpdf";
-            } else if (id.includes("node_modules/@syncfusion")) {
-              //console.log("   Bundle: syncfusion");
-              return "syncfusion";
-            } else if (
-              id.includes("node_modules/ace-builds") ||
-              id.includes("node_modules/react-ace")
-            ) {
-              //console.log("   Bundle: ace-editor");
-              return "ace-editor";
-            } else if (id.includes("node_modules/dockview")) {
-              //console.log("   Bundle: dockview");
-              return "dockview";
-            } else if (
-              id.includes("node_modules/react") ||
-              id.includes("node_modules/prop-types") ||
-              id.includes("scheduler")
-            ) {
-              //console.log("   Bundle: react");
-              return "react";
-            } else if (id.includes("node_modules")) {
-              //console.log("   Bundle: 3rdParty");
-              return "3rdParty";
-            }
+          manualChunks(_id) {
+            const chunkName = "default";
+            // if (id.includes("ej2-base") || id.includes("ej2-react-base")) {
+            //   chunkName = "syncbase";
+            // } else if (
+            //   id.includes("ej2-excel-export") ||
+            //   id.includes("ej2-file-utils") ||
+            //   id.includes("ej2-inputs") ||
+            //   id.includes("ej2-navigations") ||
+            //   id.includes("ej2-notifications")
+            // ) {
+            //   chunkName = "syncmisc";
+            // } else if (id.includes("ej2-compression") || id.includes("ej2-data")) {
+            //   chunkName = "syncmisc1";
+            // } else if (id.includes("ej2-splitbuttons")) {
+            //   chunkName = "syncsplitbut";
+            // } else if (id.includes("ej2-react")) {
+            //   chunkName = "react";
+            // } else if (id.includes("ej2-dropdowns")) {
+            //   chunkName = "syncdropdown";
+            // } else if (id.includes("ej2-lists")) {
+            //   chunkName = "synclists";
+            // } else if (id.includes("ej2-pdf-export") || id.includes("ej2-calendars")) {
+            //   chunkName = "syncunused2";
+            // } else if (id.includes("syncfusion") && id.includes("grid")) {
+            //   chunkName = "syncgrid";
+            // } else if (id.includes("node_modules/@syncfusion")) {
+            //   chunkName = "syncfusion";
+            // } else if (id.includes("ace.js")) {
+            //   chunkName = "ace-editor";
+            // } else if (id.includes("ace-builds")) {
+            //   chunkName = "ace-dynamics";
+            // } else if (id.includes("node_modules/dockview")) {
+            //   chunkName = "dockview";
+            // } else if (
+            //   id.includes("node_modules/react") ||
+            //   id.includes("node_modules/prop-types") ||
+            //   id.includes("scheduler")
+            // ) {
+            //   chunkName = "react";
+            // } else if (id.includes("node_modules")) {
+            //   chunkName = "3rdParty";
+            // }
+
+            // const idx = id.indexOf("revealGDB");
+            // const fileName = id.slice(idx);
+            // const questionIdx = id.indexOf("?");
+            // const safeFullPath = questionIdx === -1 ? id : id.slice(0, questionIdx);
+
+            // let size: number = 0;
+            // try {
+            //   if (fs.existsSync(safeFullPath)) {
+            //     size = fs.statSync(safeFullPath).size;
+            //   }
+            // } catch {
+            //   size = 0;
+            // }
+
+            // console.log(
+            //   `${chunkName.padEnd(12, " ")} | ${size.toString().padStart(8, " ")} | ${fileName}`,
+            // );
+
+            return chunkName;
           },
         },
       },

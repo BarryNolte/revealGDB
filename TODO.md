@@ -1,24 +1,31 @@
-* Global keyboard hooks (maybe??)
-* "Busy" screen during connect
-* Connection manager
-* Locals view
-* Finish memory view
-* Save column widths with layout
-* Better Dock management (multiple source files in a Group)
-  * Better source file management
-* Cleanup toolbar
-* Cleanup menus
-* Real Debug/Release builds
-* Better monospace font
-* DblClick on frame in callstack and set the proper context
-* Hookup register editing
-* Python Window for running python commands
-* About box
-* Code detection for source viewer
-* Settings page
-* Project Related
+# UI Related
+  * "Busy" screen during connect
+  * Connection manager
+  * Locals view
+  * Finish memory view
+  * Hookup register editing
+  * DblClick on frame in callstack and set the proper context
+  * Settings page
+
+  * Save column widths with layout
+  * Better Dock management (multiple source files in a Group)
+    * Better source file management
+    * Code detection for source viewer
+  * Better monospace font
+  * Cleanup toolbar
+  * Cleanup menus
+
+# New Features
+  * Python Window for running python commands
+
+# Project Related
+  * Real Debug/Release builds
   * github workflow working
   * Product Icon
+  * Install for all platforms
+
+~* About box~
 
 # Documentation
+  * Quick Start Guide
   * Hotkey map

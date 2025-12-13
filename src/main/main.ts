@@ -1,11 +1,11 @@
-import { app, ipcMain, BrowserWindow, screen, nativeTheme } from "electron";
-import path, { join } from "path";
+import { app, BrowserWindow, ipcMain, nativeTheme, screen } from "electron";
 import settings from "electron-settings";
+import os from "os";
+import path, { join } from "path";
+import { GdbAny, wait } from "../common/gdb-common";
 import { GdbMenu } from "./menu";
 import { miInterface } from "./mi-interface/mi-interface";
 import { WslUtilities } from "./utilities/wsl-utilities";
-import { GdbAny, wait } from "../common/gdb-common";
-import os from "os";
 
 console.log(`PRELOAD: ${path.resolve("./out/preload/preload.js")}`);
 
@@ -24,7 +24,7 @@ export let gdbInterface: miInterface;
 
 export const gdbAppInfo: Map<string, GdbAny> = new Map<string, GdbAny>();
 
-app.on("ready", async () => {
+app.on("ready", () => {
   /**
    * DEBUG: Usefull Information
    */
@@ -137,13 +137,13 @@ app.on("ready", async () => {
   // When we stop, then run all the stop commands
   gdbInterface.on("gdb-stopped", async () => {
     if (needToRunStartupCmds) {
+      needToRunStartupCmds = false;
       console.error("GDB is idle (once)");
       const ros: string[] = (await AppSettings.get("gdb.run.onStartup")) as string[];
       console.log("** ON STARTUP COMMANDS **");
-      ros?.forEach(async (ros: string) => {
+      ros?.forEach((ros: string) => {
         gdbInterface.send(ros);
       });
-      needToRunStartupCmds = false;
     }
     const ros: string[] = (await AppSettings.get("gdb.run.onStopped")) as string[];
     console.log(
@@ -297,8 +297,6 @@ function OnGdbCommand(command: string): void {
           console.log("*********************************************************");
           console.log("Main Window Bounds: " + JSON.stringify(mainWindow.getBounds()));
           console.log("Full Screen       : " + JSON.stringify(mainWindow.fullScreen));
-          console.log("*********************************************************");
-          console.log(JSON.stringify(debugWindow));
           console.log("*********************************************************");
         }
         break;

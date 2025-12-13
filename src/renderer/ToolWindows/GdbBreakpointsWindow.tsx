@@ -18,7 +18,7 @@ export default class GdbBreakPointWindow extends Component {
   private grid: GridComponent | null = null;
 
   override componentDidMount() {
-    window.ipcToMain.dataBrkPts(async (data: gdbBreakpoint[]) => {
+    window.ipcToMain.dataBrkPts((data: gdbBreakpoint[]) => {
       if (!this.grid) return;
 
       this.grid.dataSource = [];

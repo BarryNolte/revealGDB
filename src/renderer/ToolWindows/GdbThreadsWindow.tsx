@@ -39,7 +39,7 @@ export default class GdbThreadsWindow extends Component {
   };
 
   override componentDidMount() {
-    window.ipcToMain.dataThreads(async (data: GdbAny) => {
+    window.ipcToMain.dataThreads((data: GdbAny) => {
       if (!this.grid) return;
 
       this.grid.dataSource = [];

@@ -108,7 +108,7 @@ export default class GdbSourceWindow extends Component<
       this.displayData(data);
     });
 
-    window.ipcToMain.dataBrkPts(async (data: gdbBreakpoint[]) => {
+    window.ipcToMain.dataBrkPts((data: gdbBreakpoint[]) => {
       const newBreakpoints: breakpointMarker[] = [];
       data?.forEach((bp) => {
         if (bp.fullname === this.state.fullpath) {

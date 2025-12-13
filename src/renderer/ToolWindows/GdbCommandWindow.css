@@ -19,19 +19,25 @@
 }
 
 .historyRow {
-  height: 50%;
+  height: 250px;
   width: 100%;
 }
 
-.inputRow {
-  height: auto;
-  font-size: large;
-  padding: 2px;
+.inputContainer {
+  display: flex;
   border: 1px solid black;
-  margin-left: 2px;
-  margin-right: 3px;
-  margin-top: 2px;
-  margin-bottom: 1px;
+}
+
+.inputRow {
+  flex-grow: 1;
+  height: 25px;
+  font-size: large;
+  padding: 3px;
+  border: 1px solid black;
+  margin-left: -1px;
+  margin-right: 2px;
+  margin-top: 0px;
+  margin-bottom: 0px;
   border-radius: 6px;
 }
 
@@ -57,4 +63,22 @@
 .rowError {
   background: var(--error-background-color);
   color: var(--error-text-color);
+}
+
+.commandButton {
+  margin: 0px 0px 2px 1px;
+}
+
+.commandButtonHistory {
+  background-image: url("../icons/icons8-history-48.png");
+  background-size: cover;
+  height: 34px;
+  width: 34px;
+}
+
+.commandButtonSend {
+  background-image: url("../icons/icons8-enter-48.png");
+  background-size: cover;
+  height: 34px;
+  width: 34px;
 }

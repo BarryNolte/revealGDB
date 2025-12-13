@@ -17,7 +17,7 @@ export class GdbConnector extends EventEmitter {
   }
 
   public async Start(): Promise<boolean> {
-    return false;
+    return await Promise.resolve(false);
   }
   public End(): boolean {
     return false;

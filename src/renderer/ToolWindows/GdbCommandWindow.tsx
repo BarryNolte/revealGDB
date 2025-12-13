@@ -63,44 +63,17 @@ export default class GdbCommandWindow extends Component {
     switch (args.key) {
       case "ArrowUp":
         {
-          if (this.historyRef.current) {
-            this.historyRef.current.options.length = 0;
-
-            for (const item of this.cmdHistory.commandHistory) {
-              const option = document.createElement("option");
-              option.text = item;
-              this.historyRef.current.add(option);
-            }
-
-            this.historyRef.current.hidden = false;
-            this.historyRef.current.focus();
-            this.historyRef.current.options.selectedIndex =
-              this.historyRef.current.options.length - 1;
-            this.historyRef.current.scrollIntoView(false);
-          }
+          this.ShowHistory();
         }
         break;
       case "Escape":
         {
-          if (this.historyRef.current) {
-            this.historyRef.current.hidden = true;
-          }
-          this.inputRef.current!.value = "";
-          this.cmdHistory.reset();
+          this.HideHistory();
         }
         break;
       case "Enter":
         {
-          if (this.inputRef.current) {
-            window.ipcToMain.sendGdbCommand(this.inputRef.current.value);
-            this.cmdHistory.add(this.inputRef.current.value);
-            this.inputRef.current.value = "";
-          }
-
-          window.ipcToMain.notifyMain({
-            command: "save-cmd-history",
-            data: this.cmdHistory.commandHistory,
-          });
+          this.SendCommand();
         }
         break;
     }
@@ -119,6 +92,56 @@ export default class GdbCommandWindow extends Component {
       this.shouldScroll = true;
     }
   };
+
+  private onShowHistory = () => {
+    if (this.historyRef.current?.hidden === false) {
+      this.HideHistory();
+    } else {
+      this.ShowHistory();
+    }
+  };
+
+  private onSendCommand = () => {
+    this.SendCommand();
+  };
+
+  private SendCommand() {
+    if (this.inputRef.current) {
+      window.ipcToMain.sendGdbCommand(this.inputRef.current.value);
+      this.cmdHistory.add(this.inputRef.current.value);
+      this.inputRef.current.value = "";
+    }
+
+    window.ipcToMain.notifyMain({
+      command: "save-cmd-history",
+      data: this.cmdHistory.commandHistory,
+    });
+  }
+
+  private HideHistory() {
+    if (this.historyRef.current) {
+      this.historyRef.current.hidden = true;
+    }
+    this.inputRef.current!.value = "";
+    this.cmdHistory.reset();
+  }
+
+  private ShowHistory() {
+    if (this.historyRef.current) {
+      this.historyRef.current.options.length = 0;
+
+      for (const item of this.cmdHistory.commandHistory) {
+        const option = document.createElement("option");
+        option.text = item;
+        this.historyRef.current.add(option);
+      }
+
+      this.historyRef.current.hidden = false;
+      this.historyRef.current.focus();
+      this.historyRef.current.options.selectedIndex = this.historyRef.current.options.length - 1;
+      this.historyRef.current.scrollIntoView(false);
+    }
+  }
 
   private appendMessage(message: string, type: string): void {
     const sp = document.createElement("span");
@@ -154,13 +177,27 @@ export default class GdbCommandWindow extends Component {
           hidden={true}
           onKeyDown={this.onSelectKeydownHandler}
         />
-        <input
-          className={"inputRow"}
-          ref={this.inputRef}
-          type="text"
-          placeholder={"Type your command here..."}
-          onKeyDown={this.onInputKeydownHandler}
-        />
+        <div className="inputContainer">
+          <input
+            className={"inputRow"}
+            ref={this.inputRef}
+            type="text"
+            placeholder={"Type your command here..."}
+            onKeyDown={this.onInputKeydownHandler}
+          />
+          <button
+            className="commandButton commandButtonSend"
+            title="Send Command"
+            type="button"
+            onClick={this.onSendCommand}
+          />
+          <button
+            className="commandButton commandButtonHistory"
+            title="History"
+            type="button"
+            onClick={this.onShowHistory}
+          />
+        </div>
       </div>
     );
   }

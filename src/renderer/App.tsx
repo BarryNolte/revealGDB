@@ -16,8 +16,11 @@ import { AboutBox } from "./Dialogs/AboutBox";
 import { fRendered } from "./main";
 
 let dockView: DockviewApi | null = null;
+
 export let AppMainVersionInfo: Map<string, GdbAny>;
-window.ipcToMain.getVersionInfo().then((e) => (AppMainVersionInfo = e));
+window.ipcToMain.getVersionInfo().then((e) => {
+  AppMainVersionInfo = e;
+});
 
 export default class App extends React.Component {
   private aboutBoxRef = React.createRef<AboutBox>();
@@ -53,8 +56,6 @@ export default class App extends React.Component {
       console.log("******************************************");
       this.saveDockLayout();
     });
-
-    //window.ipcToMain.getSettings().then(async (): Promise<void> => {});
   }
 
   override componentWillUnmount() {
@@ -70,7 +71,7 @@ export default class App extends React.Component {
       this.saveDockLayout();
     });
 
-    window.ipcToMain.getSettings().then(async (gdb: GdbAny): Promise<void> => {
+    window.ipcToMain.getSettings().then((gdb: GdbAny): void => {
       console.log("Layout Loaded...");
       if (gdb.gui.dockLayout) {
         if (Object.keys(gdb.gui.dockLayout.panels).length === 0) {
