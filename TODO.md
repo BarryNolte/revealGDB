@@ -9,7 +9,6 @@
   ~* Hookup register editing~
   * DblClick on frame in callstack and set the proper context
   * Settings page
-
   * Save column widths with layout
   * Better Dock management (multiple source files in a Group)
     * Better source file management
@@ -18,12 +17,14 @@
   * Better monospace font
   * Cleanup toolbar
   * Cleanup menus
-  * Theming
-
+  * Themeing
+  * Cut/Copy/Paste
 
 # New Features
   * Python Window for running python commands
+  * Values on hover in source
   * Disassembly Window
+  * Values on hover in source
 
 # Project Related
   * Real Debug/Release builds
