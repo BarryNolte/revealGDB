@@ -1,6 +1,5 @@
-import { ItemDirective, ItemsDirective, ToolbarComponent } from "@syncfusion/ej2-react-navigations";
 import { DockviewApi, DockviewReact, DockviewReadyEvent, IDockviewPanelProps } from "dockview";
-import React from "react";
+import { Component, createRef, RefObject } from "react";
 import { GdbAny } from "../common/gdb-common";
 
 import GdbBreakPointWindow from "./ToolWindows/GdbBreakpointsWindow";
@@ -13,7 +12,11 @@ import GdbSourceWindow from "./ToolWindows/GdbSourceWindow";
 import GdbThreadsWindow from "./ToolWindows/GdbThreadsWindow";
 
 import { AboutBox } from "./Dialogs/AboutBox";
+import { ConnectionManager } from "./Dialogs/ConnectionManager";
+import { Settings } from "./Dialogs/Settings";
+
 import { fRendered } from "./main";
+import RevealToolbar from "./Components/Toolbar";
 
 let dockView: DockviewApi | null = null;
 
@@ -22,8 +25,11 @@ window.ipcToMain.getVersionInfo().then((e) => {
   AppMainVersionInfo = e;
 });
 
-export default class App extends React.Component {
-  private aboutBoxRef = React.createRef<AboutBox>();
+export default class App extends Component {
+  private aboutBoxRef = createRef<AboutBox>();
+  private settingsRef = createRef<Settings>();
+  private connectionsRef = createRef<ConnectionManager>();
+
   private disposable: ReturnType<DockviewApi["onDidLayoutChange"]> | null = null;
 
   private readonly components = {
@@ -39,8 +45,22 @@ export default class App extends React.Component {
 
   override componentDidMount() {
     window.ipcToMain.notifyRender((msg: GdbAny) => {
-      if (msg?.command === "about-box") {
-        this.aboutBoxRef.current?.ShowDialog();
+      switch (msg.command) {
+        case "about-box":
+          {
+            this.aboutBoxRef.current?.ShowDialog();
+          }
+          break;
+        case "connections-dialog":
+          {
+            this.connectionsRef.current?.ShowDialog();
+          }
+          break;
+        case "settings-dialog":
+          {
+            this.settingsRef.current?.ShowDialog();
+          }
+          break;
       }
     });
 
@@ -72,7 +92,6 @@ export default class App extends React.Component {
     });
 
     window.ipcToMain.getSettings().then((gdb: GdbAny): void => {
-      console.log("Layout Loaded...");
       if (gdb.gui.dockLayout) {
         if (Object.keys(gdb.gui.dockLayout.panels).length === 0) {
           this.DefaultLayout(event);
@@ -159,99 +178,27 @@ export default class App extends React.Component {
   override render() {
     return (
       <div className={"main-page-container"}>
-        <ToolbarComponent id="toolbar">
-          <ItemsDirective>
-            <ItemDirective
-              click={this.onContinue}
-              prefixIcon="tb-icon tb-go"
-              tooltipText="Continue"
-              text="Continue"
-            />
-            <ItemDirective
-              click={this.onPause}
-              prefixIcon="tb-icon tb-pause"
-              tooltipText="Pause"
-              text="Pause"
-            />
-            <ItemDirective
-              click={this.onStop}
-              prefixIcon="tb-icon tb-stop"
-              tooltipText="Stop"
-              text="Stop"
-            />
-            <ItemDirective type="Separator" />
-            <ItemDirective
-              click={this.onStepOver}
-              prefixIcon="tb-icon tb-step-over"
-              tooltipText="Step Over"
-              text="Step Over"
-            />
-            <ItemDirective
-              click={this.onStepIn}
-              prefixIcon="tb-icon tb-step-in"
-              tooltipText="Step In"
-              text="Step In"
-            />
-            <ItemDirective
-              click={this.onStepOut}
-              prefixIcon="tb-icon tb-step-out"
-              tooltipText="Step Out"
-              text="Step Out"
-            />
-            <ItemDirective type="Separator" />
-            <ItemDirective
-              click={this.onConnectionManager}
-              prefixIcon="tb-icon tb-connect"
-              tooltipText="Connection Manager"
-              text="Connections"
-            />
-          </ItemsDirective>
-        </ToolbarComponent>
+        <RevealToolbar
+          connectionsRef={this.connectionsRef as RefObject<ConnectionManager>}
+          settingsRef={this.settingsRef as RefObject<Settings>}
+        />
         <DockviewReact
           className={"dockview-theme-abyss"}
           onReady={this.onReady}
           components={this.components}
         />
         <AboutBox ref={this.aboutBoxRef} />
+        <Settings ref={this.settingsRef} />
+        <ConnectionManager ref={this.connectionsRef} />
       </div>
     );
   }
-
-  private onContinue = () => {
-    window.ipcToMain.sendGdbCommand("continue");
-  };
-
-  private onPause = () => {
-    window.ipcToMain.sendGdbCommand("signal SIGINT");
-  };
-
-  private onStop = () => {
-    window.ipcToMain.sendGdbCommand("kill");
-  };
-
-  private onStepOver = () => {
-    window.ipcToMain.sendGdbCommand("next");
-  };
-
-  private onStepIn = () => {
-    window.ipcToMain.sendGdbCommand("step");
-  };
-
-  private onStepOut = () => {
-    window.ipcToMain.sendGdbCommand("finish");
-  };
-
-  private onConnectionManager = () => {
-    // TODO: implement connection manager
-  };
 
   private saveDockLayout() {
     const layout = dockView?.toJSON();
     window.ipcToMain.notifyMain({ command: "save-dock-layout", data: layout });
   }
 }
-
-//window.ipcToMain.getSettings().then(async (/*gdb: GdbAny*/): Promise<void> => {});
 
 window.addEventListener("beforeunload", () => {
   console.log("******************************************");

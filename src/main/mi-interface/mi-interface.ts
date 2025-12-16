@@ -119,7 +119,7 @@ export class miInterface extends EventEmitter {
   rgxParamValue: RegExp = /^param="(?<cmdParam>.*?)",value="(?<value>.*?)"$/;
   rgxBkpt: RegExp =
     /^bkpt={number="(?<number>[^"]*)",type="(?<type>[^"]*)",disp="(?<disp>[^"]*)",enabled="(?<enabled>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",thread-groups=\[(?<tg>[^\]]*)\],times="(?<times>[^"]*)",original-location="(?<orgloc>[^"]*)"}$/;
-  private parseNotifyAsyncRecord(output: string): boolean {
+  private async parseNotifyAsyncRecord(output: string): Promise<boolean> {
     const chunks = this.rgxNotify.exec(output);
 
     const cmd = chunks?.groups?.cmd || "";
@@ -204,6 +204,27 @@ export class miInterface extends EventEmitter {
           if (id) {
             this.gdbDB.deleteThread(id);
           }
+        }
+        break;
+      case "thread-selected":
+        {
+          // This is received when the stack frame is changed when the process
+          // is stopped.
+          const idChunks = /frame={level="(?<level>[^"]*)"/g.exec(data);
+          const level: number = parseInt(idChunks?.groups?.level || "0");
+
+          this.send("-data-list-register-values x");
+
+          this.gdbDB.setActiveFrame(level);
+
+          const srcFileName = this.gdbDB.stackFrames[level].fullName || "";
+          const showSourceInfo: gdbShowSourceInfo = {
+            fileName: srcFileName,
+            line: this.gdbDB.stackFrames[level].line,
+            contents: await this.gdbDB.getSourceFileContents(srcFileName),
+          };
+          mainWindow.webContents.send("source-file", showSourceInfo);
+          mainWindow.webContents.send("stack-frames", this.gdbDB.stackFrames);
         }
         break;
       case "cmd-param-changed":
@@ -394,6 +415,7 @@ export class miInterface extends EventEmitter {
                 this.gdbDB.clearStackFrames();
                 frameValues.forEach((frameChunk: RegExpExecArray) => {
                   this.gdbDB.addStackFrame({
+                    active: false,
                     level: frameChunk.groups?.level || "",
                     func: frameChunk.groups?.func || "",
                     addr: frameChunk.groups?.addr || "",
@@ -405,6 +427,7 @@ export class miInterface extends EventEmitter {
                     arch: frameChunk.groups?.arch || "",
                   });
                 });
+                this.gdbDB.stackFrames[0].active = true;
                 mainWindow.webContents.send("stack-frames", this.gdbDB.stackFrames);
 
                 const srcFileName = this.gdbDB.stackFrames[0].fullName || "";

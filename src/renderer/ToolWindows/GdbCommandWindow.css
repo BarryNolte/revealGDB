@@ -19,11 +19,16 @@
 }
 
 .historyRow {
-  height: 250px;
+  width: 100%;
+  flex-grow: 0;
+}
+
+.historySelect {
   width: 100%;
 }
 
 .inputContainer {
+  flex-grow: 0;
   display: flex;
   border: 1px solid black;
 }
@@ -74,6 +79,7 @@
   background-size: cover;
   height: 34px;
   width: 34px;
+  margin-right: 5px;
 }
 
 .commandButtonSend {

@@ -4,26 +4,26 @@ import {
   ColumnsDirective,
   GridComponent,
   Inject,
+  RecordDoubleClickEventArgs,
   Resize,
-  //SearchSettingsModel,
-  Toolbar,
 } from "@syncfusion/ej2-react-grids";
-import { Component } from "react";
-import { GdbAny } from "../../common/gdb-common";
+import { Component, createRef } from "react";
 import { gdbStackFrame } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
 import "./GdbCallstackWindow.css";
+import { GdbAny } from "../../common/gdb-common";
 
 export default class GdbCallStackWindow extends Component {
-  private grid: GridComponent | null = null;
+  private gridRef = createRef<GridComponent>();
 
   override componentDidMount() {
     window.ipcToMain.stackFrames((data: gdbStackFrame[]) => {
-      if (!this.grid) return;
+      if (!this.gridRef.current) return;
 
-      this.grid.dataSource = [];
+      const dataList: GdbAny[] = [];
       data.forEach((frame) => {
-        ((this.grid as GridComponent).dataSource as object[]).push({
+        dataList.push({
+          active: frame.active ? "*" : "",
           level: frame.level,
           func: frame.func,
           addr: frame.addr,
@@ -36,23 +36,11 @@ export default class GdbCallStackWindow extends Component {
         });
       });
 
-      (this.grid as GridComponent).setProperties({
-        dataSource: (this.grid as GridComponent).dataSource as object[],
+      this.gridRef.current.setProperties({
+        dataSource: dataList,
       });
     });
   }
-
-  // const toolbarOptions: ToolbarItems[] = ["Search"];
-  // const searchOptions: SearchSettingsModel = {
-  //   fields: ["func", "addr", "file", "fullName"],
-  //   ignoreCase: true,
-  //   key: "",
-  //   operator: "contains",
-  // };
-
-  private setGridRef = (g: GdbAny) => {
-    this.grid = g;
-  };
 
   override render() {
     return (
@@ -63,13 +51,17 @@ export default class GdbCallStackWindow extends Component {
           allowSorting={false}
           showColumnMenu={true}
           allowFiltering={false}
-          //toolbar={toolbarOptions}
-          //searchSettings={searchOptions}
-          ref={this.setGridRef}
+          allowSelection={true}
+          selectionSettings={{ mode: "Row", cellSelectionMode: "Flow" }}
+          ref={this.gridRef}
           gridLines="Both"
           height="100%"
+          recordDoubleClick={(e: RecordDoubleClickEventArgs) => {
+            window.ipcToMain.sendGdbCommand(`frame ${e.rowIndex}`);
+          }}
         >
           <ColumnsDirective>
+            <ColumnDirective field="active" headerText="" width={50} showColumnMenu={false} />
             <ColumnDirective
               field="level"
               headerText="Depth"
@@ -86,7 +78,7 @@ export default class GdbCallStackWindow extends Component {
             <ColumnDirective field="from" headerText="From" autoFit={true} />
             <ColumnDirective field="arch" headerText="Architecture" autoFit={true} />
           </ColumnsDirective>
-          <Inject services={[Resize, ColumnMenu, Toolbar]} />
+          <Inject services={[Resize, ColumnMenu]} />
         </GridComponent>
       </div>
     );

@@ -37,6 +37,13 @@ export class GdbMenu {
         label: "File",
         submenu: [
           {
+            label: "&Preferences",
+            click: () => {
+              mainWindow.webContents.send("notify-render", { command: "settings-dialog" });
+            },
+          },
+          { type: "separator" },
+          {
             label: "Exit",
             click: () => {
               app.quit();
@@ -175,6 +182,9 @@ export class GdbMenu {
         submenu: [
           {
             label: "Configure...",
+            click: () => {
+              mainWindow.webContents.send("notify-render", { command: "connections-dialog" });
+            },
           },
         ],
       },

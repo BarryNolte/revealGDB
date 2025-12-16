@@ -21,6 +21,7 @@ export type gdbThreadGroup = {
 };
 
 export type gdbStackFrame = {
+  active: boolean;
   level: string;
   func: string;
   addr: string;
@@ -89,7 +90,12 @@ export class gdbStateDatabase {
   addStackFrame(frame: gdbStackFrame): void {
     this.stackFrames.push(frame);
   }
-
+  setActiveFrame(af: number): void {
+    this.stackFrames.forEach((sf: gdbStackFrame) => {
+      sf.active = false;
+    });
+    this.stackFrames[af].active = true;
+  }
   // Breakpoints
   clearBreakpoints(): void {
     this.breakpoints.clear();
@@ -213,6 +219,7 @@ export class gdbStateDatabase {
       name: arg0.frame.func,
       state: arg0.state,
       frame: {
+        active: false,
         level: arg0.frame.level,
         func: arg0.frame.func,
         addr: arg0.frame.addr,

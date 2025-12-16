@@ -68,11 +68,11 @@ export class AboutBox extends Component<AboutProps, AboutState> {
 
   override render() {
     return (
-      <div className="App" id="dialog-target">
+      <div className="AboutBoxTarget">
         <DialogComponent
           className="aboutBoxHeaderContainer"
           width="500px"
-          target=".App"
+          target=".AboutBoxTarget"
           visible={this.state.hideDialog}
           header={this.header}
           footerTemplate={this.footer}

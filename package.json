@@ -35,7 +35,7 @@
     "publish": "electron-builder --publish always",
     "endqemu": "wsl -e pkill qemu",
     "vite-build": "electron-vite build",
-    "vite-watch": "electron-vite build --watch"
+    "vite-watch": "electron-vite dev --watch"
   },
   "build": {
     "appId": "com.example.revealgdb",

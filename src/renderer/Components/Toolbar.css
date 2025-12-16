@@ -1,0 +1,42 @@
+.tb-icon {
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 24px;
+  padding-right: 16px;
+}
+
+.tb-step-over {
+  background-image: url("../icons/icons8-step-over-48.png");
+}
+
+.tb-step-in {
+  background-image: url("../icons/icons8-step-into-48.png");
+}
+
+.tb-step-out {
+  background-image: url("../icons/icons8-step-out-48.png");
+}
+
+.tb-go {
+  background-image: url("../icons/icons8-play-48.png");
+}
+
+.tb-pause {
+  background-image: url("../icons/icons8-pause-48.png");
+}
+
+.tb-stop {
+  background-image: url("../icons/icons8-stop-48.png");
+}
+
+.tb-connect {
+  background-image: url("../icons/icons8-connection-48.png");
+}
+
+.tb-settings {
+  background-image: url("../icons/icons8-settings-48.png");
+}
+
+.tb-python {
+  background-image: url("../icons/icons8-python-48.png");
+}

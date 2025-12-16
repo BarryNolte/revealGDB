@@ -1,4 +1,4 @@
-import React, { Component, KeyboardEvent } from "react";
+import { Component, createRef, KeyboardEvent } from "react";
 
 import { GdbAny } from "../../common/gdb-common";
 import { CommandHistory } from "../utilities/CommandHistory";
@@ -6,9 +6,9 @@ import "./GdbCommandWindow.css";
 
 export default class GdbCommandWindow extends Component {
   private cmdHistory: CommandHistory = new CommandHistory();
-  private outputRef = React.createRef<HTMLDivElement>();
-  private inputRef = React.createRef<HTMLInputElement>();
-  private historyRef = React.createRef<HTMLSelectElement>();
+  private outputRef = createRef<HTMLDivElement>();
+  private inputRef = createRef<HTMLInputElement>();
+  private historyRef = createRef<HTMLSelectElement>();
   private shouldScroll = true;
 
   override componentDidMount() {
@@ -38,22 +38,52 @@ export default class GdbCommandWindow extends Component {
     window.ipcToMain.errorMessage((message: string) => {
       this.appendMessage(message, "rowError");
     });
+
+    if (this.historyRef.current) {
+      this.historyRef.current.ondblclick = (_e: Event) => {
+        if (this.historyRef.current) {
+          this.historyRef.current.hidden = true;
+
+          if (this.inputRef.current) {
+            const selIdx = this.historyRef.current.selectedIndex;
+            this.inputRef.current.value = this.historyRef.current.options[selIdx].value;
+            this.inputRef.current.focus();
+          }
+        }
+      };
+    }
   }
 
   private onSelectKeydownHandler = (args: KeyboardEvent<HTMLSelectElement>) => {
     switch (args.key) {
       case "Escape":
         {
-          args.currentTarget.hidden = true;
+          if (this.historyRef.current) {
+            this.historyRef.current.hidden = true;
+          }
         }
         break;
       case "Enter":
         {
-          args.currentTarget.hidden = true;
+          if (this.historyRef.current) {
+            this.historyRef.current.hidden = true;
+          }
+
           if (this.inputRef.current) {
             this.inputRef.current.value = args.currentTarget.value;
             this.inputRef.current.focus();
           }
+        }
+        break;
+    }
+    args.stopPropagation();
+  };
+
+  private onInputKeyupHandler = (args: KeyboardEvent<HTMLInputElement>) => {
+    switch (args.key) {
+      case "ArrowUp":
+        {
+          this.historyRef.current?.focus();
         }
         break;
     }
@@ -137,9 +167,9 @@ export default class GdbCommandWindow extends Component {
       }
 
       this.historyRef.current.hidden = false;
-      this.historyRef.current.focus();
       this.historyRef.current.options.selectedIndex = this.historyRef.current.options.length - 1;
       this.historyRef.current.scrollIntoView(false);
+      //this.historyRef.current.focus();
     }
   }
 
@@ -169,14 +199,16 @@ export default class GdbCommandWindow extends Component {
     return (
       <div className={"commandWindow"}>
         <div className={"outputRow"} ref={this.outputRef} onScroll={this.onScrollHandler} />
-        <select
-          className={"historyRow"}
-          ref={this.historyRef}
-          title={"Command History"}
-          size={15}
-          hidden={true}
-          onKeyDown={this.onSelectKeydownHandler}
-        />
+        <div className={"historyRow"}>
+          <select
+            className={"historySelect"}
+            ref={this.historyRef}
+            title={"Command History"}
+            size={15}
+            hidden={true}
+            onKeyDown={this.onSelectKeydownHandler}
+          />
+        </div>
         <div className="inputContainer">
           <input
             className={"inputRow"}
@@ -184,6 +216,7 @@ export default class GdbCommandWindow extends Component {
             type="text"
             placeholder={"Type your command here..."}
             onKeyDown={this.onInputKeydownHandler}
+            onKeyUp={this.onInputKeyupHandler}
           />
           <button
             className="commandButton commandButtonSend"

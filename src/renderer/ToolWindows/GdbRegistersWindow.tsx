@@ -11,48 +11,72 @@ import {
   //SearchSettingsModel,
   Sort,
   Toolbar,
+  CellSaveArgs,
+  EditSettingsModel,
+  IEditCell,
 } from "@syncfusion/ej2-react-grids";
-import { Component } from "react";
-import { GdbAny } from "../../common/gdb-common";
+import { Component, createRef } from "react";
 import { gdbRegisters } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
 import "./GdbRegisterWindow.css";
+import { GdbAny } from "../../common/gdb-common";
 
 export default class GdbRegistersWindow extends Component {
-  private grid: GridComponent | null = null;
+  private gridRef = createRef<GridComponent>();
 
-  private editSettings = {
+  private editSettings: EditSettingsModel = {
     allowEditing: true,
     allowAdding: false,
     allowDeleting: false,
+    showConfirmDialog: false,
+    mode: "Batch",
   };
-  private stringParams = {
+
+  private editParams: IEditCell = {
     params: {
       showClearButton: true,
+      allowEdit: true,
     },
+  };
+
+  private hexCheck = (e: { element: Element; value: string }): boolean => {
+    const regex = /^0[x|X][0-9A-Fa-f]{1,8}$|^[0-9A-Fa-f]{1,8}$/gm;
+
+    const m = regex.exec(e.value);
+
+    if (!m) return false;
+
+    return true;
+  };
+
+  private validationRules = {
+    required: true,
+    hexFormat: [this.hexCheck, "Hex value is not valid"],
   };
 
   override componentDidMount() {
     window.ipcToMain.dataRegisters((data: gdbRegisters[]) => {
-      if (this.grid) {
-        this.grid.dataSource = [];
+      if (this.gridRef && this.gridRef.current) {
+        this.gridRef.current.dataSource = [];
+
+        const dataList: GdbAny[] = [];
         data.forEach((reg) => {
-          ((this.grid as GridComponent).dataSource as object[]).push({
+          dataList.push({
             name: reg.name,
             value: reg.value,
             changed: reg.changed,
           });
         });
 
-        (this.grid as GridComponent).setProperties({
-          dataSource: (this.grid as GridComponent).dataSource as object[],
+        this.gridRef.current.setProperties({
+          dataSource: dataList,
         });
       }
     });
   }
 
   override componentWillUnmount(): void {
-    this.grid?.columns.forEach((item) => {
+    this.gridRef?.current?.columns.forEach((item) => {
       console.log(`Register Columns: ${item}`);
     });
   }
@@ -63,8 +87,8 @@ export default class GdbRegistersWindow extends Component {
     }
   };
 
-  private setGridRef = (g: GdbAny) => {
-    this.grid = g;
+  private cellSaved = (args: CellSaveArgs) => {
+    window.ipcToMain.sendGdbCommand(`set $${(args.rowData as gdbRegisters)?.name} = ${args.value}`);
   };
 
   override render() {
@@ -79,11 +103,10 @@ export default class GdbRegistersWindow extends Component {
           showColumnMenu={true}
           allowFiltering={false}
           editSettings={this.editSettings}
-          //toolbar={toolbarOptions}
-          //searchSettings={searchOptions}
-          ref={this.setGridRef}
+          ref={this.gridRef}
           gridLines="Both"
           height="100%"
+          cellSaved={this.cellSaved}
         >
           <ColumnsDirective>
             <ColumnDirective
@@ -99,7 +122,10 @@ export default class GdbRegistersWindow extends Component {
               field="value"
               headerText="Value"
               width="80%"
-              edit={this.stringParams}
+              allowEditing={true}
+              clipMode="EllipsisWithTooltip"
+              edit={this.editParams}
+              validationRules={this.validationRules}
             />
           </ColumnsDirective>
           <Inject services={[Resize, Sort, Group, ColumnMenu, Edit, Toolbar]} />
