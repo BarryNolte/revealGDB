@@ -56,6 +56,7 @@ export type gdbBreakpoint = {
   line: string;
   tg: string;
   times: string;
+  installed: string;
   orgloc: string;
 };
 

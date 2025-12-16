@@ -37,7 +37,7 @@ export class GdbMenu {
         label: "File",
         submenu: [
           {
-            label: "&Preferences",
+            label: "&Preferences...",
             click: () => {
               mainWindow.webContents.send("notify-render", { command: "settings-dialog" });
             },

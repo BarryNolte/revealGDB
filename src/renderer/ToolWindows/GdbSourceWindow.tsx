@@ -66,6 +66,8 @@ export default class GdbSourceWindow extends Component<
     this.setupEditorCommands();
     this.setupIPCListeners();
     this.setupGutterClickListener();
+
+    this.editorRef.current?.editor.setOption("showFoldWidgets", false);
   }
 
   override componentDidUpdate(prevProps: Record<string, never>, prevState: GdbSourceWindowState) {

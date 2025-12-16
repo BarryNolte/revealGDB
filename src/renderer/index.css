@@ -173,3 +173,9 @@ body {
 .flex-item-grow {
   flex-grow: 1;
 }
+
+.emptyRecordTemplate {
+  font-family: "Segoe UI";
+  font-size: 16px;
+  font-weight: bolder;
+}

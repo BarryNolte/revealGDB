@@ -4,13 +4,9 @@ import {
   ColumnsDirective,
   Edit,
   GridComponent,
-  Group,
   Inject,
   QueryCellInfoEventArgs,
   Resize,
-  //SearchSettingsModel,
-  Sort,
-  Toolbar,
   CellSaveArgs,
   EditSettingsModel,
   IEditCell,
@@ -54,9 +50,17 @@ export default class GdbRegistersWindow extends Component {
     hexFormat: [this.hexCheck, "Hex value is not valid"],
   };
 
+  private emptyMessageTemplate(): GdbAny {
+    return (
+      <div className="emptyRecordTemplate">
+        <span>No register data available.</span>
+      </div>
+    );
+  }
+
   override componentDidMount() {
     window.ipcToMain.dataRegisters((data: gdbRegisters[]) => {
-      if (this.gridRef && this.gridRef.current) {
+      if (this.gridRef.current) {
         this.gridRef.current.dataSource = [];
 
         const dataList: GdbAny[] = [];
@@ -95,6 +99,8 @@ export default class GdbRegistersWindow extends Component {
     return (
       <div className="full-size flex-container">
         <GridComponent
+          ref={this.gridRef}
+          emptyRecordTemplate={this.emptyMessageTemplate}
           className="flex-item"
           queryCellInfo={this.queryCellInfo}
           allowResizing={true}
@@ -103,7 +109,6 @@ export default class GdbRegistersWindow extends Component {
           showColumnMenu={true}
           allowFiltering={false}
           editSettings={this.editSettings}
-          ref={this.gridRef}
           gridLines="Both"
           height="100%"
           cellSaved={this.cellSaved}
@@ -128,7 +133,7 @@ export default class GdbRegistersWindow extends Component {
               validationRules={this.validationRules}
             />
           </ColumnsDirective>
-          <Inject services={[Resize, Sort, Group, ColumnMenu, Edit, Toolbar]} />
+          <Inject services={[Resize, ColumnMenu, Edit]} />
         </GridComponent>
       </div>
     );

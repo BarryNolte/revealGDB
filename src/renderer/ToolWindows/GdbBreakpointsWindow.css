@@ -1,0 +1,19 @@
+.bp-delete {
+  width: 24px;
+  height: 24px;
+  align-content: center;
+  padding: 0px;
+}
+
+.bp-delete-img {
+  width: 20px;
+  height: 20px;
+}
+
+.bp-delete-container {
+  margin-left: -14px;
+}
+
+.bp-enable {
+  margin-bottom: 4px;
+}

@@ -10,7 +10,7 @@ import {
   //SearchSettingsModel,
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
-import { Component } from "react";
+import { Component, createRef } from "react";
 import { GdbAny } from "../../common/gdb-common";
 import {
   gdbThread,
@@ -20,7 +20,7 @@ import {
 import "./GdbThreadsWindow.css";
 
 export default class GdbThreadsWindow extends Component {
-  private grid: GridComponent | null = null;
+  private gridRef = createRef<GridComponent>();
 
   private selectionOptions: SelectionSettingsModel = {
     mode: "Row",
@@ -40,42 +40,48 @@ export default class GdbThreadsWindow extends Component {
 
   override componentDidMount() {
     window.ipcToMain.dataThreads((data: GdbAny) => {
-      if (!this.grid) return;
+      if (this.gridRef.current) {
+        this.gridRef.current.dataSource = [];
 
-      this.grid.dataSource = [];
+        const groups = data.grp;
+        const threads = data.th;
 
-      const groups = data.grp;
-      const threads = data.th;
-
-      groups.forEach((group: gdbThreadGroup) => {
-        threads.forEach((thread: gdbThread) => {
-          ((this.grid as GridComponent).dataSource as object[]).push({
-            groupId: group.gid,
-            active: thread.active,
-            id: thread.id,
-            targetId: thread.targetId,
-            details: thread.details,
-            name: thread.name,
-            state: thread.state,
-            frame: `${thread.frame.func}:${thread.frame.line}`,
+        groups.forEach((group: gdbThreadGroup) => {
+          threads.forEach((thread: gdbThread) => {
+            ((this.gridRef.current as GridComponent).dataSource as object[]).push({
+              groupId: group.gid,
+              active: thread.active,
+              id: thread.id,
+              targetId: thread.targetId,
+              details: thread.details,
+              name: thread.name,
+              state: thread.state,
+              frame: `${thread.frame.func}:${thread.frame.line}`,
+            });
           });
         });
-      });
 
-      this.grid.setProperties({
-        dataSource: this.grid.dataSource as object[],
-      });
+        this.gridRef.current.setProperties({
+          dataSource: this.gridRef.current.dataSource as object[],
+        });
+      }
     });
   }
 
-  private setGridRef = (g: GdbAny) => {
-    this.grid = g;
-  };
+  private emptyMessageTemplate(): GdbAny {
+    return (
+      <div className="emptyRecordTemplate">
+        <span>No thread data available.</span>
+      </div>
+    );
+  }
 
   override render() {
     return (
       <div className="full-size flex-container">
         <GridComponent
+          ref={this.gridRef}
+          emptyRecordTemplate={this.emptyMessageTemplate}
           className="flex-item"
           allowResizing={true}
           allowPaging={false}
@@ -87,7 +93,6 @@ export default class GdbThreadsWindow extends Component {
           // searchSettings={searchOptions}
           groupSettings={this.groupOptions}
           selectionSettings={this.selectionOptions}
-          ref={this.setGridRef}
           gridLines="Both"
           height="100%"
         >

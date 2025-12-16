@@ -22,6 +22,7 @@
   * Values on hover in source
   * Disassembly Window
   * Values on hover in source
+  * Tracepoints
 
 # Project Related
   * Real Debug/Release builds
