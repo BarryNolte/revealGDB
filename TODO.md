@@ -5,9 +5,6 @@
   * Locals view
     * Locals editing
   * Finish memory view
-
-  ~* Hookup register editing~
-  * DblClick on frame in callstack and set the proper context
   * Settings page
   * Save column widths with layout
   * Better Dock management (multiple source files in a Group)
@@ -33,6 +30,8 @@
   * Install for all platforms
 
 ~* About box~
+~* Hookup register editing~
+~  * DblClick on frame in callstack and set the proper context~
 
 # Documentation
   * Quick Start Guide
