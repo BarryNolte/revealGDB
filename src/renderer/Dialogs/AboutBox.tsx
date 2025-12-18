@@ -53,15 +53,13 @@ export class AboutBox extends Component<AboutProps, AboutState> {
   };
 
   private header = (): JSX.Element => {
-    return <div className="aboutBoxHeader">About</div>;
+    return <div className="dialogHeader">About</div>;
   };
 
   private footer = (): JSX.Element => {
     return (
       <div>
-        <ButtonComponent className="aboutBoxButton" onClick={this.dialogCloseFunc}>
-          OK
-        </ButtonComponent>
+        <ButtonComponent onClick={this.dialogCloseFunc}>OK</ButtonComponent>
       </div>
     );
   };
@@ -70,7 +68,7 @@ export class AboutBox extends Component<AboutProps, AboutState> {
     return (
       <div className="AboutBoxTarget">
         <DialogComponent
-          className="aboutBoxHeaderContainer"
+          className="dialogHeaderContainer"
           width="500px"
           target=".AboutBoxTarget"
           visible={this.state.hideDialog}

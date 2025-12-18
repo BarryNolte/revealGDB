@@ -1,11 +1,14 @@
 import { app, BrowserWindow, ipcMain, nativeTheme, screen } from "electron";
 import settings from "electron-settings";
-import os from "os";
+import os from "node:os";
+import fs from "node:fs/promises";
 import path, { join } from "path";
 import { GdbAny, wait } from "../common/gdb-common";
 import { GdbMenu } from "./menu";
 import { miInterface } from "./mi-interface/mi-interface";
 import { WslUtilities } from "./utilities/wsl-utilities";
+import getSystemFonts from "get-system-fonts";
+import { fontace } from "fontace";
 
 console.log(`PRELOAD: ${path.resolve("./out/preload/preload.js")}`);
 
@@ -16,6 +19,7 @@ export const isLinux = !isMac && !isWin;
 export const isDebug = true;
 
 export const AppSettings = settings;
+const fontList: Map<string, string> = new Map<string, string>();
 
 export let mainWindow: BrowserWindow;
 let debugWindow: BrowserWindow;
@@ -39,6 +43,20 @@ app.on("ready", () => {
     );
   });
   /* END DEBUG */
+
+  getSystemFonts().then((fontArray: string[]) => {
+    console.log(fontArray);
+    fontArray.forEach((fontFile) => {
+      fs.readFile(fontFile).then((fileBuffer) => {
+        try {
+          const metaData = fontace(fileBuffer);
+          fontList.set(metaData.family, "");
+        } catch {
+          return;
+        }
+      });
+    });
+  });
 
   gdbAppInfo.set("Node Version", process.version);
   gdbAppInfo.set("Architecture", os.arch());
@@ -189,6 +207,10 @@ ipcMain.handle("getSettings", async (): Promise<string[]> => {
   return (await AppSettings.get("gdb")) as string[];
 });
 
+ipcMain.handle("getSystemFonts", (): Promise<string[]> => {
+  return Promise.resolve(fontList.keys().toArray());
+});
+
 ipcMain.handle("getVersionInfo", (): Promise<Map<string, GdbAny>> => {
   return Promise.resolve(gdbAppInfo);
 });
@@ -196,6 +218,16 @@ ipcMain.handle("getVersionInfo", (): Promise<Map<string, GdbAny>> => {
 // General messages from the UI
 ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
   switch (msg?.command) {
+    case "save-app-show-debug-info":
+      {
+        await AppSettings.set("gdb.gui.showDebugInfo", msg.data);
+      }
+      break;
+    case "save-app-theme":
+      {
+        await AppSettings.set("gdb.gui.applicationTheme", msg.data);
+      }
+      break;
     case "save-cmd-history":
       {
         await AppSettings.set("gdb.command.history", msg.data);
@@ -209,6 +241,11 @@ ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
     case "save-source-viewer-font-size":
       {
         await AppSettings.set("gdb.gui.sourceViewerFontSize", msg.data);
+      }
+      break;
+    case "save-source-viewer-font-name":
+      {
+        await AppSettings.set("gdb.gui.sourceViewerFontName", msg.data);
       }
       break;
     case "save-main-theme":
@@ -244,8 +281,31 @@ ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
         mainWindow.webContents.send("notify-render", {
           command: "command-entry",
         });
+
         // Don't connect until the UI is ready to recieve updates.
-        gdbInterface.connect();
+        mainWindow.webContents.send("notify-render", {
+          command: "connection-started",
+        });
+
+        gdbInterface
+          .connect()
+          .then((success: boolean) => {
+            if (success) {
+              mainWindow.webContents.send("notify-render", {
+                command: "connection-success",
+              });
+            } else {
+              mainWindow.webContents.send("notify-render", {
+                command: "connection-failed",
+              });
+            }
+          })
+          .catch((reason: GdbAny) => {
+            mainWindow.webContents.send("notify-render", {
+              command: "connection-failed",
+              data: reason,
+            });
+          });
       }
       break;
   }

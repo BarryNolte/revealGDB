@@ -61,6 +61,21 @@ export default class App extends Component {
             this.settingsRef.current?.ShowDialog();
           }
           break;
+        case "connection-started":
+          {
+            console.log(`Connection Started: ${Date.now()}`);
+          }
+          break;
+        case "connection-success":
+          {
+            console.log(`Connection Success: ${Date.now()}`);
+          }
+          break;
+        case "connection-failed":
+          {
+            console.log(`Connection Failed : ${Date.now()}`);
+          }
+          break;
       }
     });
 

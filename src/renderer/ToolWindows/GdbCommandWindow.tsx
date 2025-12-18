@@ -19,11 +19,15 @@ export default class GdbCommandWindow extends Component {
       });
     });
 
-    window.ipcToMain.notifyRender((msg: GdbAny) => {
-      if (msg?.command === "command-entry") {
-        if (this.inputRef.current) {
-          this.inputRef.current.focus();
-        }
+    window.ipcToMain.notifyRender((msg: GdbAny): void => {
+      switch (msg?.command) {
+        case "command-entry":
+          {
+            if (this.inputRef.current) {
+              this.inputRef.current.focus();
+            }
+          }
+          break;
       }
     });
 

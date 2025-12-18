@@ -1,0 +1,30 @@
+.settingsContainer {
+  padding-left: 25px;
+  padding-right: 15px;
+}
+
+.settingsFullWidth {
+  width: 100%;
+}
+
+.settingsTableHeader {
+  font-weight: bold;
+  margin-left: -15px;
+  margin-top: 20px;
+}
+
+.settingsTable th:nth-child(1),
+.settingsTable td:nth-child(1) {
+  width: 20%;
+}
+
+.settingsTable th:nth-child(2),
+.settingsTable td:nth-child(2) {
+  width: 80%;
+}
+.settingsDropdown {
+  width: auto;
+}
+
+/* .settingsTag {
+} */

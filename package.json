@@ -106,6 +106,8 @@
     "ace-builds": "^1.43.5",
     "dockview": "^4.11.0",
     "electron-settings": "^4.0.4",
+    "fontace": "^0.3.1",
+    "get-system-fonts": "^2.0.2",
     "react": "^18.3.1",
     "react-ace": "^14.0.1",
     "react-dom": "^18.3.1"

@@ -25,15 +25,13 @@ export class ConnectionManager extends Component<ConnectionManagerProps, Connect
   };
 
   private header = (): JSX.Element => {
-    return <div className="aboutBoxHeader">Connections</div>;
+    return <div className="dialogHeader">Connections</div>;
   };
 
   private footer = (): JSX.Element => {
     return (
       <div>
-        <ButtonComponent className="aboutBoxButton" onClick={this.dialogCloseFunc}>
-          OK
-        </ButtonComponent>
+        <ButtonComponent onClick={this.dialogCloseFunc}>OK</ButtonComponent>
       </div>
     );
   };
@@ -42,7 +40,7 @@ export class ConnectionManager extends Component<ConnectionManagerProps, Connect
     return (
       <div className="ConnectionManagerTarget">
         <DialogComponent
-          className="aboutBoxHeaderContainer"
+          className="dialogHeaderContainer"
           width="500px"
           target=".ConnectionManagerTarget"
           visible={this.state.hideDialog}

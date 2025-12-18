@@ -1,28 +1,25 @@
 # UI Related
   * "Busy" screen during connect
-  * "Busy" indicator while running commands
   * Connection manager
   * Locals view
     * Locals editing
   * Finish memory view
-  * Settings page
-  * Save column widths with layout
+    * Memory editing
   * Better Dock management (multiple source files in a Group)
     * Better source file management
     * Code detection for source viewer
     * Ability to close window and bring it back
-  * Better monospace font
-  * Cleanup toolbar
   * Cleanup menus
   * Themeing
   * Cut/Copy/Paste
+  * Save column widths with layout
 
 # New Features
   * Python Window for running python commands
   * Values on hover in source
   * Disassembly Window
   * Values on hover in source
-  * Tracepoints
+  * Tracepoints - How to insert more automatically
 
 # Project Related
   * Real Debug/Release builds
@@ -30,9 +27,11 @@
   * Product Icon
   * Install for all platforms
 
-~* About box~
-~* Hookup register editing~
-~  * DblClick on frame in callstack and set the proper context~
+~~About box~~
+~~Settings page~~
+~~Hookup register editing~~
+~~DblClick on frame in callstack and set the proper context~~
+~~Cleanup toolbar~~
 
 # Documentation
   * Quick Start Guide

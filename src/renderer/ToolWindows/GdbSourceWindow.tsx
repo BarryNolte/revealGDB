@@ -8,19 +8,116 @@ import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/mode-rust";
 import "ace-builds/src-noconflict/mode-typescript";
 import "ace-builds/src-noconflict/theme-ambiance";
+import "ace-builds/src-noconflict/theme-chaos";
+import "ace-builds/src-noconflict/theme-chrome";
+import "ace-builds/src-noconflict/theme-cloud9_day";
+import "ace-builds/src-noconflict/theme-cloud9_night";
+import "ace-builds/src-noconflict/theme-cloud9_night_low_color";
+import "ace-builds/src-noconflict/theme-cloud_editor";
+import "ace-builds/src-noconflict/theme-cloud_editor_dark";
+import "ace-builds/src-noconflict/theme-clouds";
+import "ace-builds/src-noconflict/theme-clouds_midnight";
+import "ace-builds/src-noconflict/theme-cobalt";
+import "ace-builds/src-noconflict/theme-crimson_editor";
+import "ace-builds/src-noconflict/theme-dawn";
+import "ace-builds/src-noconflict/theme-dracula";
 import "ace-builds/src-noconflict/theme-dreamweaver";
+import "ace-builds/src-noconflict/theme-eclipse";
 import "ace-builds/src-noconflict/theme-github";
+import "ace-builds/src-noconflict/theme-github_dark";
+import "ace-builds/src-noconflict/theme-github_light_default";
+import "ace-builds/src-noconflict/theme-gob";
+import "ace-builds/src-noconflict/theme-gruvbox";
+import "ace-builds/src-noconflict/theme-gruvbox_dark_hard";
+import "ace-builds/src-noconflict/theme-gruvbox_light_hard";
+import "ace-builds/src-noconflict/theme-idle_fingers";
+import "ace-builds/src-noconflict/theme-iplastic";
+import "ace-builds/src-noconflict/theme-katzenmilch";
+import "ace-builds/src-noconflict/theme-kr_theme";
+import "ace-builds/src-noconflict/theme-kuroir";
+import "ace-builds/src-noconflict/theme-merbivore";
+import "ace-builds/src-noconflict/theme-merbivore_soft";
+import "ace-builds/src-noconflict/theme-mono_industrial";
+import "ace-builds/src-noconflict/theme-monokai";
+import "ace-builds/src-noconflict/theme-nord_dark";
+import "ace-builds/src-noconflict/theme-one_dark";
+import "ace-builds/src-noconflict/theme-pastel_on_dark";
+import "ace-builds/src-noconflict/theme-solarized_dark";
+import "ace-builds/src-noconflict/theme-solarized_light";
+import "ace-builds/src-noconflict/theme-sqlserver";
+import "ace-builds/src-noconflict/theme-terminal";
+import "ace-builds/src-noconflict/theme-textmate";
+import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/theme-tomorrow_night";
+import "ace-builds/src-noconflict/theme-tomorrow_night_blue";
+import "ace-builds/src-noconflict/theme-tomorrow_night_bright";
+import "ace-builds/src-noconflict/theme-tomorrow_night_eighties";
+import "ace-builds/src-noconflict/theme-twilight";
+import "ace-builds/src-noconflict/theme-vibrant_ink";
+import "ace-builds/src-noconflict/theme-xcode";
+
 import { Component, createRef } from "react";
 import AceEditor, { IMarker } from "react-ace";
 
-import { GdbAny } from "../../common/gdb-common";
 import {
   gdbBreakpoint,
   gdbThread,
 } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { gdbShowSourceInfo } from "../../main/mi-interface/mi-interface";
+
+import { GdbAny } from "../../common/gdb-common";
 import "./GdbSourceWindow.css";
+
+export const editorThemes: Map<string, string> = new Map<string, string>([
+  ["Ambiance", "ambiance"],
+  ["Chaos", "chaos"],
+  ["Chrome", "chrome"],
+  ["Cloud9 Day", "cloud9_day"],
+  ["Cloud9 Night", "cloud9_night"],
+  ["Cloud9 Night Low Color", "cloud9_night_low_color"],
+  ["Cloud Editor", "cloud_editor"],
+  ["Cloud Editor Dark", "cloud_editor_dark"],
+  ["Clouds", "clouds"],
+  ["Clouds Midnight", "clouds_midnight"],
+  ["Cobalt", "cobalt"],
+  ["Crimson Editor", "crimson_editor"],
+  ["Dawn", "dawn"],
+  ["Dracula", "dracula"],
+  ["Dreamweaver", "dreamweaver"],
+  ["Eclipse", "eclipse"],
+  ["Github", "github"],
+  ["Github Dark", "github_dark"],
+  ["Github Light Default", "github_light_default"],
+  ["Gob", "gob"],
+  ["Gruvbox", "gruvbox"],
+  ["Gruvbox Dark Hard", "gruvbox_dark_hard"],
+  ["Gruvbox Light Hard", "gruvbox_light_hard"],
+  ["Idle Fingers", "idle_fingers"],
+  ["iPlastic", "iplastic"],
+  ["Katzenmilch", "katzenmilch"],
+  ["Kr", "kr_theme"],
+  ["Kuroir", "kuroir"],
+  ["Merbivore", "merbivore"],
+  ["Merbivore Soft", "merbivore_soft"],
+  ["Mono Industrial", "mono_industrial"],
+  ["Monokai", "monokai"],
+  ["Nord Dark", "nord_dark"],
+  ["One Dark", "one_dark"],
+  ["Pastel on Dark", "pastel_on_dark"],
+  ["Solarized Dark", "solarized_dark"],
+  ["Solarized Light", "solarized_light"],
+  ["SQL Server", "sqlserver"],
+  ["Terminal", "terminal"],
+  ["TextMate", "textmate"],
+  ["Tomorrow", "tomorrow"],
+  ["Tomorrow Night", "tomorrow_night"],
+  ["Tomorrow Night Blue", "tomorrow_night_blue"],
+  ["Tomorrow Night Bright", "tomorrow_night_bright"],
+  ["Tomorrow Night Eighties", "tomorrow_night_eighties"],
+  ["Twilight", "twilight"],
+  ["Vibrant Ink", "vibrant_ink"],
+  ["XCode", "xcode"],
+]);
 
 ace.config.setModuleUrl("../../node_modules", "ace-builds"); // Set base path for ace
 
@@ -36,6 +133,10 @@ interface GdbSourceWindowState {
   currentMarker: number;
   breakpoints: breakpointMarker[];
   threads: threadMarker[];
+  theme: string;
+  fontSize: number;
+  fontName: string;
+  lineHeight: number;
 }
 
 export default class GdbSourceWindow extends Component<
@@ -59,6 +160,10 @@ export default class GdbSourceWindow extends Component<
       currentMarker: -1,
       breakpoints: [],
       threads: [],
+      theme: "gruvbox",
+      fontSize: 14,
+      fontName: "monospace",
+      lineHeight: 15,
     };
   }
 
@@ -68,6 +173,37 @@ export default class GdbSourceWindow extends Component<
     this.setupGutterClickListener();
 
     this.editorRef.current?.editor.setOption("showFoldWidgets", false);
+
+    window.ipcToMain.getSettings().then((gdb: GdbAny): void => {
+      if (gdb.gui.sourceViewerTheme) {
+        const savedTheme = (gdb.gui.sourceViewerTheme as string).toLowerCase();
+        this.setState({ theme: savedTheme });
+      }
+
+      if (gdb.gui.sourceViewerFontSize) {
+        const savedFontSize = parseInt(gdb.gui.sourceViewerFontSize);
+        this.setState({ fontSize: savedFontSize });
+        this.setState({ lineHeight: savedFontSize + 1 });
+      }
+
+      if (gdb.gui.sourceViewerFontName) {
+        this.setState({ fontName: gdb.gui.sourceViewerFontName });
+      }
+    });
+
+    window.addEventListener("changeEditor", (e: Event) => {
+      const ev = e as CustomEvent;
+      if (ev.detail.theme) {
+        this.setState({ theme: ev.detail.theme });
+      }
+      if (ev.detail.fontSize) {
+        this.setState({ fontSize: ev.detail.fontSize });
+        this.setState({ lineHeight: ev.detail.fontSize + 1 });
+      }
+      if (ev.detail.fontName) {
+        this.setState({ fontName: ev.detail.fontName });
+      }
+    });
   }
 
   override componentDidUpdate(prevProps: Record<string, never>, prevState: GdbSourceWindowState) {
@@ -234,9 +370,9 @@ export default class GdbSourceWindow extends Component<
               className="flex-item"
               ref={this.editorRef}
               mode="c_cpp"
-              theme="tomorrow_night"
-              fontSize={14}
-              lineHeight={15}
+              theme={this.state.theme}
+              fontSize={this.state.fontSize}
+              lineHeight={this.state.lineHeight}
               onLoad={this.onLoad}
               value={source}
               markers={stackMarkers}
@@ -244,7 +380,7 @@ export default class GdbSourceWindow extends Component<
               showPrintMargin={false}
               showGutter={true}
               name="code-editor-instance"
-              setOptions={{ fontFamily: "Consolas" }}
+              setOptions={{ fontFamily: this.state.fontName }}
               style={{ width: "100%", height: "100%" }}
             />
           </div>

@@ -36,6 +36,7 @@ contextBridge.exposeInMainWorld("ipcToMain", {
 
   // Commands from Renderer to Main
   getSettings: () => ipcRenderer.invoke("getSettings"),
+  getSystemFonts: () => ipcRenderer.invoke("getSystemFonts"),
   getVersionInfo: () => ipcRenderer.invoke("getVersionInfo"),
   sendGdbCommand: (command: string) => ipcRenderer.send("gdb-command", command),
 

@@ -27,6 +27,29 @@
   --tabbar-tab-inactive: #303030;
 }
 
+div > .dialogHeader {
+  background-color: blue;
+  color: lightblue;
+  font-size: medium;
+  margin: 0px;
+  border-bottom: none;
+  padding: 3px 10px 0px 10px;
+}
+
+div > .dialogHeaderContainer > .e-dlg-header-content + .e-dlg-content {
+  padding: 0px;
+}
+
+div > .dialogHeaderContainer > .e-dlg-header-content > .e-dlg-header {
+  width: calc(100% - 30px);
+}
+
+div > .dialogHeaderContainer > .e-dlg-header-content {
+  padding: 0px;
+  border-bottom: 2px solid black;
+  width: 100%;
+}
+
 .dv-groupview.dv-inactive-group
   > .dv-tabs-and-actions-container
   .dv-tabs-container
