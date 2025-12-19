@@ -79,10 +79,8 @@ export class Settings extends Component<SettingsProps, SettingsState> {
     );
   };
   private onSelectEditorTheme = (e: GdbAny) => {
-    const newTheme = editorThemes.get(e.itemData.value);
-
     window.dispatchEvent(
-      new CustomEvent("changeEditor", { detail: { theme: newTheme }, bubbles: false }),
+      new CustomEvent("changeEditor", { detail: { theme: e.itemData.value }, bubbles: false }),
     );
 
     window.ipcToMain.notifyMain({

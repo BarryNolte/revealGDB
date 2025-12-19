@@ -1,6 +1,9 @@
 # UI Related
-  * "Busy" screen during connect
   * Connection manager
+    * args
+    * environment (set/unset)
+    * path to exe
+    * working directory
   * Locals view
     * Locals editing
   * Finish memory view
@@ -13,12 +16,12 @@
   * Themeing
   * Cut/Copy/Paste
   * Save column widths with layout
+  * "Busy" screen during connect (Probable bad idea?)
 
 # New Features
   * Python Window for running python commands
   * Values on hover in source
   * Disassembly Window
-  * Values on hover in source
   * Tracepoints - How to insert more automatically
 
 # Project Related

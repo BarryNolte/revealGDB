@@ -166,15 +166,6 @@ export class GdbMenu {
               gdbInterface.send("finish");
             },
           },
-          {
-            type: "separator",
-          },
-          {
-            label: "Attach...",
-          },
-          {
-            label: "Detach",
-          },
         ],
       },
       {

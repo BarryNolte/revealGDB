@@ -68,6 +68,7 @@ import { gdbShowSourceInfo } from "../../main/mi-interface/mi-interface";
 import { GdbAny } from "../../common/gdb-common";
 import "./GdbSourceWindow.css";
 
+const defaultTheme = "gruvbox";
 export const editorThemes: Map<string, string> = new Map<string, string>([
   ["Ambiance", "ambiance"],
   ["Chaos", "chaos"],
@@ -160,9 +161,9 @@ export default class GdbSourceWindow extends Component<
       currentMarker: -1,
       breakpoints: [],
       threads: [],
-      theme: "gruvbox",
-      fontSize: 14,
+      theme: defaultTheme,
       fontName: "monospace",
+      fontSize: 14,
       lineHeight: 15,
     };
   }
@@ -176,7 +177,7 @@ export default class GdbSourceWindow extends Component<
 
     window.ipcToMain.getSettings().then((gdb: GdbAny): void => {
       if (gdb.gui.sourceViewerTheme) {
-        const savedTheme = (gdb.gui.sourceViewerTheme as string).toLowerCase();
+        const savedTheme = editorThemes.get(gdb.gui.sourceViewerTheme) || defaultTheme;
         this.setState({ theme: savedTheme });
       }
 
@@ -194,7 +195,8 @@ export default class GdbSourceWindow extends Component<
     window.addEventListener("changeEditor", (e: Event) => {
       const ev = e as CustomEvent;
       if (ev.detail.theme) {
-        this.setState({ theme: ev.detail.theme });
+        const newTheme = editorThemes.get(ev.detail.theme) || defaultTheme;
+        this.setState({ theme: newTheme });
       }
       if (ev.detail.fontSize) {
         this.setState({ fontSize: ev.detail.fontSize });

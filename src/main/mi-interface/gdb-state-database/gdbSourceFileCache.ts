@@ -18,9 +18,7 @@ export class gdbSourceFileCache {
       try {
         //TODO: Need to get the actual path from the connector
         const data = await readFile("//wsl$/Ubuntu" + file, "utf-8");
-        // const formatted = hljs.highlightAuto(data);
-        // this.sourceFiles.set(file, formatted.value);
-        // srcHtml = formatted.value;
+        this.sourceFiles.set(file, data);
         srcHtml = data;
       } catch (ex) {
         console.error(`Error reading file: ${file} : ${ex}`);
@@ -45,6 +43,8 @@ export class gdbSourceFileCache {
   }
 
   dump(): GdbAny {
-    console.log(this.sourceFiles.keys());
+    this.sourceFiles.keys().forEach((file) => {
+      console.log(`${this.sourceFiles.get(file)?.length.toString().padStart(6, " ")} => ${file}`);
+    });
   }
 }
