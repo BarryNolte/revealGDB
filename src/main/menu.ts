@@ -138,7 +138,6 @@ export class GdbMenu {
             label: "Continue",
             accelerator: "F5",
             click: () => {
-              console.log("Continue");
               gdbInterface.send("continue");
             },
           },
@@ -146,7 +145,6 @@ export class GdbMenu {
             label: "Step Over",
             accelerator: "F10",
             click: () => {
-              console.log("Step Over");
               gdbInterface.send("next");
             },
           },
@@ -154,7 +152,6 @@ export class GdbMenu {
             label: "Step Into",
             accelerator: "F8",
             click: () => {
-              console.log("Step Into");
               gdbInterface.send("step");
             },
           },
@@ -162,7 +159,6 @@ export class GdbMenu {
             label: "Step Out",
             accelerator: "Shift+F11",
             click: () => {
-              console.log("Step Out");
               gdbInterface.send("finish");
             },
           },

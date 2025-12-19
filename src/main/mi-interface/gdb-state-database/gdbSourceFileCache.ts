@@ -31,14 +31,6 @@ export class gdbSourceFileCache {
       return undefined;
     }
 
-    // let retCnt: number = 1;
-    // for (let i=0; i < srcHtml.length; i++) {
-    //     if (srcHtml[i] === '\n') {
-    //         retCnt++;
-    //     }
-    // }
-    // console.log(`File: ${file} has ${retCnt} lines`);
-
     return srcHtml;
   }
 

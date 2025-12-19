@@ -120,7 +120,6 @@ export class Settings extends Component<SettingsProps, SettingsState> {
   };
 
   private onChangeShowDebugInfo = (e: GdbAny) => {
-    console.log(e);
     window.dispatchEvent(
       new CustomEvent("changeApplication", {
         detail: { showDebugInfo: e.checked },

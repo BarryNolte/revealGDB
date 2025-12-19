@@ -3,10 +3,13 @@ import "ace-builds/css/ace.css";
 import "ace-builds/src-noconflict/mode-assembly_arm32";
 import "ace-builds/src-noconflict/mode-assembly_x86";
 import "ace-builds/src-noconflict/mode-c_cpp";
-import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/mode-rust";
 import "ace-builds/src-noconflict/mode-typescript";
+import "ace-builds/src-noconflict/mode-csharp";
+import "ace-builds/src-noconflict/mode-golang";
+import "ace-builds/src-noconflict/mode-python";
+import "ace-builds/src-noconflict/movde-java";
 import "ace-builds/src-noconflict/theme-ambiance";
 import "ace-builds/src-noconflict/theme-chaos";
 import "ace-builds/src-noconflict/theme-chrome";
@@ -55,7 +58,6 @@ import "ace-builds/src-noconflict/theme-tomorrow_night_eighties";
 import "ace-builds/src-noconflict/theme-twilight";
 import "ace-builds/src-noconflict/theme-vibrant_ink";
 import "ace-builds/src-noconflict/theme-xcode";
-
 import { Component, createRef } from "react";
 import AceEditor, { IMarker } from "react-ace";
 
@@ -120,6 +122,24 @@ export const editorThemes: Map<string, string> = new Map<string, string>([
   ["XCode", "xcode"],
 ]);
 
+const defaultMode = "c_cpp";
+export const editorModes: Map<string, string> = new Map<string, string>([
+  ["c", "c_cpp"],
+  ["cpp", "c_cpp"],
+  ["cxx", "c_cpp"],
+  ["h", "c_cpp"],
+  ["hxx", "c_cpp"],
+  ["cc", "c_cpp"],
+  ["rs", "rust"],
+  ["asm", "assembly_x86"],
+  ["cs", "csharp"],
+  ["d", "d"],
+  ["go", "golang"],
+  ["py", "python"],
+  ["java", "java"],
+  ["s", "assembly_arm32"],
+]);
+
 ace.config.setModuleUrl("../../node_modules", "ace-builds"); // Set base path for ace
 
 type breakpointMarker = { line: number; type: string };
@@ -135,6 +155,7 @@ interface GdbSourceWindowState {
   breakpoints: breakpointMarker[];
   threads: threadMarker[];
   theme: string;
+  mode: string;
   fontSize: number;
   fontName: string;
   lineHeight: number;
@@ -162,6 +183,7 @@ export default class GdbSourceWindow extends Component<
       breakpoints: [],
       threads: [],
       theme: defaultTheme,
+      mode: defaultMode,
       fontName: "monospace",
       fontSize: 14,
       lineHeight: 15,
@@ -245,6 +267,15 @@ export default class GdbSourceWindow extends Component<
 
   private setupIPCListeners() {
     window.ipcToMain.sourceFile((data: gdbShowSourceInfo) => {
+      const lastPeriodIndex: number = data.fileName.lastIndexOf(".");
+
+      let newMode: string = defaultMode;
+      if (lastPeriodIndex !== -1) {
+        const fileExt: string = data.fileName.slice(lastPeriodIndex + 1).toLowerCase();
+        newMode = editorModes.get(fileExt) || defaultMode;
+      }
+
+      this.setState({ mode: newMode });
       this.displayData(data);
     });
 
@@ -371,7 +402,7 @@ export default class GdbSourceWindow extends Component<
             <AceEditor
               className="flex-item"
               ref={this.editorRef}
-              mode="c_cpp"
+              mode={this.state.mode}
               theme={this.state.theme}
               fontSize={this.state.fontSize}
               lineHeight={this.state.lineHeight}
