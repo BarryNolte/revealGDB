@@ -61,8 +61,6 @@ export default class GdbRegistersWindow extends Component {
   override componentDidMount() {
     window.ipcToMain.dataRegisters((data: gdbRegisters[]) => {
       if (this.gridRef.current) {
-        this.gridRef.current.dataSource = [];
-
         const dataList: GdbAny[] = [];
         data.forEach((reg) => {
           dataList.push({

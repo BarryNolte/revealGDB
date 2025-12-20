@@ -139,7 +139,6 @@ export default class App extends Component {
       component: "memorywin",
       title: "Memory",
       position: {
-        //   direction: "below",
         referencePanel: "locwin",
       },
     });
@@ -148,7 +147,6 @@ export default class App extends Component {
       component: "registerwin",
       title: "Registers",
       position: {
-        // direction: "below",
         referencePanel: "locwin",
       },
     });
@@ -157,7 +155,6 @@ export default class App extends Component {
       component: "breakpointwin",
       title: "Breakpoints",
       position: {
-        // direction: "below",
         referencePanel: "locwin",
       },
     });
@@ -166,8 +163,8 @@ export default class App extends Component {
       component: "callstackwin",
       title: "Call Stack",
       position: {
-        // direction: "below",
-        referencePanel: "locwin",
+        direction: "below",
+        referencePanel: "srcwin",
       },
     });
     event.api.addPanel({
@@ -175,8 +172,7 @@ export default class App extends Component {
       component: "threadswin",
       title: "Threads",
       position: {
-        // direction: "below",
-        referencePanel: "locwin",
+        referencePanel: "callstkwin",
       },
     });
     event.api.addPanel({
@@ -185,7 +181,7 @@ export default class App extends Component {
       title: "GDB Command",
       position: {
         direction: "below",
-        referencePanel: "thrdwin",
+        referencePanel: "locwin",
       },
     });
   }
