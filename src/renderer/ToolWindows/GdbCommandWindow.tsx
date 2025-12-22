@@ -201,7 +201,7 @@ export default class GdbCommandWindow extends Component {
 
   override render() {
     return (
-      <div className={"commandWindow"}>
+      <div className={"commandWindow full-size"}>
         <div className={"outputRow"} ref={this.outputRef} onScroll={this.onScrollHandler} />
         <div className={"historyRow"}>
           <select

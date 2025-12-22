@@ -29,6 +29,13 @@ export let gdbInterface: miInterface;
 export const gdbAppInfo: Map<string, GdbAny> = new Map<string, GdbAny>();
 
 app.on("ready", () => {
+  AppSettings.configure({
+    atomicSave: true,
+    fileName: "settings.json",
+    numSpaces: 2,
+    prettify: true,
+  });
+
   /**
    * DEBUG: Usefull Information
    */
@@ -70,13 +77,6 @@ app.on("ready", () => {
   gdbAppInfo.set("Package Versions", process.versions);
   console.log("Version Info\n------------");
   console.log(gdbAppInfo);
-
-  AppSettings.configure({
-    atomicSave: true,
-    fileName: "settings.json",
-    numSpaces: 2,
-    prettify: true,
-  });
 
   mainWindow = new BrowserWindow({
     webPreferences: {
@@ -255,7 +255,8 @@ ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
       break;
     case "save-dock-layout":
       {
-        await AppSettings.set("gdb.gui.dockLayout", msg.data);
+        console.log("Saving: " + msg.data);
+        AppSettings.setSync("gdb.gui.dockLayout", msg.data);
 
         const winPos = {
           /**
@@ -267,7 +268,7 @@ ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
           height: mainWindow.getSize()[1] - 2,
           fullscreen: mainWindow.fullScreen,
         };
-        await AppSettings.set("gdb.gui.windowSize", winPos);
+        AppSettings.setSync("gdb.gui.windowSize", winPos);
       }
       break;
     case "renderStart":

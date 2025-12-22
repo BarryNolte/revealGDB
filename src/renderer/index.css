@@ -8,8 +8,11 @@
 @import "../../node_modules/@syncfusion/ej2-react-grids/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-react-dropdowns/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-react-buttons/styles/material.css";
+@import "../../node_modules/dock-spawn-ts/lib/css/dock-manager-style.css";
+@import "../../node_modules/dock-spawn-ts/lib/css/dock-manager.css";
+@import "../../node_modules/dock-spawn-ts/lib/css/dock-manager-context-menu.css";
 
-@import "../../node_modules/dockview/dist/styles/dockview.css";
+/* @import "../../node_modules/dockview/dist/styles/dockview.css"; */
 
 :root {
   --window-background: #606060;
@@ -25,6 +28,12 @@
   --tabbar-tab-not-active-hover: #f0f0f0;
   --tabbar-tab-border: #c0c0c0;
   --tabbar-tab-inactive: #303030;
+}
+
+.revealDockManager {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 42px);
 }
 
 div > .dialogHeader {
@@ -158,6 +167,7 @@ html {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 body {
@@ -175,11 +185,6 @@ body {
   width: 100%;
   margin: 0;
   padding: 0;
-}
-
-.main-page-container {
-  height: calc(100% - 42px);
-  width: 100%;
 }
 
 .full-size {

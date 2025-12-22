@@ -1,4 +1,6 @@
-import { DockviewApi, DockviewReact, DockviewReadyEvent, IDockviewPanelProps } from "dockview";
+import { DockManager } from "../../node_modules/dock-spawn-ts/lib/js/DockManager.js";
+import { PanelContainer } from "../../node_modules/dock-spawn-ts/lib/js/PanelContainer.js";
+
 import { Component, createRef, RefObject } from "react";
 import { GdbAny } from "../common/gdb-common";
 
@@ -15,10 +17,10 @@ import { AboutBox } from "./Dialogs/AboutBox";
 import { ConnectionManager } from "./Dialogs/ConnectionManager";
 import { Settings } from "./Dialogs/Settings";
 
-import { fRendered } from "./main";
+//import { fRendered } from "./main";
 import RevealToolbar from "./Components/Toolbar";
 
-let dockView: DockviewApi | null = null;
+let dockManager: DockManager;
 
 export let AppMainVersionInfo: Map<string, GdbAny>;
 window.ipcToMain.getVersionInfo().then((e) => {
@@ -30,20 +32,8 @@ export default class App extends Component {
   private settingsRef = createRef<Settings>();
   private connectionsRef = createRef<ConnectionManager>();
 
-  private disposable: ReturnType<DockviewApi["onDidLayoutChange"]> | null = null;
-
-  private readonly components = {
-    sourcewin: (props: IDockviewPanelProps) => <GdbSourceWindow {...(props as GdbAny)} />,
-    localswin: (props: IDockviewPanelProps) => <GdbLocalsWindow {...(props as GdbAny)} />,
-    breakpointwin: (props: IDockviewPanelProps) => <GdbBreakPointWindow {...(props as GdbAny)} />,
-    callstackwin: (props: IDockviewPanelProps) => <GdbCallStackWindow {...(props as GdbAny)} />,
-    commandwin: (props: IDockviewPanelProps) => <GdbCommandWindow {...(props as GdbAny)} />,
-    memorywin: (props: IDockviewPanelProps) => <GdbMemoryWindow {...(props as GdbAny)} />,
-    registerwin: (props: IDockviewPanelProps) => <GdbRegistersWindow {...(props as GdbAny)} />,
-    threadswin: (props: IDockviewPanelProps) => <GdbThreadsWindow {...(props as GdbAny)} />,
-  };
-
   override componentDidMount() {
+    console.log("Application DidMount");
     window.ipcToMain.notifyRender((msg: GdbAny) => {
       switch (msg.command) {
         case "about-box":
@@ -69,6 +59,7 @@ export default class App extends Component {
         case "connection-success":
           {
             console.log(`Connection Success: ${Date.now()}`);
+            dockManager.invalidate();
           }
           break;
         case "connection-failed":
@@ -79,111 +70,57 @@ export default class App extends Component {
       }
     });
 
-    window.onresize = () => {
-      if (fRendered) {
-        this.saveDockLayout();
-      }
-    };
+    // Convert a div to a dock manager.  Panels can then be docked on to it
+    dockManager = new DockManager(document.getElementById("revealDockManager")!);
+    dockManager.initialize();
 
-    window.addEventListener("beforeunload", () => {
-      console.log("******************************************");
-      console.log("Unloading Browser Window");
-      console.log("******************************************");
-      this.saveDockLayout();
-    });
-  }
-
-  override componentWillUnmount() {
-    if (this.disposable) {
-      this.disposable.dispose();
-    }
-  }
-
-  private onReady = (event: DockviewReadyEvent) => {
-    dockView = event.api;
-
-    this.disposable = event.api.onDidLayoutChange(() => {
-      this.saveDockLayout();
-    });
+    const source = new PanelContainer(document.getElementById("sourceWindow")!, dockManager);
+    const locals = new PanelContainer(document.getElementById("localsWindow")!, dockManager);
+    const threads = new PanelContainer(document.getElementById("threadsWindow")!, dockManager);
+    const callstack = new PanelContainer(document.getElementById("callstackWindow")!, dockManager);
+    const memory = new PanelContainer(document.getElementById("memoryWindow")!, dockManager);
+    const breakpoints = new PanelContainer(document.getElementById("bpWindow")!, dockManager);
+    const registers = new PanelContainer(document.getElementById("registersWindow")!, dockManager);
+    const command = new PanelContainer(document.getElementById("commandWindow")!, dockManager);
 
     window.ipcToMain.getSettings().then((gdb: GdbAny): void => {
       if (gdb.gui.dockLayout) {
-        if (Object.keys(gdb.gui.dockLayout.panels).length === 0) {
-          this.DefaultLayout(event);
-        } else {
-          event.api.fromJSON(gdb.gui.dockLayout);
-        }
+        dockManager.loadState(JSON.stringify(gdb.gui.dockLayout));
       } else {
-        this.DefaultLayout(event);
+        const documentNode = dockManager.context.model.documentManagerNode;
+        const commandNode = dockManager.dockFill(documentNode, command);
+        const localsNode = dockManager.dockUp(commandNode, locals, 0.5);
+        dockManager.dockFill(localsNode, threads);
+        dockManager.dockFill(localsNode, callstack);
+        dockManager.dockFill(localsNode, memory);
+        dockManager.dockFill(localsNode, breakpoints);
+        dockManager.dockFill(localsNode, registers);
+        dockManager.dockLeft(localsNode, source, 0.5);
       }
     });
-  };
 
-  private DefaultLayout(event: DockviewReadyEvent) {
-    event.api.addPanel({
-      id: "srcwin",
-      component: "sourcewin",
-      title: "Source",
-    });
-    event.api.addPanel({
-      id: "locwin",
-      component: "localswin",
-      title: "Locals",
-      position: {
-        direction: "right",
-        referencePanel: "srcwin",
+    dockManager.addLayoutListener({
+      onClosePanel: (dockManager, panel) => {
+        console.log(`onClosePanel(panel:'${panel?.title}')`);
+        //localStorage.setItem(storeKey, dockManager.saveState());
+        // updateState();
       },
     });
-    event.api.addPanel({
-      id: "memwin",
-      component: "memorywin",
-      title: "Memory",
-      position: {
-        referencePanel: "locwin",
-      },
-    });
-    event.api.addPanel({
-      id: "regwin",
-      component: "registerwin",
-      title: "Registers",
-      position: {
-        referencePanel: "locwin",
-      },
-    });
-    event.api.addPanel({
-      id: "brkptwin",
-      component: "breakpointwin",
-      title: "Breakpoints",
-      position: {
-        referencePanel: "locwin",
-      },
-    });
-    event.api.addPanel({
-      id: "callstkwin",
-      component: "callstackwin",
-      title: "Call Stack",
-      position: {
-        direction: "below",
-        referencePanel: "srcwin",
-      },
-    });
-    event.api.addPanel({
-      id: "thrdwin",
-      component: "threadswin",
-      title: "Threads",
-      position: {
-        referencePanel: "callstkwin",
-      },
-    });
-    event.api.addPanel({
-      id: "cmdwin",
-      component: "commandwin",
-      title: "GDB Command",
-      position: {
-        direction: "below",
-        referencePanel: "locwin",
-      },
-    });
+
+    // Let the dock manager element fill in the entire screen
+    window.onresize = function () {
+      const divDockManager = document.getElementById("revealDockDiv")!;
+
+      dockManager.resize(
+        window.innerWidth - (divDockManager.clientLeft + divDockManager.offsetLeft),
+        window.innerHeight - (divDockManager.clientTop + divDockManager.offsetTop),
+      );
+    };
+    window.dispatchEvent(new Event("resize"));
+  }
+
+  override componentWillUnmount() {
+    saveDockLayout();
   }
 
   override render() {
@@ -193,33 +130,91 @@ export default class App extends Component {
           connectionsRef={this.connectionsRef as RefObject<ConnectionManager>}
           settingsRef={this.settingsRef as RefObject<Settings>}
         />
-        <DockviewReact
-          className={"dockview-theme-abyss"}
-          onReady={this.onReady}
-          components={this.components}
-        />
+        <div id="revealDockDiv" className="full-size">
+          <div id="revealDockManager" className="revealDockManager"></div>
+          <div
+            id="sourceWindow"
+            data-panel-caption="Source"
+            className={"solution-window"}
+            hidden={true}
+          >
+            <GdbSourceWindow />
+          </div>
+          <div
+            id="localsWindow"
+            data-panel-caption="Locals"
+            className={"solution-window"}
+            hidden={true}
+          >
+            <GdbLocalsWindow />
+          </div>
+          <div
+            id="threadsWindow"
+            data-panel-caption="Threads"
+            className={"solution-window"}
+            hidden={true}
+          >
+            <GdbThreadsWindow />
+          </div>
+          <div
+            id="registersWindow"
+            data-panel-caption="Registers"
+            className={"solution-window"}
+            hidden={true}
+          >
+            <GdbRegistersWindow />
+          </div>
+          <div
+            id="commandWindow"
+            data-panel-caption="Command"
+            className={"solution-window"}
+            hidden={true}
+          >
+            <GdbCommandWindow />
+          </div>
+          <div
+            id="memoryWindow"
+            data-panel-caption="Memory"
+            className={"solution-window"}
+            hidden={true}
+          >
+            <GdbMemoryWindow />
+          </div>
+          <div
+            id="callstackWindow"
+            data-panel-caption="Call Stack"
+            className={"solution-window"}
+            hidden={true}
+          >
+            <GdbCallStackWindow />
+          </div>
+          <div
+            id="bpWindow"
+            data-panel-caption="Breakpoints"
+            className={"solution-window"}
+            hidden={true}
+          >
+            <GdbBreakPointWindow />
+          </div>
+        </div>
         <AboutBox ref={this.aboutBoxRef} />
         <Settings ref={this.settingsRef} />
         <ConnectionManager ref={this.connectionsRef} />
       </div>
     );
   }
-
-  private saveDockLayout() {
-    const layout = dockView?.toJSON();
-    window.ipcToMain.notifyMain({ command: "save-dock-layout", data: layout });
-  }
 }
 
 window.addEventListener("beforeunload", () => {
   console.log("******************************************");
-  console.log("Unloading Browser Window");
+  console.log("Before Unloading Browser Window");
   console.log("******************************************");
 
   saveDockLayout();
 });
 
 function saveDockLayout() {
-  const layout = dockView?.toJSON();
+  const layout = JSON.parse(dockManager.saveState());
+  console.log(layout);
   window.ipcToMain.notifyMain({ command: "save-dock-layout", data: layout });
 }

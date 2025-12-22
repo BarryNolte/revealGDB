@@ -418,7 +418,7 @@ export default class GdbSourceWindow extends Component<
             />
           </div>
         </div>
-        <div ref={this.noSrcViewRef}>
+        <div ref={this.noSrcViewRef} hidden>
           <div className="no-source">
             <table className="no-source-table">
               <caption className="no-source-header">No Source Found:</caption>
