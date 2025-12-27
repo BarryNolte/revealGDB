@@ -23,6 +23,7 @@
   * Values on hover in source
   * Disassembly Window
   * Tracepoints - How to insert more automatically
+  * Set Next Statement from editor
 
 # Project Related
   * Real Debug/Release builds

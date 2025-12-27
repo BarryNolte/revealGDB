@@ -8,11 +8,11 @@
 @import "../../node_modules/@syncfusion/ej2-react-grids/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-react-dropdowns/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-react-buttons/styles/material.css";
+@import "../../node_modules/@syncfusion/ej2-react-splitbuttons/styles/material.css";
+
 @import "../../node_modules/dock-spawn-ts/lib/css/dock-manager-style.css";
 @import "../../node_modules/dock-spawn-ts/lib/css/dock-manager.css";
 @import "../../node_modules/dock-spawn-ts/lib/css/dock-manager-context-menu.css";
-
-/* @import "../../node_modules/dockview/dist/styles/dockview.css"; */
 
 :root {
   --window-background: #606060;
@@ -198,6 +198,12 @@ body {
   height: 100%;
 }
 
+.flex-container-row {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
 .flex-item-grow {
   flex-grow: 1;
 }
@@ -206,4 +212,53 @@ body {
   font-family: "Segoe UI";
   font-size: 16px;
   font-weight: bolder;
+}
+
+div > .dockspan-tab-handle-text {
+  font-family: "Segoe UI";
+  font-size: 14px;
+  font-weight: normal;
+  margin-top: 1px;
+}
+
+div > .panel-titlebar-icon {
+  margin-top: 1px;
+  margin-left: -2px;
+}
+
+div.panel-titlebar.disable-selection.dockspan-panel-active
+  > div.panel-titlebar-text.dockspan-panel-titlebar-text-active
+  > img {
+  margin-top: 4px;
+}
+
+div.panel-titlebar.disable-selection > div.panel-titlebar-text > img {
+  margin-top: 4px;
+}
+div > .panel-titlebar-text {
+  margin-top: -4px;
+}
+
+div > .splitbar-vertical {
+  background-color: gray;
+}
+
+div > .splitbar-horizontal {
+  background-color: gray;
+}
+
+div > .dockspan-tab-handle-active {
+  background-color: rgba(8, 8, 8, 0.85);
+}
+
+div > .dockspan-panel-active {
+  background-color: rgba(8, 8, 8, 0.85);
+}
+
+div > .dockspan-tab-handle:hover {
+  background-color: rgba(90, 90, 90, 85);
+}
+
+div > .dockspan-tab-handle-list-container {
+  background-color: rgba(165, 165, 165, 0.874);
 }
