@@ -1,5 +1,4 @@
 import { Component } from "react";
-import RevealHexEditor from "../../../components/reveal-hex-editor/reveal-hex-editor";
 
 interface GdbMemoryWindowState {
   datasource: Uint8Array;
@@ -17,6 +16,10 @@ export default class GdbMemoryWindow extends Component<
   }
 
   override render() {
-    return <RevealHexEditor datasource={this.state.datasource} />;
+    return (
+      <>
+        <div>Memory Window</div>
+      </>
+    );
   }
 }

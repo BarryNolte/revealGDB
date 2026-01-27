@@ -1,0 +1,15 @@
+/**
+ * @file editor-entry-form.css
+ * @description Styling for the EditorEntry configuration panel component.
+ * 
+ * Components:
+ * - .editor-entry: Container for data view and text view selector dropdowns
+ *   - Background: bisque color for visual distinction from main editor
+ *   - Padding: 5px for internal spacing around controls
+ */
+
+/* Configuration panel container - distinct styling separates controls from main hex editor view */
+.editor-entry {
+  background-color: bisque;
+  padding: 5px;
+}
