@@ -9,7 +9,10 @@ import HexDataView from "./view-data";
 import HexOffsetView from "./view-offset";
 import { MouseKeyboardHandler } from "./MouseKeyboardHandler";
 import "./HexEditor.css";
-import { type JSX } from "react";
+import { createRef, JSX, useEffect } from "react";
+
+/** Callback signature for data change notifications */
+export type ArrayChangeCallback = (index: number, value: number) => void;
 
 /** Props for the HexEditor component */
 interface HexEditorProps {
@@ -17,6 +20,8 @@ interface HexEditorProps {
   offset: number;
   /** Binary data source to display (Uint8Array) */
   datasource: Uint8Array;
+  /** Callback for data change notifications */
+  changeCallback?: ArrayChangeCallback;
 }
 
 /**
@@ -37,17 +42,31 @@ interface HexEditorProps {
  * @param {HexEditorProps} props - Component props
  * @returns {JSX.Element} Flex container with three synchronized view columns
  */
-export default function HexEditor({ offset, datasource }: HexEditorProps): JSX.Element {
+export default function HexEditor({
+  offset,
+  datasource,
+  changeCallback,
+}: HexEditorProps): JSX.Element {
+  const hexEditorRef = createRef<HTMLDivElement>();
+
   // Centralized event handler for all mouse and keyboard interactions
-  const mouseKeyboardHandler = new MouseKeyboardHandler(datasource.length, (index, value) => {
-    console.debug(`Data changed at index ${index} to value ${value}`);
-    // TODO: Implement data persistence (update datasource, trigger save, etc.)
-  });
+  const mouseKeyboardHandler = new MouseKeyboardHandler(datasource.length, changeCallback);
+
+  useEffect(() => {
+    if (hexEditorRef.current) {
+      const changedElements: HTMLCollectionOf<Element> =
+        hexEditorRef.current.getElementsByClassName("he-data-changed");
+
+      Array.from(changedElements).forEach((element) => {
+        element.classList.remove("he-data-changed");
+      });
+    }
+  }, [datasource, hexEditorRef]);
 
   return (
     <div>
       {/* Flex container holds three synchronized view columns */}
-      <div className="he-flex-container">
+      <div ref={hexEditorRef} className="he-flex-container">
         {/* Left column: Memory offsets (sticky) */}
         <HexOffsetView
           offset={offset}

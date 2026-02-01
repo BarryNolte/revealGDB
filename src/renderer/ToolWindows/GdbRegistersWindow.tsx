@@ -11,10 +11,10 @@ import {
   EditSettingsModel,
   IEditCell,
 } from "@syncfusion/ej2-react-grids";
-import { Component, createRef } from "react";
+import { Component, createRef, JSX } from "react";
 import { gdbRegisters } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
-import "./GdbRegisterWindow.css";
+import "./GdbRegistersWindow.css";
 import { GdbAny } from "../../common/gdb-common";
 
 export default class GdbRegistersWindow extends Component {
@@ -50,7 +50,7 @@ export default class GdbRegistersWindow extends Component {
     hexFormat: [this.hexCheck, "Hex value is not valid"],
   };
 
-  private emptyMessageTemplate(): GdbAny {
+  private emptyMessageTemplate(): JSX.Element {
     return (
       <div className="emptyRecordTemplate">
         <span>No register data available.</span>
@@ -77,11 +77,11 @@ export default class GdbRegistersWindow extends Component {
     });
   }
 
-  override componentWillUnmount(): void {
-    this.gridRef?.current?.columns.forEach((item) => {
-      console.log(`Register Columns: ${item}`);
-    });
-  }
+  // override componentWillUnmount(): void {
+  //   this.gridRef?.current?.columns.forEach((item) => {
+  //     console.log(`Register Columns: ${item}`);
+  //   });
+  // }
 
   private queryCellInfo = (args: QueryCellInfoEventArgs): void => {
     if (args.column?.field === "value" && (args.data as gdbRegisters).changed === true) {
@@ -93,12 +93,14 @@ export default class GdbRegistersWindow extends Component {
     window.ipcToMain.sendGdbCommand(`set $${(args.rowData as gdbRegisters)?.name} = ${args.value}`);
   };
 
-  override render() {
+  override render(): JSX.Element {
     return (
       <div className="full-size flex-container">
         <GridComponent
           ref={this.gridRef}
           emptyRecordTemplate={this.emptyMessageTemplate}
+          height="100%"
+          rowHeight={16}
           className="flex-item"
           queryCellInfo={this.queryCellInfo}
           allowResizing={true}
@@ -108,7 +110,6 @@ export default class GdbRegistersWindow extends Component {
           allowFiltering={false}
           editSettings={this.editSettings}
           gridLines="Both"
-          height="100%"
           cellSaved={this.cellSaved}
         >
           <ColumnsDirective>

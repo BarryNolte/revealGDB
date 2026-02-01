@@ -64,7 +64,7 @@ export class AboutBox extends Component<AboutProps, AboutState> {
     );
   };
 
-  override render() {
+  override render(): JSX.Element {
     return (
       <div className="AboutBoxTarget">
         <DialogComponent

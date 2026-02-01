@@ -7,7 +7,7 @@ import {
   RecordDoubleClickEventArgs,
   Resize,
 } from "@syncfusion/ej2-react-grids";
-import { Component, createRef } from "react";
+import { Component, createRef, JSX } from "react";
 import { gdbStackFrame } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
 import "./GdbCallstackWindow.css";
@@ -43,7 +43,7 @@ export default class GdbCallStackWindow extends Component {
     });
   }
 
-  private emptyMessageTemplate(): GdbAny {
+  private emptyMessageTemplate(): JSX.Element {
     return (
       <div className="emptyRecordTemplate">
         <span>Callstack is empty.</span>
@@ -57,6 +57,8 @@ export default class GdbCallStackWindow extends Component {
         <GridComponent
           ref={this.gridRef}
           emptyRecordTemplate={this.emptyMessageTemplate}
+          height="100%"
+          rowHeight={16}
           allowResizing={true}
           allowPaging={false}
           allowSorting={false}
@@ -65,7 +67,6 @@ export default class GdbCallStackWindow extends Component {
           allowSelection={true}
           selectionSettings={{ mode: "Row", cellSelectionMode: "Flow" }}
           gridLines="Both"
-          height="100%"
           recordDoubleClick={(e: RecordDoubleClickEventArgs) => {
             window.ipcToMain.sendGdbCommand(`frame ${e.rowIndex}`);
           }}

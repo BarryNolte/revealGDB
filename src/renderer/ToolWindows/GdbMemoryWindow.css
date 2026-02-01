@@ -1,0 +1,26 @@
+#memoryWindow {
+  overflow: scroll;
+  background-color: var(--window-background);
+}
+
+.memoryControls {
+  padding: 0px 5px;
+  background-color: var(--he-header-background-color);
+  display: flex;
+  gap: 5px;
+}
+
+.memoryControlTable {
+  border-collapse: collapse;
+  border-spacing: 0px;
+}
+
+.memoryTitle {
+  color: white;
+  font-size: small;
+}
+
+.validateError {
+  color: red;
+  font-size: 12px;
+}

@@ -1,6 +1,6 @@
 import { ItemDirective, ItemsDirective, ToolbarComponent } from "@syncfusion/ej2-react-navigations";
 import { ItemModel, SplitButtonComponent } from "@syncfusion/ej2-react-splitbuttons";
-import { Component, RefObject } from "react";
+import { Component, JSX, RefObject } from "react";
 import { ConnectionManager } from "../Dialogs/ConnectionManager";
 import { Settings } from "../Dialogs/Settings";
 
@@ -62,16 +62,12 @@ export default class RevealToolbar extends Component<RevealToolbarProps, RevealT
   };
 
   override componentDidMount(): void {
-    console.log("Toolbar DidMount");
-    // this.onListWindows();
-
     window.addEventListener("update-window-list", () => {
       this.FillWindowList();
     });
   }
 
   public FillWindowList(): void {
-    console.log("Filling Window List");
     dockMenuConnector?.reconsilePanels();
     const winList = dockMenuConnector?.getPanelList();
     const menuItems: ItemModel[] = [];
@@ -86,7 +82,7 @@ export default class RevealToolbar extends Component<RevealToolbarProps, RevealT
   }
 
   private onSelectWindow = (args: GdbAny) => {
-    console.log(`Selected Window: ${args.item.properties.text}`);
+    //console.log(`Selected Window: ${args.item.properties.text}`);
     window.dispatchEvent(new CustomEvent("toggle-window", { detail: args.item.properties.text }));
   };
 
@@ -94,7 +90,7 @@ export default class RevealToolbar extends Component<RevealToolbarProps, RevealT
     dockMenuConnector?.reconsilePanels();
   };
 
-  override render() {
+  override render(): JSX.Element {
     return (
       <div className="flex-container-row">
         <ToolbarComponent id="toolbar" className="flex-item-grow">

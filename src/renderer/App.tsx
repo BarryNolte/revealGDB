@@ -1,6 +1,6 @@
 import { DockManager } from "../../node_modules/dock-spawn-ts/lib/js/DockManager.js";
 
-import { Component, createRef, RefObject } from "react";
+import { Component, createRef, JSX, RefObject } from "react";
 import { GdbAny } from "../common/gdb-common";
 
 /* Dialogs */
@@ -188,7 +188,7 @@ export default class App extends Component {
     window.dispatchEvent(new Event("update-window-list"));
   }
 
-  override render() {
+  override render(): JSX.Element {
     return (
       <div className={"main-page-container"}>
         <RevealToolbar
@@ -281,6 +281,6 @@ window.addEventListener("beforeunload", () => {
 
 window.addEventListener("save-dock-layout", () => {
   const layout = JSON.parse(dockManager.saveState());
-  console.log(layout);
+  //console.log(layout);
   window.ipcToMain.notifyMain({ command: "save-dock-layout", data: layout });
 });

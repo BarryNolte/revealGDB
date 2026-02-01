@@ -1,4 +1,4 @@
-import { Component, createRef, KeyboardEvent } from "react";
+import { Component, createRef, JSX, KeyboardEvent } from "react";
 
 import { GdbAny } from "../../common/gdb-common";
 import { CommandHistory } from "../utilities/CommandHistory";
@@ -199,7 +199,7 @@ export default class GdbCommandWindow extends Component {
     }
   }
 
-  override render() {
+  override render(): JSX.Element {
     return (
       <div className={"commandWindow full-size"}>
         <div className={"outputRow"} ref={this.outputRef} onScroll={this.onScrollHandler} />
@@ -218,6 +218,7 @@ export default class GdbCommandWindow extends Component {
             className={"inputRow"}
             ref={this.inputRef}
             type="text"
+            spellCheck={false}
             placeholder={"Type your command here..."}
             onKeyDown={this.onInputKeydownHandler}
             onKeyUp={this.onInputKeyupHandler}

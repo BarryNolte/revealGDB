@@ -7,38 +7,32 @@
 
 /**
  * Represents all possible values that a Local variable can hold
- * - Local[]: Array of nested Local objects for complex structures
  * - string: Simple value
  * - undefined: Uninitialized value
  */
-type LocalValue = Local[] | string | undefined;
+//type LocalValue = string;
 
 /**
  * Represents a local variable with a name and value
- * Can contain nested structures through the value property
+ * Can contain nested structures through the subLocals property
  */
 export class Local {
   name: string;
-  value: LocalValue;
+  value: string;
+  sublocals: Local[];
 
-  constructor(name: string, value?: string) {
+  constructor(name: string, value: string) {
     this.name = name;
     this.value = value;
+    this.sublocals = [];
   }
 
   /**
-   * Adds a child Local object to this Local's value array
-   * Initializes value as array if undefined
+   * Adds a child Local object to this Local's subLocals array
    * @param local The Local object to add as a child
    */
   addLocal(local: Local): void {
-    if (this.value === undefined) {
-      this.value = [];
-    }
-
-    if (Array.isArray(this.value)) {
-      this.value.push(local);
-    }
+    this.sublocals.push(local);
   }
 }
 
@@ -163,7 +157,7 @@ export class LocalsContainer {
     }
     chunks.push({ val: chunk, type: lastMaskVal }); // push the last chunk
 
-    const rootLocal: Local = new Local(name);
+    const rootLocal: Local = new Local(name, "");
     let curLocal: Local = rootLocal;
 
     const localStack: Local[] = [];
@@ -212,7 +206,7 @@ export class LocalsContainer {
           break;
         case streamType.name:
           {
-            curLocal = new Local(c.val);
+            curLocal = new Local(c.val, "");
           }
           break;
         case streamType.leftBracket:
@@ -248,12 +242,11 @@ export class LocalsContainer {
   private parseSimpleValue(name: string, value: string): Local {
     const varsRegx = /[{, ](?<name>[^=]*) = (?<value>[^,]*)[,}]/gm;
     const vars = value.matchAll(varsRegx);
-    const retValue: Local = new Local(name);
-    retValue.value = [];
+    const retValue: Local = new Local(name, "");
 
     for (const v of vars) {
-      const newLocal: Local = new Local(v.groups?.name ?? "", v.groups?.value);
-      retValue.value.push(newLocal);
+      const newLocal: Local = new Local(v.groups?.name ?? "", v.groups?.value ?? "");
+      retValue.sublocals.push(newLocal);
     }
 
     return retValue;

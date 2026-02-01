@@ -36,7 +36,7 @@ export class ConnectionManager extends Component<ConnectionManagerProps, Connect
     );
   };
 
-  override render() {
+  override render(): JSX.Element {
     return (
       <div className="ConnectionManagerTarget">
         <DialogComponent

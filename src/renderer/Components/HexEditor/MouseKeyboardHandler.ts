@@ -5,15 +5,13 @@
  */
 
 import { convertCharValue } from "./common";
+import { ArrayChangeCallback } from "./HexEditor";
 
 /** Type definition for mouse event types */
 export type MouseEventType = "Over" | "Leave" | "Click";
 
 /** Callback signature for mouse/keyboard events from view components */
 export type MouseCallback = (type: MouseEventType, value: string) => void;
-
-/** Callback signature for data change notifications */
-type ArrayChangeCallback = (index: number, value: number) => void;
 
 /** Identifier for view types (data or text) */
 type ViewType = "d" | "t";
@@ -77,7 +75,7 @@ const viewTypeInfo: Record<ViewType, ViewInfo> = {
  */
 export class MouseKeyboardHandler {
   // DOM stylesheet reference for dynamic highlighting
-  private styleSheet = document.styleSheets[0];
+  private styleSheet = new CSSStyleSheet();
   // Style rule indices for cleanup
   private dynamicRowStyleIdx?: number = undefined;
   private dynamicColStyleIdx?: number = undefined;
@@ -98,6 +96,7 @@ export class MouseKeyboardHandler {
    * @param {ArrayChangeCallback} dataChangeCallback - Optional callback for data changes
    */
   constructor(length: number, dataChangeCallback?: ArrayChangeCallback) {
+    document.adoptedStyleSheets = [this.styleSheet];
     this.datasourceLength = length;
     this.dataChangeCallback = dataChangeCallback;
   }

@@ -58,7 +58,7 @@ import "ace-builds/src-noconflict/theme-tomorrow_night_eighties";
 import "ace-builds/src-noconflict/theme-twilight";
 import "ace-builds/src-noconflict/theme-vibrant_ink";
 import "ace-builds/src-noconflict/theme-xcode";
-import { Component, createRef } from "react";
+import { Component, createRef, JSX } from "react";
 import AceEditor, { IMarker } from "react-ace";
 
 import {
@@ -391,7 +391,7 @@ export default class GdbSourceWindow extends Component<
     editor.clearSelection();
   };
 
-  override render() {
+  override render(): JSX.Element {
     const { source, fullpath, filename, line, stackMarkers } = this.state;
 
     return (

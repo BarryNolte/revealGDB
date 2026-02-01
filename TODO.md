@@ -8,13 +8,11 @@
     * Locals editing
   * Finish memory view
     * Memory editing
-  * Better Dock management (multiple source files in a Group)
-    * Better source file management
-    * Code detection for source viewer
-    * Ability to close window and bring it back
+ 
   * Cleanup menus
   * Themeing
-  * Cut/Copy/Paste
+  * Cut/Copy/Paste/drag/drop
+  * Convience variables
   * Save column widths with layout
   * "Busy" screen during connect (Probable bad idea?)
 
@@ -24,6 +22,9 @@
   * Disassembly Window
   * Tracepoints - How to insert more automatically
   * Set Next Statement from editor
+  * Better Dock management (multiple source files in a Group)
+    * Better source file management
+    * Code detection for source viewer
 
 # Project Related
   * Real Debug/Release builds
@@ -31,6 +32,10 @@
   * Product Icon
   * Install for all platforms
 
+# New Settings
+  * rowHeight for grid toolwindows
+
+~~Ability to close window and bring it back~~
 ~~About box~~
 ~~Settings page~~
 ~~Hookup register editing~~

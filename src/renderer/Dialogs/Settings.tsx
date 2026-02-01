@@ -149,7 +149,7 @@ export class Settings extends Component<SettingsProps, SettingsState> {
   };
 
   private fontSizes: string[] = ["8", "10", "11", "12", "14", "16", "18", "20"];
-  override render() {
+  override render(): JSX.Element {
     return (
       <div className="SettingsTarget">
         <DialogComponent
@@ -170,7 +170,7 @@ export class Settings extends Component<SettingsProps, SettingsState> {
                 <td className="settingsTag">Application</td>
               </tr>
               <tr>
-                <hr />
+                <td />
               </tr>
             </table>
             <table className="settingsFullWidth settingsTable">
@@ -200,7 +200,7 @@ export class Settings extends Component<SettingsProps, SettingsState> {
                 <td>Source View</td>
               </tr>
               <tr>
-                <hr />
+                <td />
               </tr>
             </table>
             <table className="settingsFullWidth settingsTable">

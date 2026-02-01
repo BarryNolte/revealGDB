@@ -298,6 +298,33 @@ export class miInterface extends EventEmitter {
           const resList: string = resChunks?.groups?.list || "";
 
           switch (resResult) {
+            case "memory":
+              {
+                const rgxMemData: RegExp =
+                  /\[\{begin="(?<begin>[^"]*)",offset="(?<offset>[^"]*)",end="(?<end>[^"]*)",contents="(?<contents>[^"]*)"\}\]/gm;
+
+                const memData = rgxMemData.exec(output);
+                console.log(memData);
+
+                const hexData = memData?.groups?.contents || "";
+                console.log(hexData);
+                const result = [];
+                for (let i = 0; i < hexData.length; i += 2) {
+                  result.push(hexData.slice(i, i + 2));
+                }
+                const dataArray = new Uint8Array(result.length);
+                result.forEach((byte, idx) => {
+                  dataArray[idx] = parseInt(byte, 16);
+                });
+
+                mainWindow.webContents.send("data-memory", {
+                  begin: memData?.groups?.["begin"],
+                  offset: memData?.groups?.["offset"],
+                  end: memData?.groups?.["end"],
+                  data: dataArray,
+                });
+              }
+              break;
             case "addr":
               {
                 const rgxMemPage: RegExp =
@@ -419,6 +446,7 @@ export class miInterface extends EventEmitter {
                     level: frameChunk.groups?.level || "",
                     func: frameChunk.groups?.func || "",
                     addr: frameChunk.groups?.addr || "",
+                    //TODO: Include ARGS??
                     args: "",
                     file: frameChunk.groups?.file || "",
                     fullName: frameChunk.groups?.fullname || "",
@@ -444,7 +472,7 @@ export class miInterface extends EventEmitter {
             case "variables":
               {
                 const lc = new LocalsContainer(resList);
-                console.log(lc.locals);
+                //console.log(lc.locals);
 
                 mainWindow.webContents.send("data-locals", lc.locals);
               }
@@ -528,12 +556,13 @@ export class miInterface extends EventEmitter {
           const core = /core="(?<core>[^"]*)"/.exec(data)?.groups?.core || undefined;
           const reason = /reason="(?<reason>[^"]*)"/.exec(data)?.groups?.reason || undefined;
 
+          console.log(
+            `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
+          );
+
           switch (reason) {
             case undefined:
               {
-                console.log(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
                 this.gdbDB.stopThreads(tid, stoppedThreads);
                 // TODO: frame is also available here, if needed
               }
@@ -541,9 +570,6 @@ export class miInterface extends EventEmitter {
             case "end-stepping-range":
             case "breakpoint-hit":
               {
-                console.log(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
                 const bph =
                   /disp="(?<disp>[^"]*)",bkptno="(?<bkptno>[^"]*)",frame={(?<frame>[^}]*)}/.exec(
                     data,
@@ -554,117 +580,21 @@ export class miInterface extends EventEmitter {
               }
               break;
             case "watchpoint-trigger":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "read-watchpoint-trigger":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "access-watchpoint-trigger":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "function-finished":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "location-reached":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "watchpoint-scope":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "exited":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "exited-normally":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "signal-received":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "solib-event":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "fork":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "vfork":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "syscall-entry":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "syscall-return":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "exec":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "no-history":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             default: {
               console.error(
                 `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
@@ -686,7 +616,6 @@ export class miInterface extends EventEmitter {
     return true;
   }
   private parseTargetStream(output: string): boolean {
-    //throw new Error(`Method not implemented. ${output}`);
     this.emit("log-error", `Target Stream: ${output}`);
     return true;
   }

@@ -10,7 +10,7 @@ import {
   //SearchSettingsModel,
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
-import { Component, createRef } from "react";
+import { Component, createRef, JSX } from "react";
 import { GdbAny } from "../../common/gdb-common";
 import {
   gdbThread,
@@ -68,7 +68,7 @@ export default class GdbThreadsWindow extends Component {
     });
   }
 
-  private emptyMessageTemplate(): GdbAny {
+  private emptyMessageTemplate(): JSX.Element {
     return (
       <div className="emptyRecordTemplate">
         <span>No thread data available.</span>
@@ -76,12 +76,14 @@ export default class GdbThreadsWindow extends Component {
     );
   }
 
-  override render() {
+  override render(): JSX.Element {
     return (
       <div className="full-size flex-container">
         <GridComponent
           ref={this.gridRef}
           emptyRecordTemplate={this.emptyMessageTemplate}
+          height="100%"
+          rowHeight={16}
           className="flex-item"
           allowResizing={true}
           allowPaging={false}
@@ -94,7 +96,6 @@ export default class GdbThreadsWindow extends Component {
           groupSettings={this.groupOptions}
           selectionSettings={this.selectionOptions}
           gridLines="Both"
-          height="100%"
         >
           <ColumnsDirective>
             <ColumnDirective

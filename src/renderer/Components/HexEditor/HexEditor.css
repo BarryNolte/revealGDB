@@ -23,20 +23,11 @@
  * - --he-cursor-color: Edit mode cursor indicator (yellowgreen)
  */
 
-/* Theme color variables - customize here for light/dark mode support */
-#root {
-  --he-text-color: white;
-  --he-header-background-color: black;
-  --he-text-background-color: #002500;
-  --he-data-changed-color: red;
-  --he-cursor-color: yellowgreen;
-}
-
 /* Main table styling - monospace font for data alignment and visual consistency */
 .he-table {
   border-collapse: collapse;
   font-family: monospace;
-  font-size: 16px;
+  font-size: 15px;
   color: var(--he-text-color);
   margin-left: 10px;
   line-height: normal;
@@ -57,13 +48,6 @@
   z-index: 101;
 }
 
-/* Header cell styling - centered text with no extra spacing */
-.he-table > thead > tr > td {
-  border-spacing: 0;
-  font-weight: normal;
-  text-align: center;
-}
-
 /* Transparent body for custom row/column highlighting via dynamic styles */
 .he-table > tbody {
   background-color: transparent;
@@ -73,6 +57,7 @@
 .he-table-header {
   background-color: var(--he-header-background-color);
   text-align: center;
+  font-size: larger;
 }
 
 /* Main container - flexbox layout holding three synchronized view columns (offset, data, text) */

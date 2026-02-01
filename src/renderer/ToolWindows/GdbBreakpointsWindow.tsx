@@ -10,7 +10,7 @@ import {
   NotifyArgs,
   Resize,
 } from "@syncfusion/ej2-react-grids";
-import { Component, createRef } from "react";
+import { Component, createRef, JSX } from "react";
 import { GdbAny } from "../../common/gdb-common";
 import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
@@ -105,12 +105,14 @@ export default class GdbBreakPointWindow extends Component {
   contextMenuItems: ContextMenuItem[] = ["Copy", "Delete"];
   editing = { allowDeleting: true };
 
-  override render() {
+  override render(): JSX.Element {
     return (
       <div className="full-size flex-container">
         <GridComponent
           className="flex-item"
           emptyRecordTemplate={this.emptyMessageTemplate}
+          height="100%"
+          rowHeight={16}
           allowResizing={true}
           allowPaging={false}
           allowSorting={false}
@@ -121,7 +123,6 @@ export default class GdbBreakPointWindow extends Component {
           ref={this.gridRef}
           gridLines="Both"
           actionBegin={this.onAction}
-          height="100%"
         >
           <ColumnsDirective>
             <ColumnDirective

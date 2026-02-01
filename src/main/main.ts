@@ -255,7 +255,7 @@ ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
       break;
     case "save-dock-layout":
       {
-        console.log("Saving: " + msg.data);
+        //TODO!: Add try/catch here to avoid partial writes
         AppSettings.setSync("gdb.gui.dockLayout", msg.data);
 
         const winPos = {
