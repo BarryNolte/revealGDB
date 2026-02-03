@@ -60,6 +60,14 @@ export type gdbBreakpoint = {
   orgloc: string;
 };
 
+export type gdbAsmRow = {
+  address: string;
+  func: string;
+  offset: string;
+  opcodes: string;
+  instruction: string;
+};
+
 /**
  *
  */

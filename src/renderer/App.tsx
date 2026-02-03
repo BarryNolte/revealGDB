@@ -18,6 +18,7 @@ import GdbMemoryWindow from "./ToolWindows/GdbMemoryWindow";
 import GdbRegistersWindow from "./ToolWindows/GdbRegistersWindow";
 import GdbSourceWindow from "./ToolWindows/GdbSourceWindow";
 import GdbThreadsWindow from "./ToolWindows/GdbThreadsWindow";
+import GdbDisassemblerWindow from "./ToolWindows/GdbDisassemblerWindow.jsx";
 import { DockMenuConnector } from "./utilities/DockMenuConnector.js";
 
 /* Dock Manager */
@@ -120,6 +121,13 @@ export default class App extends Component {
       "Registers Window",
       "wm-registers",
     );
+    dockMenuConnector.registerPanel(
+      "disassemblyWindow",
+      "Disassembly",
+      "Disassembly Window",
+      "wm-disasm",
+    );
+
     dockMenuConnector.registerPanel("commandWindow", "Command", "GDB Command Window", "wm-command");
 
     dockManager.addLayoutListener({
@@ -162,6 +170,7 @@ export default class App extends Component {
         dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Memory"));
         dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Breakpoints"));
         dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Registers"));
+        dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Disassembly"));
       }
     });
 
@@ -229,6 +238,14 @@ export default class App extends Component {
             data-panel-icon={iconRegister}
           >
             <GdbRegistersWindow />
+          </div>
+          <div
+            id="disassemblyWindow"
+            data-panel-caption="Disassembly"
+            hidden={true}
+            data-panel-icon={iconRegister}
+          >
+            <GdbDisassemblerWindow />
           </div>
           <div
             id="commandWindow"

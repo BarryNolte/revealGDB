@@ -13,6 +13,8 @@ contextBridge.exposeInMainWorld("ipcToMain", {
     ipcRenderer.on("log-message", (_event, value) => callback(value)),
   errorMessage: (callback: GdbAny) =>
     ipcRenderer.on("error-message", (_event, value) => callback(value)),
+  debugMessage: (callback: GdbAny) =>
+    ipcRenderer.on("debug-message", (_event, value) => callback(value)),
 
   // General poking of the render process from the main process
   notifyRender: (callback: GdbAny) =>
@@ -33,6 +35,8 @@ contextBridge.exposeInMainWorld("ipcToMain", {
     ipcRenderer.on("data-brkpts", (_event, value) => callback(value)),
   dataMemory: (callback: GdbAny) =>
     ipcRenderer.on("data-memory", (_event, value) => callback(value)),
+  dataDisasm: (callback: GdbAny) =>
+    ipcRenderer.on("data-disasm", (_event, value) => callback(value)),
 
   // Commands from Renderer to Main
   getSettings: () => ipcRenderer.invoke("getSettings"),
@@ -40,5 +44,6 @@ contextBridge.exposeInMainWorld("ipcToMain", {
   getVersionInfo: () => ipcRenderer.invoke("getVersionInfo"),
   sendGdbCommand: (command: string) => ipcRenderer.send("gdb-command", command),
 
+  // General poking of the main process by the render process
   notifyMain: (command: GdbAny) => ipcRenderer.send("notify-main", command),
 });

@@ -43,6 +43,10 @@ export default class GdbCommandWindow extends Component {
       this.appendMessage(message, "rowError");
     });
 
+    window.ipcToMain.debugMessage((message: string) => {
+      this.appendMessage(message, "rowDebug");
+    });
+
     if (this.historyRef.current) {
       this.historyRef.current.ondblclick = (_e: Event) => {
         if (this.historyRef.current) {

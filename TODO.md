@@ -19,6 +19,8 @@
 # New Features
   * Python Window for running python commands
   * Values on hover in source
+  * Click on function name for disassembly
+  * Thread markers in source (better with multiple source windows)
   * Disassembly Window
   * Tracepoints - How to insert more automatically
   * Set Next Statement from editor
@@ -27,10 +29,13 @@
     * Code detection for source viewer
 
 # Project Related
-  * Real Debug/Release builds
   * github workflow working
-  * Product Icon
-  * Install for all platforms
+    * Real Debug/Release builds
+    * Product Icon
+    * Install for all platforms
+      * x64, arm64 (Windows)
+      * x64, arm64 (Linux)
+      * x64, arm64 (Mac)
 
 # New Settings
   * rowHeight for grid toolwindows

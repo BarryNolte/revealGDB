@@ -70,6 +70,11 @@
   color: var(--error-text-color);
 }
 
+.rowDebug {
+  background: var(--debug-background-color);
+  color: var(--debug-text-color);
+}
+
 .commandButton {
   margin: 1px 0px 2px 1px;
   border-radius: 5px;

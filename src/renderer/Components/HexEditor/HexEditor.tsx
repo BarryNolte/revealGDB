@@ -54,7 +54,7 @@ export default function HexEditor({
 
   useEffect(() => {
     if (hexEditorRef.current) {
-      const changedElements: HTMLCollectionOf<Element> =
+      const changedElements: HTMLCollection =
         hexEditorRef.current.getElementsByClassName("he-data-changed");
 
       Array.from(changedElements).forEach((element) => {

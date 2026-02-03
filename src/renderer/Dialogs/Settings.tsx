@@ -166,77 +166,85 @@ export class Settings extends Component<SettingsProps, SettingsState> {
         >
           <div className="settingsContainer">
             <table className="settingsFullWidth settingsTableHeader">
-              <tr>
-                <td className="settingsTag">Application</td>
-              </tr>
-              <tr>
-                <td />
-              </tr>
+              <thead>
+                <tr>
+                  <td className="settingsTag">Application</td>
+                </tr>
+                <tr>
+                  <td />
+                </tr>
+              </thead>
             </table>
             <table className="settingsFullWidth settingsTable">
-              <tr>
-                <td>Theme:</td>
-                <td>
-                  <DropDownListComponent
-                    ref={this.appThemeRef}
-                    className="settingsDropdown"
-                    select={this.onSelectAppTheme}
-                    dataSource={themes}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td colSpan={2}>
-                  <CheckBoxComponent
-                    ref={this.appShowDebugInfoRef}
-                    label="Show debug info in terminal"
-                    change={this.onChangeShowDebugInfo}
-                  />
-                </td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td>Theme:</td>
+                  <td>
+                    <DropDownListComponent
+                      ref={this.appThemeRef}
+                      className="settingsDropdown"
+                      select={this.onSelectAppTheme}
+                      dataSource={themes}
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td colSpan={2}>
+                    <CheckBoxComponent
+                      ref={this.appShowDebugInfoRef}
+                      label="Show debug info in terminal"
+                      change={this.onChangeShowDebugInfo}
+                    />
+                  </td>
+                </tr>
+              </tbody>
             </table>
             <table className="settingsFullWidth settingsTableHeader">
-              <tr>
-                <td>Source View</td>
-              </tr>
-              <tr>
-                <td />
-              </tr>
+              <thead>
+                <tr>
+                  <td>Source View</td>
+                </tr>
+                <tr>
+                  <td />
+                </tr>
+              </thead>
             </table>
             <table className="settingsFullWidth settingsTable">
-              <tr>
-                <td>Theme:</td>
-                <td>
-                  <DropDownListComponent
-                    ref={this.editorThemeRef}
-                    className="settingsDropdown"
-                    select={this.onSelectEditorTheme}
-                    dataSource={editorThemes.keys().toArray()}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Font:</td>
-                <td>
-                  <DropDownListComponent
-                    ref={this.editorFontsRef}
-                    className="settingsDropdown"
-                    dataSource={this.state.fontNames}
-                    select={this.onSelectEditorFont}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Font Size:</td>
-                <td>
-                  <DropDownListComponent
-                    ref={this.editorFontSizeRef}
-                    className="settingsDropdown"
-                    dataSource={this.fontSizes}
-                    select={this.onSelectEditorFontSize}
-                  />
-                </td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td>Theme:</td>
+                  <td>
+                    <DropDownListComponent
+                      ref={this.editorThemeRef}
+                      className="settingsDropdown"
+                      select={this.onSelectEditorTheme}
+                      dataSource={editorThemes.keys().toArray()}
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Font:</td>
+                  <td>
+                    <DropDownListComponent
+                      ref={this.editorFontsRef}
+                      className="settingsDropdown"
+                      dataSource={this.state.fontNames}
+                      select={this.onSelectEditorFont}
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Font Size:</td>
+                  <td>
+                    <DropDownListComponent
+                      ref={this.editorFontSizeRef}
+                      className="settingsDropdown"
+                      dataSource={this.fontSizes}
+                      select={this.onSelectEditorFontSize}
+                    />
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
         </DialogComponent>

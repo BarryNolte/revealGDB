@@ -150,6 +150,9 @@ app.on("ready", () => {
   gdbInterface.on("error-stream", (line: string) => {
     mainWindow.webContents.send("error-message", line);
   });
+  gdbInterface.on("debug-stream", (line: string) => {
+    mainWindow.webContents.send("debug-message", line);
+  });
 
   let needToRunStartupCmds = true;
   // When we stop, then run all the stop commands

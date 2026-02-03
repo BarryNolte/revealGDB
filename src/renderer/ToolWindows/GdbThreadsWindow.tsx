@@ -7,7 +7,6 @@ import {
   GroupSettingsModel,
   Inject,
   Resize,
-  //SearchSettingsModel,
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
 import { Component, createRef, JSX } from "react";
@@ -26,13 +25,7 @@ export default class GdbThreadsWindow extends Component {
     mode: "Row",
     type: "Single",
   };
-  // const toolbarOptions: ToolbarItems[] = ["Search"];
-  // const searchOptions: SearchSettingsModel = {
-  //   fields: ["frame", "addr", "file", "fullName", "groupId", "id", "name"],
-  //   ignoreCase: true,
-  //   key: "",
-  //   operator: "contains",
-  // };
+
   private groupOptions: GroupSettingsModel = {
     columns: ["groupId"],
     showDropArea: false,
@@ -64,6 +57,11 @@ export default class GdbThreadsWindow extends Component {
         this.gridRef.current.setProperties({
           dataSource: this.gridRef.current.dataSource as object[],
         });
+
+        this.gridRef.current?.autoFitColumns(
+          ["active", "id", "details", "frame", "state", "name", "targetId"],
+          0,
+        );
       }
     });
   }
@@ -87,12 +85,9 @@ export default class GdbThreadsWindow extends Component {
           className="flex-item"
           allowResizing={true}
           allowPaging={false}
-          //allowSorting={false}
           allowGrouping={true}
           showColumnMenu={true}
           allowFiltering={false}
-          // toolbar={toolbarOptions}
-          // searchSettings={searchOptions}
           groupSettings={this.groupOptions}
           selectionSettings={this.selectionOptions}
           gridLines="Both"

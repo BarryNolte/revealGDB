@@ -17,6 +17,8 @@
 
 :root {
   --window-background: #606060;
+  --debug-text-color: lightblue;
+  --debug-background-color: blue;
   --error-text-color: #f0f0f0;
   --error-background-color: #ff3d3d;
   --console-text-color: rgba(0, 255, 0, 0.85);

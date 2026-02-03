@@ -1,4 +1,3 @@
-//import { AppSettings } from '../../main';
 import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector";
 import { ChildProcess, spawn } from "child_process";
 

@@ -1,8 +1,8 @@
 //import { gdbConnectorWsl } from "./gdb-connector/gdb-connector-wsl";
 import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector/gdb-connector";
 import { EventEmitter } from "events";
-import { gdbBreakpoint, gdbStateDatabase } from "./gdb-state-database/gdbStateDatabase";
-import { mainWindow } from "../main";
+import { gdbAsmRow, gdbBreakpoint, gdbStateDatabase } from "./gdb-state-database/gdbStateDatabase";
+import { AppSettings, mainWindow } from "../main";
 import { GdbAny } from "../../common/gdb-common";
 import { LocalsContainer } from "./gdb-parsers/gdb-locals";
 import { gdbConnectorIdfOnWsl } from "./gdb-connector/gdb-connector-idf-on-wsl";
@@ -17,6 +17,7 @@ export class miInterface extends EventEmitter {
   private static lnum: number = 0;
   private conn: GdbConnector | null = null;
   readonly gdbDB: gdbStateDatabase = new gdbStateDatabase();
+  private streamSave: string[] = [];
 
   constructor() {
     super();
@@ -31,8 +32,19 @@ export class miInterface extends EventEmitter {
     });
 
     this.conn.on("gdb-data", (args: OutputAvailableEventArgs) => {
-      console.log(`GDB Data (${miInterface.lnum++}): ${args.Output}`);
-      const lines = args.Output.split("\n");
+      console.log(`GDB Data (${miInterface.lnum++}): ${args.Output} ${args.Output.endsWith("\n")}`);
+      if (!args.Output.endsWith("\n")) {
+        this.streamSave.push(args.Output);
+        return;
+      }
+      let totalStream = "";
+      this.streamSave.forEach((s) => {
+        totalStream += s;
+      });
+      this.streamSave = [];
+      totalStream += args.Output;
+
+      const lines = totalStream.split("\n");
       lines.forEach(async (line: string) => {
         try {
           await this.parseRawOutput(line);
@@ -61,6 +73,9 @@ export class miInterface extends EventEmitter {
   }
 
   send(data: string): void {
+    if (AppSettings.getSync("gdb.gui.showDebugInfo") as boolean) {
+      this.emit("debug-stream", data);
+    }
     this.conn?.Send(data);
   }
 
@@ -177,10 +192,8 @@ export class miInterface extends EventEmitter {
             th: this.gdbDB.threads,
             grp: this.gdbDB.threadGroups,
           });
-          throw new Error("Method not implemented.");
         }
         break;
-
       case "thread-created":
         {
           const idChunks = /^id="(?<id>[^"]*)",group-id="(?<grpid>[^"]*)"$/.exec(data);
@@ -298,6 +311,41 @@ export class miInterface extends EventEmitter {
           const resList: string = resChunks?.groups?.list || "";
 
           switch (resResult) {
+            case "asm_insns":
+              {
+                const rgxAsmData: RegExp = /asm_insns=\[(?<asm_list>.*)]$/gm;
+                const asmData = rgxAsmData.exec(output);
+                const asmList = asmData?.groups?.["asm_list"];
+
+                const rgxAsmRow: RegExp =
+                  /(?<asm_row>address="(?<address>[^"]*)",func-name="(?<func>[^"]*)",offset="(?<offset>[^"]*)",opcodes="(?<opcodes>[^"]*)",inst="(?<inst>[^"]*)")/gm;
+                const asmRows = asmList?.matchAll(rgxAsmRow);
+
+                const asmRowsText: gdbAsmRow[] = [];
+
+                asmRows?.forEach((asmRow) => {
+                  console.log(asmRow);
+                  const address = asmRow.groups?.["address"] || "";
+                  const func = asmRow.groups?.["func"] || "";
+                  const offset = asmRow.groups?.["offset"] || "";
+                  const opcodes = asmRow.groups?.["opcodes"] || "";
+                  const inst = asmRow.groups?.["inst"] || "";
+                  //const ops = (asmRow.groups?.["inst"] || "").split("\\t");
+
+                  const row: gdbAsmRow = {
+                    address: address,
+                    func: func,
+                    offset: offset,
+                    opcodes: opcodes,
+                    instruction: inst,
+                  };
+
+                  asmRowsText.push(row);
+                });
+
+                mainWindow.webContents.send("data-disasm", asmRowsText);
+              }
+              break;
             case "memory":
               {
                 const rgxMemData: RegExp =
@@ -325,24 +373,25 @@ export class miInterface extends EventEmitter {
                 });
               }
               break;
-            case "addr":
-              {
-                const rgxMemPage: RegExp =
-                  /addr="(?<addr>[^"]*)",nr-bytes="(?<nrBytes>[^"]*)",total-bytes="(?<totalBytes>[^"]*)",next-row="(?<nextRow>[^"]*)",prev-row="(?<prevRow>[^"]*)",next-page="(?<nextPage>[^"]*)",prev-page="(?<prevPage>[^"]*)"/g;
-                const rgxMemData: RegExp =
-                  /\{addr="(?<addr>[^"]*)",data=\[(?<data>[^\]]*)\],ascii="(?<ascii>................)"}/g;
-                const memPage = rgxMemPage.exec(output);
-                const memData = resList.replaceAll('\\"', '"').matchAll(rgxMemData);
-                const memList: ({ [key: string]: string } | undefined)[] = [];
-                memData.forEach((md) => {
-                  memList.push(md.groups);
-                });
-                mainWindow.webContents.send("data-memory", {
-                  page: memPage?.groups,
-                  memList: memList,
-                });
-              }
-              break;
+            // deprecated
+            // case "addr":
+            //   {
+            //     const rgxMemPage: RegExp =
+            //       /addr="(?<addr>[^"]*)",nr-bytes="(?<nrBytes>[^"]*)",total-bytes="(?<totalBytes>[^"]*)",next-row="(?<nextRow>[^"]*)",prev-row="(?<prevRow>[^"]*)",next-page="(?<nextPage>[^"]*)",prev-page="(?<prevPage>[^"]*)"/g;
+            //     const rgxMemData: RegExp =
+            //       /\{addr="(?<addr>[^"]*)",data=\[(?<data>[^\]]*)\],ascii="(?<ascii>................)"}/g;
+            //     const memPage = rgxMemPage.exec(output);
+            //     const memData = resList.replaceAll('\\"', '"').matchAll(rgxMemData);
+            //     const memList: ({ [key: string]: string } | undefined)[] = [];
+            //     memData.forEach((md) => {
+            //       memList.push(md.groups);
+            //     });
+            //     mainWindow.webContents.send("data-memory", {
+            //       page: memPage?.groups,
+            //       memList: memList,
+            //     });
+            //   }
+            //   break;
             case "BreakpointTable":
               {
                 // const rgxBpHdr: RegExp = /nr_rows="(?<nr_rows>[^"]*)",nr_cols="(?<nr_cols>[^"]*)",hdr=\[(?<hdr>[^\]]*)\],body/g;

@@ -1,0 +1,59 @@
+#disassemblyWindow {
+  overflow: scroll;
+  font-family: monospace;
+  background-color: var(--window-background);
+  color: var(--console-text-color);
+}
+
+.disasm-function-group-header {
+  color: "gray";
+  margin-left: "10px";
+}
+
+.disasmAddress {
+  color: black;
+  font-weight: bolder;
+}
+
+.disasmOffset {
+  color: pink;
+}
+
+.disasmOpcodes {
+  color: cornflowerblue;
+  font-weight: bolder;
+}
+
+.instruction {
+  width: 60px;
+  color: green;
+  font-weight: bold;
+}
+
+.disasmPointerTo {
+  color: blue;
+  font-weight: 900;
+}
+
+.disasmImm32 {
+  color: chocolate;
+  background-color: aliceblue;
+}
+
+.op1 {
+  color: blue;
+}
+
+.op2 {
+  color: red;
+}
+
+.op3 {
+  background-color: black;
+  color: yellow;
+}
+
+.op4 {
+  background-color: red;
+  color: yellow;
+}

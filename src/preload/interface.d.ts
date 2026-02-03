@@ -2,6 +2,7 @@ export interface IElectronAPI {
   consoleMessage: (message: GdbAny) => void;
   logMessage: (message: GdbAny) => void;
   errorMessage: (message: GdbAny) => void;
+  debugMessage: (message: GdbAny) => void;
   notifyRender: (command: GdbAny) => void;
 
   dataRegisters: (data: GdbAny) => void;
@@ -11,6 +12,7 @@ export interface IElectronAPI {
   dataThreads: (data: GdbAny) => void;
   dataBrkPts: (data: GdbAny) => void;
   dataMemory: (data: GdbAny) => void;
+  dataDisasm: (data: GdbAny) => void;
 
   getSettings: () => GdbAny;
   getSystemFonts: () => Promise<string[]>;
