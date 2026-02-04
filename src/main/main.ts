@@ -52,7 +52,6 @@ app.on("ready", () => {
   /* END DEBUG */
 
   getSystemFonts().then((fontArray: string[]) => {
-    console.log(fontArray);
     fontArray.forEach((fontFile) => {
       fs.readFile(fontFile).then((fileBuffer) => {
         try {
@@ -75,8 +74,8 @@ app.on("ready", () => {
   gdbAppInfo.set("v8 Version", process.versions.v8);
   gdbAppInfo.set("System Version", process.getSystemVersion());
   gdbAppInfo.set("Package Versions", process.versions);
-  console.log("Version Info\n------------");
-  console.log(gdbAppInfo);
+  //console.log("Version Info\n------------");
+  //console.log(gdbAppInfo);
 
   mainWindow = new BrowserWindow({
     webPreferences: {
@@ -103,6 +102,7 @@ app.on("ready", () => {
     });
   }
 
+  //TODO!: Wait for GDB to be ready before loading the UI (Debug ONLY)
   wait(5000);
 
   let devUrl = process.env.ELECTRON_RENDERER_URL;
@@ -159,7 +159,7 @@ app.on("ready", () => {
   gdbInterface.on("gdb-stopped", async () => {
     if (needToRunStartupCmds) {
       needToRunStartupCmds = false;
-      console.error("GDB is idle (once)");
+      //console.error("GDB is idle (once)");
       const ros: string[] = (await AppSettings.get("gdb.run.onStartup")) as string[];
       console.log("** ON STARTUP COMMANDS **");
       ros?.forEach((ros: string) => {

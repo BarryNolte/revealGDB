@@ -99,14 +99,50 @@ export default class GdbThreadsWindow extends Component {
               isPrimaryKey={true}
               textAlign="Left"
               autoFit={true}
+              clipMode="EllipsisWithTooltip"
             />
-            <ColumnDirective field="groupId" headerText="Group Id" autoFit={true} />
-            <ColumnDirective field="id" headerText="Id" autoFit={true} />
-            <ColumnDirective field="details" headerText="Details" autoFit={true} />
-            <ColumnDirective field="frame" headerText="Frame" autoFit={true} />
-            <ColumnDirective field="state" headerText="State" autoFit={true} />
-            <ColumnDirective field="name" headerText="Name" autoFit={true} />
-            <ColumnDirective field="targetId" headerText="Target Id" autoFit={true} />
+            <ColumnDirective
+              field="groupId"
+              headerText="Group Id"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="id"
+              headerText="Id"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="details"
+              headerText="Details"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="frame"
+              headerText="Frame"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="state"
+              headerText="State"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="name"
+              headerText="Name"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="targetId"
+              headerText="Target Id"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
           </ColumnsDirective>
           <Inject services={[Resize, ColumnMenu, Group]} />
         </GridComponent>

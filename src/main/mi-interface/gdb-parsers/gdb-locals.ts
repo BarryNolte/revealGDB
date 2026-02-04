@@ -20,18 +20,35 @@ export class Local {
   name: string;
   value: string;
   sublocals: Local[];
+  fullpath: string;
 
-  constructor(name: string, value: string) {
+  constructor(name: string, value: string, parentFullpath?: string) {
     this.name = name;
     this.value = value;
     this.sublocals = [];
+    // Set fullpath based on whether there's a parent
+    // Skip anonymous markers in the path - they should be transparent to the fullpath
+    if (name.startsWith(LocalsContainer.anonMarker)) {
+      this.fullpath = parentFullpath || name;
+    } else {
+      this.fullpath = parentFullpath ? `${parentFullpath}.${name}` : name;
+    }
   }
 
   /**
    * Adds a child Local object to this Local's subLocals array
+   * Updates the child's fullpath to include this local's path
+   * Anonymous markers are not included in the fullpath
    * @param local The Local object to add as a child
    */
   addLocal(local: Local): void {
+    // Recalculate the child's fullpath based on this local's fullpath
+    // Skip anonymous markers in the path - they should be transparent to the fullpath
+    if (local.name.startsWith(LocalsContainer.anonMarker)) {
+      local.fullpath = this.fullpath;
+    } else {
+      local.fullpath = `${this.fullpath}.${local.name}`;
+    }
     this.sublocals.push(local);
   }
 }
@@ -206,7 +223,9 @@ export class LocalsContainer {
           break;
         case streamType.name:
           {
-            curLocal = new Local(c.val, "");
+            // Get the parent's fullpath if there's one on the stack
+            const parentFullpath = topOfStack()?.fullpath;
+            curLocal = new Local(c.val, "", parentFullpath);
           }
           break;
         case streamType.leftBracket:
@@ -245,7 +264,11 @@ export class LocalsContainer {
     const retValue: Local = new Local(name, "");
 
     for (const v of vars) {
-      const newLocal: Local = new Local(v.groups?.name ?? "", v.groups?.value ?? "");
+      const newLocal: Local = new Local(
+        v.groups?.name ?? "",
+        v.groups?.value ?? "",
+        retValue.fullpath,
+      );
       retValue.sublocals.push(newLocal);
     }
 

@@ -21,7 +21,7 @@ export default class GdbLocalsWindow extends Component {
     allowAdding: false,
     allowDeleting: false,
     showConfirmDialog: false,
-    mode: "Cell",
+    mode: "Batch",
   };
 
   private editParams: IEditCell = {
@@ -37,6 +37,8 @@ export default class GdbLocalsWindow extends Component {
         dataSource: data as object[],
       });
     });
+
+    this.treeRef.current?.autoFitColumns(["name", "value"]);
   }
 
   private emptyMessageTemplate(): JSX.Element {
@@ -48,8 +50,7 @@ export default class GdbLocalsWindow extends Component {
   }
 
   private cellSaved = (args: CellSaveArgs) => {
-    console.log("Cell Saved:", JSON.stringify(args));
-    //window.ipcToMain.sendGdbCommand(`set $${(args.rowData as gdbRegisters)?.name} = ${args.value}`);
+    window.ipcToMain.sendGdbCommand(`set var ${(args.rowData as GdbAny).fullpath} = ${args.value}`);
   };
 
   override render(): JSX.Element {
@@ -92,6 +93,13 @@ export default class GdbLocalsWindow extends Component {
               allowEditing={true}
               clipMode="EllipsisWithTooltip"
               edit={this.editParams}
+            ></ColumnDirective>
+            <ColumnDirective
+              field="fullpath"
+              headerText="Full Path"
+              allowEditing={false}
+              clipMode="EllipsisWithTooltip"
+              visible={false}
             ></ColumnDirective>
           </ColumnsDirective>
           <Inject services={[Resize, ColumnMenu, Edit]} />

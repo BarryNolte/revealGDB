@@ -1,11 +1,12 @@
-//import hljs from "highlight.js";
 import { readFile } from "fs/promises";
-import { GdbAny } from "../../../common/gdb-common";
+import EventEmitter from "events";
 
-export class gdbSourceFileCache {
+export class gdbSourceFileCache extends EventEmitter {
   private sourceFiles: Map<string, string> = new Map<string, string>();
 
-  constructor() {}
+  constructor() {
+    super();
+  }
 
   hasSourceFile(file: string): boolean {
     return this.sourceFiles.has(file);
@@ -21,7 +22,7 @@ export class gdbSourceFileCache {
         this.sourceFiles.set(file, data);
         srcHtml = data;
       } catch (ex) {
-        console.error(`Error reading file: ${file} : ${ex}`);
+        this.emit("error-stream", `Error reading file: ${file} : ${ex}`);
       }
     } else {
       srcHtml = this.sourceFiles.get(file) || "";
@@ -34,7 +35,7 @@ export class gdbSourceFileCache {
     return srcHtml;
   }
 
-  dump(): GdbAny {
+  dump(): void {
     this.sourceFiles.keys().forEach((file) => {
       console.log(`${this.sourceFiles.get(file)?.length.toString().padStart(6, " ")} => ${file}`);
     });

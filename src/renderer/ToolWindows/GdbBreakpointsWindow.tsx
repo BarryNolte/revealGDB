@@ -45,6 +45,25 @@ export default class GdbBreakPointWindow extends Component {
         this.gridRef.current.setProperties({
           dataSource: dataList,
         });
+
+        this.gridRef.current?.autoFitColumns(
+          [
+            "enabled",
+            "number",
+            "addr",
+            "func",
+            "file",
+            "line",
+            "times",
+            "installed",
+            "fullName",
+            "tg",
+            "orgloc",
+            "type",
+            "disp",
+          ],
+          0,
+        );
       }
     });
   }
@@ -133,6 +152,7 @@ export default class GdbBreakPointWindow extends Component {
               textAlign="Left"
               showColumnMenu={false}
               width="55px"
+              clipMode="EllipsisWithTooltip"
             />
             <ColumnDirective
               field="number"
@@ -141,18 +161,75 @@ export default class GdbBreakPointWindow extends Component {
               textAlign="Left"
               showColumnMenu={false}
               width="35px"
+              clipMode="EllipsisWithTooltip"
             />
-            <ColumnDirective field="addr" headerText="Address" autoFit={true} />
-            <ColumnDirective field="func" headerText="Function" autoFit={true} />
-            <ColumnDirective field="file" headerText="File" autoFit={true} />
-            <ColumnDirective field="line" headerText="Line" autoFit={true} width="35px" />
-            <ColumnDirective field="times" headerText="Times" autoFit={true} />
-            <ColumnDirective field="installed" headerText="Installed" autoFit={true} />
-            <ColumnDirective field="fullName" headerText="Full Path" autoFit={true} />
-            <ColumnDirective field="tg" headerText="Thread Group" autoFit={true} />
-            <ColumnDirective field="orgloc" headerText="Original Location" autoFit={true} />
-            <ColumnDirective field="disp" headerText="Display" autoFit={true} />
-            <ColumnDirective field="type" headerText="Type" autoFit={true} />
+            <ColumnDirective
+              field="addr"
+              headerText="Address"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="func"
+              headerText="Function"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="file"
+              headerText="File"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="line"
+              headerText="Line"
+              autoFit={true}
+              width="35px"
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="times"
+              headerText="Times"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="installed"
+              headerText="Installed"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="fullName"
+              headerText="Full Path"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="tg"
+              headerText="Thread Group"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="orgloc"
+              headerText="Original Location"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="disp"
+              headerText="Display"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="type"
+              headerText="Type"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
           </ColumnsDirective>
           <Inject services={[Resize, ColumnMenu, ContextMenu]} />
         </GridComponent>

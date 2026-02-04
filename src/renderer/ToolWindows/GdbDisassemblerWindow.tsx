@@ -109,6 +109,7 @@ function GdbDisassemblerWindow(): JSX.Element {
             isPrimaryKey={true}
             textAlign="Left"
             autoFit={true}
+            clipMode="EllipsisWithTooltip"
             template={(props: GdbAny) => <span className="disasmAddress">{props!.address}</span>}
           />
           <ColumnDirective field="func" headerText="Function" autoFit={true} />
@@ -116,6 +117,7 @@ function GdbDisassemblerWindow(): JSX.Element {
             field="offset"
             headerText="Offset"
             autoFit={true}
+            clipMode="EllipsisWithTooltip"
             template={(props: GdbAny) => <span className="disasmOffset">{props!.offset}</span>}
           />
           <ColumnDirective field="opcodes" headerText="Opcodes" autoFit={true} />
@@ -123,6 +125,7 @@ function GdbDisassemblerWindow(): JSX.Element {
             field="instruction"
             headerText="Instructions"
             autoFit={true}
+            clipMode="EllipsisWithTooltip"
             template={instructionsTemplate}
           />
         </ColumnsDirective>

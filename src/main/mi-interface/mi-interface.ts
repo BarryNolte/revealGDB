@@ -32,7 +32,13 @@ export class miInterface extends EventEmitter {
     });
 
     this.conn.on("gdb-data", (args: OutputAvailableEventArgs) => {
-      console.log(`GDB Data (${miInterface.lnum++}): ${args.Output} ${args.Output.endsWith("\n")}`);
+      if (AppSettings.getSync("gdb.gui.showDebugInfo") as boolean) {
+        this.emit(
+          "debug-stream",
+          `GDB Data (${miInterface.lnum++}): ${args.Output} ${args.Output.endsWith("\n")}`,
+        );
+      }
+
       if (!args.Output.endsWith("\n")) {
         this.streamSave.push(args.Output);
         return;
@@ -49,7 +55,8 @@ export class miInterface extends EventEmitter {
         try {
           await this.parseRawOutput(line);
         } catch (ex) {
-          console.error(
+          this.emit(
+            "error-stream",
             `\n*************************************\nEXCEPTION: ${ex}\n*************************************\n`,
           );
         }

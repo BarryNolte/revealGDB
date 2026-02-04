@@ -39,6 +39,11 @@ export default class GdbCallStackWindow extends Component {
         this.gridRef.current.setProperties({
           dataSource: dataList,
         });
+
+        this.gridRef.current?.autoFitColumns(
+          ["active", "level", "func", "addr", "file", "fullName", "line", "from", "args", "arch"],
+          0,
+        );
       }
     });
   }
@@ -79,15 +84,56 @@ export default class GdbCallStackWindow extends Component {
               isPrimaryKey={true}
               textAlign="Left"
               autoFit={true}
+              clipMode="EllipsisWithTooltip"
             />
-            <ColumnDirective field="func" headerText="Function" autoFit={true} />
-            <ColumnDirective field="addr" headerText="Address" autoFit={true} />
-            <ColumnDirective field="file" headerText="File" autoFit={true} />
-            <ColumnDirective field="fullName" headerText="Full Path" autoFit={true} />
-            <ColumnDirective field="line" headerText="Line" autoFit={true} />
-            <ColumnDirective field="from" headerText="From" autoFit={true} />
-            <ColumnDirective field="args" headerText="Arguments" autoFit={true} />
-            <ColumnDirective field="arch" headerText="Architecture" autoFit={true} />
+            <ColumnDirective
+              field="func"
+              headerText="Function"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="addr"
+              headerText="Address"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="file"
+              headerText="File"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="fullName"
+              headerText="Full Path"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="line"
+              headerText="Line"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="from"
+              headerText="From"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="args"
+              headerText="Arguments"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="arch"
+              headerText="Architecture"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
           </ColumnsDirective>
           <Inject services={[Resize, ColumnMenu]} />
         </GridComponent>

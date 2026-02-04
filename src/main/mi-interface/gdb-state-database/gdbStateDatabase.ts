@@ -1,3 +1,4 @@
+import { EventEmitter } from "stream";
 import { gdbSourceFileCache } from "./gdbSourceFileCache";
 
 export type gdbFeature = {
@@ -71,7 +72,7 @@ export type gdbAsmRow = {
 /**
  *
  */
-export class gdbStateDatabase {
+export class gdbStateDatabase extends EventEmitter {
   readonly threadGroups: Map<string, gdbThreadGroup> = new Map<string, gdbThreadGroup>();
   readonly threads: Map<string, gdbThread> = new Map<string, gdbThread>();
   readonly registers: Map<string, gdbRegisters> = new Map<string, gdbRegisters>();
@@ -82,7 +83,9 @@ export class gdbStateDatabase {
 
   readonly gdbSrcFileCache: gdbSourceFileCache = new gdbSourceFileCache();
 
-  constructor() {}
+  constructor() {
+    super();
+  }
 
   // Source Files
   hasSourceFile(file: string): boolean {
@@ -100,10 +103,16 @@ export class gdbStateDatabase {
     this.stackFrames.push(frame);
   }
   setActiveFrame(af: number): void {
-    this.stackFrames.forEach((sf: gdbStackFrame) => {
+    if (af < 0 || af >= this.stackFrames.length) {
+      return;
+    }
+
+    this.stackFrames.forEach((sf: gdbStackFrame, idx) => {
       sf.active = false;
+      if (af == idx) {
+        sf.active = true;
+      }
     });
-    this.stackFrames[af].active = true;
   }
   // Breakpoints
   clearBreakpoints(): void {
@@ -262,7 +271,10 @@ export class gdbStateDatabase {
         });
       });
     } else {
-      console.error(`Unknown stoppedThreads value, tid: ${tid} stoppedThreads: ${stoppedThreads}`);
+      this.emit(
+        "error-stream",
+        `Unknown stoppedThreads value, tid: ${tid} stoppedThreads: ${stoppedThreads}`,
+      );
     }
   }
 
@@ -278,7 +290,7 @@ export class gdbStateDatabase {
         });
       });
     } else {
-      console.error(`Unknown tid value, tid: ${tid}`);
+      this.emit("error-stream", `Unknown tid value, tid: ${tid}`);
     }
   }
 

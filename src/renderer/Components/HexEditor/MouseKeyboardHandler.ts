@@ -148,7 +148,6 @@ export class MouseKeyboardHandler {
     // Determine view type from element ID prefix
     const t = this.savedElementForEdit.id.charAt(0);
     if (t !== "d" && t !== "t") {
-      console.error(`Invalid element ID: ${this.savedElementForEdit.id}`);
       return;
     }
     const vt = viewTypeInfo[t as ViewType];
@@ -237,7 +236,6 @@ export class MouseKeyboardHandler {
 
     const index = this.parseIndexFromId(id);
     if (index === null) {
-      console.error(`Failed to parse index from ID: ${id}`);
       return;
     }
 
@@ -266,7 +264,6 @@ export class MouseKeyboardHandler {
     if (this.savedElementForEdit) {
       const t = this.savedElementForEdit.id.charAt(0);
       if (t !== "d" && t !== "t") {
-        console.error(`Invalid element ID: ${this.savedElementForEdit.id}`);
         return;
       }
       const vt = viewTypeInfo[t as ViewType];

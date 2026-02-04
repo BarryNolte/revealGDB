@@ -73,6 +73,8 @@ export default class GdbRegistersWindow extends Component {
         this.gridRef.current.setProperties({
           dataSource: dataList,
         });
+
+        this.gridRef.current?.autoFitColumns(["name", "value"], 0);
       }
     });
   }
@@ -121,6 +123,7 @@ export default class GdbRegistersWindow extends Component {
               minWidth={100}
               allowEditing={false}
               isPrimaryKey={true}
+              clipMode="EllipsisWithTooltip"
             />
             <ColumnDirective
               field="value"
