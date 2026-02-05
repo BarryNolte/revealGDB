@@ -9,6 +9,7 @@
   * Disassembly Window
     * UI for picking what to disassemble
     * Highlight registers?
+    * "Show Disassembly" button working in source window
     * Window icon
   * Cleanup menus
   * Convience variables
@@ -16,9 +17,6 @@
   * "Busy" screen during connect (Probable bad idea?)
 
 # Bugs
-  * BP's show on all files at the same line
-  * BP delete/enable/disable needs reformatting
-  * Errors are echo'd to normal output stream
 
 # New Features
   * Python Window for running python commands

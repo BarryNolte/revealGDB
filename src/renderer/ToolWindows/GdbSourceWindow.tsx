@@ -63,7 +63,7 @@ import AceEditor, { IMarker } from "react-ace";
 
 import {
   gdbBreakpoint,
-  gdbThread,
+  //gdbThread,
 } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { gdbShowSourceInfo } from "../../main/mi-interface/mi-interface";
 
@@ -142,8 +142,8 @@ export const editorModes: Map<string, string> = new Map<string, string>([
 
 ace.config.setModuleUrl("../../node_modules", "ace-builds"); // Set base path for ace
 
-type breakpointMarker = { line: number; type: string };
-type threadMarker = { line: number; title: string; path: string };
+type breakpointMarker = { line: number; type: string; file: string };
+//type threadMarker = { line: number; title: string; file: string };
 
 interface GdbSourceWindowState {
   source: string;
@@ -152,8 +152,6 @@ interface GdbSourceWindowState {
   line: string;
   stackMarkers: IMarker[];
   currentMarker: number;
-  breakpoints: breakpointMarker[];
-  threads: threadMarker[];
   theme: string;
   mode: string;
   fontSize: number;
@@ -171,6 +169,9 @@ export default class GdbSourceWindow extends Component<
   private noSrcViewRef = createRef<HTMLDivElement>();
   private gutterClickListener: ((e: GdbAny) => void) | null = null;
 
+  private breakpoints: breakpointMarker[] = [];
+  //private threads: threadMarker[] = [];
+
   constructor(props: Record<string, never>) {
     super(props);
     this.state = {
@@ -180,8 +181,6 @@ export default class GdbSourceWindow extends Component<
       line: "",
       stackMarkers: [],
       currentMarker: -1,
-      breakpoints: [],
-      threads: [],
       theme: defaultTheme,
       mode: defaultMode,
       fontName: "monospace",
@@ -231,14 +230,6 @@ export default class GdbSourceWindow extends Component<
   }
 
   override componentDidUpdate(prevProps: Record<string, never>, prevState: GdbSourceWindowState) {
-    // Update breakpoint markers when breakpoints or source changes
-    if (
-      prevState.breakpoints !== this.state.breakpoints ||
-      prevState.source !== this.state.source
-    ) {
-      this.updateBreakpointMarkers();
-    }
-
     // Scroll to current marker when it changes
     if (prevState.currentMarker !== this.state.currentMarker) {
       this.editorRef.current?.editor.scrollToLine(this.state.currentMarker, true, true);
@@ -265,6 +256,36 @@ export default class GdbSourceWindow extends Component<
     }
   }
 
+  private updateBreakpointMarkers() {
+    const session = this.editorRef.current?.editor.getSession();
+
+    session?.clearBreakpoints();
+    this.breakpoints.forEach((bp) => {
+      if (bp.file === this.fullFilePath) {
+        session?.setBreakpoint(bp.line, bp.type);
+      }
+    });
+  }
+
+  // private addThreadMarkers() {
+  //   const threadMarkers: IMarker[] = [];
+  //   this.threads.forEach((thread: GdbAny) => {
+  //     if (thread.file === this.fullFilePath && thread.line !== this.state.currentMarker) {
+  //       const marker = {
+  //         startRow: thread.line,
+  //         startCol: 0,
+  //         endRow: thread.line,
+  //         endCol: 1,
+  //         className: "ace_thread_line",
+  //         type: "fullLine",
+  //       } as IMarker;
+  //       threadMarkers.push(marker);
+  //     }
+  //   });
+  //   const newMarkers = this.state.stackMarkers.concat(threadMarkers);
+  //   this.setState({ stackMarkers: newMarkers });
+  // }
+
   private setupIPCListeners() {
     window.ipcToMain.sourceFile((data: gdbShowSourceInfo) => {
       const lastPeriodIndex: number = data.fileName.lastIndexOf(".");
@@ -277,33 +298,36 @@ export default class GdbSourceWindow extends Component<
 
       this.setState({ mode: newMode });
       this.displayData(data);
+      this.updateBreakpointMarkers();
+      //this.addThreadMarkers();
     });
 
     window.ipcToMain.dataBrkPts((data: gdbBreakpoint[]) => {
-      const newBreakpoints: breakpointMarker[] = [];
+      this.breakpoints = [];
       data?.forEach((bp) => {
-        if (bp.fullname === this.state.fullpath) {
-          const bpLine = parseInt(bp.line, 10) - 1;
-          const type = bp.enabled === "y" ? "ace_breakpoint_enabled" : "ace_breakpoint_disabled";
-          newBreakpoints.push({ line: bpLine, type });
-        }
+        const file = bp.fullname;
+        const bpLine = parseInt(bp.line, 10) - 1;
+        const type = bp.enabled === "y" ? "ace_breakpoint_enabled" : "ace_breakpoint_disabled";
+        this.breakpoints.push({ line: bpLine, type: type, file: file });
       });
-      this.setState({ breakpoints: newBreakpoints });
+
+      this.updateBreakpointMarkers();
     });
 
-    window.ipcToMain.dataThreads((data: GdbAny) => {
-      const newThreads: threadMarker[] = [];
-      data.grp.forEach(() => {
-        data.th.forEach((thread: gdbThread) => {
-          newThreads.push({
-            line: parseInt(thread.frame.line, 10) - 1,
-            title: `${thread.name}:${thread.frame.func}:${thread.frame.line}`,
-            path: thread.frame.fullName,
-          });
-        });
-      });
-      this.setState({ threads: newThreads });
-    });
+    // window.ipcToMain.dataThreads((data: GdbAny) => {
+    //   this.threads = [];
+    //   data.grp.forEach(() => {
+    //     data.th.forEach((thread: gdbThread) => {
+    //       this.threads.push({
+    //         line: parseInt(thread.frame.line, 10) - 1,
+    //         title: `${thread.name}:${thread.frame.func}:${thread.frame.line}`,
+    //         file: thread.frame.fullName,
+    //       });
+    //     });
+    //   });
+
+    //   this.addThreadMarkers();
+    // });
   }
 
   private setupGutterClickListener() {
@@ -326,13 +350,6 @@ export default class GdbSourceWindow extends Component<
     if (this.editorRef.current?.editor) {
       this.editorRef.current.editor.on("gutterclick", this.gutterClickListener);
     }
-  }
-
-  private updateBreakpointMarkers() {
-    this.editorRef.current?.editor.getSession().clearBreakpoints();
-    this.state.breakpoints.forEach((bp) => {
-      this.editorRef.current?.editor.getSession().setBreakpoint(bp.line, bp.type);
-    });
   }
 
   private toggleBreakpointAtRow(ed: ace.Ace.Editor, row: number) {

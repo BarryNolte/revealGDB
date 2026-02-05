@@ -148,11 +148,11 @@ export default class GdbBreakPointWindow extends Component {
               field="enabled"
               toolTip="BP Enabled"
               headerText=""
+              allowEditing={true}
               template={this.checkboxTemplate}
               textAlign="Left"
               showColumnMenu={false}
               width="55px"
-              clipMode="EllipsisWithTooltip"
             />
             <ColumnDirective
               field="number"
@@ -163,73 +163,34 @@ export default class GdbBreakPointWindow extends Component {
               width="35px"
               clipMode="EllipsisWithTooltip"
             />
-            <ColumnDirective
-              field="addr"
-              headerText="Address"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective
-              field="func"
-              headerText="Function"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective
-              field="file"
-              headerText="File"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
+            <ColumnDirective field="addr" headerText="Address" clipMode="EllipsisWithTooltip" />
+            <ColumnDirective field="func" headerText="Function" clipMode="EllipsisWithTooltip" />
+            <ColumnDirective field="file" headerText="File" clipMode="EllipsisWithTooltip" />
             <ColumnDirective
               field="line"
               headerText="Line"
-              autoFit={true}
               width="35px"
               clipMode="EllipsisWithTooltip"
             />
-            <ColumnDirective
-              field="times"
-              headerText="Times"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
+            <ColumnDirective field="times" headerText="Times" clipMode="EllipsisWithTooltip" />
             <ColumnDirective
               field="installed"
               headerText="Installed"
-              autoFit={true}
               clipMode="EllipsisWithTooltip"
             />
             <ColumnDirective
               field="fullName"
               headerText="Full Path"
-              autoFit={true}
               clipMode="EllipsisWithTooltip"
             />
-            <ColumnDirective
-              field="tg"
-              headerText="Thread Group"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
+            <ColumnDirective field="tg" headerText="Thread Group" clipMode="EllipsisWithTooltip" />
             <ColumnDirective
               field="orgloc"
               headerText="Original Location"
-              autoFit={true}
               clipMode="EllipsisWithTooltip"
             />
-            <ColumnDirective
-              field="disp"
-              headerText="Display"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective
-              field="type"
-              headerText="Type"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
+            <ColumnDirective field="disp" headerText="Display" clipMode="EllipsisWithTooltip" />
+            <ColumnDirective field="type" headerText="Type" clipMode="EllipsisWithTooltip" />
           </ColumnsDirective>
           <Inject services={[Resize, ColumnMenu, ContextMenu]} />
         </GridComponent>

@@ -3,6 +3,10 @@
   height: 24px;
   align-content: center;
   padding: 0px;
+  border-color: lightgray;
+  border-width: 1.5px;
+  border-radius: 3px;
+  margin: 2px 0px;
 }
 
 .bp-delete-img {
@@ -11,9 +15,10 @@
 }
 
 .bp-delete-container {
-  margin-left: -14px;
+  margin-left: 0px;
 }
 
 .bp-enable {
-  margin-bottom: 4px;
+  margin-top: 8px;
+  vertical-align: top;
 }
