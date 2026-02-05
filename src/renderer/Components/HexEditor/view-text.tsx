@@ -94,8 +94,8 @@ function TextValues({ datasource }: { datasource: Uint8Array }): JSX.Element[] {
  */
 export default function HexTextView({ datasource, mouseCallback }: HexTextViewProps): JSX.Element {
   return (
-    <div>
-      <table className="he-table he-table-sticky">
+    <div data-testid="hex-text-view">
+      <table className="he-table he-table-sticky" data-testid="hex-text-table">
         <thead
           className="he-table-header"
           onMouseOver={(e: MouseEvent) => mouseCallback("Over", (e.target as Element).id)}
@@ -104,6 +104,7 @@ export default function HexTextView({ datasource, mouseCallback }: HexTextViewPr
           <TextHeader />
         </thead>
         <tbody
+          data-testid="hex-text-body"
           onMouseOver={(e: MouseEvent) => mouseCallback("Over", (e.target as Element).id)}
           onMouseLeave={(e: MouseEvent) => mouseCallback("Leave", (e.target as Element).id)}
           onClick={(e: MouseEvent) => mouseCallback("Click", (e.target as Element).id)}

@@ -44,7 +44,9 @@
     "vite-build:release": "cross-env REVEALGDB_BUILD=release REVEALGDB_DEBUG=false electron-vite build",
     "vite-watch": "cross-env REVEALGDB_BUILD=debug REVEALGDB_DEBUG=true electron-vite dev --watch",
     "vite-watch:release": "cross-env REVEALGDB_BUILD=release REVEALGDB_DEBUG=false electron-vite dev --watch",
-    "test": "vitest"
+    "playwright:install": "playwright install",
+    "test:playwright": "npm run build:renderer && playwright test",
+    "test": "vitest && npm run test:playwright"
   },
   "build": {
     "appId": "com.example.revealgdb",
@@ -87,6 +89,7 @@
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
     "@vitejs/plugin-react": "^5.1.2",
+    "@playwright/test": "^1.54.1",
     "concurrently": "^9.2.1",
     "cross-env": "^7.0.3",
     "electron": "^39.3.0",

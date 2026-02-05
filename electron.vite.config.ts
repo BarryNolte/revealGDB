@@ -18,6 +18,12 @@ const buildDefines = {
   __REVEALGDB_DEBUG__: JSON.stringify(isDebugBuild),
 };
 
+const rendererInputs = {
+  main: resolve(__dirname, "src/renderer/index.html"),
+  hexeditor: resolve(__dirname, "src/renderer/hexeditor-test.html"),
+  gdbcommand: resolve(__dirname, "src/renderer/gdbcommand-test.html"),
+};
+
 export default defineConfig({
   preload: {
     root: ".",
@@ -66,6 +72,7 @@ export default defineConfig({
       emptyOutDir: true,
       sourcemap: true,
       rollupOptions: {
+        input: rendererInputs,
         output: {
           // Configure manual chunks for better control
           manualChunks(_id) {

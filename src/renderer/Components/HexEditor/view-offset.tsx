@@ -44,8 +44,8 @@ export default function HexOffsetView({
   mouseCallback,
 }: HexOffsetViewProps): JSX.Element {
   return (
-    <div className="he-column-sticky">
-      <table className="he-table he-table-sticky">
+    <div className="he-column-sticky" data-testid="hex-offset-view">
+      <table className="he-table he-table-sticky" data-testid="hex-offset-table">
         <thead
           className="he-table-header"
           onMouseOver={(e: MouseEvent) => mouseCallback("Over", (e.target as Element).id)}
@@ -54,6 +54,7 @@ export default function HexOffsetView({
           <OffsetHeader />
         </thead>
         <tbody
+          data-testid="hex-offset-body"
           onMouseOver={(e: MouseEvent) => mouseCallback("Over", (e.target as Element).id)}
           onMouseLeave={(e: MouseEvent) => mouseCallback("Leave", (e.target as Element).id)}
         >

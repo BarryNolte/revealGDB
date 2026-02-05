@@ -205,8 +205,13 @@ export default class GdbCommandWindow extends Component {
 
   override render(): JSX.Element {
     return (
-      <div className={"commandWindow full-size"}>
-        <div className={"outputRow"} ref={this.outputRef} onScroll={this.onScrollHandler} />
+      <div className={"commandWindow full-size"} data-testid="gdb-command-window">
+        <div
+          className={"outputRow"}
+          ref={this.outputRef}
+          onScroll={this.onScrollHandler}
+          data-testid="gdb-command-output"
+        />
         <div className={"historyRow"}>
           <select
             className={"historySelect"}
@@ -215,6 +220,7 @@ export default class GdbCommandWindow extends Component {
             size={15}
             hidden={true}
             onKeyDown={this.onSelectKeydownHandler}
+            data-testid="gdb-command-history"
           />
         </div>
         <div className="inputContainer">
@@ -226,18 +232,21 @@ export default class GdbCommandWindow extends Component {
             placeholder={"Type your command here..."}
             onKeyDown={this.onInputKeydownHandler}
             onKeyUp={this.onInputKeyupHandler}
+            data-testid="gdb-command-input"
           />
           <button
             className="commandButton commandButtonSend"
             title="Send Command"
             type="button"
             onClick={this.onSendCommand}
+            data-testid="gdb-command-send"
           />
           <button
             className="commandButton commandButtonHistory"
             title="History"
             type="button"
             onClick={this.onShowHistory}
+            data-testid="gdb-command-show-history"
           />
         </div>
       </div>

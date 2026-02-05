@@ -4,12 +4,12 @@
  * Manages the centralized event handler and layout for offset, hex data, and text views.
  */
 
-import HexTextView from "./view-text";
+import { createRef, JSX, useEffect } from "react";
+import "./HexEditor.css";
+import { MouseKeyboardHandler } from "./MouseKeyboardHandler";
 import HexDataView from "./view-data";
 import HexOffsetView from "./view-offset";
-import { MouseKeyboardHandler } from "./MouseKeyboardHandler";
-import "./HexEditor.css";
-import { createRef, JSX, useEffect } from "react";
+import HexTextView from "./view-text";
 
 /** Callback signature for data change notifications */
 export type ArrayChangeCallback = (index: number, value: number) => void;
@@ -64,9 +64,9 @@ export default function HexEditor({
   }, [datasource, hexEditorRef]);
 
   return (
-    <div>
+    <div data-testid="hex-editor">
       {/* Flex container holds three synchronized view columns */}
-      <div ref={hexEditorRef} className="he-flex-container">
+      <div ref={hexEditorRef} className="he-flex-container" data-testid="hex-editor-container">
         {/* Left column: Memory offsets (sticky) */}
         <HexOffsetView
           offset={offset}
