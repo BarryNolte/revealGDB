@@ -1,14 +1,14 @@
 import { app, BrowserWindow, ipcMain, nativeTheme, screen } from "electron";
 import settings from "electron-settings";
-import os from "node:os";
+import { fontace } from "fontace";
+import getSystemFonts from "get-system-fonts";
 import fs from "node:fs/promises";
+import os from "node:os";
 import path, { join } from "path";
 import { GdbAny, wait } from "../common/gdb-common";
 import { GdbMenu } from "./menu";
 import { miInterface } from "./mi-interface/mi-interface";
 import { WslUtilities } from "./utilities/wsl-utilities";
-import getSystemFonts from "get-system-fonts";
-import { fontace } from "fontace";
 
 console.log(`PRELOAD: ${path.resolve("./out/preload/preload.js")}`);
 
@@ -16,13 +16,22 @@ export const isMac = process.platform === "darwin";
 export const isWin = process.platform === "win32";
 export const isLinux = !isMac && !isWin;
 
-export const isDebug = true;
+// eslint-disable-next-line no-undef
+export const isDebug = __REVEALGDB_DEBUG__;
+
+globalThis.revealGdbBuild = {
+  // eslint-disable-next-line no-undef
+  debug: __REVEALGDB_DEBUG__,
+  // eslint-disable-next-line no-undef
+  mode: __REVEALGDB_BUILD__,
+};
+console.log(`Build Info: ${JSON.stringify(globalThis.revealGdbBuild, null, 2)}`);
 
 export const AppSettings = settings;
 const fontList: Map<string, string> = new Map<string, string>();
 
 export let mainWindow: BrowserWindow;
-let debugWindow: BrowserWindow;
+let debugWindow: BrowserWindow | undefined;
 
 export let gdbInterface: miInterface;
 
@@ -103,7 +112,9 @@ app.on("ready", () => {
   }
 
   //TODO!: Wait for GDB to be ready before loading the UI (Debug ONLY)
-  wait(5000);
+  if (isDebug) {
+    wait(5000);
+  }
 
   let devUrl = process.env.ELECTRON_RENDERER_URL;
 
@@ -159,7 +170,6 @@ app.on("ready", () => {
   gdbInterface.on("gdb-stopped", async () => {
     if (needToRunStartupCmds) {
       needToRunStartupCmds = false;
-      //console.error("GDB is idle (once)");
       const ros: string[] = (await AppSettings.get("gdb.run.onStartup")) as string[];
       console.log("** ON STARTUP COMMANDS **");
       ros?.forEach((ros: string) => {
@@ -177,12 +187,12 @@ app.on("ready", () => {
 
   let debugWindowClosed = false;
   mainWindow.on("closed", () => {
-    if (!debugWindowClosed) {
+    if (debugWindow && !debugWindowClosed) {
       debugWindow.close();
     }
   });
 
-  if (isDebug) {
+  if (isDebug && debugWindow) {
     debugWindow.on("closed", () => {
       debugWindowClosed = true;
     });
