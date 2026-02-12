@@ -388,8 +388,8 @@ export class LocalsContainer {
 
 // Parse the input and create the local variable tree
 //const lc = new LocalsContainer(input);
-const lc = new LocalsContainer("{}");
-console.log(lc.locals);
+// const lc = new LocalsContainer("{}");
+// console.log(lc.locals);
 
 // console.log("");
 // console.log("");

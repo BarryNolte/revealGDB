@@ -42,6 +42,12 @@ describe("valueValidation", () => {
       expect(result.valueType).toBe(ValueType.DollarPrefix);
     });
 
+    it("should trim whitespace for dollar prefix", () => {
+      const result = validateValue("  $AbC123xYz  ");
+      expect(result.isValid).toBe(true);
+      expect(result.valueType).toBe(ValueType.DollarPrefix);
+    });
+
     it("should validate dollar prefix with numbers", () => {
       const result = validateValue("$0123456789");
       expect(result.isValid).toBe(true);
@@ -90,6 +96,14 @@ describe("valueValidation", () => {
       expect(result.valueType).toBe(ValueType.Hexadecimal);
       expect(result.hexValue).toBe("0xFF00");
       expect(result.decimalValue).toBe(65280);
+    });
+
+    it("should trim whitespace for hex", () => {
+      const result = validateValue("  0x1A2B  ");
+      expect(result.isValid).toBe(true);
+      expect(result.valueType).toBe(ValueType.Hexadecimal);
+      expect(result.hexValue).toBe("0x1A2B");
+      expect(result.decimalValue).toBe(6699);
     });
 
     it("should validate lowercase hex letters", () => {
@@ -178,6 +192,11 @@ describe("valueValidation", () => {
 
     it("should reject empty string", () => {
       const result = validateValue("");
+      expect(result.isValid).toBe(false);
+    });
+
+    it("should reject whitespace-only string", () => {
+      const result = validateValue("   ");
       expect(result.isValid).toBe(false);
     });
 

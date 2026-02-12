@@ -33,11 +33,13 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
 
     this.gdbExe.stdout?.on("data", (data: Uint8Array) => {
       const text = new TextDecoder().decode(data);
+      //console.log("<< " + text);
       this.emit("gdb-data", new OutputAvailableEventArgs(text));
     });
 
     this.gdbExe.stderr?.on("data", (data: Uint8Array) => {
       const text = new TextDecoder().decode(data);
+      //console.log("!! " + text);
       this.emit("gdb-error", new OutputAvailableEventArgs(text));
     });
 
@@ -46,7 +48,7 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
 
   override Send(data: string): void {
     this.gdbExe?.stdin?.write(data + "\n", (error) => {
-      console.log(`Sent: ${data} : ${error}`);
+      console.log(`>>  ${data} : ${error}`);
       this.emit("gdb-input", data);
     });
   }

@@ -27,8 +27,8 @@ export class GdbConnector extends EventEmitter {
     return false;
   }
 
-  public Send(data: string): void {
-    console.log(data);
+  public Send(_data: string): void {
+    //console.log(data);
   }
 
   public ConvertFilePath(path: string): string {

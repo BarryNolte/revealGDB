@@ -1,22 +1,24 @@
 export interface IElectronAPI {
-  consoleMessage: (message: GdbAny) => void;
-  logMessage: (message: GdbAny) => void;
-  errorMessage: (message: GdbAny) => void;
-  debugMessage: (message: GdbAny) => void;
-  notifyRender: (command: GdbAny) => void;
+  consoleMessage: (callback: GdbAny) => () => void;
+  logMessage: (callback: GdbAny) => () => void;
+  errorMessage: (callback: GdbAny) => () => void;
+  debugMessage: (callback: GdbAny) => () => void;
+  notifyRender: (callback: GdbAny) => () => void;
 
-  dataRegisters: (data: GdbAny) => void;
-  stackFrames: (data: GdbAny) => void;
-  sourceFile: (data: GdbAny) => void;
-  dataLocals: (data: GdbAny) => void;
-  dataThreads: (data: GdbAny) => void;
-  dataBrkPts: (data: GdbAny) => void;
-  dataMemory: (data: GdbAny) => void;
-  dataDisasm: (data: GdbAny) => void;
+  dataRegisters: (callback: GdbAny) => () => void;
+  stackFrames: (callback: GdbAny) => () => void;
+  sourceFile: (callback: GdbAny) => () => void;
+  dataLocals: (callback: GdbAny) => () => void;
+  dataThreads: (callback: GdbAny) => () => void;
+  dataBrkPts: (callback: GdbAny) => () => void;
+  dataMemory: (callback: GdbAny) => () => void;
+  dataDisasm: (callback: GdbAny) => () => void;
+  dataFunctions: (callback: GdbAny) => () => void;
 
   getSettings: () => GdbAny;
   getSystemFonts: () => Promise<string[]>;
   getVersionInfo: () => Promise<Map<string, GdbAny>>;
+  //getFunctionNames: () => Promise<string[]>;
   sendGdbCommand: (command: string) => void;
   notifyMain: (command: GdbAny) => void;
 }

@@ -1,11 +1,13 @@
 //import { gdbConnectorWsl } from "./gdb-connector/gdb-connector-wsl";
-import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector/gdb-connector";
 import { EventEmitter } from "events";
-import { gdbAsmRow, gdbBreakpoint, gdbStateDatabase } from "./gdb-state-database/gdbStateDatabase";
-import { AppSettings, mainWindow } from "../main";
 import { GdbAny } from "../../common/gdb-common";
-import { LocalsContainer } from "./gdb-parsers/gdb-locals";
+import { AppSettings, mainWindow } from "../main";
+import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector/gdb-connector";
 import { gdbConnectorIdfOnWsl } from "./gdb-connector/gdb-connector-idf-on-wsl";
+import { LocalsContainer } from "./gdb-parsers/gdb-locals";
+import { GdbOutputCapture } from "./gdb-parsers/gdb-output-capture";
+import { gdbAsmRow, gdbBreakpoint, gdbStateDatabase } from "./gdb-state-database/gdbStateDatabase";
+import { parseDisasmTokens } from "./gdb-parsers/disasmParser";
 
 export type gdbShowSourceInfo = {
   fileName: string;
@@ -18,20 +20,21 @@ export class miInterface extends EventEmitter {
   private conn: GdbConnector | null = null;
   readonly gdbDB: gdbStateDatabase = new gdbStateDatabase();
   private streamSave: string[] = [];
+  private outputCapture: GdbOutputCapture = new GdbOutputCapture(this.gdbDB);
 
   constructor() {
     super();
   }
 
   async connect(): Promise<boolean> {
-    //this.conn = new gdbConnectorWsl();
     this.conn = new gdbConnectorIdfOnWsl();
 
     this.conn.on("gdb-exit", () => {
       console.log("GDB exited");
     });
 
-    this.conn.on("gdb-data", (args: OutputAvailableEventArgs) => {
+    this.conn.on("gdb-data", (args: OutputAvailableEventArgs): void => {
+      //console.log(">> " + args.Output);
       if (AppSettings.getSync("gdb.gui.showDebugInfo") as boolean) {
         this.emit(
           "debug-stream",
@@ -43,6 +46,7 @@ export class miInterface extends EventEmitter {
         this.streamSave.push(args.Output);
         return;
       }
+
       let totalStream = "";
       this.streamSave.forEach((s) => {
         totalStream += s;
@@ -52,7 +56,12 @@ export class miInterface extends EventEmitter {
 
       const lines = totalStream.split("\n");
       lines.forEach(async (line: string) => {
+        // console.log(`Raw Output: ${line}`);
         try {
+          if (this.outputCapture.CaptureLine(line)) {
+            return;
+          }
+          // console.error(`Raw Output: ${line}`);
           await this.parseRawOutput(line);
         } catch (ex) {
           this.emit(
@@ -61,6 +70,8 @@ export class miInterface extends EventEmitter {
           );
         }
       });
+
+      return;
     });
 
     this.conn.on("gdb-input", (input: string) => {
@@ -305,8 +316,8 @@ export class miInterface extends EventEmitter {
     const result = chunks?.groups?.result || "";
     const data = chunks?.groups?.data || "";
 
-    console.error(result);
-    console.error(data);
+    // console.error(result);
+    // console.error(data);
 
     switch (result) {
       case "done":
@@ -320,6 +331,7 @@ export class miInterface extends EventEmitter {
           switch (resResult) {
             case "asm_insns":
               {
+                console.log(output);
                 const rgxAsmData: RegExp = /asm_insns=\[(?<asm_list>.*)]$/gm;
                 const asmData = rgxAsmData.exec(output);
                 const asmList = asmData?.groups?.["asm_list"];
@@ -329,22 +341,32 @@ export class miInterface extends EventEmitter {
                 const asmRows = asmList?.matchAll(rgxAsmRow);
 
                 const asmRowsText: gdbAsmRow[] = [];
+                let currentFunc = "";
+                let currentFuncFirstAddress = "";
 
                 asmRows?.forEach((asmRow) => {
-                  console.log(asmRow);
-                  const address = asmRow.groups?.["address"] || "";
-                  const func = asmRow.groups?.["func"] || "";
-                  const offset = asmRow.groups?.["offset"] || "";
-                  const opcodes = asmRow.groups?.["opcodes"] || "";
-                  const inst = asmRow.groups?.["inst"] || "";
-                  //const ops = (asmRow.groups?.["inst"] || "").split("\\t");
+                  //console.log(asmRow);
+                  const address = asmRow.groups?.address || "";
+                  const func = asmRow.groups?.func || "";
+                  const offset = asmRow.groups?.offset || "";
+                  const opcodes = asmRow.groups?.opcodes || "";
+                  const inst = asmRow.groups?.inst || "";
+
+                  if (func !== currentFunc) {
+                    currentFunc = func;
+                    currentFuncFirstAddress = address;
+                  }
+
+                  const funcWithAddress = currentFuncFirstAddress
+                    ? `${currentFuncFirstAddress}-${func}`
+                    : func;
 
                   const row: gdbAsmRow = {
                     address: address,
-                    func: func,
+                    func: funcWithAddress,
                     offset: offset,
                     opcodes: opcodes,
-                    instruction: inst,
+                    instructions: parseDisasmTokens(inst),
                   };
 
                   asmRowsText.push(row);
@@ -359,10 +381,10 @@ export class miInterface extends EventEmitter {
                   /\[\{begin="(?<begin>[^"]*)",offset="(?<offset>[^"]*)",end="(?<end>[^"]*)",contents="(?<contents>[^"]*)"\}\]/gm;
 
                 const memData = rgxMemData.exec(output);
-                console.log(memData);
+                //console.log(memData);
 
                 const hexData = memData?.groups?.contents || "";
-                console.log(hexData);
+                //console.log(hexData);
                 const result = [];
                 for (let i = 0; i < hexData.length; i += 2) {
                   result.push(hexData.slice(i, i + 2));

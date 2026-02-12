@@ -1,110 +1,143 @@
-import { createRef, Component, JSX } from "react";
-import { GdbAny } from "../../common/gdb-common";
+import {
+  CellEditArgs,
+  CellSaveArgs,
+  IEditCell,
+  SelectionSettingsModel,
+} from "@syncfusion/ej2-react-grids";
 import {
   ColumnDirective,
   ColumnMenu,
   ColumnsDirective,
+  Edit,
   EditSettingsModel,
   Inject,
   Resize,
   TreeGridComponent,
-  Edit,
 } from "@syncfusion/ej2-react-treegrid";
-import { CellEditArgs, CellSaveArgs, IEditCell } from "@syncfusion/ej2-react-grids";
+import { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { GdbAny } from "../../common/gdb-common";
 import "./GdbLocalsWindow.css";
+import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
+import { menuCopy } from "../utilities/Clipboard";
 
-export default class GdbLocalsWindow extends Component {
-  private treeRef = createRef<TreeGridComponent>();
+export default function GdbLocalsWindow(): JSX.Element {
+  const treeRef = useRef<TreeGridComponent | null>(null);
+  const [localData, setLocalData] = useState<GdbAny[]>([]);
 
-  private editSettings: EditSettingsModel = {
-    allowEditing: true,
-    allowAdding: false,
-    allowDeleting: false,
-    showConfirmDialog: false,
-    mode: "Batch",
-  };
+  const editSettings: EditSettingsModel = useMemo(
+    () => ({
+      allowEditing: true,
+      allowAdding: false,
+      allowDeleting: false,
+      showConfirmDialog: false,
+      mode: "Batch",
+    }),
+    [],
+  );
 
-  private editParams: IEditCell = {
-    params: {
-      showClearButton: true,
-      allowEdit: true,
-    },
-  };
+  const editParams: IEditCell = useMemo(
+    () => ({
+      params: {
+        showClearButton: true,
+        allowEdit: true,
+      },
+    }),
+    [],
+  );
 
-  override componentDidMount() {
-    window.ipcToMain.dataLocals((data: GdbAny) => {
-      this.treeRef.current?.setProperties({
-        dataSource: data as object[],
-      });
+  const selectionOptions: SelectionSettingsModel = useMemo(
+    () => ({
+      mode: "Both",
+      type: "Multiple",
+    }),
+    [],
+  );
+
+  useEffect(() => {
+    const unsubscribe = window.ipcToMain.dataLocals((data: GdbAny) => {
+      setLocalData(data);
     });
 
-    this.treeRef.current?.autoFitColumns(["name", "value"]);
-  }
+    treeRef.current?.autoFitColumns(["name", "value"]);
 
-  private emptyMessageTemplate(): JSX.Element {
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const emptyMessageTemplate = useCallback((): JSX.Element => {
     return (
       <div className="emptyRecordTemplate">
         <span>Locals is empty.</span>
       </div>
     );
-  }
+  }, []);
 
-  private cellSaved = (args: CellSaveArgs) => {
+  const cellSaved = useCallback((args: CellSaveArgs) => {
     window.ipcToMain.sendGdbCommand(`set var ${(args.rowData as GdbAny).fullpath} = ${args.value}`);
-  };
+  }, []);
 
-  override render(): JSX.Element {
-    return (
-      <div className="full-size flex-container">
-        <TreeGridComponent
-          ref={this.treeRef}
-          emptyRecordTemplate={this.emptyMessageTemplate}
-          treeColumnIndex={0}
-          childMapping="sublocals"
-          height="100%"
-          rowHeight={16}
-          allowResizing={true}
-          showColumnMenu={true}
-          allowSelection={true}
-          editSettings={this.editSettings}
-          selectionSettings={{ type: "Single", mode: "Row" }}
-          gridLines="Both"
-          cellSaved={this.cellSaved}
-          cellEdit={(args: CellEditArgs) => {
-            if (args.type === "edit") {
-              if (args.columnName === "value" && (args.rowData as GdbAny).sublocals.length > 0) {
-                args.cancel = true;
-              }
-            }
-          }}
-        >
-          <ColumnsDirective>
-            <ColumnDirective
-              field="name"
-              headerText="Name"
-              width="85"
-              allowEditing={false}
-              clipMode="EllipsisWithTooltip"
-              isPrimaryKey={true}
-            ></ColumnDirective>
-            <ColumnDirective
-              field="value"
-              headerText="Value"
-              allowEditing={true}
-              clipMode="EllipsisWithTooltip"
-              edit={this.editParams}
-            ></ColumnDirective>
-            <ColumnDirective
-              field="fullpath"
-              headerText="Full Path"
-              allowEditing={false}
-              clipMode="EllipsisWithTooltip"
-              visible={false}
-            ></ColumnDirective>
-          </ColumnsDirective>
-          <Inject services={[Resize, ColumnMenu, Edit]} />
-        </TreeGridComponent>
-      </div>
-    );
-  }
+  const cellEdit = useCallback((args: CellEditArgs) => {
+    if (args.type === "edit") {
+      if (args.columnName === "value" && (args.rowData as GdbAny).sublocals.length > 0) {
+        args.cancel = true;
+      }
+    }
+  }, []);
+
+  return (
+    <div className="full-size flex-container">
+      <TreeGridComponent
+        ref={treeRef}
+        id="locals-grid"
+        dataSource={localData}
+        emptyRecordTemplate={emptyMessageTemplate}
+        treeColumnIndex={0}
+        childMapping="sublocals"
+        height="100%"
+        rowHeight={16}
+        allowResizing={true}
+        showColumnMenu={true}
+        allowSelection={true}
+        editSettings={editSettings}
+        selectionSettings={selectionOptions}
+        gridLines="Both"
+        cellSaved={cellSaved}
+        cellEdit={cellEdit}
+      >
+        <ColumnsDirective>
+          <ColumnDirective
+            field="name"
+            headerText="Name"
+            width="85"
+            allowEditing={false}
+            clipMode="EllipsisWithTooltip"
+            isPrimaryKey={true}
+          ></ColumnDirective>
+          <ColumnDirective
+            field="value"
+            headerText="Value"
+            allowEditing={true}
+            clipMode="EllipsisWithTooltip"
+            edit={editParams}
+          ></ColumnDirective>
+          <ColumnDirective
+            field="fullpath"
+            headerText="Full Path"
+            allowEditing={false}
+            clipMode="EllipsisWithTooltip"
+            visible={false}
+          ></ColumnDirective>
+        </ColumnsDirective>
+        <Inject services={[Resize, ColumnMenu, Edit]} />
+      </TreeGridComponent>
+      <ContextMenuComponent
+        target="#locals-grid"
+        items={menuCopy}
+        select={() => {
+          treeRef.current?.copy();
+        }}
+      />
+    </div>
+  );
 }

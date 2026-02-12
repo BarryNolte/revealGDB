@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain, nativeTheme, screen } from "electron";
+import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import settings from "electron-settings";
 import { fontace } from "fontace";
 import getSystemFonts from "get-system-fonts";
@@ -9,6 +10,7 @@ import { GdbAny, wait } from "../common/gdb-common";
 import { GdbMenu } from "./menu";
 import { miInterface } from "./mi-interface/mi-interface";
 import { WslUtilities } from "./utilities/wsl-utilities";
+import { gdbFunction } from "./mi-interface/gdb-state-database/gdbStateDatabase";
 
 console.log(`PRELOAD: ${path.resolve("./out/preload/preload.js")}`);
 
@@ -72,6 +74,16 @@ app.on("ready", () => {
       });
     });
   });
+
+  if (isDebug) {
+    installExtension(REACT_DEVELOPER_TOOLS)
+      .then((name) => {
+        console.log(`Installed DevTools extension: ${name}`);
+      })
+      .catch((err) => {
+        console.warn("Failed to install React DevTools extension:", err);
+      });
+  }
 
   gdbAppInfo.set("Node Version", process.version);
   gdbAppInfo.set("Architecture", os.arch());
@@ -175,7 +187,16 @@ app.on("ready", () => {
       ros?.forEach((ros: string) => {
         gdbInterface.send(ros);
       });
+
+      gdbInterface.send("echo <<<<file-info>>>>");
+      gdbInterface.send("info files");
+      gdbInterface.send("echo >>>>end-capture<<<<");
+
+      gdbInterface.send("echo <<<<function-names>>>>");
+      gdbInterface.send("info functions");
+      gdbInterface.send("echo >>>>end-capture<<<<");
     }
+
     const ros: string[] = (await AppSettings.get("gdb.run.onStopped")) as string[];
     console.log(
       `***********************\nRunning ${ros?.length} Stop Commands\n***********************`,
@@ -228,6 +249,10 @@ ipcMain.handle("getVersionInfo", (): Promise<Map<string, GdbAny>> => {
   return Promise.resolve(gdbAppInfo);
 });
 
+ipcMain.handle("getFunctionNames", (): Promise<gdbFunction[]> => {
+  return Promise.resolve(gdbInterface.gdbDB.getAllFunctionNames());
+});
+
 // General messages from the UI
 ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
   switch (msg?.command) {
@@ -268,7 +293,6 @@ ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
       break;
     case "save-dock-layout":
       {
-        //TODO!: Add try/catch here to avoid partial writes
         AppSettings.setSync("gdb.gui.dockLayout", msg.data);
 
         const winPos = {

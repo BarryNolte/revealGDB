@@ -79,7 +79,7 @@ export default function GdbMemoryWindow(): JSX.Element {
             </tr>
             <tr>
               <td ref={startErrorRef}>
-                <span className="validateError">Start is invalide hex</span>
+                <span className="validateError">Start is invalid hex</span>
               </td>
               <td ref={lengthErrorRef}>
                 <span className="validateError">Length is invalid hex</span>
@@ -115,6 +115,7 @@ export default function GdbMemoryWindow(): JSX.Element {
         startErrorRef.current.style.visibility = "visible";
       }
     }
+
     if (lengthInput.isValid) {
       if (lengthErrorRef.current) {
         lengthErrorRef.current.style.visibility = "hidden";
@@ -134,6 +135,8 @@ export default function GdbMemoryWindow(): JSX.Element {
         ? startRef.current?.value
         : startInput.hexValue;
 
-    window.ipcToMain.sendGdbCommand(`-data-read-memory-bytes ${start} ${lengthInput.decimalValue}`);
+    window.ipcToMain.sendGdbCommand(
+      `-data-read-memory-bytes ${start?.trim()} ${lengthInput.decimalValue?.toString().trim()}`,
+    );
   }
 }

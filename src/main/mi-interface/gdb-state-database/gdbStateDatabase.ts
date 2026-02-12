@@ -61,12 +61,42 @@ export type gdbBreakpoint = {
   orgloc: string;
 };
 
+export type DisasmTokenType =
+  | "address"
+  | "function"
+  | "leftparen"
+  | "rightparen"
+  | "text"
+  | "instruction";
+
+export type DisasmToken = {
+  value: string;
+  type: DisasmTokenType;
+};
+
 export type gdbAsmRow = {
   address: string;
   func: string;
   offset: string;
   opcodes: string;
-  instruction: string;
+  instructions: DisasmToken[];
+};
+
+export type gdbSection = {
+  startAddr: string;
+  endAddr: string;
+  section: string;
+  file?: string;
+};
+
+export type gdbSymbolFiles = {
+  mainSym: string;
+  sections: gdbSection[];
+};
+
+export type gdbFunction = {
+  line: string;
+  function: string;
 };
 
 /**
@@ -83,8 +113,45 @@ export class gdbStateDatabase extends EventEmitter {
 
   readonly gdbSrcFileCache: gdbSourceFileCache = new gdbSourceFileCache();
 
+  readonly gdbSymbolFiles: gdbSymbolFiles = { mainSym: "", sections: [] };
+  readonly gdbFunctionNames: Map<string, gdbFunction[]> = new Map<string, gdbFunction[]>();
+
   constructor() {
     super();
+  }
+
+  // Function List
+  addFunctionNames(fileName: string, line: string, func: string): void {
+    const functions = this.gdbFunctionNames.get(fileName) || [];
+    functions.push({ line, function: func });
+    this.gdbFunctionNames.set(fileName, functions);
+  }
+  getFunctionNames(fileName: string): gdbFunction[] | undefined {
+    return this.gdbFunctionNames.get(fileName);
+  }
+  getFunction(): Map<string, gdbFunction[]> {
+    return this.gdbFunctionNames;
+  }
+  getAllFunctionNames(): gdbFunction[] {
+    const allFunctions: gdbFunction[] = [];
+    this.gdbFunctionNames.forEach((funcs) => {
+      funcs.forEach((f) => {
+        allFunctions.push(f);
+      });
+    });
+    allFunctions.sort((a, b) => a.function.localeCompare(b.function));
+    return allFunctions;
+  }
+
+  // Symbol Files
+  addMainSymbolFile(mainSym: string): void {
+    this.gdbSymbolFiles.mainSym = mainSym;
+  }
+  addSection(section: gdbSection): void {
+    this.gdbSymbolFiles.sections.push(section);
+  }
+  getSymbolFiles(): gdbSymbolFiles {
+    return this.gdbSymbolFiles;
   }
 
   // Source Files
@@ -313,5 +380,9 @@ export class gdbStateDatabase extends EventEmitter {
     console.log(this.breakpoints);
     console.log("Source Files:");
     console.log(this.gdbSrcFileCache.dump());
+    console.log("Symbol Files:");
+    console.log(this.gdbSymbolFiles);
+    console.log("Function Names:");
+    console.log(this.gdbFunctionNames);
   }
 }

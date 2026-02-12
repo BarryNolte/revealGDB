@@ -78,6 +78,10 @@
   background-image: url("../icons/icons8-dot-48.png");
 }
 
+.wm-disasm {
+  background-image: url("../icons/icons8-disassembly-48.png");
+}
+
 .wm-command {
   background-image: url("../icons/icons8-command-line-48.png");
 }

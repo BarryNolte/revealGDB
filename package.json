@@ -126,7 +126,6 @@
     "electron-settings": "^4.0.4",
     "fontace": "^0.3.1",
     "get-system-fonts": "^2.0.2",
-    "html-react-parser": "^5.2.16",
     "react": "^19.2.4",
     "react-ace": "^14.0.1",
     "react-dom": "^19.2.4"

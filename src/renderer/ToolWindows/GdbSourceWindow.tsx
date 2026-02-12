@@ -3,13 +3,12 @@ import "ace-builds/css/ace.css";
 import "ace-builds/src-noconflict/mode-assembly_arm32";
 import "ace-builds/src-noconflict/mode-assembly_x86";
 import "ace-builds/src-noconflict/mode-c_cpp";
+import "ace-builds/src-noconflict/mode-csharp";
+import "ace-builds/src-noconflict/mode-golang";
+import "ace-builds/src-noconflict/mode-java";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/mode-rust";
 import "ace-builds/src-noconflict/mode-typescript";
-import "ace-builds/src-noconflict/mode-csharp";
-import "ace-builds/src-noconflict/mode-golang";
-import "ace-builds/src-noconflict/mode-python";
-import "ace-builds/src-noconflict/mode-java";
 import "ace-builds/src-noconflict/theme-ambiance";
 import "ace-builds/src-noconflict/theme-chaos";
 import "ace-builds/src-noconflict/theme-chrome";
@@ -58,16 +57,15 @@ import "ace-builds/src-noconflict/theme-tomorrow_night_eighties";
 import "ace-builds/src-noconflict/theme-twilight";
 import "ace-builds/src-noconflict/theme-vibrant_ink";
 import "ace-builds/src-noconflict/theme-xcode";
-import { Component, createRef, JSX } from "react";
+import { JSX, useCallback, useEffect, useRef, useState } from "react";
 import AceEditor, { IMarker } from "react-ace";
 
-import {
-  gdbBreakpoint,
-  //gdbThread,
-} from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
+import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { gdbShowSourceInfo } from "../../main/mi-interface/mi-interface";
 
+import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { GdbAny } from "../../common/gdb-common";
+import { menuCopy, sendTextToClipboard } from "../utilities/Clipboard";
 import "./GdbSourceWindow.css";
 
 const defaultTheme = "gruvbox";
@@ -145,127 +143,37 @@ ace.config.setModuleUrl("../../node_modules", "ace-builds"); // Set base path fo
 type breakpointMarker = { line: number; type: string; file: string };
 //type threadMarker = { line: number; title: string; file: string };
 
-interface GdbSourceWindowState {
-  source: string;
-  fullpath: string;
-  filename: string;
-  line: string;
-  stackMarkers: IMarker[];
-  currentMarker: number;
-  theme: string;
-  mode: string;
-  fontSize: number;
-  fontName: string;
-  lineHeight: number;
-}
+export default function GdbSourceWindow(): JSX.Element {
+  const [source, setSource] = useState("");
+  const [fullpath, setFullpath] = useState("");
+  const [filename, setFilename] = useState("");
+  const [line, setLine] = useState("");
+  const [stackMarkers, setStackMarkers] = useState<IMarker[]>([]);
+  const [currentMarker, setCurrentMarker] = useState(-1);
+  const [theme, setTheme] = useState(defaultTheme);
+  const [mode, setMode] = useState(defaultMode);
+  const [fontSize, setFontSize] = useState(14);
+  const [fontName, setFontName] = useState("monospace");
+  const [lineHeight, setLineHeight] = useState(15);
 
-export default class GdbSourceWindow extends Component<
-  Record<string, never>,
-  GdbSourceWindowState
-> {
-  private fullFilePath: string = "";
-  private editorRef = createRef<AceEditor>();
-  private srcViewRef = createRef<HTMLDivElement>();
-  private noSrcViewRef = createRef<HTMLDivElement>();
-  private gutterClickListener: ((e: GdbAny) => void) | null = null;
+  const fullFilePathRef = useRef("");
+  const editorRef = useRef<AceEditor | null>(null);
+  const srcViewRef = useRef<HTMLDivElement | null>(null);
+  const noSrcViewRef = useRef<HTMLDivElement | null>(null);
+  const gutterClickListenerRef = useRef<((e: GdbAny) => void) | null>(null);
+  const breakpointsRef = useRef<breakpointMarker[]>([]);
+  //const threadsRef = useRef<threadMarker[]>([]);
 
-  private breakpoints: breakpointMarker[] = [];
-  //private threads: threadMarker[] = [];
-
-  constructor(props: Record<string, never>) {
-    super(props);
-    this.state = {
-      source: "",
-      fullpath: "",
-      filename: "",
-      line: "",
-      stackMarkers: [],
-      currentMarker: -1,
-      theme: defaultTheme,
-      mode: defaultMode,
-      fontName: "monospace",
-      fontSize: 14,
-      lineHeight: 15,
-    };
-  }
-
-  override componentDidMount() {
-    this.setupEditorCommands();
-    this.setupIPCListeners();
-    this.setupGutterClickListener();
-
-    this.editorRef.current?.editor.setOption("showFoldWidgets", false);
-
-    window.ipcToMain.getSettings().then((gdb: GdbAny): void => {
-      if (gdb.gui.sourceViewerTheme) {
-        const savedTheme = editorThemes.get(gdb.gui.sourceViewerTheme) || defaultTheme;
-        this.setState({ theme: savedTheme });
-      }
-
-      if (gdb.gui.sourceViewerFontSize) {
-        const savedFontSize = parseInt(gdb.gui.sourceViewerFontSize);
-        this.setState({ fontSize: savedFontSize });
-        this.setState({ lineHeight: savedFontSize + 1 });
-      }
-
-      if (gdb.gui.sourceViewerFontName) {
-        this.setState({ fontName: gdb.gui.sourceViewerFontName });
-      }
-    });
-
-    window.addEventListener("changeEditor", (e: Event) => {
-      const ev = e as CustomEvent;
-      if (ev.detail.theme) {
-        const newTheme = editorThemes.get(ev.detail.theme) || defaultTheme;
-        this.setState({ theme: newTheme });
-      }
-      if (ev.detail.fontSize) {
-        this.setState({ fontSize: ev.detail.fontSize });
-        this.setState({ lineHeight: ev.detail.fontSize + 1 });
-      }
-      if (ev.detail.fontName) {
-        this.setState({ fontName: ev.detail.fontName });
-      }
-    });
-  }
-
-  override componentDidUpdate(prevProps: Record<string, never>, prevState: GdbSourceWindowState) {
-    // Scroll to current marker when it changes
-    if (prevState.currentMarker !== this.state.currentMarker) {
-      this.editorRef.current?.editor.scrollToLine(this.state.currentMarker, true, true);
-    }
-  }
-
-  override componentWillUnmount() {
-    if (this.gutterClickListener && this.editorRef.current?.editor) {
-      this.editorRef.current.editor.off("gutterclick", this.gutterClickListener);
-    }
-  }
-
-  private setupEditorCommands() {
-    if (this.editorRef.current?.editor) {
-      this.editorRef.current.editor.commands.addCommand({
-        name: "F9_Breakpoint_Toggle",
-        bindKey: { win: "F9", mac: "F9" },
-        exec: (editor: ace.Ace.Editor) => {
-          const row = editor.getCursorPosition().row;
-          this.toggleBreakpointAtRow(editor, row);
-        },
-        readOnly: true,
-      });
-    }
-  }
-
-  private updateBreakpointMarkers() {
-    const session = this.editorRef.current?.editor.getSession();
+  const updateBreakpointMarkers = useCallback(() => {
+    const session = editorRef.current?.editor.getSession();
 
     session?.clearBreakpoints();
-    this.breakpoints.forEach((bp) => {
-      if (bp.file === this.fullFilePath) {
+    breakpointsRef.current.forEach((bp) => {
+      if (bp.file === fullFilePathRef.current) {
         session?.setBreakpoint(bp.line, bp.type);
       }
     });
-  }
+  }, []);
 
   // private addThreadMarkers() {
   //   const threadMarkers: IMarker[] = [];
@@ -286,104 +194,51 @@ export default class GdbSourceWindow extends Component<
   //   this.setState({ stackMarkers: newMarkers });
   // }
 
-  private setupIPCListeners() {
-    window.ipcToMain.sourceFile((data: gdbShowSourceInfo) => {
-      const lastPeriodIndex: number = data.fileName.lastIndexOf(".");
-
-      let newMode: string = defaultMode;
-      if (lastPeriodIndex !== -1) {
-        const fileExt: string = data.fileName.slice(lastPeriodIndex + 1).toLowerCase();
-        newMode = editorModes.get(fileExt) || defaultMode;
-      }
-
-      this.setState({ mode: newMode });
-      this.displayData(data);
-      this.updateBreakpointMarkers();
-      //this.addThreadMarkers();
-    });
-
-    window.ipcToMain.dataBrkPts((data: gdbBreakpoint[]) => {
-      this.breakpoints = [];
-      data?.forEach((bp) => {
-        const file = bp.fullname;
-        const bpLine = parseInt(bp.line, 10) - 1;
-        const type = bp.enabled === "y" ? "ace_breakpoint_enabled" : "ace_breakpoint_disabled";
-        this.breakpoints.push({ line: bpLine, type: type, file: file });
-      });
-
-      this.updateBreakpointMarkers();
-    });
-
-    // window.ipcToMain.dataThreads((data: GdbAny) => {
-    //   this.threads = [];
-    //   data.grp.forEach(() => {
-    //     data.th.forEach((thread: gdbThread) => {
-    //       this.threads.push({
-    //         line: parseInt(thread.frame.line, 10) - 1,
-    //         title: `${thread.name}:${thread.frame.func}:${thread.frame.line}`,
-    //         file: thread.frame.fullName,
-    //       });
-    //     });
-    //   });
-
-    //   this.addThreadMarkers();
-    // });
-  }
-
-  private setupGutterClickListener() {
-    this.gutterClickListener = (e: GdbAny) => {
-      const target = e.domEvent.target;
-
-      if (
-        target.className.indexOf("ace_gutter-cell") === -1 ||
-        !this.editorRef.current?.editor.isFocused() ||
-        e.clientX > 25 + target.getBoundingClientRect().left
-      ) {
-        return;
-      }
-
-      const row = e.getDocumentPosition().row;
-      this.toggleBreakpointAtRow(e.editor, row);
-      e.stop();
-    };
-
-    if (this.editorRef.current?.editor) {
-      this.editorRef.current.editor.on("gutterclick", this.gutterClickListener);
-    }
-  }
-
-  private toggleBreakpointAtRow(ed: ace.Ace.Editor, row: number) {
+  const toggleBreakpointAtRow = useCallback((ed: ace.Ace.Editor, row: number) => {
     if (ed.getSession().getBreakpoints()[row] === undefined) {
-      window.ipcToMain.sendGdbCommand(`break ${this.fullFilePath}:${row + 1}`);
+      window.ipcToMain.sendGdbCommand(`break ${fullFilePathRef.current}:${row + 1}`);
     } else {
-      window.ipcToMain.sendGdbCommand(`clear ${this.fullFilePath}:${row + 1}`);
+      window.ipcToMain.sendGdbCommand(`clear ${fullFilePathRef.current}:${row + 1}`);
     }
-  }
+  }, []);
 
-  private displayData = (data: gdbShowSourceInfo) => {
+  const setupEditorCommands = useCallback(() => {
+    if (editorRef.current?.editor) {
+      editorRef.current.editor.commands.addCommand({
+        name: "F9_Breakpoint_Toggle",
+        bindKey: { win: "F9", mac: "F9" },
+        exec: (editor: ace.Ace.Editor) => {
+          const row = editor.getCursorPosition().row;
+          toggleBreakpointAtRow(editor, row);
+        },
+        readOnly: true,
+      });
+    }
+  }, [toggleBreakpointAtRow]);
+
+  const displayData = useCallback((data: gdbShowSourceInfo) => {
     if (data.contents) {
-      this.setState({ source: data.contents });
+      setSource(data.contents);
     }
     if (data.fileName) {
-      this.fullFilePath = data.fileName;
-      this.setState({ fullpath: data.fileName });
+      fullFilePathRef.current = data.fileName;
+      setFullpath(data.fileName);
     }
     if (data.line) {
-      this.setState({ line: data.line });
+      setLine(data.line);
     }
 
     const baseName = data.fileName.replace(/^.*[\\/]/, "");
-    this.setState({ filename: baseName });
+    setFilename(baseName);
 
     if (data.contents) {
-      // Have source
-      if (this.srcViewRef.current && this.noSrcViewRef.current) {
-        this.srcViewRef.current.hidden = false;
-        this.noSrcViewRef.current.hidden = true;
+      if (srcViewRef.current && noSrcViewRef.current) {
+        srcViewRef.current.hidden = false;
+        noSrcViewRef.current.hidden = true;
       }
 
       const start: number = parseInt(data.line) - 1;
-      this.setState({ currentMarker: start });
+      setCurrentMarker(start);
 
       const marker = {
         startRow: start,
@@ -394,79 +249,196 @@ export default class GdbSourceWindow extends Component<
         type: "fullLine",
       } as IMarker;
 
-      this.setState({ stackMarkers: [marker] });
+      setStackMarkers([marker]);
     } else {
-      // No source
-      if (this.srcViewRef.current && this.noSrcViewRef.current) {
-        this.srcViewRef.current.hidden = true;
-        this.noSrcViewRef.current.hidden = false;
+      if (srcViewRef.current && noSrcViewRef.current) {
+        srcViewRef.current.hidden = true;
+        noSrcViewRef.current.hidden = false;
       }
     }
-  };
+  }, []);
 
-  private onLoad = (editor: ace.Ace.Editor) => {
+  const setupGutterClickListener = useCallback(() => {
+    gutterClickListenerRef.current = (e: GdbAny) => {
+      const target = e.domEvent.target;
+
+      if (
+        target.className.indexOf("ace_gutter-cell") === -1 ||
+        !editorRef.current?.editor.isFocused() ||
+        e.clientX > 25 + target.getBoundingClientRect().left
+      ) {
+        return;
+      }
+
+      const row = e.getDocumentPosition().row;
+      toggleBreakpointAtRow(e.editor, row);
+      e.stop();
+    };
+
+    if (editorRef.current?.editor && gutterClickListenerRef.current) {
+      editorRef.current.editor.on("gutterclick", gutterClickListenerRef.current);
+    }
+  }, [toggleBreakpointAtRow]);
+
+  const handleChangeEditor = useCallback((e: Event) => {
+    const ev = e as CustomEvent;
+    if (ev.detail.theme) {
+      const newTheme = editorThemes.get(ev.detail.theme) || defaultTheme;
+      setTheme(newTheme);
+    }
+    if (ev.detail.fontSize) {
+      setFontSize(ev.detail.fontSize);
+      setLineHeight(ev.detail.fontSize + 1);
+    }
+    if (ev.detail.fontName) {
+      setFontName(ev.detail.fontName);
+    }
+  }, []);
+
+  useEffect(() => {
+    setupEditorCommands();
+    setupGutterClickListener();
+
+    editorRef.current?.editor.setOption("showFoldWidgets", false);
+
+    window.ipcToMain.getSettings().then((gdb: GdbAny): void => {
+      if (gdb.gui.sourceViewerTheme) {
+        const savedTheme = editorThemes.get(gdb.gui.sourceViewerTheme) || defaultTheme;
+        setTheme(savedTheme);
+      }
+
+      if (gdb.gui.sourceViewerFontSize) {
+        const savedFontSize = parseInt(gdb.gui.sourceViewerFontSize);
+        setFontSize(savedFontSize);
+        setLineHeight(savedFontSize + 1);
+      }
+
+      if (gdb.gui.sourceViewerFontName) {
+        setFontName(gdb.gui.sourceViewerFontName);
+      }
+    });
+
+    const unsubscribeSourceFile = window.ipcToMain.sourceFile((data: gdbShowSourceInfo) => {
+      const lastPeriodIndex: number = data.fileName.lastIndexOf(".");
+
+      let newMode: string = defaultMode;
+      if (lastPeriodIndex !== -1) {
+        const fileExt: string = data.fileName.slice(lastPeriodIndex + 1).toLowerCase();
+        newMode = editorModes.get(fileExt) || defaultMode;
+      }
+
+      setMode(newMode);
+      displayData(data);
+      updateBreakpointMarkers();
+      //this.addThreadMarkers();
+    });
+
+    const unsubscribeBrk = window.ipcToMain.dataBrkPts((data: gdbBreakpoint[]) => {
+      breakpointsRef.current = [];
+      data?.forEach((bp) => {
+        const file = bp.fullname;
+        const bpLine = parseInt(bp.line, 10) - 1;
+        const type = bp.enabled === "y" ? "ace_breakpoint_enabled" : "ace_breakpoint_disabled";
+        breakpointsRef.current.push({ line: bpLine, type: type, file: file });
+      });
+
+      updateBreakpointMarkers();
+    });
+
+    window.addEventListener("changeEditor", handleChangeEditor);
+
+    const editor = editorRef.current?.editor;
+    const gutterListener = gutterClickListenerRef.current;
+
+    return () => {
+      if (gutterListener && editor) {
+        editor.off("gutterclick", gutterListener);
+      }
+      window.removeEventListener("changeEditor", handleChangeEditor);
+      unsubscribeSourceFile();
+      unsubscribeBrk();
+    };
+  }, [
+    displayData,
+    handleChangeEditor,
+    setupEditorCommands,
+    setupGutterClickListener,
+    updateBreakpointMarkers,
+  ]);
+
+  useEffect(() => {
+    if (currentMarker !== -1) {
+      editorRef.current?.editor.scrollToLine(currentMarker, true, true);
+    }
+  }, [currentMarker]);
+
+  const onLoad = useCallback((editor: ace.Ace.Editor) => {
     editor.clearSelection();
-  };
+  }, []);
 
-  override render(): JSX.Element {
-    const { source, fullpath, filename, line, stackMarkers } = this.state;
-
-    return (
-      <div className="full-size">
-        <div className="full-size" ref={this.srcViewRef} hidden={false}>
-          <div className="full-size flex-container">
-            <div className="file-name flex-item-grow">{fullpath}</div>
-            <AceEditor
-              className="flex-item"
-              ref={this.editorRef}
-              mode={this.state.mode}
-              theme={this.state.theme}
-              fontSize={this.state.fontSize}
-              lineHeight={this.state.lineHeight}
-              onLoad={this.onLoad}
-              value={source}
-              markers={stackMarkers}
-              readOnly={true}
-              showPrintMargin={false}
-              showGutter={true}
-              name="code-editor-instance"
-              setOptions={{ fontFamily: this.state.fontName }}
-              style={{ width: "100%", height: "100%" }}
-            />
-          </div>
+  return (
+    <div className="full-size">
+      <div className="full-size" ref={srcViewRef} hidden={false}>
+        <div id="gdb-ace-editor" className="full-size flex-container">
+          <div className="file-name flex-item-grow">{fullpath}</div>
+          <AceEditor
+            ref={editorRef}
+            className="flex-item"
+            mode={mode}
+            theme={theme}
+            fontSize={fontSize}
+            lineHeight={lineHeight}
+            onLoad={onLoad}
+            value={source}
+            markers={stackMarkers}
+            readOnly={true}
+            showPrintMargin={false}
+            showGutter={true}
+            name="code-editor-instance"
+            setOptions={{ fontFamily: fontName }}
+            style={{ width: "100%", height: "100%" }}
+          />
         </div>
-        <div ref={this.noSrcViewRef} hidden>
-          <div className="no-source">
-            <table className="no-source-table">
-              <caption className="no-source-header">No Source Found:</caption>
-              <tbody>
-                <tr>
-                  <td className="no-source-row-header">Filename:</td>
-                  <td className="no-source-row-data">
-                    <span className="no-source-filename">{filename}</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="no-source-row-header">Line:</td>
-                  <td className="no-source-row-data">
-                    <span className="no-source-lineno">{line}</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="no-source-row-header">Full Path:</td>
-                  <td className="no-source-row-data">
-                    <span className="no-source-fullpath">{fullpath}</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div>
-              <button className="no-source-button button-disassemble">Show Diassembly</button>
-              <button className="no-source-button button-open-file">Open File...</button>
-            </div>
+        <ContextMenuComponent
+          target="#gdb-ace-editor"
+          items={menuCopy}
+          select={() => {
+            const text = editorRef.current?.editor.getSelectedText();
+            sendTextToClipboard(text ?? "");
+          }}
+        />
+      </div>
+      <div ref={noSrcViewRef} hidden>
+        <div className="no-source">
+          <table className="no-source-table">
+            <caption className="no-source-header">No Source Found:</caption>
+            <tbody>
+              <tr>
+                <td className="no-source-row-header">Filename:</td>
+                <td className="no-source-row-data">
+                  <span className="no-source-filename">{filename}</span>
+                </td>
+              </tr>
+              <tr>
+                <td className="no-source-row-header">Line:</td>
+                <td className="no-source-row-data">
+                  <span className="no-source-lineno">{line}</span>
+                </td>
+              </tr>
+              <tr>
+                <td className="no-source-row-header">Full Path:</td>
+                <td className="no-source-row-data">
+                  <span className="no-source-fullpath">{fullpath}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div>
+            <button className="no-source-button button-disassemble">Show Diassembly</button>
+            <button className="no-source-button button-open-file">Open File...</button>
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }

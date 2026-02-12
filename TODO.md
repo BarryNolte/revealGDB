@@ -1,27 +1,25 @@
 # UI Related
+  * Connection Model Dialog with status while connecting
   * Cut/Copy/Paste/drag/drop
+  * Command Window Clear Button
   * Themeing
   * Connection manager
     * args
     * environment (set/unset)
     * path to exe
     * working directory
-  * Disassembly Window
-    * UI for picking what to disassemble
-    * Highlight registers?
-    * "Show Disassembly" button working in source window
-    * Window icon
   * Cleanup menus
   * Convience variables
   * Save column widths with layout
-  * "Busy" screen during connect (Probable bad idea?)
 
 # Bugs
 
 # New Features
+  * Disassembly Window
+    * Highlight registers?
+    * "Show Disassembly" button working in source window
   * Python Window for running python commands
   * Values on hover in source
-  * Click on function name for disassembly
   * Thread markers in source (better with multiple source windows)
   * Tracepoints - How to insert more automatically
   * Set Next Statement from editor
@@ -42,6 +40,7 @@
 # New Settings
   * rowHeight for grid toolwindows
 
+~~Click on function name for disassembly~~
 ~~Locals view~~
 ~~Locals editing~~
 ~~Autofit columns everywhere~~

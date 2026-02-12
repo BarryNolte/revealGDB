@@ -42,6 +42,7 @@ import iconSrc from "./icons/icons8-source-code-48.png?asset";
 import iconLocal from "./icons/icons8-local-48.png?asset";
 // @ts-expect-error the &asset messes up the type checking
 import iconBp from "./icons/icons8-dot-48.png?asset";
+import iconDisa from "./icons/icons8-disassembly-48.png";
 
 /* Application Version Info */
 export let AppMainVersionInfo: Map<string, GdbAny>;
@@ -243,7 +244,7 @@ export default class App extends Component {
             id="disassemblyWindow"
             data-panel-caption="Disassembly"
             hidden={true}
-            data-panel-icon={iconRegister}
+            data-panel-icon={iconDisa}
           >
             <GdbDisassemblerWindow />
           </div>

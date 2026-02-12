@@ -9,144 +9,165 @@ import {
   Resize,
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
-import { Component, createRef, JSX } from "react";
+import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
+import { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
 import {
   gdbThread,
   gdbThreadGroup,
 } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
-
+import { menuCopy } from "../utilities/Clipboard";
 import "./GdbThreadsWindow.css";
 
-export default class GdbThreadsWindow extends Component {
-  private gridRef = createRef<GridComponent>();
+export default function GdbThreadsWindow(): JSX.Element {
+  const gridRef = useRef<GridComponent | null>(null);
+  const [threadData, setThreadData] = useState<GdbAny[]>([]);
 
-  private selectionOptions: SelectionSettingsModel = {
-    mode: "Row",
-    type: "Single",
-  };
+  const selectionOptions: SelectionSettingsModel = useMemo(
+    () => ({
+      mode: "Both",
+      type: "Multiple",
+    }),
+    [],
+  );
 
-  private groupOptions: GroupSettingsModel = {
-    columns: ["groupId"],
-    showDropArea: false,
-  };
+  const groupOptions: GroupSettingsModel = useMemo(
+    () => ({
+      columns: ["groupId"],
+      showDropArea: false,
+    }),
+    [],
+  );
 
-  override componentDidMount() {
-    window.ipcToMain.dataThreads((data: GdbAny) => {
-      if (this.gridRef.current) {
-        this.gridRef.current.dataSource = [];
+  useEffect(() => {
+    const unsubscribe = window.ipcToMain.dataThreads((data: GdbAny) => {
+      const grid = gridRef.current;
+      if (!grid) {
+        return;
+      }
 
-        const groups = data.grp;
-        const threads = data.th;
+      //grid.dataSource = [];
+      const threadList: GdbAny[] = [];
 
-        groups.forEach((group: gdbThreadGroup) => {
-          threads.forEach((thread: gdbThread) => {
-            ((this.gridRef.current as GridComponent).dataSource as object[]).push({
-              groupId: group.gid,
-              active: thread.active,
-              id: thread.id,
-              targetId: thread.targetId,
-              details: thread.details,
-              name: thread.name,
-              state: thread.state,
-              frame: `${thread.frame.func}:${thread.frame.line}`,
-            });
+      const groups = data.grp;
+      const threads = data.th;
+
+      groups.forEach((group: gdbThreadGroup) => {
+        threads.forEach((thread: gdbThread) => {
+          threadList.push({
+            groupId: group.gid,
+            active: thread.active,
+            id: thread.id,
+            targetId: thread.targetId,
+            details: thread.details,
+            name: thread.name,
+            state: thread.state,
+            frame: `${thread.frame.func}:${thread.frame.line}`,
           });
         });
+      });
 
-        this.gridRef.current.setProperties({
-          dataSource: this.gridRef.current.dataSource as object[],
-        });
+      // grid.setProperties({
+      //   dataSource: grid.dataSource as object[],
+      // });
+      setThreadData(threadList);
 
-        this.gridRef.current?.autoFitColumns(
-          ["active", "id", "details", "frame", "state", "name", "targetId"],
-          0,
-        );
-      }
+      grid.autoFitColumns(["active", "id", "details", "frame", "state", "name", "targetId"], 0);
     });
-  }
 
-  private emptyMessageTemplate(): JSX.Element {
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const emptyMessageTemplate = useCallback((): JSX.Element => {
     return (
       <div className="emptyRecordTemplate">
         <span>No thread data available.</span>
       </div>
     );
-  }
+  }, []);
 
-  override render(): JSX.Element {
-    return (
-      <div className="full-size flex-container">
-        <GridComponent
-          ref={this.gridRef}
-          emptyRecordTemplate={this.emptyMessageTemplate}
-          height="100%"
-          rowHeight={16}
-          className="flex-item"
-          allowResizing={true}
-          allowPaging={false}
-          allowGrouping={true}
-          showColumnMenu={true}
-          allowFiltering={false}
-          groupSettings={this.groupOptions}
-          selectionSettings={this.selectionOptions}
-          gridLines="Both"
-        >
-          <ColumnsDirective>
-            <ColumnDirective
-              field="active"
-              headerText="Active"
-              isPrimaryKey={true}
-              textAlign="Left"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective
-              field="groupId"
-              headerText="Group Id"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective
-              field="id"
-              headerText="Id"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective
-              field="details"
-              headerText="Details"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective
-              field="frame"
-              headerText="Frame"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective
-              field="state"
-              headerText="State"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective
-              field="name"
-              headerText="Name"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective
-              field="targetId"
-              headerText="Target Id"
-              autoFit={true}
-              clipMode="EllipsisWithTooltip"
-            />
-          </ColumnsDirective>
-          <Inject services={[Resize, ColumnMenu, Group]} />
-        </GridComponent>
-      </div>
-    );
-  }
+  return (
+    <div className="full-size flex-container">
+      <GridComponent
+        ref={gridRef}
+        id="threads-grid"
+        dataSource={threadData}
+        emptyRecordTemplate={emptyMessageTemplate}
+        height="100%"
+        rowHeight={16}
+        className="flex-item"
+        allowResizing={true}
+        allowPaging={false}
+        allowGrouping={true}
+        showColumnMenu={true}
+        allowFiltering={false}
+        groupSettings={groupOptions}
+        selectionSettings={selectionOptions}
+        gridLines="Both"
+      >
+        <ColumnsDirective>
+          <ColumnDirective
+            field="active"
+            headerText="Active"
+            isPrimaryKey={true}
+            textAlign="Left"
+            autoFit={true}
+            clipMode="EllipsisWithTooltip"
+          />
+          <ColumnDirective
+            field="groupId"
+            headerText="Group Id"
+            autoFit={true}
+            clipMode="EllipsisWithTooltip"
+          />
+          <ColumnDirective
+            field="id"
+            headerText="Id"
+            autoFit={true}
+            clipMode="EllipsisWithTooltip"
+          />
+          <ColumnDirective
+            field="details"
+            headerText="Details"
+            autoFit={true}
+            clipMode="EllipsisWithTooltip"
+          />
+          <ColumnDirective
+            field="frame"
+            headerText="Frame"
+            autoFit={true}
+            clipMode="EllipsisWithTooltip"
+          />
+          <ColumnDirective
+            field="state"
+            headerText="State"
+            autoFit={true}
+            clipMode="EllipsisWithTooltip"
+          />
+          <ColumnDirective
+            field="name"
+            headerText="Name"
+            autoFit={true}
+            clipMode="EllipsisWithTooltip"
+          />
+          <ColumnDirective
+            field="targetId"
+            headerText="Target Id"
+            autoFit={true}
+            clipMode="EllipsisWithTooltip"
+          />
+        </ColumnsDirective>
+        <Inject services={[Resize, ColumnMenu, Group]} />
+      </GridComponent>
+      <ContextMenuComponent
+        target="#threads-grid"
+        items={menuCopy}
+        select={() => {
+          gridRef.current?.copy();
+        }}
+      />
+    </div>
+  );
 }

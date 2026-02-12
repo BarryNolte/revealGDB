@@ -35,9 +35,11 @@ export function validateValue(input: string | undefined): ValidationResult {
     return { isValid: false, valueType: null, hexValue: null, decimalValue: null };
   }
 
+  const trimmedInput = input.trim();
+
   // Check for dollar prefix format: $aaaaaaaaaaa (up to 32 alphanumeric chars)
   const dollarRegex = /^\$[a-zA-Z0-9]{1,32}$/;
-  if (dollarRegex.test(input)) {
+  if (dollarRegex.test(trimmedInput)) {
     return { isValid: true, valueType: ValueType.DollarPrefix, hexValue: null, decimalValue: null };
   }
 
@@ -45,9 +47,9 @@ export function validateValue(input: string | undefined): ValidationResult {
   // Note: This check is performed before base10 because all valid base10 numbers
   // are also valid hexadecimal, and per requirements, we treat them as hex
   const hexRegex = /^(0x)?[0-9a-fA-F]+$/;
-  if (hexRegex.test(input)) {
-    const hexValue = input.startsWith("0x") ? input : `0x${input}`;
-    const decimalValue = parseInt(input, 16);
+  if (hexRegex.test(trimmedInput)) {
+    const hexValue = trimmedInput.startsWith("0x") ? trimmedInput : `0x${trimmedInput}`;
+    const decimalValue = parseInt(trimmedInput, 16);
     return { isValid: true, valueType: ValueType.Hexadecimal, hexValue, decimalValue };
   }
 
