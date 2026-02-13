@@ -66,7 +66,6 @@ export default function GdbDisassemblerWindow(): JSX.Element {
   // };
 
   const instructionsTemplate = (props: gdbAsmRow): JSX.Element => {
-    console.log("Rendering instruction template for:", props);
     const instParts: JSX.Element[] = [];
 
     props.instructions.forEach((token: DisasmToken) => {
@@ -210,6 +209,7 @@ export default function GdbDisassemblerWindow(): JSX.Element {
                   popupHeight={400}
                   fields={{ value: "function" }}
                   itemTemplate={itemTemplate}
+                  //TODO: Change this so it doesn't try to disassemble on every change (only on selection)
                   onChange={disasmFunction}
                 ></ComboBoxComponent>
               </td>
@@ -273,7 +273,6 @@ export default function GdbDisassemblerWindow(): JSX.Element {
           groupSettings={groupOptions}
           selectionSettings={selectionOptions}
           gridLines="Vertical"
-          //created={onGridCreated}
         >
           <ColumnsDirective>
             <ColumnDirective

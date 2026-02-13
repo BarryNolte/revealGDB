@@ -272,7 +272,6 @@ export class miInterface extends EventEmitter {
         {
           const idChunks = this.rgxBkpt.exec(data);
           if (!idChunks || !idChunks.groups) {
-            console.error(`Breakpoint Created (error): ${data}`);
             return false;
           }
           this.gdbDB.createBreakpoint(idChunks.groups as gdbBreakpoint);
@@ -283,7 +282,6 @@ export class miInterface extends EventEmitter {
         {
           const idChunks = this.rgxBkpt.exec(data);
           if (!idChunks || !idChunks.groups) {
-            console.error(`Breakpoint Modified (error): ${data}`);
             return false;
           }
           this.gdbDB.updateBreakpoint(idChunks.groups as gdbBreakpoint);
@@ -331,7 +329,6 @@ export class miInterface extends EventEmitter {
           switch (resResult) {
             case "asm_insns":
               {
-                console.log(output);
                 const rgxAsmData: RegExp = /asm_insns=\[(?<asm_list>.*)]$/gm;
                 const asmData = rgxAsmData.exec(output);
                 const asmList = asmData?.groups?.["asm_list"];
@@ -674,9 +671,9 @@ export class miInterface extends EventEmitter {
             case "exec":
             case "no-history":
             default: {
-              console.error(
-                `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-              );
+              //   console.error(
+              //     `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
+              //   );
             }
           }
 

@@ -333,7 +333,7 @@ export default function GdbSourceWindow(): JSX.Element {
       //this.addThreadMarkers();
     });
 
-    const unsubscribeBrk = window.ipcToMain.dataBrkPts((data: gdbBreakpoint[]) => {
+    const unsubscribeBrk = window.ipcToMain.dataBrkPts((data: Map<string, gdbBreakpoint>) => {
       breakpointsRef.current = [];
       data?.forEach((bp) => {
         const file = bp.fullname;

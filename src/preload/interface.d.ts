@@ -10,7 +10,7 @@ export interface IElectronAPI {
   sourceFile: (callback: GdbAny) => () => void;
   dataLocals: (callback: GdbAny) => () => void;
   dataThreads: (callback: GdbAny) => () => void;
-  dataBrkPts: (callback: GdbAny) => () => void;
+  dataBrkPts: (callback: (data: Map<string, gdbBreakpoint>) => void) => () => void;
   dataMemory: (callback: GdbAny) => () => void;
   dataDisasm: (callback: GdbAny) => () => void;
   dataFunctions: (callback: GdbAny) => () => void;

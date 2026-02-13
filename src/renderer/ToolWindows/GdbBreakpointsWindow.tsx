@@ -20,7 +20,7 @@ import "./GdbBreakpointsWindow.css";
 
 export default function GdbBreakPointWindow(): JSX.Element {
   const gridRef = useRef<GridComponent | null>(null);
-  const [breakpointData, setBreakpointData] = useState<gdbBreakpoint[]>([]);
+  const [breakpointData, setBreakpointData] = useState<GdbAny[]>([]);
 
   const selectionOptions: SelectionSettingsModel = useMemo(
     () => ({
@@ -30,7 +30,7 @@ export default function GdbBreakPointWindow(): JSX.Element {
     [],
   );
   useEffect(() => {
-    const unsubscribe = window.ipcToMain.dataBrkPts((data: gdbBreakpoint[]) => {
+    const unsubscribe = window.ipcToMain.dataBrkPts((data: Map<string, gdbBreakpoint>) => {
       const grid = gridRef.current;
       if (!grid) {
         return;
