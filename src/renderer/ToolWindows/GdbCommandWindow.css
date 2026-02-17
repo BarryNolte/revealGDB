@@ -85,7 +85,6 @@
   background-size: cover;
   height: 34px;
   width: 34px;
-  margin-right: 5px;
 }
 
 .commandButtonSend {
@@ -93,4 +92,12 @@
   background-size: cover;
   height: 34px;
   width: 34px;
+}
+
+.commandButtonClear {
+  background-image: url("../icons/icons8-clear-48.png");
+  background-size: cover;
+  height: 34px;
+  width: 34px;
+  margin-right: 5px;
 }

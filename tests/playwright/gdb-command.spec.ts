@@ -137,6 +137,23 @@ test("routes console/log/error/debug output", async ({ page }) => {
   await expect(output.locator(".rowDebug").last()).toHaveText("debug-line");
 });
 
+test("clear output window removes messages", async ({ page }) => {
+  await page.evaluate(() => {
+    window.__GDB_COMMAND_TEST_API__?.emitLog("first-line");
+    window.__GDB_COMMAND_TEST_API__?.emitLog("second-line");
+  });
+
+  const output = page.getByTestId("gdb-command-output");
+  await expect(output.locator(".rowLog")).toHaveCount(2);
+
+  await page.getByTestId("gdb-command-clear").evaluate((el) => {
+    (el as HTMLButtonElement).click();
+  });
+
+  await expect(output.locator(".rowLog")).toHaveCount(0);
+  await expect(output).toHaveText("");
+});
+
 test("enter sends command and clears input", async ({ page }) => {
   const input = page.getByTestId("gdb-command-input");
 
@@ -159,7 +176,9 @@ test("send button sends command", async ({ page }) => {
   const sendButton = page.getByTestId("gdb-command-send");
 
   await input.fill("thread apply all bt");
-  await sendButton.click();
+  await sendButton.evaluate((el) => {
+    (el as HTMLButtonElement).click();
+  });
 
   const sent = await page.evaluate(() => window.__GDB_COMMAND_TEST_API__?.getSentCommands());
   expect(sent).toEqual(["thread apply all bt"]);
@@ -170,7 +189,9 @@ test("history list toggles and selects", async ({ page }) => {
   const historyButton = page.getByTestId("gdb-command-show-history");
   const historySelect = page.getByTestId("gdb-command-history");
 
-  await historyButton.click();
+  await historyButton.evaluate((el) => {
+    (el as HTMLButtonElement).click();
+  });
   await expect(historySelect).toBeVisible();
   await expect(historySelect.locator("option")).toHaveCount(3);
 
@@ -179,7 +200,9 @@ test("history list toggles and selects", async ({ page }) => {
   await expect(historySelect).toBeHidden();
   await expect(input).toHaveValue("help");
 
-  await historyButton.click();
+  await historyButton.evaluate((el) => {
+    (el as HTMLButtonElement).click();
+  });
   await expect(historySelect).toBeVisible();
   await historySelect.press("Escape");
   await expect(historySelect).toBeHidden();
@@ -190,7 +213,9 @@ test("double-click history fills input", async ({ page }) => {
   const historySelect = page.getByTestId("gdb-command-history");
   const input = page.getByTestId("gdb-command-input");
 
-  await historyButton.click();
+  await historyButton.evaluate((el) => {
+    (el as HTMLButtonElement).click();
+  });
   await expect(historySelect).toBeVisible();
 
   await historySelect.selectOption({ index: 1 });

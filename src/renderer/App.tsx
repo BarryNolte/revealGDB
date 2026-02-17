@@ -1,24 +1,28 @@
 import { DockManager } from "../../node_modules/dock-spawn-ts/lib/js/DockManager.js";
 
-import { Component, createRef, JSX, RefObject } from "react";
+import { JSX, RefObject, useEffect, useRef } from "react";
 import { GdbAny } from "../common/gdb-common";
 
 /* Dialogs */
-import { AboutBox } from "./Dialogs/AboutBox";
-import { ConnectionManager } from "./Dialogs/ConnectionManager";
-import { Settings } from "./Dialogs/Settings";
+import { AboutBox, type AboutBoxHandle } from "./Dialogs/AboutBox";
+import {
+  WhileConnectingDialog,
+  type WhileConnectingDialogHandle,
+} from "./Dialogs/ConnectingDialog.jsx";
+import { ConnectionManager, type ConnectionManagerHandle } from "./Dialogs/ConnectionManager";
 
 /* Tool Windows */
 import RevealToolbar from "./Components/Toolbar.jsx";
+import Settings, { SettingsHandle } from "./Dialogs/Settings.jsx";
 import GdbBreakPointWindow from "./ToolWindows/GdbBreakpointsWindow";
 import GdbCallStackWindow from "./ToolWindows/GdbCallstackWindow";
 import GdbCommandWindow from "./ToolWindows/GdbCommandWindow";
+import GdbDisassemblerWindow from "./ToolWindows/GdbDisassemblerWindow.jsx";
 import GdbLocalsWindow from "./ToolWindows/GdbLocalsWindow";
 import GdbMemoryWindow from "./ToolWindows/GdbMemoryWindow";
 import GdbRegistersWindow from "./ToolWindows/GdbRegistersWindow";
 import GdbSourceWindow from "./ToolWindows/GdbSourceWindow";
 import GdbThreadsWindow from "./ToolWindows/GdbThreadsWindow";
-import GdbDisassemblerWindow from "./ToolWindows/GdbDisassemblerWindow.jsx";
 import { DockMenuConnector } from "./utilities/DockMenuConnector.js";
 
 /* Dock Manager */
@@ -41,8 +45,9 @@ import iconSrc from "./icons/icons8-source-code-48.png?asset";
 // @ts-expect-error the &asset messes up the type checking
 import iconLocal from "./icons/icons8-local-48.png?asset";
 // @ts-expect-error the &asset messes up the type checking
+import iconDisa from "./icons/icons8-disassembly-48.png?asset";
+// @ts-expect-error the &asset messes up the type checking
 import iconBp from "./icons/icons8-dot-48.png?asset";
-import iconDisa from "./icons/icons8-disassembly-48.png";
 
 /* Application Version Info */
 export let AppMainVersionInfo: Map<string, GdbAny>;
@@ -50,45 +55,29 @@ window.ipcToMain.getVersionInfo().then((e) => {
   AppMainVersionInfo = e;
 });
 
-export default class App extends Component {
-  private toolbarRef = createRef<RevealToolbar>();
-  private aboutBoxRef = createRef<AboutBox>();
-  private settingsRef = createRef<Settings>();
-  private connectionsRef = createRef<ConnectionManager>();
+export default function App(): JSX.Element {
+  const toolbarRef = useRef<RevealToolbar>(null);
+  const aboutBoxRef = useRef<AboutBoxHandle>(null);
+  const settingsRef = useRef<SettingsHandle>(null);
+  const connectionsRef = useRef<ConnectionManagerHandle>(null);
+  const whileConnectingRef = useRef<WhileConnectingDialogHandle>(null);
 
-  override componentDidMount() {
-    console.log("Application DidMount");
+  useEffect(() => {
     window.ipcToMain.notifyRender((msg: GdbAny) => {
       switch (msg.command) {
         case "about-box":
           {
-            this.aboutBoxRef.current?.ShowDialog();
+            aboutBoxRef.current?.ShowDialog();
           }
           break;
         case "connections-dialog":
           {
-            this.connectionsRef.current?.ShowDialog();
+            connectionsRef.current?.ShowDialog();
           }
           break;
         case "settings-dialog":
           {
-            this.settingsRef.current?.ShowDialog();
-          }
-          break;
-        case "connection-started":
-          {
-            console.log(`Connection Started: ${Date.now()}`);
-          }
-          break;
-        case "connection-success":
-          {
-            console.log(`Connection Success: ${Date.now()}`);
-            dockManager.invalidate();
-          }
-          break;
-        case "connection-failed":
-          {
-            console.log(`Connection Failed : ${Date.now()}`);
+            settingsRef.current?.ShowDialog();
           }
           break;
       }
@@ -176,10 +165,9 @@ export default class App extends Component {
     });
 
     dockMenuConnector.reconsilePanels();
-    this.toolbarRef.current?.FillWindowList();
+    toolbarRef.current?.FillWindowList();
 
-    // Let the dock manager element fill in the entire screen
-    window.onresize = function () {
+    const handleResize = () => {
       const divDockManager = document.getElementById("revealDockDiv")!;
 
       dockManager.resize(
@@ -188,105 +176,95 @@ export default class App extends Component {
       );
       window.dispatchEvent(new Event("save-dock-layout"));
     };
+
+    window.addEventListener("resize", handleResize);
     window.dispatchEvent(new Event("resize"));
     dockMenuConnector?.reconsilePanels();
 
     // window.addEventListener("update-window-list", () => {
-    //   this.toolbarRef.current?.FillWindowList();
+    //   toolbarRef.current?.FillWindowList();
     // });
 
     window.dispatchEvent(new Event("update-window-list"));
-  }
 
-  override render(): JSX.Element {
-    return (
-      <div className={"main-page-container"}>
-        <RevealToolbar
-          ref={this.toolbarRef}
-          connectionsRef={this.connectionsRef as RefObject<ConnectionManager>}
-          settingsRef={this.settingsRef as RefObject<Settings>}
-        />
-        <div id="revealDockDiv" className="full-size">
-          <div id="revealDockManager" className="revealDockManager"></div>
-          <div
-            id="sourceWindow"
-            data-panel-caption="Source"
-            hidden={true}
-            data-panel-icon={iconSrc}
-          >
-            <GdbSourceWindow />
-          </div>
-          <div
-            id="localsWindow"
-            data-panel-caption="Locals"
-            hidden={true}
-            data-panel-icon={iconLocal}
-          >
-            <GdbLocalsWindow />
-          </div>
-          <div
-            id="threadsWindow"
-            data-panel-caption="Threads"
-            data-panel-icon={iconThread}
-            hidden={true}
-          >
-            <GdbThreadsWindow />
-          </div>
-          <div
-            id="registersWindow"
-            data-panel-caption="Registers"
-            hidden={true}
-            data-panel-icon={iconRegister}
-          >
-            <GdbRegistersWindow />
-          </div>
-          <div
-            id="disassemblyWindow"
-            data-panel-caption="Disassembly"
-            hidden={true}
-            data-panel-icon={iconDisa}
-          >
-            <GdbDisassemblerWindow />
-          </div>
-          <div
-            id="commandWindow"
-            data-panel-caption="Command"
-            hidden={true}
-            data-panel-icon={iconCmd}
-          >
-            <GdbCommandWindow />
-          </div>
-          <div
-            id="memoryWindow"
-            data-panel-caption="Memory"
-            hidden={true}
-            data-panel-icon={iconHex}
-          >
-            <GdbMemoryWindow />
-          </div>
-          <div
-            id="callstackWindow"
-            data-panel-caption="Call Stack"
-            hidden={true}
-            data-panel-icon={iconStack}
-          >
-            <GdbCallStackWindow />
-          </div>
-          <div
-            id="bpWindow"
-            data-panel-caption="Breakpoints"
-            hidden={true}
-            data-panel-icon={iconBp}
-          >
-            <GdbBreakPointWindow />
-          </div>
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  return (
+    <div className={"main-page-container"}>
+      <RevealToolbar
+        ref={toolbarRef}
+        connectionsRef={connectionsRef as RefObject<ConnectionManagerHandle>}
+        settingsRef={settingsRef as RefObject<SettingsHandle>}
+      />
+      <div id="revealDockDiv" className="full-size">
+        <div id="revealDockManager" className="revealDockManager"></div>
+        <div id="sourceWindow" data-panel-caption="Source" hidden={true} data-panel-icon={iconSrc}>
+          <GdbSourceWindow />
         </div>
-        <AboutBox ref={this.aboutBoxRef} />
-        <Settings ref={this.settingsRef} />
-        <ConnectionManager ref={this.connectionsRef} />
+        <div
+          id="localsWindow"
+          data-panel-caption="Locals"
+          hidden={true}
+          data-panel-icon={iconLocal}
+        >
+          <GdbLocalsWindow />
+        </div>
+        <div
+          id="threadsWindow"
+          data-panel-caption="Threads"
+          data-panel-icon={iconThread}
+          hidden={true}
+        >
+          <GdbThreadsWindow />
+        </div>
+        <div
+          id="registersWindow"
+          data-panel-caption="Registers"
+          hidden={true}
+          data-panel-icon={iconRegister}
+        >
+          <GdbRegistersWindow />
+        </div>
+        <div
+          id="disassemblyWindow"
+          data-panel-caption="Disassembly"
+          hidden={true}
+          data-panel-icon={iconDisa}
+        >
+          <GdbDisassemblerWindow />
+        </div>
+        <div
+          id="commandWindow"
+          data-panel-caption="Command"
+          hidden={true}
+          data-panel-icon={iconCmd}
+        >
+          <GdbCommandWindow />
+        </div>
+        <div id="memoryWindow" data-panel-caption="Memory" hidden={true} data-panel-icon={iconHex}>
+          <GdbMemoryWindow />
+        </div>
+        <div
+          id="callstackWindow"
+          data-panel-caption="Call Stack"
+          hidden={true}
+          data-panel-icon={iconStack}
+        >
+          <GdbCallStackWindow />
+        </div>
+        <div id="bpWindow" data-panel-caption="Breakpoints" hidden={true} data-panel-icon={iconBp}>
+          <GdbBreakPointWindow />
+        </div>
       </div>
-    );
-  }
+      <AboutBox ref={aboutBoxRef} />
+      <Settings ref={settingsRef} />
+      <ConnectionManager ref={connectionsRef} />
+      <WhileConnectingDialog ref={whileConnectingRef} />
+    </div>
+  );
 }
 
 window.addEventListener("beforeunload", () => {

@@ -1,3 +1,4 @@
+import { ConnectionNotifier } from "../../utilities/ConnectionNotifier";
 import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector";
 import { ChildProcess, spawn } from "child_process";
 
@@ -10,6 +11,7 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
   }
 
   override async Start(): Promise<boolean> {
+    ConnectionNotifier.getInstance().notifyFindingGdb();
     //const extraArgs: string[] = await AppSettings.get('connections[0].extraArgs') as string[] ?? [];
     //TODO: figure out how to add arguments to the command line
     const args: string[] = [
@@ -17,14 +19,22 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
       "-c",
       "cd ~/perftool; source ~/.profile; idf.py gdb --gdb-commands --interpreter=mi2",
     ];
+
+    ConnectionNotifier.getInstance().notifyGdbFound();
+
     console.log(`ARGS: ${args}`);
     console.log("");
+
+    ConnectionNotifier.getInstance().notifyGdbStarting();
 
     this.gdbExe = spawn("wsl", args, {
       cwd: "",
       shell: false,
       windowsHide: true,
     });
+    //TODO: handle errors when starting the process (e.g. wsl not installed, command fails, etc.)
+
+    ConnectionNotifier.getInstance().notifyGdbStarted();
 
     this.gdbExe.on("close", (code, signal) => {
       console.log(`Child process exited with code ${code} and signal ${signal}`);
@@ -48,7 +58,7 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
 
   override Send(data: string): void {
     this.gdbExe?.stdin?.write(data + "\n", (error) => {
-      console.log(`>>  ${data} : ${error}`);
+      console.log(`>>  ${data} > Error: ${error}`);
       this.emit("gdb-input", data);
     });
   }

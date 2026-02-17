@@ -1,59 +1,60 @@
-import { Component, JSX } from "react";
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
+import { forwardRef, JSX, useImperativeHandle, useState } from "react";
 
 interface ConnectionManagerProps {
   center?: boolean;
 }
 
-interface ConnectionManagerState {
-  hideDialog: boolean;
-}
+export type ConnectionManagerHandle = {
+  ShowDialog: () => void;
+};
 
-export class ConnectionManager extends Component<ConnectionManagerProps, ConnectionManagerState> {
-  constructor(props: ConnectionManagerProps) {
-    super(props);
-    this.state = { hideDialog: false };
-  }
+export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionManagerProps>(
+  (_props, ref): JSX.Element => {
+    const [hideDialog, setHideDialog] = useState(false);
 
-  ShowDialog() {
-    this.setState({ hideDialog: true });
-  }
+    useImperativeHandle(ref, () => ({
+      ShowDialog: () => {
+        setHideDialog(true);
+      },
+    }));
 
-  private dialogCloseFunc = () => {
-    this.setState({ hideDialog: false });
-  };
+    const dialogCloseFunc = () => {
+      setHideDialog(false);
+    };
 
-  private header = (): JSX.Element => {
-    return <div className="dialogHeader">Connections</div>;
-  };
+    const header = (): JSX.Element => {
+      return <div className="dialogHeader">Connections</div>;
+    };
 
-  private footer = (): JSX.Element => {
-    return (
-      <div>
-        <ButtonComponent onClick={this.dialogCloseFunc}>OK</ButtonComponent>
-      </div>
-    );
-  };
+    const footer = (): JSX.Element => {
+      return (
+        <div>
+          <ButtonComponent onClick={dialogCloseFunc}>OK</ButtonComponent>
+        </div>
+      );
+    };
 
-  override render(): JSX.Element {
     return (
       <div className="ConnectionManagerTarget">
         <DialogComponent
           className="dialogHeaderContainer"
           width="500px"
           target=".ConnectionManagerTarget"
-          visible={this.state.hideDialog}
-          header={this.header}
-          footerTemplate={this.footer}
+          visible={hideDialog}
+          header={header}
+          footerTemplate={footer}
           closeOnEscape={true}
           showCloseIcon={true}
-          close={this.dialogCloseFunc}
+          close={dialogCloseFunc}
           isModal={true} // Makes the dialog modal
         >
           Hello World!
         </DialogComponent>
       </div>
     );
-  }
-}
+  },
+);
+
+ConnectionManager.displayName = "ConnectionManager";

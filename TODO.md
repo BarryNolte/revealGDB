@@ -1,7 +1,5 @@
 # UI Related
   * Connection Model Dialog with status while connecting
-  * Cut/Copy/Paste/drag/drop
-  * Command Window Clear Button
   * Themeing
   * Connection manager
     * args
@@ -15,6 +13,7 @@
 # Bugs
 
 # New Features
+  * -exec-jump for "set next statement"
   * Disassembly Window
     * Highlight registers?
     * "Show Disassembly" button working in source window
@@ -40,6 +39,8 @@
 # New Settings
   * rowHeight for grid toolwindows
 
+~~Command Window Clear Button~~
+~~Cut/Copy/Paste/drag/drop~~
 ~~Click on function name for disassembly~~
 ~~Locals view~~
 ~~Locals editing~~

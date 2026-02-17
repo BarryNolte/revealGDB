@@ -223,6 +223,12 @@ export default function GdbCommandWindow(): JSX.Element {
     sendCommand();
   }, [sendCommand]);
 
+  const onClearWindow = useCallback(() => {
+    if (outputRef.current) {
+      outputRef.current.innerHTML = "";
+    }
+  }, []);
+
   return (
     <div className={"commandWindow full-size"} data-testid="gdb-command-window">
       <div
@@ -268,6 +274,13 @@ export default function GdbCommandWindow(): JSX.Element {
           type="button"
           onClick={onShowHistory}
           data-testid="gdb-command-show-history"
+        />
+        <button
+          className="commandButton commandButtonClear"
+          title="Clear Command Window"
+          type="button"
+          onClick={onClearWindow}
+          data-testid="gdb-command-clear"
         />
       </div>
       <ContextMenuComponent

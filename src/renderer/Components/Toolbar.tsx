@@ -1,21 +1,21 @@
 import { ItemDirective, ItemsDirective, ToolbarComponent } from "@syncfusion/ej2-react-navigations";
 import { ItemModel, SplitButtonComponent } from "@syncfusion/ej2-react-splitbuttons";
 import { Component, JSX, RefObject } from "react";
-import { ConnectionManager } from "../Dialogs/ConnectionManager";
-import { Settings } from "../Dialogs/Settings";
+import type { ConnectionManagerHandle } from "../Dialogs/ConnectionManager";
+import type { SettingsHandle } from "../Dialogs/Settings";
 
-import "./ToolBar.css";
 import { GdbAny } from "../../common/gdb-common";
 import { dockMenuConnector } from "../App";
+import "./ToolBar.css";
 
 type RevealToolbarProps = {
-  connectionsRef?: RefObject<ConnectionManager> | null;
-  settingsRef?: RefObject<Settings> | null;
+  connectionsRef?: RefObject<ConnectionManagerHandle> | null;
+  settingsRef?: RefObject<SettingsHandle> | null;
 };
 
 type RevealToolbarState = {
-  connectionsRef?: RefObject<ConnectionManager> | null;
-  settingsRef?: RefObject<Settings> | null;
+  connectionsRef?: RefObject<ConnectionManagerHandle> | null;
+  settingsRef?: RefObject<SettingsHandle> | null;
   items: ItemModel[];
 };
 
@@ -74,7 +74,9 @@ export default class RevealToolbar extends Component<RevealToolbarProps, RevealT
     winList?.forEach((win) => {
       const i = {
         text: win.displayName,
-        iconCss: `${win.iconCss} wm-icon ${!win.panel?.isDialog ? "wm-icon-visible" : "wm-icon-hidden"}`,
+        iconCss: `${win.iconCss} wm-icon ${
+          !win.panel?.isDialog ? "wm-icon-visible" : "wm-icon-hidden"
+        }`,
       };
       menuItems.push(i);
     });

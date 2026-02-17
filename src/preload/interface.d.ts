@@ -3,6 +3,7 @@ export interface IElectronAPI {
   logMessage: (callback: GdbAny) => () => void;
   errorMessage: (callback: GdbAny) => () => void;
   debugMessage: (callback: GdbAny) => () => void;
+  connectionStatus: (callback: GdbAny) => () => void;
   notifyRender: (callback: GdbAny) => () => void;
 
   dataRegisters: (callback: GdbAny) => () => void;
@@ -18,7 +19,6 @@ export interface IElectronAPI {
   getSettings: () => GdbAny;
   getSystemFonts: () => Promise<string[]>;
   getVersionInfo: () => Promise<Map<string, GdbAny>>;
-  //getFunctionNames: () => Promise<string[]>;
   sendGdbCommand: (command: string) => void;
   notifyMain: (command: GdbAny) => void;
 }

@@ -35,7 +35,13 @@ contextBridge.exposeInMainWorld("ipcToMain", {
       ipcRenderer.removeListener("debug-message", listener);
     };
   },
-
+  connectionStatus: (callback: GdbAny) => {
+    const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
+    ipcRenderer.on("connection-status", listener);
+    return () => {
+      ipcRenderer.removeListener("connection-status", listener);
+    };
+  },
   // General poking of the render process from the main process
   notifyRender: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
@@ -114,7 +120,6 @@ contextBridge.exposeInMainWorld("ipcToMain", {
   getSettings: () => ipcRenderer.invoke("getSettings"),
   getSystemFonts: () => ipcRenderer.invoke("getSystemFonts"),
   getVersionInfo: () => ipcRenderer.invoke("getVersionInfo"),
-  //getFunctionNames: () => ipcRenderer.invoke("getFunctionNames"),
   sendGdbCommand: (command: string) => ipcRenderer.send("gdb-command", command),
 
   // General poking of the main process by the render process
