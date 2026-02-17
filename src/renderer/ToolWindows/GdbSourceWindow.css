@@ -28,6 +28,12 @@
   z-index: 20;
 }
 
+.ace_thread_line {
+  position: absolute;
+  background: rgba(100, 100, 200, 0.5);
+  z-index: 19;
+}
+
 .ace_editor {
   height: calc(100% - 26px);
 }

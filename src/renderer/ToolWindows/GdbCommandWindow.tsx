@@ -1,187 +1,25 @@
-import { Component, createRef, KeyboardEvent } from "react";
-
+import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
+import { JSX, KeyboardEvent, useCallback, useEffect, useId, useRef } from "react";
 import { GdbAny } from "../../common/gdb-common";
+import { doCutCopyPaste, menuCopy, menuCutCopyPaste } from "../utilities/Clipboard";
 import { CommandHistory } from "../utilities/CommandHistory";
 import "./GdbCommandWindow.css";
 
-export default class GdbCommandWindow extends Component {
-  private cmdHistory: CommandHistory = new CommandHistory();
-  private outputRef = createRef<HTMLDivElement>();
-  private inputRef = createRef<HTMLInputElement>();
-  private historyRef = createRef<HTMLSelectElement>();
-  private shouldScroll = true;
+export default function GdbCommandWindow(): JSX.Element {
+  const idBase = useId();
+  const outputId = `cmdOutputRow-${idBase}`;
+  const inputId = `cmdInputRow-${idBase}`;
+  const cmdHistoryRef = useRef<CommandHistory>(new CommandHistory());
+  const outputRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const historyRef = useRef<HTMLSelectElement | null>(null);
+  const shouldScrollRef = useRef(true);
 
-  override componentDidMount() {
-    window.ipcToMain.getSettings().then((gdb: GdbAny) => {
-      this.cmdHistory.clearHistory();
-      gdb.command.history.forEach((cmd: string) => {
-        this.cmdHistory.add(cmd);
-      });
-    });
-
-    window.ipcToMain.notifyRender((msg: GdbAny): void => {
-      switch (msg?.command) {
-        case "command-entry":
-          {
-            if (this.inputRef.current) {
-              this.inputRef.current.focus();
-            }
-          }
-          break;
-      }
-    });
-
-    window.ipcToMain.consoleMessage((message: string) => {
-      this.appendMessage(message, "rowConsole");
-    });
-
-    window.ipcToMain.logMessage((message: string) => {
-      this.appendMessage(message, "rowLog");
-    });
-
-    window.ipcToMain.errorMessage((message: string) => {
-      this.appendMessage(message, "rowError");
-    });
-
-    if (this.historyRef.current) {
-      this.historyRef.current.ondblclick = (_e: Event) => {
-        if (this.historyRef.current) {
-          this.historyRef.current.hidden = true;
-
-          if (this.inputRef.current) {
-            const selIdx = this.historyRef.current.selectedIndex;
-            this.inputRef.current.value = this.historyRef.current.options[selIdx].value;
-            this.inputRef.current.focus();
-          }
-        }
-      };
-    }
-  }
-
-  private onSelectKeydownHandler = (args: KeyboardEvent<HTMLSelectElement>) => {
-    switch (args.key) {
-      case "Escape":
-        {
-          if (this.historyRef.current) {
-            this.historyRef.current.hidden = true;
-          }
-        }
-        break;
-      case "Enter":
-        {
-          if (this.historyRef.current) {
-            this.historyRef.current.hidden = true;
-          }
-
-          if (this.inputRef.current) {
-            this.inputRef.current.value = args.currentTarget.value;
-            this.inputRef.current.focus();
-          }
-        }
-        break;
-    }
-    args.stopPropagation();
-  };
-
-  private onInputKeyupHandler = (args: KeyboardEvent<HTMLInputElement>) => {
-    switch (args.key) {
-      case "ArrowUp":
-        {
-          this.historyRef.current?.focus();
-        }
-        break;
-    }
-  };
-
-  private onInputKeydownHandler = (args: KeyboardEvent<HTMLInputElement>) => {
-    switch (args.key) {
-      case "ArrowUp":
-        {
-          this.ShowHistory();
-        }
-        break;
-      case "Escape":
-        {
-          this.HideHistory();
-        }
-        break;
-      case "Enter":
-        {
-          this.SendCommand();
-        }
-        break;
-    }
-  };
-
-  private onScrollHandler = () => {
-    const cr = this.outputRef.current?.getBoundingClientRect();
-
-    const scrollHeight = this.outputRef.current?.scrollHeight ?? 0;
-    const scrollTop = this.outputRef.current?.scrollTop ?? 0;
-    const crHeight = cr?.height ?? 0;
-
-    if (scrollHeight - scrollTop - crHeight > crHeight * 0.2) {
-      this.shouldScroll = false;
-    } else {
-      this.shouldScroll = true;
-    }
-  };
-
-  private onShowHistory = () => {
-    if (this.historyRef.current?.hidden === false) {
-      this.HideHistory();
-    } else {
-      this.ShowHistory();
-    }
-  };
-
-  private onSendCommand = () => {
-    this.SendCommand();
-  };
-
-  private SendCommand() {
-    if (this.inputRef.current) {
-      window.ipcToMain.sendGdbCommand(this.inputRef.current.value);
-      this.cmdHistory.add(this.inputRef.current.value);
-      this.inputRef.current.value = "";
-    }
-
-    window.ipcToMain.notifyMain({
-      command: "save-cmd-history",
-      data: this.cmdHistory.commandHistory,
-    });
-  }
-
-  private HideHistory() {
-    if (this.historyRef.current) {
-      this.historyRef.current.hidden = true;
-    }
-    this.inputRef.current!.value = "";
-    this.cmdHistory.reset();
-  }
-
-  private ShowHistory() {
-    if (this.historyRef.current) {
-      this.historyRef.current.options.length = 0;
-
-      for (const item of this.cmdHistory.commandHistory) {
-        const option = document.createElement("option");
-        option.text = item;
-        this.historyRef.current.add(option);
-      }
-
-      this.historyRef.current.hidden = false;
-      this.historyRef.current.options.selectedIndex = this.historyRef.current.options.length - 1;
-      this.historyRef.current.scrollIntoView(false);
-      //this.historyRef.current.focus();
-    }
-  }
-
-  private appendMessage(message: string, type: string): void {
+  const appendMessage = useCallback((message: string, type: string): void => {
     const sp = document.createElement("span");
     sp.classList.add("defaultRow");
     const br = document.createElement("br");
-    this.outputRef.current?.appendChild(sp);
+    outputRef.current?.appendChild(sp);
 
     if (message === "") {
       message = "\u00A0";
@@ -190,52 +28,271 @@ export default class GdbCommandWindow extends Component {
     sp.classList.add(type);
 
     sp.appendChild(document.createTextNode(message));
-    this.outputRef.current?.appendChild(br);
-    if (this.shouldScroll) {
+    outputRef.current?.appendChild(br);
+    if (shouldScrollRef.current) {
       br.scrollIntoView();
-      if (this.outputRef.current) {
-        this.outputRef.current.scrollLeft = 0;
+      if (outputRef.current) {
+        outputRef.current.scrollLeft = 0;
       }
     }
-  }
+  }, []);
 
-  override render() {
-    return (
-      <div className={"commandWindow"}>
-        <div className={"outputRow"} ref={this.outputRef} onScroll={this.onScrollHandler} />
-        <div className={"historyRow"}>
-          <select
-            className={"historySelect"}
-            ref={this.historyRef}
-            title={"Command History"}
-            size={15}
-            hidden={true}
-            onKeyDown={this.onSelectKeydownHandler}
-          />
-        </div>
-        <div className="inputContainer">
-          <input
-            className={"inputRow"}
-            ref={this.inputRef}
-            type="text"
-            placeholder={"Type your command here..."}
-            onKeyDown={this.onInputKeydownHandler}
-            onKeyUp={this.onInputKeyupHandler}
-          />
-          <button
-            className="commandButton commandButtonSend"
-            title="Send Command"
-            type="button"
-            onClick={this.onSendCommand}
-          />
-          <button
-            className="commandButton commandButtonHistory"
-            title="History"
-            type="button"
-            onClick={this.onShowHistory}
-          />
-        </div>
+  const sendCommand = useCallback(() => {
+    if (inputRef.current) {
+      window.ipcToMain.sendGdbCommand(inputRef.current.value);
+      cmdHistoryRef.current.add(inputRef.current.value);
+      inputRef.current.value = "";
+    }
+
+    window.ipcToMain.notifyMain({
+      command: "save-cmd-history",
+      data: cmdHistoryRef.current.commandHistory,
+    });
+  }, []);
+
+  const hideHistory = useCallback(() => {
+    if (historyRef.current) {
+      historyRef.current.hidden = true;
+    }
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+    cmdHistoryRef.current.reset();
+  }, []);
+
+  const showHistory = useCallback(() => {
+    if (historyRef.current) {
+      historyRef.current.options.length = 0;
+
+      for (const item of cmdHistoryRef.current.commandHistory) {
+        const option = document.createElement("option");
+        option.text = item;
+        historyRef.current.add(option);
+      }
+
+      historyRef.current.hidden = false;
+      historyRef.current.options.selectedIndex = historyRef.current.options.length - 1;
+      historyRef.current.scrollIntoView(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.ipcToMain.getSettings().then((gdb: GdbAny) => {
+      cmdHistoryRef.current.clearHistory();
+      gdb.command.history.forEach((cmd: string) => {
+        cmdHistoryRef.current.add(cmd);
+      });
+    });
+
+    const unsubscribeNotify = window.ipcToMain.notifyRender((msg: GdbAny): void => {
+      switch (msg?.command) {
+        case "command-entry":
+          {
+            if (inputRef.current) {
+              inputRef.current.focus();
+            }
+          }
+          break;
+      }
+    });
+
+    const unsubscribeConsole = window.ipcToMain.consoleMessage((message: string) => {
+      appendMessage(message, "rowConsole");
+    });
+
+    const unsubscribeLog = window.ipcToMain.logMessage((message: string) => {
+      appendMessage(message, "rowLog");
+    });
+
+    const unsubscribeError = window.ipcToMain.errorMessage((message: string) => {
+      appendMessage(message, "rowError");
+    });
+
+    const unsubscribeDebug = window.ipcToMain.debugMessage((message: string) => {
+      appendMessage(message, "rowDebug");
+    });
+
+    const historyElement = historyRef.current;
+    if (historyElement) {
+      historyElement.ondblclick = (_e: Event) => {
+        if (historyRef.current) {
+          historyRef.current.hidden = true;
+
+          if (inputRef.current) {
+            const selIdx = historyRef.current.selectedIndex;
+            inputRef.current.value = historyRef.current.options[selIdx].value;
+            inputRef.current.focus();
+          }
+        }
+      };
+    }
+
+    return () => {
+      unsubscribeNotify();
+      unsubscribeConsole();
+      unsubscribeLog();
+      unsubscribeError();
+      unsubscribeDebug();
+      if (historyElement) {
+        historyElement.ondblclick = null;
+      }
+    };
+  }, [appendMessage]);
+
+  const onSelectKeydownHandler = useCallback((args: KeyboardEvent<HTMLSelectElement>) => {
+    switch (args.key) {
+      case "Escape":
+        {
+          if (historyRef.current) {
+            historyRef.current.hidden = true;
+          }
+        }
+        break;
+      case "Enter":
+        {
+          if (historyRef.current) {
+            historyRef.current.hidden = true;
+          }
+
+          if (inputRef.current) {
+            inputRef.current.value = args.currentTarget.value;
+            inputRef.current.focus();
+          }
+        }
+        break;
+    }
+    args.stopPropagation();
+  }, []);
+
+  const onInputKeyupHandler = useCallback((args: KeyboardEvent<HTMLInputElement>) => {
+    switch (args.key) {
+      case "ArrowUp":
+        {
+          historyRef.current?.focus();
+        }
+        break;
+    }
+  }, []);
+
+  const onInputKeydownHandler = useCallback(
+    (args: KeyboardEvent<HTMLInputElement>) => {
+      switch (args.key) {
+        case "ArrowUp":
+          {
+            showHistory();
+          }
+          break;
+        case "Escape":
+          {
+            hideHistory();
+          }
+          break;
+        case "Enter":
+          {
+            sendCommand();
+          }
+          break;
+      }
+    },
+    [hideHistory, sendCommand, showHistory],
+  );
+
+  const onScrollHandler = useCallback(() => {
+    const cr = outputRef.current?.getBoundingClientRect();
+
+    const scrollHeight = outputRef.current?.scrollHeight ?? 0;
+    const scrollTop = outputRef.current?.scrollTop ?? 0;
+    const crHeight = cr?.height ?? 0;
+
+    if (scrollHeight - scrollTop - crHeight > crHeight * 0.2) {
+      shouldScrollRef.current = false;
+    } else {
+      shouldScrollRef.current = true;
+    }
+  }, []);
+
+  const onShowHistory = useCallback(() => {
+    if (historyRef.current?.hidden === false) {
+      hideHistory();
+    } else {
+      showHistory();
+    }
+  }, [hideHistory, showHistory]);
+
+  const onSendCommand = useCallback(() => {
+    sendCommand();
+  }, [sendCommand]);
+
+  const onClearWindow = useCallback(() => {
+    if (outputRef.current) {
+      outputRef.current.innerHTML = "";
+    }
+  }, []);
+
+  return (
+    <div className={"commandWindow full-size"} data-testid="gdb-command-window">
+      <div
+        className={"outputRow"}
+        id={outputId}
+        ref={outputRef}
+        onScroll={onScrollHandler}
+        data-testid="gdb-command-output"
+      />
+      <div className={"historyRow"}>
+        <select
+          className={"historySelect"}
+          ref={historyRef}
+          title={"Command History"}
+          size={15}
+          hidden={true}
+          onKeyDown={onSelectKeydownHandler}
+          data-testid="gdb-command-history"
+        />
       </div>
-    );
-  }
+      <div className="inputContainer">
+        <input
+          className={"inputRow"}
+          id={inputId}
+          ref={inputRef}
+          type="text"
+          spellCheck={false}
+          placeholder={"Type your command here..."}
+          onKeyDown={onInputKeydownHandler}
+          onKeyUp={onInputKeyupHandler}
+          data-testid="gdb-command-input"
+        />
+        <button
+          className="commandButton commandButtonSend"
+          title="Send Command"
+          type="button"
+          onClick={onSendCommand}
+          data-testid="gdb-command-send"
+        />
+        <button
+          className="commandButton commandButtonHistory"
+          title="History"
+          type="button"
+          onClick={onShowHistory}
+          data-testid="gdb-command-show-history"
+        />
+        <button
+          className="commandButton commandButtonClear"
+          title="Clear Command Window"
+          type="button"
+          onClick={onClearWindow}
+          data-testid="gdb-command-clear"
+        />
+      </div>
+      <ContextMenuComponent
+        target={`#${outputId}`}
+        items={menuCopy}
+        select={(e) => doCutCopyPaste(e.item.text, inputRef.current!)}
+      />
+      <ContextMenuComponent
+        target={`#${inputId}`}
+        items={menuCutCopyPaste}
+        select={(e) => doCutCopyPaste(e.item.text, inputRef.current!)}
+      />
+    </div>
+  );
 }

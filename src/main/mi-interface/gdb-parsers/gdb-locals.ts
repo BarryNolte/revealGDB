@@ -7,38 +7,49 @@
 
 /**
  * Represents all possible values that a Local variable can hold
- * - Local[]: Array of nested Local objects for complex structures
  * - string: Simple value
  * - undefined: Uninitialized value
  */
-type LocalValue = Local[] | string | undefined;
+//type LocalValue = string;
 
 /**
  * Represents a local variable with a name and value
- * Can contain nested structures through the value property
+ * Can contain nested structures through the subLocals property
  */
 export class Local {
   name: string;
-  value: LocalValue;
+  value: string;
+  sublocals: Local[];
+  fullpath: string;
 
-  constructor(name: string, value?: string) {
+  constructor(name: string, value: string, parentFullpath?: string) {
     this.name = name;
     this.value = value;
+    this.sublocals = [];
+    // Set fullpath based on whether there's a parent
+    // Skip anonymous markers in the path - they should be transparent to the fullpath
+    if (name.startsWith(LocalsContainer.anonMarker)) {
+      this.fullpath = parentFullpath || name;
+    } else {
+      this.fullpath = parentFullpath ? `${parentFullpath}.${name}` : name;
+    }
   }
 
   /**
-   * Adds a child Local object to this Local's value array
-   * Initializes value as array if undefined
+   * Adds a child Local object to this Local's subLocals array
+   * Updates the child's fullpath to include this local's path
+   * Anonymous markers are not included in the fullpath
    * @param local The Local object to add as a child
    */
   addLocal(local: Local): void {
-    if (this.value === undefined) {
-      this.value = [];
+    // Recalculate the child's fullpath based on this local's fullpath
+    // Skip anonymous markers in the path - they should be transparent to the fullpath
+    if (local.name.startsWith(LocalsContainer.anonMarker)) {
+      local.fullpath = this.fullpath;
+    } else {
+      local.fullpath = `${this.fullpath}.${local.name}`;
     }
-
-    if (Array.isArray(this.value)) {
-      this.value.push(local);
-    }
+    this.sublocals.push(local);
   }
 }
 
@@ -163,7 +174,7 @@ export class LocalsContainer {
     }
     chunks.push({ val: chunk, type: lastMaskVal }); // push the last chunk
 
-    const rootLocal: Local = new Local(name);
+    const rootLocal: Local = new Local(name, "");
     let curLocal: Local = rootLocal;
 
     const localStack: Local[] = [];
@@ -212,7 +223,9 @@ export class LocalsContainer {
           break;
         case streamType.name:
           {
-            curLocal = new Local(c.val);
+            // Get the parent's fullpath if there's one on the stack
+            const parentFullpath = topOfStack()?.fullpath;
+            curLocal = new Local(c.val, "", parentFullpath);
           }
           break;
         case streamType.leftBracket:
@@ -248,12 +261,15 @@ export class LocalsContainer {
   private parseSimpleValue(name: string, value: string): Local {
     const varsRegx = /[{, ](?<name>[^=]*) = (?<value>[^,]*)[,}]/gm;
     const vars = value.matchAll(varsRegx);
-    const retValue: Local = new Local(name);
-    retValue.value = [];
+    const retValue: Local = new Local(name, "");
 
     for (const v of vars) {
-      const newLocal: Local = new Local(v.groups?.name ?? "", v.groups?.value);
-      retValue.value.push(newLocal);
+      const newLocal: Local = new Local(
+        v.groups?.name ?? "",
+        v.groups?.value ?? "",
+        retValue.fullpath,
+      );
+      retValue.sublocals.push(newLocal);
     }
 
     return retValue;
@@ -372,8 +388,8 @@ export class LocalsContainer {
 
 // Parse the input and create the local variable tree
 //const lc = new LocalsContainer(input);
-const lc = new LocalsContainer("{}");
-console.log(lc.locals);
+// const lc = new LocalsContainer("{}");
+// console.log(lc.locals);
 
 // console.log("");
 // console.log("");

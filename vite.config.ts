@@ -20,6 +20,13 @@ export default defineConfig({
   build: {
     outDir: "../../out/renderer",
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "src/renderer/index.html"),
+        hexeditor: resolve(__dirname, "src/renderer/hexeditor-test.html"),
+        gdbcommand: resolve(__dirname, "src/renderer/gdbcommand-test.html"),
+      },
+    },
   },
   resolve: {
     alias: {

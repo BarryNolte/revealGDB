@@ -14,7 +14,7 @@
   width: 100%;
   flex-grow: 1;
   overflow: scroll;
-  background-color: black;
+  background-color: var(--console-background-color);
   font-weight: bolder;
 }
 
@@ -30,7 +30,7 @@
 .inputContainer {
   flex-grow: 0;
   display: flex;
-  border: 1px solid black;
+  border: 0px solid;
 }
 
 .inputRow {
@@ -39,9 +39,9 @@
   font-size: large;
   padding: 3px;
   border: 1px solid black;
-  margin-left: -1px;
+  margin-left: 1px;
   margin-right: 2px;
-  margin-top: 0px;
+  margin-top: 2px;
   margin-bottom: 0px;
   border-radius: 6px;
 }
@@ -70,8 +70,14 @@
   color: var(--error-text-color);
 }
 
+.rowDebug {
+  background: var(--debug-background-color);
+  color: var(--debug-text-color);
+}
+
 .commandButton {
-  margin: 0px 0px 2px 1px;
+  margin: 1px 0px 2px 1px;
+  border-radius: 5px;
 }
 
 .commandButtonHistory {
@@ -79,7 +85,6 @@
   background-size: cover;
   height: 34px;
   width: 34px;
-  margin-right: 5px;
 }
 
 .commandButtonSend {
@@ -87,4 +92,12 @@
   background-size: cover;
   height: 34px;
   width: 34px;
+}
+
+.commandButtonClear {
+  background-image: url("../icons/icons8-clear-48.png");
+  background-size: cover;
+  height: 34px;
+  width: 34px;
+  margin-right: 5px;
 }

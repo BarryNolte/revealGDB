@@ -1,18 +1,21 @@
+import { registerLicense } from "@syncfusion/ej2-base";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
-import { registerLicense } from "@syncfusion/ej2-base";
 
 registerLicense(
-  "Ngo9BigBOggjGyl/Vkd+XU9FcVRDX3xKf0x/TGpQb19xflBPallYVBYiSV9jS3tSd0VkW31cdXBQQWRfVE91Xg==",
+  "Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWH1cc3VdR2FeUkZwXEFWYEs=",
 );
 
-export let fRendered: boolean = false;
+window.revealGdbBuild = {
+  // eslint-disable-next-line no-undef
+  debug: __REVEALGDB_DEBUG__,
+  // eslint-disable-next-line no-undef
+  mode: __REVEALGDB_BUILD__,
+};
 
 window.ipcToMain.notifyMain({ command: "renderStart" });
 
 const container = document.getElementById("root")!;
 createRoot(container).render(<App />);
-
 window.ipcToMain.notifyMain({ command: "renderEnd" });
-fRendered = true;

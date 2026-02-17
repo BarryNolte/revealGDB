@@ -1,3 +1,4 @@
+import { EventEmitter } from "stream";
 import { gdbSourceFileCache } from "./gdbSourceFileCache";
 
 export type gdbFeature = {
@@ -60,10 +61,48 @@ export type gdbBreakpoint = {
   orgloc: string;
 };
 
+export type DisasmTokenType =
+  | "address"
+  | "function"
+  | "leftparen"
+  | "rightparen"
+  | "text"
+  | "instruction";
+
+export type DisasmToken = {
+  value: string;
+  type: DisasmTokenType;
+};
+
+export type gdbAsmRow = {
+  address: string;
+  func: string;
+  offset: string;
+  opcodes: string;
+  instructions: DisasmToken[];
+};
+
+export type gdbSection = {
+  startAddr: string;
+  endAddr: string;
+  section: string;
+  file?: string;
+};
+
+export type gdbSymbolFiles = {
+  mainSym: string;
+  sections: gdbSection[];
+};
+
+export type gdbFunction = {
+  line: string;
+  function: string;
+};
+
 /**
  *
  */
-export class gdbStateDatabase {
+export class gdbStateDatabase extends EventEmitter {
   readonly threadGroups: Map<string, gdbThreadGroup> = new Map<string, gdbThreadGroup>();
   readonly threads: Map<string, gdbThread> = new Map<string, gdbThread>();
   readonly registers: Map<string, gdbRegisters> = new Map<string, gdbRegisters>();
@@ -74,7 +113,46 @@ export class gdbStateDatabase {
 
   readonly gdbSrcFileCache: gdbSourceFileCache = new gdbSourceFileCache();
 
-  constructor() {}
+  readonly gdbSymbolFiles: gdbSymbolFiles = { mainSym: "", sections: [] };
+  readonly gdbFunctionNames: Map<string, gdbFunction[]> = new Map<string, gdbFunction[]>();
+
+  constructor() {
+    super();
+  }
+
+  // Function List
+  addFunctionNames(fileName: string, line: string, func: string): void {
+    const functions = this.gdbFunctionNames.get(fileName) || [];
+    functions.push({ line, function: func });
+    this.gdbFunctionNames.set(fileName, functions);
+  }
+  getFunctionNames(fileName: string): gdbFunction[] | undefined {
+    return this.gdbFunctionNames.get(fileName);
+  }
+  getFunction(): Map<string, gdbFunction[]> {
+    return this.gdbFunctionNames;
+  }
+  getAllFunctionNames(): gdbFunction[] {
+    const allFunctions: gdbFunction[] = [];
+    this.gdbFunctionNames.forEach((funcs) => {
+      funcs.forEach((f) => {
+        allFunctions.push(f);
+      });
+    });
+    allFunctions.sort((a, b) => a.function.localeCompare(b.function));
+    return allFunctions;
+  }
+
+  // Symbol Files
+  addMainSymbolFile(mainSym: string): void {
+    this.gdbSymbolFiles.mainSym = mainSym;
+  }
+  addSection(section: gdbSection): void {
+    this.gdbSymbolFiles.sections.push(section);
+  }
+  getSymbolFiles(): gdbSymbolFiles {
+    return this.gdbSymbolFiles;
+  }
 
   // Source Files
   hasSourceFile(file: string): boolean {
@@ -92,10 +170,16 @@ export class gdbStateDatabase {
     this.stackFrames.push(frame);
   }
   setActiveFrame(af: number): void {
-    this.stackFrames.forEach((sf: gdbStackFrame) => {
+    if (af < 0 || af >= this.stackFrames.length) {
+      return;
+    }
+
+    this.stackFrames.forEach((sf: gdbStackFrame, idx) => {
       sf.active = false;
+      if (af == idx) {
+        sf.active = true;
+      }
     });
-    this.stackFrames[af].active = true;
   }
   // Breakpoints
   clearBreakpoints(): void {
@@ -254,7 +338,10 @@ export class gdbStateDatabase {
         });
       });
     } else {
-      console.error(`Unknown stoppedThreads value, tid: ${tid} stoppedThreads: ${stoppedThreads}`);
+      this.emit(
+        "error-stream",
+        `Unknown stoppedThreads value, tid: ${tid} stoppedThreads: ${stoppedThreads}`,
+      );
     }
   }
 
@@ -270,7 +357,7 @@ export class gdbStateDatabase {
         });
       });
     } else {
-      console.error(`Unknown tid value, tid: ${tid}`);
+      this.emit("error-stream", `Unknown tid value, tid: ${tid}`);
     }
   }
 
@@ -293,5 +380,9 @@ export class gdbStateDatabase {
     console.log(this.breakpoints);
     console.log("Source Files:");
     console.log(this.gdbSrcFileCache.dump());
+    console.log("Symbol Files:");
+    console.log(this.gdbSymbolFiles);
+    console.log("Function Names:");
+    console.log(this.gdbFunctionNames);
   }
 }

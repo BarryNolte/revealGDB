@@ -8,9 +8,26 @@ import { resolve } from "path";
 import react from "@vitejs/plugin-react";
 // import fs from "fs";
 
+const buildVariant = process.env.REVEALGDB_BUILD === "debug" ? "debug" : "release";
+const isDebugBuild =
+  process.env.REVEALGDB_DEBUG === "true" ||
+  (process.env.REVEALGDB_BUILD === undefined && process.env.NODE_ENV === "development");
+
+const buildDefines = {
+  __REVEALGDB_BUILD__: JSON.stringify(buildVariant),
+  __REVEALGDB_DEBUG__: JSON.stringify(isDebugBuild),
+};
+
+const rendererInputs = {
+  main: resolve(__dirname, "src/renderer/index.html"),
+  hexeditor: resolve(__dirname, "src/renderer/hexeditor-test.html"),
+  gdbcommand: resolve(__dirname, "src/renderer/gdbcommand-test.html"),
+};
+
 export default defineConfig({
   preload: {
     root: ".",
+    define: buildDefines,
     build: {
       outDir: "out/preload",
       emptyOutDir: true,
@@ -29,6 +46,7 @@ export default defineConfig({
   },
   main: {
     root: ".",
+    define: buildDefines,
     build: {
       outDir: "out/main",
       emptyOutDir: true,
@@ -48,11 +66,13 @@ export default defineConfig({
   renderer: {
     plugins: [react()],
     base: "./",
+    define: buildDefines,
     build: {
       outDir: "out/renderer",
       emptyOutDir: true,
       sourcemap: true,
       rollupOptions: {
+        input: rendererInputs,
         output: {
           // Configure manual chunks for better control
           manualChunks(_id) {

@@ -1,0 +1,32 @@
+#connectionLabel {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 10px;
+}
+
+.state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 10px;
+}
+
+#stepsTable {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#stepsTable.e-grid .e-headercell {
+  color: #3c3c3c;
+  background-color: #a0a0a0;
+  height: 12px;
+}
+
+.column-header-template {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#connectionProgress {
+  margin-top: 35px;
+}

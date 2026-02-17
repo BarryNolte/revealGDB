@@ -1,0 +1,95 @@
+#disassemblyWindow {
+  background-color: var(--window-background);
+}
+
+.disasmAddress {
+  color: black;
+  font-weight: bolder;
+}
+
+.disasmOffset {
+  color: rgb(251, 170, 184);
+}
+
+.disasmOpcodes {
+  color: cornflowerblue;
+  font-weight: bolder;
+}
+
+.disasmInstruction {
+  display: inline-block;
+  width: 60px;
+  color: green;
+  font-weight: bold;
+}
+
+.disasmOpAddress {
+  color: orange;
+}
+
+.disasmFunction {
+  color: purple;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.disasmText {
+  color: red;
+}
+
+.disasmControls {
+  padding: 0px 5px;
+  background-color: var(--he-header-background-color);
+  display: flex;
+  gap: 5px;
+  height: 140px;
+}
+
+.disasmControlTable {
+  border-collapse: collapse;
+  border-spacing: 0px;
+}
+
+.disasmTitle {
+  color: white;
+  font-size: small;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+#function-names {
+  background-color: white;
+  font-family: monospace;
+  color: black;
+  padding-left: 5px;
+  line-height: 16px;
+  height: 18px;
+}
+
+.e-ddl.e-input-group .e-input-group-icon,
+.e-ddl.e-input-group.e-control-wrapper {
+  background-color: lightgray;
+  font-size: 16px;
+}
+
+.e-dropdownbase .e-list-item {
+  line-height: 18px !important;
+  min-height: 18px !important;
+}
+
+span.function-item {
+  color: black;
+  font-family: monospace;
+  font-size: 16px;
+}
+
+.disasm-flex-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.disasm-flex-item {
+  flex-grow: inherit;
+  overflow: auto;
+}

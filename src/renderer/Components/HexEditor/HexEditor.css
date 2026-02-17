@@ -1,0 +1,101 @@
+/**
+ * @file HexEditor.css
+ * @description Styling for the HexEditor component and its three synchronized view columns.
+ * 
+ * Architecture:
+ * - CSS variables define the theme (text color, background, highlights)
+ * - Table layout uses monospace font for data alignment (16 bytes per row)
+ * - Sticky positioning keeps offset column (left) and header (top) visible during scroll
+ * - Dynamic row/column highlighting injected by MouseKeyboardHandler at runtime
+ * - Edit mode uses keyframe animation for blinking cursor effect
+ * 
+ * Layout:
+ * - .he-flex-container: Flex row holding three columns (offset, data, text views)
+ * - .he-table-sticky: Table with sticky header (top: 0, z-index: 100)
+ * - .he-column-sticky: Offset column with sticky left (left: 0, z-index: 101)
+ * - Row/column classes: row-N and col-N added dynamically for hover highlighting
+ * 
+ * Theme Variables:
+ * - --he-text-color: Text foreground (white)
+ * - --he-header-background-color: Column header background (black)
+ * - --he-text-background-color: Main table background (dark green #002500)
+ * - --he-data-changed-color: Highlight color for edited cells (red)
+ * - --he-cursor-color: Edit mode cursor indicator (yellowgreen)
+ */
+
+/* Main table styling - monospace font for data alignment and visual consistency */
+.he-table {
+  border-collapse: collapse;
+  font-family: monospace;
+  font-size: 15px;
+  color: var(--he-text-color);
+  margin-left: 10px;
+  line-height: normal;
+  cursor: default;
+}
+
+/* Sticky table header - remains visible during vertical scroll */
+.he-table-sticky > thead {
+  top: 0px;
+  position: sticky;
+  z-index: 100;
+}
+
+/* Sticky offset column (left) - remains visible during horizontal scroll, higher z-index than header */
+.he-column-sticky {
+  left: 0px;
+  position: sticky;
+  z-index: 101;
+}
+
+/* Transparent body for custom row/column highlighting via dynamic styles */
+.he-table > tbody {
+  background-color: transparent;
+}
+
+/* Header styling - black background with centered text */
+.he-table-header {
+  background-color: var(--he-header-background-color);
+  text-align: center;
+  font-size: larger;
+}
+
+/* Main container - flexbox layout holding three synchronized view columns (offset, data, text) */
+.he-flex-container {
+  display: flex;
+  flex-flow: row;
+  background-color: var(--he-text-background-color);
+  width: fit-content;
+}
+
+/* Blinking cursor animation - 1250ms cycle with underline effect during on-phase */
+@keyframes edit-blink {
+  0% {
+    box-shadow: inset 0 -4px 0 0 var(--he-cursor-color);
+  }
+
+  49% {
+    box-shadow: inset 0 -4px 0 0 var(--he-cursor-color);
+  }
+
+  50% {
+    box-shadow: none;
+  }
+
+  100% {
+    box-shadow: none;
+  }
+}
+
+/* Edit mode styling - applies cursor animation and darkened background to cell in edit */
+.cursor {
+  animation-name: edit-blink;
+  animation-duration: 1250ms;
+  animation-iteration-count: infinite;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Cell changed indicator - red background applied after successful edit to show data was modified */
+.he-data-changed {
+  background-color: var(--he-data-changed-color);
+}

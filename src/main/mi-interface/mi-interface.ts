@@ -1,11 +1,14 @@
 //import { gdbConnectorWsl } from "./gdb-connector/gdb-connector-wsl";
-import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector/gdb-connector";
 import { EventEmitter } from "events";
-import { gdbBreakpoint, gdbStateDatabase } from "./gdb-state-database/gdbStateDatabase";
-import { mainWindow } from "../main";
 import { GdbAny } from "../../common/gdb-common";
-import { LocalsContainer } from "./gdb-parsers/gdb-locals";
+import { AppSettings, mainWindow } from "../main";
+import { ConnectionNotifier } from "../utilities/ConnectionNotifier";
+import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector/gdb-connector";
 import { gdbConnectorIdfOnWsl } from "./gdb-connector/gdb-connector-idf-on-wsl";
+import { parseDisasmTokens } from "./gdb-parsers/disasmParser";
+import { LocalsContainer } from "./gdb-parsers/gdb-locals";
+import { GdbOutputCapture } from "./gdb-parsers/gdb-output-capture";
+import { gdbAsmRow, gdbBreakpoint, gdbStateDatabase } from "./gdb-state-database/gdbStateDatabase";
 
 export type gdbShowSourceInfo = {
   fileName: string;
@@ -17,31 +20,60 @@ export class miInterface extends EventEmitter {
   private static lnum: number = 0;
   private conn: GdbConnector | null = null;
   readonly gdbDB: gdbStateDatabase = new gdbStateDatabase();
+  private streamSave: string[] = [];
+  private outputCapture: GdbOutputCapture = new GdbOutputCapture(this.gdbDB);
 
   constructor() {
     super();
   }
 
   async connect(): Promise<boolean> {
-    //this.conn = new gdbConnectorWsl();
     this.conn = new gdbConnectorIdfOnWsl();
 
     this.conn.on("gdb-exit", () => {
       console.log("GDB exited");
     });
 
-    this.conn.on("gdb-data", (args: OutputAvailableEventArgs) => {
-      console.log(`GDB Data (${miInterface.lnum++}): ${args.Output}`);
-      const lines = args.Output.split("\n");
+    this.conn.on("gdb-data", (args: OutputAvailableEventArgs): void => {
+      ConnectionNotifier.getInstance().notifyTargetRunning();
+
+      if (AppSettings.getSync("gdb.gui.showDebugInfo") as boolean) {
+        this.emit(
+          "debug-stream",
+          `GDB Data (${miInterface.lnum++}): ${args.Output} ${args.Output.endsWith("\n")}`,
+        );
+      }
+
+      if (!args.Output.endsWith("\n")) {
+        this.streamSave.push(args.Output);
+        return;
+      }
+
+      let totalStream = "";
+      this.streamSave.forEach((s) => {
+        totalStream += s;
+      });
+      this.streamSave = [];
+      totalStream += args.Output;
+
+      const lines = totalStream.split("\n");
       lines.forEach(async (line: string) => {
+        // console.log(`Raw Output: ${line}`);
         try {
+          if (this.outputCapture.CaptureLine(line)) {
+            return;
+          }
+          // console.error(`Raw Output: ${line}`);
           await this.parseRawOutput(line);
         } catch (ex) {
-          console.error(
+          this.emit(
+            "error-stream",
             `\n*************************************\nEXCEPTION: ${ex}\n*************************************\n`,
           );
         }
       });
+
+      return;
     });
 
     this.conn.on("gdb-input", (input: string) => {
@@ -61,6 +93,9 @@ export class miInterface extends EventEmitter {
   }
 
   send(data: string): void {
+    if (AppSettings.getSync("gdb.gui.showDebugInfo") as boolean) {
+      this.emit("debug-stream", data);
+    }
     this.conn?.Send(data);
   }
 
@@ -177,10 +212,8 @@ export class miInterface extends EventEmitter {
             th: this.gdbDB.threads,
             grp: this.gdbDB.threadGroups,
           });
-          throw new Error("Method not implemented.");
         }
         break;
-
       case "thread-created":
         {
           const idChunks = /^id="(?<id>[^"]*)",group-id="(?<grpid>[^"]*)"$/.exec(data);
@@ -241,7 +274,6 @@ export class miInterface extends EventEmitter {
         {
           const idChunks = this.rgxBkpt.exec(data);
           if (!idChunks || !idChunks.groups) {
-            console.error(`Breakpoint Created (error): ${data}`);
             return false;
           }
           this.gdbDB.createBreakpoint(idChunks.groups as gdbBreakpoint);
@@ -252,7 +284,6 @@ export class miInterface extends EventEmitter {
         {
           const idChunks = this.rgxBkpt.exec(data);
           if (!idChunks || !idChunks.groups) {
-            console.error(`Breakpoint Modified (error): ${data}`);
             return false;
           }
           this.gdbDB.updateBreakpoint(idChunks.groups as gdbBreakpoint);
@@ -285,8 +316,8 @@ export class miInterface extends EventEmitter {
     const result = chunks?.groups?.result || "";
     const data = chunks?.groups?.data || "";
 
-    console.error(result);
-    console.error(data);
+    // console.error(result);
+    // console.error(data);
 
     switch (result) {
       case "done":
@@ -298,24 +329,97 @@ export class miInterface extends EventEmitter {
           const resList: string = resChunks?.groups?.list || "";
 
           switch (resResult) {
-            case "addr":
+            case "asm_insns":
               {
-                const rgxMemPage: RegExp =
-                  /addr="(?<addr>[^"]*)",nr-bytes="(?<nrBytes>[^"]*)",total-bytes="(?<totalBytes>[^"]*)",next-row="(?<nextRow>[^"]*)",prev-row="(?<prevRow>[^"]*)",next-page="(?<nextPage>[^"]*)",prev-page="(?<prevPage>[^"]*)"/g;
-                const rgxMemData: RegExp =
-                  /\{addr="(?<addr>[^"]*)",data=\[(?<data>[^\]]*)\],ascii="(?<ascii>................)"}/g;
-                const memPage = rgxMemPage.exec(output);
-                const memData = resList.replaceAll('\\"', '"').matchAll(rgxMemData);
-                const memList: ({ [key: string]: string } | undefined)[] = [];
-                memData.forEach((md) => {
-                  memList.push(md.groups);
+                const rgxAsmData: RegExp = /asm_insns=\[(?<asm_list>.*)]$/gm;
+                const asmData = rgxAsmData.exec(output);
+                const asmList = asmData?.groups?.["asm_list"];
+
+                const rgxAsmRow: RegExp =
+                  /(?<asm_row>address="(?<address>[^"]*)",func-name="(?<func>[^"]*)",offset="(?<offset>[^"]*)",opcodes="(?<opcodes>[^"]*)",inst="(?<inst>[^"]*)")/gm;
+                const asmRows = asmList?.matchAll(rgxAsmRow);
+
+                const asmRowsText: gdbAsmRow[] = [];
+                let currentFunc = "";
+                let currentFuncFirstAddress = "";
+
+                asmRows?.forEach((asmRow) => {
+                  //console.log(asmRow);
+                  const address = asmRow.groups?.address || "";
+                  const func = asmRow.groups?.func || "";
+                  const offset = asmRow.groups?.offset || "";
+                  const opcodes = asmRow.groups?.opcodes || "";
+                  const inst = asmRow.groups?.inst || "";
+
+                  if (func !== currentFunc) {
+                    currentFunc = func;
+                    currentFuncFirstAddress = address;
+                  }
+
+                  const funcWithAddress = currentFuncFirstAddress
+                    ? `${currentFuncFirstAddress}-${func}`
+                    : func;
+
+                  const row: gdbAsmRow = {
+                    address: address,
+                    func: funcWithAddress,
+                    offset: offset,
+                    opcodes: opcodes,
+                    instructions: parseDisasmTokens(inst),
+                  };
+
+                  asmRowsText.push(row);
                 });
+
+                mainWindow.webContents.send("data-disasm", asmRowsText);
+              }
+              break;
+            case "memory":
+              {
+                const rgxMemData: RegExp =
+                  /\[\{begin="(?<begin>[^"]*)",offset="(?<offset>[^"]*)",end="(?<end>[^"]*)",contents="(?<contents>[^"]*)"\}\]/gm;
+
+                const memData = rgxMemData.exec(output);
+                //console.log(memData);
+
+                const hexData = memData?.groups?.contents || "";
+                //console.log(hexData);
+                const result = [];
+                for (let i = 0; i < hexData.length; i += 2) {
+                  result.push(hexData.slice(i, i + 2));
+                }
+                const dataArray = new Uint8Array(result.length);
+                result.forEach((byte, idx) => {
+                  dataArray[idx] = parseInt(byte, 16);
+                });
+
                 mainWindow.webContents.send("data-memory", {
-                  page: memPage?.groups,
-                  memList: memList,
+                  begin: memData?.groups?.["begin"],
+                  offset: memData?.groups?.["offset"],
+                  end: memData?.groups?.["end"],
+                  data: dataArray,
                 });
               }
               break;
+            // deprecated
+            // case "addr":
+            //   {
+            //     const rgxMemPage: RegExp =
+            //       /addr="(?<addr>[^"]*)",nr-bytes="(?<nrBytes>[^"]*)",total-bytes="(?<totalBytes>[^"]*)",next-row="(?<nextRow>[^"]*)",prev-row="(?<prevRow>[^"]*)",next-page="(?<nextPage>[^"]*)",prev-page="(?<prevPage>[^"]*)"/g;
+            //     const rgxMemData: RegExp =
+            //       /\{addr="(?<addr>[^"]*)",data=\[(?<data>[^\]]*)\],ascii="(?<ascii>................)"}/g;
+            //     const memPage = rgxMemPage.exec(output);
+            //     const memData = resList.replaceAll('\\"', '"').matchAll(rgxMemData);
+            //     const memList: ({ [key: string]: string } | undefined)[] = [];
+            //     memData.forEach((md) => {
+            //       memList.push(md.groups);
+            //     });
+            //     mainWindow.webContents.send("data-memory", {
+            //       page: memPage?.groups,
+            //       memList: memList,
+            //     });
+            //   }
+            //   break;
             case "BreakpointTable":
               {
                 // const rgxBpHdr: RegExp = /nr_rows="(?<nr_rows>[^"]*)",nr_cols="(?<nr_cols>[^"]*)",hdr=\[(?<hdr>[^\]]*)\],body/g;
@@ -419,6 +523,7 @@ export class miInterface extends EventEmitter {
                     level: frameChunk.groups?.level || "",
                     func: frameChunk.groups?.func || "",
                     addr: frameChunk.groups?.addr || "",
+                    //TODO: Include ARGS??
                     args: "",
                     file: frameChunk.groups?.file || "",
                     fullName: frameChunk.groups?.fullname || "",
@@ -444,7 +549,7 @@ export class miInterface extends EventEmitter {
             case "variables":
               {
                 const lc = new LocalsContainer(resList);
-                console.log(lc.locals);
+                //console.log(lc.locals);
 
                 mainWindow.webContents.send("data-locals", lc.locals);
               }
@@ -528,12 +633,13 @@ export class miInterface extends EventEmitter {
           const core = /core="(?<core>[^"]*)"/.exec(data)?.groups?.core || undefined;
           const reason = /reason="(?<reason>[^"]*)"/.exec(data)?.groups?.reason || undefined;
 
+          console.log(
+            `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
+          );
+
           switch (reason) {
             case undefined:
               {
-                console.log(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
                 this.gdbDB.stopThreads(tid, stoppedThreads);
                 // TODO: frame is also available here, if needed
               }
@@ -541,9 +647,6 @@ export class miInterface extends EventEmitter {
             case "end-stepping-range":
             case "breakpoint-hit":
               {
-                console.log(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
                 const bph =
                   /disp="(?<disp>[^"]*)",bkptno="(?<bkptno>[^"]*)",frame={(?<frame>[^}]*)}/.exec(
                     data,
@@ -554,121 +657,25 @@ export class miInterface extends EventEmitter {
               }
               break;
             case "watchpoint-trigger":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "read-watchpoint-trigger":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "access-watchpoint-trigger":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "function-finished":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "location-reached":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "watchpoint-scope":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "exited":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "exited-normally":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "signal-received":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "solib-event":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "fork":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "vfork":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "syscall-entry":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "syscall-return":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "exec":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             case "no-history":
-              {
-                console.warn(
-                  `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-                );
-              }
-              break;
             default: {
-              console.error(
-                `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-              );
+              //   console.error(
+              //     `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
+              //   );
             }
           }
 
@@ -686,7 +693,6 @@ export class miInterface extends EventEmitter {
     return true;
   }
   private parseTargetStream(output: string): boolean {
-    //throw new Error(`Method not implemented. ${output}`);
     this.emit("log-error", `Target Stream: ${output}`);
     return true;
   }

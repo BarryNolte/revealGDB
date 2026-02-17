@@ -1,35 +1,54 @@
 # UI Related
+  * Connection Model Dialog with status while connecting
+  * Themeing
   * Connection manager
     * args
     * environment (set/unset)
     * path to exe
     * working directory
-  * Locals view
-    * Locals editing
-  * Finish memory view
-    * Memory editing
+  * Cleanup menus
+  * Convience variables
+  * Save column widths with layout
+
+# Bugs
+
+# New Features
+  * -exec-jump for "set next statement"
+  * Disassembly Window
+    * Highlight registers?
+    * "Show Disassembly" button working in source window
+  * Python Window for running python commands
+  * Values on hover in source
+  * Thread markers in source (better with multiple source windows)
+  * Tracepoints - How to insert more automatically
+  * Set Next Statement from editor
   * Better Dock management (multiple source files in a Group)
     * Better source file management
     * Code detection for source viewer
-    * Ability to close window and bring it back
-  * Cleanup menus
-  * Themeing
-  * Cut/Copy/Paste
-  * Save column widths with layout
-  * "Busy" screen during connect (Probable bad idea?)
-
-# New Features
-  * Python Window for running python commands
-  * Values on hover in source
-  * Disassembly Window
-  * Tracepoints - How to insert more automatically
 
 # Project Related
-  * Real Debug/Release builds
+  * Convert all react components to function based
   * github workflow working
-  * Product Icon
-  * Install for all platforms
+    * Real Debug/Release builds
+    * Product Icon
+    * Install for all platforms
+      * x64, arm64 (Windows)
+      * x64, arm64 (Linux)
+      * x64, arm64 (Mac)
 
+# New Settings
+  * rowHeight for grid toolwindows
+
+~~Command Window Clear Button~~
+~~Cut/Copy/Paste/drag/drop~~
+~~Click on function name for disassembly~~
+~~Locals view~~
+~~Locals editing~~
+~~Autofit columns everywhere~~
+~~Column Clip Mode everywhere~~
+~~Finish memory view~~
+~~Memory editing~~
+~~Ability to close window and bring it back~~
 ~~About box~~
 ~~Settings page~~
 ~~Hookup register editing~~

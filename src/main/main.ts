@@ -1,14 +1,16 @@
 import { app, BrowserWindow, ipcMain, nativeTheme, screen } from "electron";
+import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import settings from "electron-settings";
-import os from "node:os";
+import { fontace } from "fontace";
+import getSystemFonts from "get-system-fonts";
 import fs from "node:fs/promises";
+import os from "node:os";
 import path, { join } from "path";
 import { GdbAny, wait } from "../common/gdb-common";
 import { GdbMenu } from "./menu";
 import { miInterface } from "./mi-interface/mi-interface";
 import { WslUtilities } from "./utilities/wsl-utilities";
-import getSystemFonts from "get-system-fonts";
-import { fontace } from "fontace";
+import { gdbFunction } from "./mi-interface/gdb-state-database/gdbStateDatabase";
 
 console.log(`PRELOAD: ${path.resolve("./out/preload/preload.js")}`);
 
@@ -16,19 +18,35 @@ export const isMac = process.platform === "darwin";
 export const isWin = process.platform === "win32";
 export const isLinux = !isMac && !isWin;
 
-export const isDebug = true;
+// eslint-disable-next-line no-undef
+export const isDebug = __REVEALGDB_DEBUG__;
+
+globalThis.revealGdbBuild = {
+  // eslint-disable-next-line no-undef
+  debug: __REVEALGDB_DEBUG__,
+  // eslint-disable-next-line no-undef
+  mode: __REVEALGDB_BUILD__,
+};
+console.log(`Build Info: ${JSON.stringify(globalThis.revealGdbBuild, null, 2)}`);
 
 export const AppSettings = settings;
 const fontList: Map<string, string> = new Map<string, string>();
 
 export let mainWindow: BrowserWindow;
-let debugWindow: BrowserWindow;
+let debugWindow: BrowserWindow | undefined;
 
 export let gdbInterface: miInterface;
 
 export const gdbAppInfo: Map<string, GdbAny> = new Map<string, GdbAny>();
 
 app.on("ready", () => {
+  AppSettings.configure({
+    atomicSave: true,
+    fileName: "settings.json",
+    numSpaces: 2,
+    prettify: true,
+  });
+
   /**
    * DEBUG: Usefull Information
    */
@@ -45,7 +63,6 @@ app.on("ready", () => {
   /* END DEBUG */
 
   getSystemFonts().then((fontArray: string[]) => {
-    console.log(fontArray);
     fontArray.forEach((fontFile) => {
       fs.readFile(fontFile).then((fileBuffer) => {
         try {
@@ -58,6 +75,16 @@ app.on("ready", () => {
     });
   });
 
+  if (isDebug) {
+    installExtension(REACT_DEVELOPER_TOOLS)
+      .then((name) => {
+        console.log(`Installed DevTools extension: ${name}`);
+      })
+      .catch((err) => {
+        console.warn("Failed to install React DevTools extension:", err);
+      });
+  }
+
   gdbAppInfo.set("Node Version", process.version);
   gdbAppInfo.set("Architecture", os.arch());
   gdbAppInfo.set("Platform", process.platform);
@@ -68,15 +95,8 @@ app.on("ready", () => {
   gdbAppInfo.set("v8 Version", process.versions.v8);
   gdbAppInfo.set("System Version", process.getSystemVersion());
   gdbAppInfo.set("Package Versions", process.versions);
-  console.log("Version Info\n------------");
-  console.log(gdbAppInfo);
-
-  AppSettings.configure({
-    atomicSave: true,
-    fileName: "settings.json",
-    numSpaces: 2,
-    prettify: true,
-  });
+  //console.log("Version Info\n------------");
+  //console.log(gdbAppInfo);
 
   mainWindow = new BrowserWindow({
     webPreferences: {
@@ -103,7 +123,10 @@ app.on("ready", () => {
     });
   }
 
-  wait(5000);
+  //TODO!: Wait for GDB to be ready before loading the UI (Debug ONLY)
+  if (isDebug) {
+    wait(5000);
+  }
 
   let devUrl = process.env.ELECTRON_RENDERER_URL;
 
@@ -150,19 +173,30 @@ app.on("ready", () => {
   gdbInterface.on("error-stream", (line: string) => {
     mainWindow.webContents.send("error-message", line);
   });
+  gdbInterface.on("debug-stream", (line: string) => {
+    mainWindow.webContents.send("debug-message", line);
+  });
 
   let needToRunStartupCmds = true;
   // When we stop, then run all the stop commands
   gdbInterface.on("gdb-stopped", async () => {
     if (needToRunStartupCmds) {
       needToRunStartupCmds = false;
-      console.error("GDB is idle (once)");
       const ros: string[] = (await AppSettings.get("gdb.run.onStartup")) as string[];
       console.log("** ON STARTUP COMMANDS **");
       ros?.forEach((ros: string) => {
         gdbInterface.send(ros);
       });
+
+      gdbInterface.send("echo <<<<file-info>>>>");
+      gdbInterface.send("info files");
+      gdbInterface.send("echo >>>>end-capture<<<<");
+
+      gdbInterface.send("echo <<<<function-names>>>>");
+      gdbInterface.send("info functions");
+      gdbInterface.send("echo >>>>end-capture<<<<");
     }
+
     const ros: string[] = (await AppSettings.get("gdb.run.onStopped")) as string[];
     console.log(
       `***********************\nRunning ${ros?.length} Stop Commands\n***********************`,
@@ -174,12 +208,12 @@ app.on("ready", () => {
 
   let debugWindowClosed = false;
   mainWindow.on("closed", () => {
-    if (!debugWindowClosed) {
+    if (debugWindow && !debugWindowClosed) {
       debugWindow.close();
     }
   });
 
-  if (isDebug) {
+  if (isDebug && debugWindow) {
     debugWindow.on("closed", () => {
       debugWindowClosed = true;
     });
@@ -213,6 +247,10 @@ ipcMain.handle("getSystemFonts", (): Promise<string[]> => {
 
 ipcMain.handle("getVersionInfo", (): Promise<Map<string, GdbAny>> => {
   return Promise.resolve(gdbAppInfo);
+});
+
+ipcMain.handle("getFunctionNames", (): Promise<gdbFunction[]> => {
+  return Promise.resolve(gdbInterface.gdbDB.getAllFunctionNames());
 });
 
 // General messages from the UI
@@ -255,7 +293,7 @@ ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
       break;
     case "save-dock-layout":
       {
-        await AppSettings.set("gdb.gui.dockLayout", msg.data);
+        AppSettings.setSync("gdb.gui.dockLayout", msg.data);
 
         const winPos = {
           /**
@@ -267,7 +305,7 @@ ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
           height: mainWindow.getSize()[1] - 2,
           fullscreen: mainWindow.fullScreen,
         };
-        await AppSettings.set("gdb.gui.windowSize", winPos);
+        AppSettings.setSync("gdb.gui.windowSize", winPos);
       }
       break;
     case "renderStart":

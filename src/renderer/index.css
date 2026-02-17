@@ -8,11 +8,17 @@
 @import "../../node_modules/@syncfusion/ej2-react-grids/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-react-dropdowns/styles/material.css";
 @import "../../node_modules/@syncfusion/ej2-react-buttons/styles/material.css";
+@import "../../node_modules/@syncfusion/ej2-react-splitbuttons/styles/material.css";
+@import "../../node_modules/@syncfusion/ej2-react-treegrid/styles/material.css";
 
-@import "../../node_modules/dockview/dist/styles/dockview.css";
+@import "../../node_modules/dock-spawn-ts/lib/css/dock-manager-style.css";
+@import "../../node_modules/dock-spawn-ts/lib/css/dock-manager.css";
+@import "../../node_modules/dock-spawn-ts/lib/css/dock-manager-context-menu.css";
 
 :root {
   --window-background: #606060;
+  --debug-text-color: lightblue;
+  --debug-background-color: blue;
   --error-text-color: #f0f0f0;
   --error-background-color: #ff3d3d;
   --console-text-color: rgba(0, 255, 0, 0.85);
@@ -20,16 +26,49 @@
   --log-text-color: grey;
   --log-background-color: #ffffc0;
 
-  --tabbar-tab-background: #e5e5e5;
-  --tabbar-tab-active: white;
-  --tabbar-tab-not-active-hover: #f0f0f0;
-  --tabbar-tab-border: #c0c0c0;
-  --tabbar-tab-inactive: #303030;
+  --dialog-header-background: blue;
+  --dialog-header-text-color: lightblue;
+
+  --grid-header-background: grey;
+  --grid-header-text-color: #e0e0e0;
+
+  --splitter-vertical-color: grey;
+  --splitter-horizontal-color: grey;
+
+  --he-text-color: white;
+  --he-header-background-color: #505050;
+  --he-text-background-color: #606060;
+  --he-data-changed-color: red;
+  --he-cursor-color: yellowgreen;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family:
+    system-ui,
+    Segoe UI;
+}
+
+.revealDockManager {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 42px);
 }
 
 div > .dialogHeader {
-  background-color: blue;
-  color: lightblue;
+  background-color: var(--dialog-header-background);
+  color: var(--dialog-header-text-color);
   font-size: medium;
   margin: 0px;
   border-bottom: none;
@@ -50,124 +89,39 @@ div > .dialogHeaderContainer > .e-dlg-header-content {
   width: 100%;
 }
 
-.dv-groupview.dv-inactive-group
-  > .dv-tabs-and-actions-container
-  .dv-tabs-container
-  > .dv-tab.dv-active-tab {
-  background-color: #454545;
-  color: var(--tabbar-tab-background);
-}
-
-.dv-groupview.dv-active-group
-  > .dv-tabs-and-actions-container
-  .dv-tabs-container
-  > .dv-tab.dv-active-tab {
-  background-color: darkgray;
-  color: black;
+span.e-headertext {
+  font-family: "Segoe UI";
+  font-size: 16px;
   font-weight: bold;
 }
 
-.dv-groupview.dv-inactive-group
-  > .dv-tabs-and-actions-container
-  .dv-tabs-container
-  > .dv-tab.dv-inactive-tab {
-  background-color: var(--tabbar-tab-inactive);
-  color: var(--tabbar-tab-background);
-}
-
-.dv-react-part {
-  background-color: gray;
-}
-.dv-default-tab-action {
-  visibility: hidden !important;
-}
-
-.e-grid:not(.e-grid-min-height) .e-gridcontent tr td:not(.e-indentcell):first-child:empty,
-.e-grid:not(.e-grid-min-height) .e-gridcontent tr.e-row .e-rowcell:empty {
-  height: 18px;
+div.e-grid {
+  font-family: monospace;
 }
 
 .e-grid .e-headercell {
-  font-family: "Segoe UI";
-  font-size: 16px;
-  font-weight: bolder;
-  background-color: #c0c0c0; /* Override the header background color */
-  color: black;
-  padding: 2px 2px 5px 12px;
-  margin: 0px;
-  height: 20px;
+  background-color: var(--grid-header-background);
+  color: var(grid-header-text-color);
+  font-weight: bold;
 }
 
 .e-grid .e-rowcell {
-  line-height: 18px;
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
-.e-grid .e-rowcell {
-  background-color: #e0e0e0;
-  padding: 1px 12px;
-  margin: 0px;
-  line-height: 13px;
+.e-grid .e-headercell {
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
-.e-grid .e-table {
-  border-spacing: 1px !important;
-}
-
-.e-grid .e-content {
-  background-color: #c0c0c0;
-}
-
-.e-grid {
-  font-family: monospace;
-  font-size: 16px;
-}
-
-.e-grid .e-gridheader {
-  border-bottom-width: 0px;
-}
-
-.e-grid .e-summarycell,
-.e-grid .e-groupcaption {
-  background-color: #d3d3d3;
-  color: black;
-  padding-left: 25px;
-}
-
-.e-grid .e-toolbar-items .e-toolbar-item.e-search-wrapper {
-  padding: 0px;
-}
-
-.e-grid .e-toolbar-items .e-toolbar-item.e-search-wrapper .e-search {
-  margin-bottom: 0;
-  opacity: 1;
-  width: 230px;
-  height: 24px;
-}
-
-.e-toolbar.e-control[class*="e-toolbar"] {
-  min-height: 36px;
-}
-
-.e-grid .e-groupcaption {
-  padding: 0px;
-  padding-left: 5px;
-}
-
-html {
-  width: 100%;
-  height: 100%;
-  margin: 0;
+.e-grid .e-sortfilterdiv {
   padding: 0;
+  width: 0;
 }
 
-body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  font-family:
-    system-ui,
-    Segoe UI;
+.e-grid .e-columnmenu {
+  padding: 0 0px;
 }
 
 #root {
@@ -175,11 +129,6 @@ body {
   width: 100%;
   margin: 0;
   padding: 0;
-}
-
-.main-page-container {
-  height: calc(100% - 42px);
-  width: 100%;
 }
 
 .full-size {
@@ -193,6 +142,12 @@ body {
   height: 100%;
 }
 
+.flex-container-row {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
 .flex-item-grow {
   flex-grow: 1;
 }
@@ -201,4 +156,59 @@ body {
   font-family: "Segoe UI";
   font-size: 16px;
   font-weight: bolder;
+}
+
+div.dockspan-tab-handle {
+  width: 100px !important;
+}
+
+div > .dockspan-tab-handle-text {
+  font-family: "Segoe UI";
+  font-size: 14px;
+  font-weight: normal;
+  margin-top: 1px;
+}
+
+div > .panel-titlebar-icon {
+  margin-top: 1px;
+  margin-left: -2px;
+}
+
+div.panel-titlebar.disable-selection.dockspan-panel-active
+  > div.panel-titlebar-text.dockspan-panel-titlebar-text-active
+  > img {
+  margin-top: 4px;
+}
+
+div.panel-titlebar.disable-selection > div.panel-titlebar-text > img {
+  margin-top: 4px;
+}
+div > .panel-titlebar-text {
+  margin-top: -4px;
+}
+
+div > .splitbar-vertical {
+  background-color: var(--splitter-vertical-color);
+  z-index: 20;
+}
+
+div > .splitbar-horizontal {
+  background-color: var(--splitter-horizontal-color);
+  z-index: 20;
+}
+
+div > .dockspan-tab-handle-active {
+  background-color: rgba(8, 8, 8, 0.85);
+}
+
+div > .dockspan-panel-active {
+  background-color: rgba(8, 8, 8, 0.85);
+}
+
+div > .dockspan-tab-handle:hover {
+  background-color: rgba(90, 90, 90, 0.85);
+}
+
+div > .dockspan-tab-handle-list-container {
+  background-color: rgba(165, 165, 165, 0.874);
 }

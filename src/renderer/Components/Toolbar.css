@@ -40,3 +40,56 @@
 .tb-python {
   background-image: url("../icons/icons8-python-48.png");
 }
+
+.wm-icon {
+  background-size: contain;
+  top: 8px;
+  margin-left: -10px !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: inline-block;
+  background-repeat: no-repeat;
+}
+.wm-stack {
+  background-image: url("../icons/icons8-stack-48.png");
+}
+
+.wm-thread {
+  background-image: url("../icons/icons8-thread-48.png");
+}
+
+.wm-hex {
+  background-image: url("../icons/icons8-hex-48.png");
+}
+
+.wm-registers {
+  background-image: url("../icons/icons8-cpu-48.png");
+}
+
+.wm-source {
+  background-image: url("../icons/icons8-source-code-48.png");
+}
+
+.wm-locals {
+  background-image: url("../icons/icons8-local-48.png");
+}
+
+.wm-bp {
+  background-image: url("../icons/icons8-dot-48.png");
+}
+
+.wm-disasm {
+  background-image: url("../icons/icons8-disassembly-48.png");
+}
+
+.wm-command {
+  background-image: url("../icons/icons8-command-line-48.png");
+}
+
+.wm-icon-visible {
+  opacity: 1;
+}
+
+.wm-icon-hidden {
+  opacity: 0.3;
+}

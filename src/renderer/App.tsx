@@ -1,225 +1,282 @@
-import { DockviewApi, DockviewReact, DockviewReadyEvent, IDockviewPanelProps } from "dockview";
-import { Component, createRef, RefObject } from "react";
+import { DockManager } from "../../node_modules/dock-spawn-ts/lib/js/DockManager.js";
+
+import { JSX, RefObject, useEffect, useRef } from "react";
 import { GdbAny } from "../common/gdb-common";
 
+/* Dialogs */
+import { AboutBox, type AboutBoxHandle } from "./Dialogs/AboutBox";
+import {
+  WhileConnectingDialog,
+  type WhileConnectingDialogHandle,
+} from "./Dialogs/ConnectingDialog.jsx";
+import { ConnectionManager, type ConnectionManagerHandle } from "./Dialogs/ConnectionManager";
+
+/* Tool Windows */
+import RevealToolbar from "./Components/Toolbar.jsx";
+import Settings, { SettingsHandle } from "./Dialogs/Settings.jsx";
 import GdbBreakPointWindow from "./ToolWindows/GdbBreakpointsWindow";
 import GdbCallStackWindow from "./ToolWindows/GdbCallstackWindow";
 import GdbCommandWindow from "./ToolWindows/GdbCommandWindow";
+import GdbDisassemblerWindow from "./ToolWindows/GdbDisassemblerWindow.jsx";
 import GdbLocalsWindow from "./ToolWindows/GdbLocalsWindow";
 import GdbMemoryWindow from "./ToolWindows/GdbMemoryWindow";
 import GdbRegistersWindow from "./ToolWindows/GdbRegistersWindow";
 import GdbSourceWindow from "./ToolWindows/GdbSourceWindow";
 import GdbThreadsWindow from "./ToolWindows/GdbThreadsWindow";
+import { DockMenuConnector } from "./utilities/DockMenuConnector.js";
 
-import { AboutBox } from "./Dialogs/AboutBox";
-import { ConnectionManager } from "./Dialogs/ConnectionManager";
-import { Settings } from "./Dialogs/Settings";
+/* Dock Manager */
+let dockManager: DockManager;
+export let dockMenuConnector: DockMenuConnector | null = null;
 
-import { fRendered } from "./main";
-import RevealToolbar from "./Components/Toolbar";
+/* Icons Assets */
+// @ts-expect-error the &asset messes up the type checking
+import iconThread from "./icons/icons8-thread-48.png?asset";
+// @ts-expect-error the &asset messes up the type checking
+import iconRegister from "./icons/icons8-cpu-48.png?asset";
+// @ts-expect-error the &asset messes up the type checking
+import iconStack from "./icons/icons8-stack-48.png?asset";
+// @ts-expect-error the &asset messes up the type checking
+import iconHex from "./icons/icons8-hex-48.png?asset";
+// @ts-expect-error the &asset messes up the type checking
+import iconCmd from "./icons/icons8-command-line-48.png?asset";
+// @ts-expect-error the &asset messes up the type checking
+import iconSrc from "./icons/icons8-source-code-48.png?asset";
+// @ts-expect-error the &asset messes up the type checking
+import iconLocal from "./icons/icons8-local-48.png?asset";
+// @ts-expect-error the &asset messes up the type checking
+import iconDisa from "./icons/icons8-disassembly-48.png?asset";
+// @ts-expect-error the &asset messes up the type checking
+import iconBp from "./icons/icons8-dot-48.png?asset";
 
-let dockView: DockviewApi | null = null;
-
+/* Application Version Info */
 export let AppMainVersionInfo: Map<string, GdbAny>;
 window.ipcToMain.getVersionInfo().then((e) => {
   AppMainVersionInfo = e;
 });
 
-export default class App extends Component {
-  private aboutBoxRef = createRef<AboutBox>();
-  private settingsRef = createRef<Settings>();
-  private connectionsRef = createRef<ConnectionManager>();
+export default function App(): JSX.Element {
+  const toolbarRef = useRef<RevealToolbar>(null);
+  const aboutBoxRef = useRef<AboutBoxHandle>(null);
+  const settingsRef = useRef<SettingsHandle>(null);
+  const connectionsRef = useRef<ConnectionManagerHandle>(null);
+  const whileConnectingRef = useRef<WhileConnectingDialogHandle>(null);
 
-  private disposable: ReturnType<DockviewApi["onDidLayoutChange"]> | null = null;
-
-  private readonly components = {
-    sourcewin: (props: IDockviewPanelProps) => <GdbSourceWindow {...(props as GdbAny)} />,
-    localswin: (props: IDockviewPanelProps) => <GdbLocalsWindow {...(props as GdbAny)} />,
-    breakpointwin: (props: IDockviewPanelProps) => <GdbBreakPointWindow {...(props as GdbAny)} />,
-    callstackwin: (props: IDockviewPanelProps) => <GdbCallStackWindow {...(props as GdbAny)} />,
-    commandwin: (props: IDockviewPanelProps) => <GdbCommandWindow {...(props as GdbAny)} />,
-    memorywin: (props: IDockviewPanelProps) => <GdbMemoryWindow {...(props as GdbAny)} />,
-    registerwin: (props: IDockviewPanelProps) => <GdbRegistersWindow {...(props as GdbAny)} />,
-    threadswin: (props: IDockviewPanelProps) => <GdbThreadsWindow {...(props as GdbAny)} />,
-  };
-
-  override componentDidMount() {
+  useEffect(() => {
     window.ipcToMain.notifyRender((msg: GdbAny) => {
       switch (msg.command) {
         case "about-box":
           {
-            this.aboutBoxRef.current?.ShowDialog();
+            aboutBoxRef.current?.ShowDialog();
           }
           break;
         case "connections-dialog":
           {
-            this.connectionsRef.current?.ShowDialog();
+            connectionsRef.current?.ShowDialog();
           }
           break;
         case "settings-dialog":
           {
-            this.settingsRef.current?.ShowDialog();
-          }
-          break;
-        case "connection-started":
-          {
-            console.log(`Connection Started: ${Date.now()}`);
-          }
-          break;
-        case "connection-success":
-          {
-            console.log(`Connection Success: ${Date.now()}`);
-          }
-          break;
-        case "connection-failed":
-          {
-            console.log(`Connection Failed : ${Date.now()}`);
+            settingsRef.current?.ShowDialog();
           }
           break;
       }
     });
 
-    window.onresize = () => {
-      if (fRendered) {
-        this.saveDockLayout();
-      }
-    };
+    const dockManagerElement = document.getElementById("revealDockManager")!;
+    dockManager = new DockManager(dockManagerElement, { dialogRootElement: dockManagerElement });
+    dockManager.initialize();
 
-    window.addEventListener("beforeunload", () => {
-      console.log("******************************************");
-      console.log("Unloading Browser Window");
-      console.log("******************************************");
-      this.saveDockLayout();
-    });
-  }
+    dockMenuConnector = new DockMenuConnector(dockManager);
 
-  override componentWillUnmount() {
-    if (this.disposable) {
-      this.disposable.dispose();
-    }
-  }
+    dockMenuConnector.registerPanel("sourceWindow", "Source", "Source Code Window", "wm-source");
+    dockMenuConnector.registerPanel(
+      "localsWindow",
+      "Locals",
+      "Locals Variable Window",
+      "wm-locals",
+    );
+    dockMenuConnector.registerPanel("threadsWindow", "Threads", "Threads Window", "wm-thread");
+    dockMenuConnector.registerPanel(
+      "callstackWindow",
+      "Call Stack",
+      "Call Stack Window",
+      "wm-stack",
+    );
+    dockMenuConnector.registerPanel("memoryWindow", "Memory", "Memory Window", "wm-hex");
+    dockMenuConnector.registerPanel("bpWindow", "Breakpoints", "Breakpoints Window", "wm-bp");
+    dockMenuConnector.registerPanel(
+      "registersWindow",
+      "Registers",
+      "Registers Window",
+      "wm-registers",
+    );
+    dockMenuConnector.registerPanel(
+      "disassemblyWindow",
+      "Disassembly",
+      "Disassembly Window",
+      "wm-disasm",
+    );
 
-  private onReady = (event: DockviewReadyEvent) => {
-    dockView = event.api;
+    dockMenuConnector.registerPanel("commandWindow", "Command", "GDB Command Window", "wm-command");
 
-    this.disposable = event.api.onDidLayoutChange(() => {
-      this.saveDockLayout();
+    dockManager.addLayoutListener({
+      onContainerResized: () => {
+        window.dispatchEvent(new Event("update-window-list"));
+        window.dispatchEvent(new Event("save-dock-layout"));
+      },
+      onTabChanged: () => {
+        window.dispatchEvent(new Event("update-window-list"));
+        window.dispatchEvent(new Event("save-dock-layout"));
+      },
     });
 
     window.ipcToMain.getSettings().then((gdb: GdbAny): void => {
       if (gdb.gui.dockLayout) {
-        if (Object.keys(gdb.gui.dockLayout.panels).length === 0) {
-          this.DefaultLayout(event);
-        } else {
-          event.api.fromJSON(gdb.gui.dockLayout);
-        }
+        dockManager.loadState(JSON.stringify(gdb.gui.dockLayout));
       } else {
-        this.DefaultLayout(event);
+        const documentNode = dockManager.context.model.documentManagerNode;
+
+        if (!dockMenuConnector) return;
+
+        dockMenuConnector.createAllWindows();
+
+        const srcNode = dockManager.dockFill(
+          documentNode,
+          dockMenuConnector.getPanelByDisplayName("Source"),
+        );
+        const cmdNode = dockManager.dockRight(
+          srcNode,
+          dockMenuConnector.getPanelByDisplayName("Command"),
+          0.5,
+        );
+        const localsNode = dockManager.dockUp(
+          cmdNode,
+          dockMenuConnector.getPanelByDisplayName("Locals"),
+          0.5,
+        );
+        dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Threads"));
+        dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Call Stack"));
+        dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Memory"));
+        dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Breakpoints"));
+        dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Registers"));
+        dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Disassembly"));
       }
     });
-  };
 
-  private DefaultLayout(event: DockviewReadyEvent) {
-    event.api.addPanel({
-      id: "srcwin",
-      component: "sourcewin",
-      title: "Source",
-    });
-    event.api.addPanel({
-      id: "locwin",
-      component: "localswin",
-      title: "Locals",
-      position: {
-        direction: "right",
-        referencePanel: "srcwin",
-      },
-    });
-    event.api.addPanel({
-      id: "memwin",
-      component: "memorywin",
-      title: "Memory",
-      position: {
-        referencePanel: "locwin",
-      },
-    });
-    event.api.addPanel({
-      id: "regwin",
-      component: "registerwin",
-      title: "Registers",
-      position: {
-        referencePanel: "locwin",
-      },
-    });
-    event.api.addPanel({
-      id: "brkptwin",
-      component: "breakpointwin",
-      title: "Breakpoints",
-      position: {
-        referencePanel: "locwin",
-      },
-    });
-    event.api.addPanel({
-      id: "callstkwin",
-      component: "callstackwin",
-      title: "Call Stack",
-      position: {
-        direction: "below",
-        referencePanel: "srcwin",
-      },
-    });
-    event.api.addPanel({
-      id: "thrdwin",
-      component: "threadswin",
-      title: "Threads",
-      position: {
-        referencePanel: "callstkwin",
-      },
-    });
-    event.api.addPanel({
-      id: "cmdwin",
-      component: "commandwin",
-      title: "GDB Command",
-      position: {
-        direction: "below",
-        referencePanel: "locwin",
-      },
-    });
-  }
+    dockMenuConnector.reconsilePanels();
+    toolbarRef.current?.FillWindowList();
 
-  override render() {
-    return (
-      <div className={"main-page-container"}>
-        <RevealToolbar
-          connectionsRef={this.connectionsRef as RefObject<ConnectionManager>}
-          settingsRef={this.settingsRef as RefObject<Settings>}
-        />
-        <DockviewReact
-          className={"dockview-theme-abyss"}
-          onReady={this.onReady}
-          components={this.components}
-        />
-        <AboutBox ref={this.aboutBoxRef} />
-        <Settings ref={this.settingsRef} />
-        <ConnectionManager ref={this.connectionsRef} />
+    const handleResize = () => {
+      const divDockManager = document.getElementById("revealDockDiv")!;
+
+      dockManager.resize(
+        window.innerWidth - (divDockManager.clientLeft + divDockManager.offsetLeft),
+        window.innerHeight - (divDockManager.clientTop + divDockManager.offsetTop),
+      );
+      window.dispatchEvent(new Event("save-dock-layout"));
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.dispatchEvent(new Event("resize"));
+    dockMenuConnector?.reconsilePanels();
+
+    // window.addEventListener("update-window-list", () => {
+    //   toolbarRef.current?.FillWindowList();
+    // });
+
+    window.dispatchEvent(new Event("update-window-list"));
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  return (
+    <div className={"main-page-container"}>
+      <RevealToolbar
+        ref={toolbarRef}
+        connectionsRef={connectionsRef as RefObject<ConnectionManagerHandle>}
+        settingsRef={settingsRef as RefObject<SettingsHandle>}
+      />
+      <div id="revealDockDiv" className="full-size">
+        <div id="revealDockManager" className="revealDockManager"></div>
+        <div id="sourceWindow" data-panel-caption="Source" hidden={true} data-panel-icon={iconSrc}>
+          <GdbSourceWindow />
+        </div>
+        <div
+          id="localsWindow"
+          data-panel-caption="Locals"
+          hidden={true}
+          data-panel-icon={iconLocal}
+        >
+          <GdbLocalsWindow />
+        </div>
+        <div
+          id="threadsWindow"
+          data-panel-caption="Threads"
+          data-panel-icon={iconThread}
+          hidden={true}
+        >
+          <GdbThreadsWindow />
+        </div>
+        <div
+          id="registersWindow"
+          data-panel-caption="Registers"
+          hidden={true}
+          data-panel-icon={iconRegister}
+        >
+          <GdbRegistersWindow />
+        </div>
+        <div
+          id="disassemblyWindow"
+          data-panel-caption="Disassembly"
+          hidden={true}
+          data-panel-icon={iconDisa}
+        >
+          <GdbDisassemblerWindow />
+        </div>
+        <div
+          id="commandWindow"
+          data-panel-caption="Command"
+          hidden={true}
+          data-panel-icon={iconCmd}
+        >
+          <GdbCommandWindow />
+        </div>
+        <div id="memoryWindow" data-panel-caption="Memory" hidden={true} data-panel-icon={iconHex}>
+          <GdbMemoryWindow />
+        </div>
+        <div
+          id="callstackWindow"
+          data-panel-caption="Call Stack"
+          hidden={true}
+          data-panel-icon={iconStack}
+        >
+          <GdbCallStackWindow />
+        </div>
+        <div id="bpWindow" data-panel-caption="Breakpoints" hidden={true} data-panel-icon={iconBp}>
+          <GdbBreakPointWindow />
+        </div>
       </div>
-    );
-  }
-
-  private saveDockLayout() {
-    const layout = dockView?.toJSON();
-    window.ipcToMain.notifyMain({ command: "save-dock-layout", data: layout });
-  }
+      <AboutBox ref={aboutBoxRef} />
+      <Settings ref={settingsRef} />
+      <ConnectionManager ref={connectionsRef} />
+      <WhileConnectingDialog ref={whileConnectingRef} />
+    </div>
+  );
 }
 
 window.addEventListener("beforeunload", () => {
   console.log("******************************************");
-  console.log("Unloading Browser Window");
+  console.log("Before Unloading Browser Window");
   console.log("******************************************");
 
-  saveDockLayout();
+  window.dispatchEvent(new Event("save-dock-layout"));
 });
 
-function saveDockLayout() {
-  const layout = dockView?.toJSON();
+window.addEventListener("save-dock-layout", () => {
+  const layout = JSON.parse(dockManager.saveState());
+  //console.log(layout);
   window.ipcToMain.notifyMain({ command: "save-dock-layout", data: layout });
-}
+});
