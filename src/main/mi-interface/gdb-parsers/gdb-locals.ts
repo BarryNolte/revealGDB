@@ -1,4 +1,7 @@
 /**
+ * Parses gdb MI locals output into a structured tree of values.
+ */
+/**
  * Sample input string representing a complex nested data structure
  * Format: series of name-value pairs containing various data types and nested structures
  */

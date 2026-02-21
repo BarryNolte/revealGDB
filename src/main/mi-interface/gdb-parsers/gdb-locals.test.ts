@@ -1,3 +1,6 @@
+/**
+ * Tests for Local and LocalsContainer parsing behavior.
+ */
 import { describe, expect, it } from "vitest";
 import { Local, LocalsContainer } from "./gdb-locals";
 

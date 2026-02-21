@@ -1,3 +1,6 @@
+/**
+ * WSL helper utilities for listing distros and serial ports.
+ */
 import { Buffer } from "node:buffer";
 import { execSync } from "node:child_process";
 
@@ -36,7 +39,7 @@ export class WslUtilities {
     for (let i = 0; i < buffer.length; i++) {
       const charCode = buffer[i];
 
-      // Check if the character is within the ASCII range
+      // Filter to printable ASCII plus CR/LF for deterministic parsing.
       if (charCode < 0x7f && charCode >= 0x20) {
         asciiString += String.fromCharCode(charCode);
       } else {

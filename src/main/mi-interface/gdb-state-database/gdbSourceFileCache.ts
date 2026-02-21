@@ -1,5 +1,8 @@
-import { readFile } from "fs/promises";
+/**
+ * Simple source file cache backed by WSL file reads.
+ */
 import EventEmitter from "events";
+import { readFile } from "fs/promises";
 
 export class gdbSourceFileCache extends EventEmitter {
   private sourceFiles: Map<string, string> = new Map<string, string>();
@@ -17,7 +20,7 @@ export class gdbSourceFileCache extends EventEmitter {
     let srcHtml: string = "";
     if (!have && file.length > 0) {
       try {
-        //TODO: Need to get the actual path from the connector
+        // TODO: Resolve actual path using the active connector.
         const data = await readFile("//wsl$/Ubuntu" + file, "utf-8");
         this.sourceFiles.set(file, data);
         srcHtml = data;

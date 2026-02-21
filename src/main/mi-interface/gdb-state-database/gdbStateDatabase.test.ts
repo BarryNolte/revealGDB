@@ -1,3 +1,6 @@
+/**
+ * Tests for gdbStateDatabase behavior and edge cases.
+ */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { gdbBreakpoint, gdbStackFrame, gdbStateDatabase } from "./gdbStateDatabase";
 

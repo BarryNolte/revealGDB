@@ -1,3 +1,6 @@
+/**
+ * Captures multi-line gdb outputs and extracts symbol/function metadata.
+ */
 import { mainWindow } from "../../main";
 import { gdbStateDatabase } from "../gdb-state-database/gdbStateDatabase";
 
@@ -5,6 +8,7 @@ export type CaptureType = "" | "file-info" | "function-names";
 
 export class GdbOutputCapture {
   private output: string[] = [];
+  // Active capture mode, driven by sentinel markers in the output stream.
   private captureType: CaptureType = "";
   private gdbDB: gdbStateDatabase;
 

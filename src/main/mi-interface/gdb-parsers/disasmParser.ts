@@ -1,3 +1,6 @@
+/**
+ * Tokenizes gdb disassembly lines for renderer highlighting.
+ */
 import { DisasmToken } from "../gdb-state-database/gdbStateDatabase";
 
 const tokenRegex = /[^\s]+\\t|<[^>]+>|0x[0-9A-Fa-f]+|\(|\)|\S+/g;

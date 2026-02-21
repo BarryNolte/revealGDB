@@ -1,3 +1,6 @@
+/**
+ * Bridges gdb startup milestones to renderer UI notifications.
+ */
 import { Step, StepState } from "../../common/gdb-common";
 import { mainWindow } from "../main";
 
@@ -34,6 +37,7 @@ export class ConnectionNotifier {
   }
 
   public consoleCapture(error: boolean, text: string): void {
+    // Normalize partial console output into line-based events.
     text.split("\n").forEach((line) => {
       if (line === "(revealGDB) Shell Running (revealGDB)") {
         this.notifyGdbStartup("starting-shell", "completed");

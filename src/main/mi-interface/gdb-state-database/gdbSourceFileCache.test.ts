@@ -1,3 +1,6 @@
+/**
+ * Tests for gdbSourceFileCache behavior.
+ */
 import * as fs from "fs/promises";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { gdbSourceFileCache } from "./gdbSourceFileCache";

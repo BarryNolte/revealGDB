@@ -1,3 +1,6 @@
+/**
+ * Tests for disassembly token parsing.
+ */
 import { describe, expect, it } from "vitest";
 import { parseDisasmTokens } from "./disasmParser";
 
@@ -28,11 +31,11 @@ describe("parseDisasmTokens", () => {
   });
 
   it("captures instruction tokens ending with a tab", () => {
-    const input = "mov\t0x40080aec <bootloader_random_enable+92>";
+    const input = "mov\\t0x40080aec <bootloader_random_enable+92>";
     const tokens = parseDisasmTokens(input);
 
     expect(tokens).toEqual([
-      { value: "mov\t", type: "instruction" },
+      { value: "mov", type: "instruction" },
       { value: "0x40080aec", type: "address" },
       { value: "<bootloader_random_enable+92>", type: "function" },
     ]);

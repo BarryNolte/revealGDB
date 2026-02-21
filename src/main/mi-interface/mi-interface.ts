@@ -1,14 +1,17 @@
+/**
+ * GDB MI interface: parse MI output and push structured updates to the UI.
+ */
 //import { gdbConnectorWsl } from "./gdb-connector/gdb-connector-wsl";
 import { EventEmitter } from "events";
 import { GdbAny } from "../../common/gdb-common";
 import { AppSettings, mainWindow } from "../main";
+import { ConnectionNotifier } from "../utilities/ConnectionNotifier";
 import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector/gdb-connector";
 import { gdbConnectorIdfOnWsl } from "./gdb-connector/gdb-connector-idf-on-wsl";
 import { parseDisasmTokens } from "./gdb-parsers/disasmParser";
 import { LocalsContainer } from "./gdb-parsers/gdb-locals";
 import { GdbOutputCapture } from "./gdb-parsers/gdb-output-capture";
 import { gdbAsmRow, gdbBreakpoint, gdbStateDatabase } from "./gdb-state-database/gdbStateDatabase";
-import { ConnectionNotifier } from "../utilities/ConnectionNotifier";
 
 export type gdbShowSourceInfo = {
   fileName: string;
@@ -20,7 +23,9 @@ export class miInterface extends EventEmitter {
   private static lnum: number = 0;
   private conn: GdbConnector | null = null;
   readonly gdbDB: gdbStateDatabase = new gdbStateDatabase();
+  // Buffer partial lines until a newline terminator arrives.
   private streamSave: string[] = [];
+  // Captures multi-line MI outputs (e.g., symbol files, function list).
   private outputCapture: GdbOutputCapture = new GdbOutputCapture(this.gdbDB);
 
   constructor() {

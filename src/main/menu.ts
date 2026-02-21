@@ -1,6 +1,8 @@
-import { app, Menu } from "electron";
+/**
+ * Application menu wiring for GDB actions and app commands.
+ */
+import { app, Menu, shell } from "electron";
 import { gdbInterface, isDebug, isMac, mainWindow } from "./main";
-import { shell } from "electron";
 
 export class GdbMenu {
   public static installMenu() {

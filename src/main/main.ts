@@ -1,3 +1,6 @@
+/**
+ * Main process entry point: window lifecycle, IPC, and GDB wiring.
+ */
 import { app, BrowserWindow, ipcMain, nativeTheme, screen } from "electron";
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import settings from "electron-settings";
@@ -8,9 +11,9 @@ import os from "node:os";
 import path, { join } from "path";
 import { GdbAny, wait } from "../common/gdb-common";
 import { GdbMenu } from "./menu";
+import { gdbFunction } from "./mi-interface/gdb-state-database/gdbStateDatabase";
 import { miInterface } from "./mi-interface/mi-interface";
 import { WslUtilities } from "./utilities/wsl-utilities";
-import { gdbFunction } from "./mi-interface/gdb-state-database/gdbStateDatabase";
 
 console.log(`PRELOAD: ${path.resolve("./out/preload/preload.js")}`);
 
@@ -62,6 +65,7 @@ app.on("ready", () => {
   });
   /* END DEBUG */
 
+  // Cache system font names for renderer font pickers.
   getSystemFonts().then((fontArray: string[]) => {
     fontArray.forEach((fontFile) => {
       fs.readFile(fontFile).then((fileBuffer) => {
@@ -139,6 +143,7 @@ app.on("ready", () => {
     mainWindow.loadFile(devUrl);
   }
 
+  // Restore persisted window bounds on first show.
   mainWindow.once("ready-to-show", () => {
     const x = AppSettings.getSync("gdb.gui.windowSize.x") as number;
     const y = AppSettings.getSync("gdb.gui.windowSize.y") as number;
@@ -163,6 +168,7 @@ app.on("ready", () => {
   /**
    * UI is now up and running, now we can interact with GDB
    */
+  // Initialize MI interface only after the UI exists.
   gdbInterface = new miInterface();
   gdbInterface.on("console-stream", (line: string) => {
     mainWindow.webContents.send("console-message", line);
@@ -325,6 +331,7 @@ ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
           command: "connection-started",
         });
 
+        // Connect once renderer is ready to accept GDB events.
         gdbInterface
           .connect()
           .then((success: boolean) => {

@@ -1,3 +1,6 @@
+/**
+ * In-memory database for gdb state snapshots and derived metadata.
+ */
 import { EventEmitter } from "stream";
 import { gdbSourceFileCache } from "./gdbSourceFileCache";
 
@@ -100,7 +103,7 @@ export type gdbFunction = {
 };
 
 /**
- *
+ * Tracks threads, breakpoints, registers, and symbol info from gdb.
  */
 export class gdbStateDatabase extends EventEmitter {
   readonly threadGroups: Map<string, gdbThreadGroup> = new Map<string, gdbThreadGroup>();

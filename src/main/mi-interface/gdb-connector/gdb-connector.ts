@@ -1,3 +1,6 @@
+/**
+ * Base connector abstraction for launching and talking to gdb.
+ */
 import { EventEmitter } from "events";
 
 export class OutputAvailableEventArgs {

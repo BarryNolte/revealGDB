@@ -1,3 +1,6 @@
+/**
+ * WSL-based connector that launches idf.py gdb in MI mode.
+ */
 import { ChildProcess, spawn } from "child_process";
 import { ConnectionNotifier } from "../../utilities/ConnectionNotifier";
 import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector";
@@ -11,6 +14,7 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
   }
 
   override async Start(): Promise<boolean> {
+    // Bootstrap the shell and then launch gdb in MI mode.
     const cmds = [
       "echo '(revealGDB) Shell Running (revealGDB)'",
       "cd ~/perftool",

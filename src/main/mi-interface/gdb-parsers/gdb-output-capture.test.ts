@@ -1,3 +1,6 @@
+/**
+ * Tests for GdbOutputCapture parsing behavior.
+ */
 import { describe, expect, it } from "vitest";
 import { gdbStateDatabase } from "../gdb-state-database/gdbStateDatabase";
 import { GdbOutputCapture } from "./gdb-output-capture";
