@@ -4,6 +4,7 @@ import {
   IEditCell,
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
+import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import {
   ColumnDirective,
   ColumnMenu,
@@ -14,16 +15,21 @@ import {
   Resize,
   TreeGridComponent,
 } from "@syncfusion/ej2-react-treegrid";
-import { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
-import "./GdbLocalsWindow.css";
-import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { menuCopy } from "../utilities/Clipboard";
+import "./GdbLocalsWindow.css";
 
+/**
+ * Locals window component.
+ * Renders a Syncfusion tree grid with hierarchical local variable data from GDB.
+ */
 export default function GdbLocalsWindow(): JSX.Element {
+  const menuId = useId();
   const treeRef = useRef<TreeGridComponent | null>(null);
   const [localData, setLocalData] = useState<GdbAny[]>([]);
 
+  /** Edit settings: enable cell editing in batch mode */
   const editSettings: EditSettingsModel = useMemo(
     () => ({
       allowEditing: true,
@@ -132,6 +138,7 @@ export default function GdbLocalsWindow(): JSX.Element {
         <Inject services={[Resize, ColumnMenu, Edit]} />
       </TreeGridComponent>
       <ContextMenuComponent
+        id={`locals-menu-${menuId}`}
         target="#locals-grid"
         items={menuCopy}
         select={() => {

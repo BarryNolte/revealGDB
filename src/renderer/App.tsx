@@ -1,3 +1,17 @@
+/**
+ * Main application component for RevealGDB.
+ *
+ * This component orchestrates the entire UI, including:
+ * - Docking window system for debugger panels
+ * - Application toolbar with window management
+ * - Dialog windows (About, Settings, Connections)
+ * - All GDB tool windows (Source, Locals, Registers, Memory, etc.)
+ *
+ * The app uses dock-spawn-ts for a flexible docking layout that can be
+ * customized and persisted. The layout state is saved to settings and
+ * restored on application restart.
+ */
+
 import { DockManager } from "../../node_modules/dock-spawn-ts/lib/js/DockManager.js";
 
 import { JSX, RefObject, useEffect, useRef } from "react";
@@ -25,11 +39,22 @@ import GdbSourceWindow from "./ToolWindows/GdbSourceWindow";
 import GdbThreadsWindow from "./ToolWindows/GdbThreadsWindow";
 import { DockMenuConnector } from "./utilities/DockMenuConnector.js";
 
-/* Dock Manager */
+/* Dock Manager - Global instances */
+/**
+ * Main docking system manager.
+ * Handles window layout, docking, undocking, and resizing operations.
+ */
 let dockManager: DockManager;
+
+/**
+ * Connector between the dock manager and the application menu system.
+ * Manages panel registration and visibility toggling.
+ */
 export let dockMenuConnector: DockMenuConnector | null = null;
 
-/* Icons Assets */
+/* Icon Assets - Tool window icons loaded as static assets */
+// Note: The ?asset query parameter tells Vite to treat these as static assets
+// and return their URLs rather than inlining them
 // @ts-expect-error the &asset messes up the type checking
 import iconThread from "./icons/icons8-thread-48.png?asset";
 // @ts-expect-error the &asset messes up the type checking
@@ -50,12 +75,24 @@ import iconDisa from "./icons/icons8-disassembly-48.png?asset";
 import iconBp from "./icons/icons8-dot-48.png?asset";
 
 /* Application Version Info */
+/**
+ * Version information for the application and its dependencies.
+ * Populated asynchronously from the main process and displayed in the About dialog.
+ */
 export let AppMainVersionInfo: Map<string, GdbAny>;
 window.ipcToMain.getVersionInfo().then((e) => {
   AppMainVersionInfo = e;
 });
 
+/**
+ * Main application component.
+ *
+ * Initializes the docking layout, registers all tool windows, and sets up
+ * event handlers for layout changes and window management. Also handles
+ * dialog display requests from the main process.
+ */
 export default function App(): JSX.Element {
+  // Refs for imperative access to child components
   const toolbarRef = useRef<RevealToolbar>(null);
   const aboutBoxRef = useRef<AboutBoxHandle>(null);
   const settingsRef = useRef<SettingsHandle>(null);
@@ -63,6 +100,7 @@ export default function App(): JSX.Element {
   const whileConnectingRef = useRef<WhileConnectingDialogHandle>(null);
 
   useEffect(() => {
+    // Listen for commands from main process to show dialogs
     window.ipcToMain.notifyRender((msg: GdbAny) => {
       switch (msg.command) {
         case "about-box":
@@ -83,12 +121,16 @@ export default function App(): JSX.Element {
       }
     });
 
+    // Initialize the dock manager system
     const dockManagerElement = document.getElementById("revealDockManager")!;
     dockManager = new DockManager(dockManagerElement, { dialogRootElement: dockManagerElement });
     dockManager.initialize();
 
+    // Create connector to manage panel registration and menu integration
     dockMenuConnector = new DockMenuConnector(dockManager);
 
+    // Register all tool windows with the dock system
+    // Parameters: elementId, displayName, title, iconClass
     dockMenuConnector.registerPanel("sourceWindow", "Source", "Source Code Window", "wm-source");
     dockMenuConnector.registerPanel(
       "localsWindow",
@@ -120,6 +162,7 @@ export default function App(): JSX.Element {
 
     dockMenuConnector.registerPanel("commandWindow", "Command", "GDB Command Window", "wm-command");
 
+    // Listen for docking layout changes to trigger saves and UI updates
     dockManager.addLayoutListener({
       onContainerResized: () => {
         window.dispatchEvent(new Event("update-window-list"));
@@ -131,10 +174,13 @@ export default function App(): JSX.Element {
       },
     });
 
+    // Load saved layout or create default layout
     window.ipcToMain.getSettings().then((gdb: GdbAny): void => {
       if (gdb.gui.dockLayout) {
+        // Restore previously saved layout
         dockManager.loadState(JSON.stringify(gdb.gui.dockLayout));
       } else {
+        // Create default layout for first-time use
         const documentNode = dockManager.context.model.documentManagerNode;
 
         if (!dockMenuConnector) return;
@@ -164,9 +210,11 @@ export default function App(): JSX.Element {
       }
     });
 
+    // Synchronize panel state and populate window list in toolbar
     dockMenuConnector.reconsilePanels();
     toolbarRef.current?.FillWindowList();
 
+    // Handle window resize events to adjust dock layout
     const handleResize = () => {
       const divDockManager = document.getElementById("revealDockDiv")!;
 
@@ -181,12 +229,10 @@ export default function App(): JSX.Element {
     window.dispatchEvent(new Event("resize"));
     dockMenuConnector?.reconsilePanels();
 
-    // window.addEventListener("update-window-list", () => {
-    //   toolbarRef.current?.FillWindowList();
-    // });
-
+    // Trigger initial window list update
     window.dispatchEvent(new Event("update-window-list"));
 
+    // Cleanup function: remove event listeners on unmount
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -267,6 +313,10 @@ export default function App(): JSX.Element {
   );
 }
 
+/**
+ * Save dock layout before window unload.
+ * Ensures user's window arrangement is preserved across sessions.
+ */
 window.addEventListener("beforeunload", () => {
   console.log("******************************************");
   console.log("Before Unloading Browser Window");
@@ -275,8 +325,11 @@ window.addEventListener("beforeunload", () => {
   window.dispatchEvent(new Event("save-dock-layout"));
 });
 
+/**
+ * Handle dock layout save requests.
+ * Serializes the current layout and sends it to the main process for persistence.
+ */
 window.addEventListener("save-dock-layout", () => {
   const layout = JSON.parse(dockManager.saveState());
-  //console.log(layout);
   window.ipcToMain.notifyMain({ command: "save-dock-layout", data: layout });
 });

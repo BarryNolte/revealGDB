@@ -1,4 +1,16 @@
 /**
+ * Value validation utilities for memory addresses and GDB expressions.
+ *
+ * Provides validation for multiple input formats used in GDB:
+ * - Dollar-prefixed register names: $pc, $sp, $eax, etc.
+ * - Hexadecimal addresses: 0x1234, ABCD
+ * - Decimal numbers
+ *
+ * Used by memory window, breakpoint window, and other components that
+ * accept address or register inputs.
+ */
+
+/**
  * Enum for the type of validated value
  */
 export enum ValueType {

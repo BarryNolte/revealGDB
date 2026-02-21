@@ -1,16 +1,38 @@
+/**
+ * GDB Memory window component.
+ *
+ * Provides a hex editor interface for viewing and editing process memory:
+ * - Enter start address (hex, decimal, or register like $pc)
+ * - Specify length to read
+ * - View memory in hex, offset, and ASCII/text columns
+ * - Edit memory values directly
+ *
+ * Features:
+ * - Flexible address format support (0x1234, 1234, $sp)
+ * - Input validation for addresses and lengths
+ * - Integrated HexEditor component with synchronized views
+ * - Memory modification via GDB commands
+ */
+
 import { createRef, JSX, useEffect, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
-import { validateValue, ValueType } from "../utilities/valueValidation";
 import HexEditor from "../Components/HexEditor/HexEditor";
 import "../Components/HexEditor/HexEditor.css";
+import { validateValue, ValueType } from "../utilities/valueValidation";
 import "./GdbMemoryWindow.css";
 
+/**
+ * Memory window component.
+ * Provides address input controls and hex editor for memory inspection.
+ */
 export default function GdbMemoryWindow(): JSX.Element {
+  // Refs for form controls
   const startRef = createRef<HTMLInputElement>();
   const lengthRef = createRef<HTMLInputElement>();
   const startErrorRef = createRef<HTMLTableCellElement>();
   const lengthErrorRef = createRef<HTMLTableCellElement>();
 
+  // State for memory data
   const [address, setAddress] = useState<string>("");
   const [length, setLength] = useState<string>("");
   const [datasource, setDatasource] = useState<Uint8Array>(new Uint8Array(0));

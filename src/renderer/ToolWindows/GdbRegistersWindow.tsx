@@ -11,7 +11,7 @@ import {
   QueryCellInfoEventArgs,
   Resize,
 } from "@syncfusion/ej2-react-grids";
-import { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { gdbRegisters } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
@@ -19,10 +19,16 @@ import { GdbAny } from "../../common/gdb-common";
 import { menuCopy } from "../utilities/Clipboard";
 import "./GdbRegistersWindow.css";
 
+/**
+ * Registers window component.
+ * Renders a Syncfusion grid with CPU register data from GDB.
+ */
 export default function GdbRegistersWindow(): JSX.Element {
+  const menuId = useId();
   const gridRef = useRef<GridComponent | null>(null);
   const [registerData, setRegisterData] = useState<gdbRegisters[]>([]);
 
+  /** Edit settings: enable cell editing in batch mode */
   const editSettings: EditSettingsModel = useMemo(
     () => ({
       allowEditing: true,
@@ -44,6 +50,10 @@ export default function GdbRegistersWindow(): JSX.Element {
     [],
   );
 
+  /**
+   * Custom validation function for hexadecimal values.
+   * Accepts 1-8 hex digits with or without 0x prefix.
+   */
   const hexCheck = useCallback((e: { element: Element; value: string }): boolean => {
     const regex = /^0[x|X][0-9A-Fa-f]{1,8}$|^[0-9A-Fa-f]{1,8}$/gm;
 
@@ -153,6 +163,7 @@ export default function GdbRegistersWindow(): JSX.Element {
         <Inject services={[Resize, ColumnMenu, Edit]} />
       </GridComponent>
       <ContextMenuComponent
+        id={`registers-menu-${menuId}`}
         target="#registers-grid"
         items={menuCopy}
         select={() => {

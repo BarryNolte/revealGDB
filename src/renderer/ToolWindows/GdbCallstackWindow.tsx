@@ -8,7 +8,7 @@ import {
   Resize,
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
-import { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { gdbStackFrame } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
@@ -16,10 +16,16 @@ import { GdbAny } from "../../common/gdb-common";
 import { menuCopy } from "../utilities/Clipboard";
 import "./GdbCallstackWindow.css";
 
+/**
+ * Call stack window component.
+ * Renders a Syncfusion grid with stack frame data from GDB.
+ */
 export default function GdbCallStackWindow(): JSX.Element {
+  const menuId = useId();
   const gridRef = useRef<GridComponent | null>(null);
   const [stackData, setStackData] = useState<gdbStackFrame[]>([]);
 
+  /** Grid selection settings: allow multiple row/cell selection */
   const selectionOptions: SelectionSettingsModel = useMemo(
     () => ({
       mode: "Both",
@@ -28,6 +34,10 @@ export default function GdbCallStackWindow(): JSX.Element {
     [],
   );
 
+  /**
+   * Subscribe to stack frame updates from GDB.
+   * Transforms GDB stack data into grid-compatible format and auto-fits columns.
+   */
   useEffect(() => {
     const unsubscribe = window.ipcToMain.stackFrames((data: gdbStackFrame[]) => {
       const grid = gridRef.current;
@@ -69,6 +79,10 @@ export default function GdbCallStackWindow(): JSX.Element {
     };
   }, []);
 
+  /**
+   * Template for empty grid state.
+   * Displays a friendly message when no stack frames are available.
+   */
   const emptyMessageTemplate = useCallback((): JSX.Element => {
     return (
       <div className="emptyRecordTemplate">
@@ -77,6 +91,10 @@ export default function GdbCallStackWindow(): JSX.Element {
     );
   }, []);
 
+  /**
+   * Handles double-click on stack frame row.
+   * Navigates to the corresponding source location in the source window.
+   */
   const handleRecordDoubleClick = useCallback((e: RecordDoubleClickEventArgs) => {
     window.ipcToMain.sendGdbCommand(`frame ${e.rowIndex}`);
   }, []);
@@ -162,6 +180,7 @@ export default function GdbCallStackWindow(): JSX.Element {
         <Inject services={[Resize, ColumnMenu]} />
       </GridComponent>
       <ContextMenuComponent
+        id={`callstack-menu-${menuId}`}
         target="#callstack-grid"
         items={menuCopy}
         select={() => {

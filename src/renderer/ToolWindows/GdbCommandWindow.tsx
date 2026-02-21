@@ -1,3 +1,18 @@
+/**
+ * GDB Command window component.
+ *
+ * Provides an interactive command-line interface for sending GDB MI commands.
+ * Features include:
+ * - Command input with history navigation (Up/Down arrows)
+ * - Command history dropdown (Ctrl+H)
+ * - Color-coded output (console, log, error, debug)
+ * - Auto-scroll to latest output
+ * - Context menu for copy/paste operations
+ *
+ * The window maintains a command history (up to 100 commands) that persists
+ * across sessions via the main process settings.
+ */
+
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { JSX, KeyboardEvent, useCallback, useEffect, useId, useRef } from "react";
 import { GdbAny } from "../../common/gdb-common";
@@ -5,16 +20,29 @@ import { doCutCopyPaste, menuCopy, menuCutCopyPaste } from "../utilities/Clipboa
 import { CommandHistory } from "../utilities/CommandHistory";
 import "./GdbCommandWindow.css";
 
+/**
+ * GDB command window component.
+ * Provides interactive command input and color-coded output display.
+ */
 export default function GdbCommandWindow(): JSX.Element {
   const idBase = useId();
-  const outputId = `cmdOutputRow-${idBase}`;
-  const inputId = `cmdInputRow-${idBase}`;
+  const outputId = `cmdOutput-${idBase}`;
+  const inputId = `cmdInput-${idBase}`;
+  const outputMenuId = `cmdOutputMenu-${idBase}-menu`;
+  const inputMenuId = `cmdInputMenu-${idBase}-menu`;
+
+  // Refs for managing state and DOM elements
   const cmdHistoryRef = useRef<CommandHistory>(new CommandHistory());
   const outputRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const historyRef = useRef<HTMLSelectElement | null>(null);
   const shouldScrollRef = useRef(true);
 
+  /**
+   * Appends a message to the output area with type-specific styling.
+   * @param message - The text to display
+   * @param type - CSS class for styling (rowConsole, rowLog, rowError, rowDebug)
+   */
   const appendMessage = useCallback((message: string, type: string): void => {
     const sp = document.createElement("span");
     sp.classList.add("defaultRow");
@@ -37,6 +65,10 @@ export default function GdbCommandWindow(): JSX.Element {
     }
   }, []);
 
+  /**
+   * Sends the current command to GDB and adds it to history.
+   * Clears the input field and persists history to settings.
+   */
   const sendCommand = useCallback(() => {
     if (inputRef.current) {
       window.ipcToMain.sendGdbCommand(inputRef.current.value);
@@ -50,6 +82,9 @@ export default function GdbCommandWindow(): JSX.Element {
     });
   }, []);
 
+  /**
+   * Hides the history dropdown and resets navigation state.
+   */
   const hideHistory = useCallback(() => {
     if (historyRef.current) {
       historyRef.current.hidden = true;
@@ -60,6 +95,10 @@ export default function GdbCommandWindow(): JSX.Element {
     cmdHistoryRef.current.reset();
   }, []);
 
+  /**
+   * Shows the history dropdown populated with all previous commands.
+   * Selects the most recent command by default.
+   */
   const showHistory = useCallback(() => {
     if (historyRef.current) {
       historyRef.current.options.length = 0;
@@ -76,6 +115,10 @@ export default function GdbCommandWindow(): JSX.Element {
     }
   }, []);
 
+  /**
+   * Load command history and subscribe to message channels on mount.
+   * Sets up listeners for console, log, error, and debug messages from GDB.
+   */
   useEffect(() => {
     window.ipcToMain.getSettings().then((gdb: GdbAny) => {
       cmdHistoryRef.current.clearHistory();
@@ -284,11 +327,13 @@ export default function GdbCommandWindow(): JSX.Element {
         />
       </div>
       <ContextMenuComponent
+        id={outputMenuId}
         target={`#${outputId}`}
         items={menuCopy}
         select={(e) => doCutCopyPaste(e.item.text, inputRef.current!)}
       />
       <ContextMenuComponent
+        id={inputMenuId}
         target={`#${inputId}`}
         items={menuCutCopyPaste}
         select={(e) => doCutCopyPaste(e.item.text, inputRef.current!)}

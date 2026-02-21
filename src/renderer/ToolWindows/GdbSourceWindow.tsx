@@ -1,3 +1,19 @@
+/**
+ * GDB Source window component.
+ *
+ * Displays source code files with syntax highlighting using Ace Editor.
+ * Features include:
+ * - Syntax highlighting for multiple languages (C/C++, Python, Rust, etc.)
+ * - Configurable editor themes (50+ themes available)
+ * - Current execution line highlighting
+ * - Breakpoint markers in the gutter
+ * - Line numbers and code folding
+ * - Context menu for copy operations
+ *
+ * The editor responds to source file updates from GDB and highlights the
+ * current execution position. Breakpoints are visually marked in the gutter.
+ */
+
 import ace from "ace-builds";
 import "ace-builds/css/ace.css";
 import "ace-builds/src-noconflict/mode-assembly_arm32";
@@ -57,7 +73,7 @@ import "ace-builds/src-noconflict/theme-tomorrow_night_eighties";
 import "ace-builds/src-noconflict/theme-twilight";
 import "ace-builds/src-noconflict/theme-vibrant_ink";
 import "ace-builds/src-noconflict/theme-xcode";
-import { JSX, useCallback, useEffect, useRef, useState } from "react";
+import { JSX, useCallback, useEffect, useId, useRef, useState } from "react";
 import AceEditor, { IMarker } from "react-ace";
 
 import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
@@ -68,7 +84,10 @@ import { GdbAny } from "../../common/gdb-common";
 import { menuCopy, sendTextToClipboard } from "../utilities/Clipboard";
 import "./GdbSourceWindow.css";
 
+/** Default editor theme */
 const defaultTheme = "gruvbox";
+
+/** Map of user-friendly theme names to Ace theme identifiers */
 export const editorThemes: Map<string, string> = new Map<string, string>([
   ["Ambiance", "ambiance"],
   ["Chaos", "chaos"],
@@ -144,6 +163,7 @@ type breakpointMarker = { line: number; type: string; file: string };
 //type threadMarker = { line: number; title: string; file: string };
 
 export default function GdbSourceWindow(): JSX.Element {
+  const menuId = useId();
   const [source, setSource] = useState("");
   const [fullpath, setFullpath] = useState("");
   const [filename, setFilename] = useState("");
@@ -400,6 +420,7 @@ export default function GdbSourceWindow(): JSX.Element {
           />
         </div>
         <ContextMenuComponent
+          id={`source-menu-${menuId}`}
           target="#gdb-ace-editor"
           items={menuCopy}
           select={() => {

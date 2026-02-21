@@ -39,8 +39,7 @@
   font-size: 12px;
   font-weight: bold;
   width: 132ch;
-  color: var(--error-text-color);
-  background-color: var(--error-background-color);
+  color: var(--error-background-color);
 }
 
 #stepsTable.e-grid .e-headercell {

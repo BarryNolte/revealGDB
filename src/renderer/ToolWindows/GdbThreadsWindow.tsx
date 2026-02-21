@@ -10,7 +10,7 @@ import {
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
-import { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
 import {
   gdbThread,
@@ -19,10 +19,16 @@ import {
 import { menuCopy } from "../utilities/Clipboard";
 import "./GdbThreadsWindow.css";
 
+/**
+ * Threads window component.
+ * Renders a Syncfusion grid with thread data grouped by process.
+ */
 export default function GdbThreadsWindow(): JSX.Element {
+  const menuId = useId();
   const gridRef = useRef<GridComponent | null>(null);
   const [threadData, setThreadData] = useState<GdbAny[]>([]);
 
+  /** Grid selection settings: allow multiple row/cell selection */
   const selectionOptions: SelectionSettingsModel = useMemo(
     () => ({
       mode: "Both",
@@ -31,6 +37,7 @@ export default function GdbThreadsWindow(): JSX.Element {
     [],
   );
 
+  /** Group settings: group by thread group ID */
   const groupOptions: GroupSettingsModel = useMemo(
     () => ({
       columns: ["groupId"],
@@ -162,6 +169,7 @@ export default function GdbThreadsWindow(): JSX.Element {
         <Inject services={[Resize, ColumnMenu, Group]} />
       </GridComponent>
       <ContextMenuComponent
+        id={`threads-menu-${menuId}`}
         target="#threads-grid"
         items={menuCopy}
         select={() => {

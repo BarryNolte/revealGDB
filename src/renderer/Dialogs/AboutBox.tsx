@@ -1,3 +1,14 @@
+/**
+ * About box dialog for RevealGDB.
+ *
+ * Displays application information including:
+ * - Application name, version, and description
+ * - Copyright and company information
+ * - Runtime environment details (Node, Electron, V8, OS)
+ *
+ * Version information is fetched from the main process on dialog show.
+ */
+
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
 import { forwardRef, JSX, useImperativeHandle, useState } from "react";
@@ -5,10 +16,12 @@ import { AppMainVersionInfo } from "../App";
 import packageInfo from "./../../../package.json";
 import "./AboutBox.css";
 
+/** Props for about dialog (currently unused) */
 interface AboutProps {
   center?: boolean;
 }
 
+/** State interface for runtime version information */
 interface AboutInfoState {
   nodeVersion: string;
   electronVersion: string;
@@ -18,10 +31,16 @@ interface AboutInfoState {
   osVersion: string;
 }
 
+/** Imperative handle interface for parent components */
 export type AboutBoxHandle = {
+  /** Shows the about dialog */
   ShowDialog: () => void;
 };
 
+/**
+ * About box component with forward ref for imperative control.
+ * Uses modal dialog with version information fetched on display.
+ */
 export const AboutBox = forwardRef<AboutBoxHandle, AboutProps>((_props, ref): JSX.Element => {
   const [hideDialog, setHideDialog] = useState(false);
   const [info, setInfo] = useState<AboutInfoState>({
@@ -33,7 +52,12 @@ export const AboutBox = forwardRef<AboutBoxHandle, AboutProps>((_props, ref): JS
     osVersion: "",
   });
 
+  // Expose ShowDialog method to parent components
   useImperativeHandle(ref, () => ({
+    /**
+     * Shows the dialog and populates version information.
+     * Fetches runtime details from the main process.
+     */
     ShowDialog: () => {
       const getInfoValue = (key: string): string => {
         return (AppMainVersionInfo?.get(key) ?? "") as string;
@@ -51,14 +75,17 @@ export const AboutBox = forwardRef<AboutBoxHandle, AboutProps>((_props, ref): JS
     },
   }));
 
+  /** Closes the about dialog */
   const dialogCloseFunc = () => {
     setHideDialog(false);
   };
 
+  /** Custom header component */
   const header = (): JSX.Element => {
     return <div className="dialogHeader">About</div>;
   };
 
+  /** Custom footer with OK button */
   const footer = (): JSX.Element => {
     return (
       <div>

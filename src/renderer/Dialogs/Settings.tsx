@@ -1,3 +1,15 @@
+/**
+ * Settings dialog for RevealGDB.
+ *
+ * Allows users to configure:
+ * - Source editor theme and fonts (Monaco editor settings)
+ * - Application theme (Light/Dark)
+ * - Debug information display options
+ *
+ * Settings are persisted to the main process and applied immediately
+ * via custom events that update relevant components.
+ */
+
 import { ButtonComponent, CheckBoxComponent } from "@syncfusion/ej2-react-buttons";
 import { DropDownListComponent } from "@syncfusion/ej2-react-dropdowns";
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
@@ -7,34 +19,49 @@ import { GdbAny } from "../../common/gdb-common";
 import { editorThemes } from "../ToolWindows/GdbSourceWindow";
 import "./Settings.css";
 
+/** Props for settings dialog (currently unused) */
 interface SettingsProps {
   center?: boolean;
 }
 
+/** Available application themes */
 const themes = ["Light", "Dark"];
 
+/** Available editor font sizes in points */
 const fontSizes: string[] = ["8", "10", "11", "12", "14", "16", "18", "20"];
 
+/** Imperative handle interface for parent components */
 export type SettingsHandle = {
+  /** Shows the settings dialog */
   ShowDialog: () => void;
 };
 
+/**
+ * Settings dialog component with forward ref for imperative control.
+ * Loads current settings on mount and provides UI for modifying preferences.
+ */
 const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.Element => {
   const [hideDialog, setHideDialog] = useState(false);
   const [fontNames, setFontNames] = useState<GdbAny[]>([]);
 
+  // Refs for form controls
   const editorThemeRef = useRef<DropDownListComponent>(null);
   const editorFontSizeRef = useRef<DropDownListComponent>(null);
   const editorFontsRef = useRef<DropDownListComponent>(null);
   const appThemeRef = useRef<DropDownListComponent>(null);
   const appShowDebugInfoRef = useRef<CheckBoxComponent>(null);
 
+  // Expose ShowDialog method to parent components
   useImperativeHandle(ref, () => ({
     ShowDialog: () => {
       setHideDialog(true);
     },
   }));
 
+  /**
+   * Load current settings on component mount.
+   * Fetches settings and system fonts from main process and populates form controls.
+   */
   useEffect(() => {
     let isMounted = true;
 
@@ -71,14 +98,17 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
     };
   }, []);
 
+  /** Closes the settings dialog */
   const dialogCloseFunc = () => {
     setHideDialog(false);
   };
 
+  /** Custom header component */
   const header = (): JSX.Element => {
     return <div className="dialogHeader">Settings</div>;
   };
 
+  /** Custom footer with OK button */
   const footer = (): JSX.Element => {
     return (
       <div>
@@ -87,6 +117,10 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
     );
   };
 
+  /**
+   * Handles editor theme selection change.
+   * Updates the source window editor theme and persists to settings.
+   */
   const onSelectEditorTheme = (e: GdbAny) => {
     window.dispatchEvent(
       new CustomEvent("changeEditor", { detail: { theme: e.itemData.value }, bubbles: false }),
@@ -98,6 +132,10 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
     });
   };
 
+  /**
+   * Handles editor font selection change.
+   * Updates the source window editor font and persists to settings.
+   */
   const onSelectEditorFont = (e: GdbAny) => {
     const newFontName = e.itemData.value;
     window.dispatchEvent(
@@ -113,6 +151,10 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
     });
   };
 
+  /**
+   * Handles editor font size selection change.
+   * Updates the source window editor font size and persists to settings.
+   */
   const onSelectEditorFontSize = (e: GdbAny) => {
     const newFontSize = e.itemData.value;
     window.dispatchEvent(
@@ -128,6 +170,10 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
     });
   };
 
+  /**
+   * Handles debug info display toggle.
+   * Shows/hides debug information in various UI components.
+   */
   const onChangeShowDebugInfo = (e: GdbAny) => {
     window.dispatchEvent(
       new CustomEvent("changeApplication", {
@@ -142,6 +188,10 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
     });
   };
 
+  /**
+   * Handles application theme selection change.
+   * Switches between Light and Dark themes for the entire application.
+   */
   const onSelectAppTheme = (e: GdbAny) => {
     const newAppTheme = e.itemData.value;
     window.dispatchEvent(

@@ -1,30 +1,65 @@
+/**
+ * GDB Command Window test page.
+ *
+ * Provides a standalone test environment for the GdbCommandWindow component
+ * by mocking the IPC interface. This allows testing command input, history
+ * navigation, and output display without a running GDB backend.
+ *
+ * Test API exposed via window.__GDB_COMMAND_TEST_API__:
+ * - emitConsole/Log/Error/Debug: Simulate GDB output messages
+ * - emitNotifyRender: Simulate main process notifications
+ * - getSentCommands: Retrieve commands sent to GDB
+ * - getSavedHistory: Retrieve persisted command history
+ * - reset: Clear test state
+ *
+ * Used by Playwright tests to verify command window functionality.
+ */
+
 import type { JSX } from "react";
 import GdbCommandWindow from "../ToolWindows/GdbCommandWindow";
 import "./gdbcommand-test-page.css";
 
+/** Notification message format */
 type NotifyMessage = { command: string };
 
+/** Test settings structure for command history */
 type GdbCommandTestSettings = {
   history: string[];
 };
 
+/** Test API interface for interacting with the component */
 type TestApi = {
+  /** Emit a console message to the command output */
   emitConsole: (message: string) => void;
+  /** Emit a log message to the command output */
   emitLog: (message: string) => void;
+  /** Emit an error message to the command output */
   emitError: (message: string) => void;
+  /** Emit a debug message to the command output */
   emitDebug: (message: string) => void;
+  /** Emit a notification to the renderer */
   emitNotifyRender: (message: NotifyMessage) => void;
+  /** Get list of commands sent during test */
   getSentCommands: () => string[];
+  /** Get persisted command history */
   getSavedHistory: () => string[];
+  /** Reset test state */
   reset: () => void;
 };
 
+/** Window type augmentation for test data */
 type WindowWithTestApi = Window & {
   __GDB_COMMAND_TEST_SETTINGS__?: GdbCommandTestSettings;
   __GDB_COMMAND_TEST_API__?: TestApi;
 };
 
+/**
+ * Sets up a mock IPC interface for testing the GDB command window.
+ * Creates window.__GDB_COMMAND_TEST_API__ with methods to control and inspect
+ * the component during tests.
+ */
 export function setupGdbCommandTestApi(): void {
+  // Track commands sent to GDB and saved history
   const sentCommands: string[] = [];
   let savedHistory: string[] = [];
 

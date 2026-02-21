@@ -18,10 +18,15 @@ import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbSta
 import imgUrl from "../icons/icons8-delete-48.png";
 import "./GdbBreakpointsWindow.css";
 
+/**
+ * Breakpoints window component.
+ * Renders a Syncfusion grid with breakpoint data from GDB.
+ */
 export default function GdbBreakPointWindow(): JSX.Element {
   const gridRef = useRef<GridComponent | null>(null);
   const [breakpointData, setBreakpointData] = useState<GdbAny[]>([]);
 
+  /** Grid selection settings: allow multiple row/cell selection */
   const selectionOptions: SelectionSettingsModel = useMemo(
     () => ({
       mode: "Both",
@@ -29,6 +34,11 @@ export default function GdbBreakPointWindow(): JSX.Element {
     }),
     [],
   );
+
+  /**
+   * Subscribe to breakpoint data updates from GDB.
+   * Transforms GDB breakpoint data into grid-compatible format and auto-fits columns.
+   */
   useEffect(() => {
     const unsubscribe = window.ipcToMain.dataBrkPts((data: Map<string, gdbBreakpoint>) => {
       const grid = gridRef.current;

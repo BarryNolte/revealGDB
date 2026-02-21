@@ -1,3 +1,21 @@
+/**
+ * GDB Disassembler window component.
+ *
+ * Displays disassembled machine code with:
+ * - Memory addresses and instruction offsets
+ * - Hex opcodes
+ * - Disassembled assembly instructions with syntax highlighting
+ * - Function boundaries and names
+ * - Current PC (program counter) indicator
+ *
+ * Features:
+ * - Function selector dropdown for quick navigation
+ * - Address range input for custom disassembly
+ * - Grouped by function
+ * - Color-coded instruction tokens (mnemonics, registers, addresses)
+ * - Context menu for copy operations
+ */
+
 import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns";
 import {
   ColumnDirective,
@@ -10,7 +28,7 @@ import {
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
-import React, { JSX, useEffect, useMemo, useRef, useState } from "react";
+import React, { JSX, useEffect, useId, useMemo, useRef, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
 import {
   DisasmToken,
@@ -18,20 +36,28 @@ import {
   gdbFunction,
 } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { doCutCopyPaste, menuCopy, menuCutCopyPaste } from "../utilities/Clipboard";
-import "./GdbDisassemblerWindow.css";
 import { validateValue, ValueType } from "../utilities/valueValidation";
+import "./GdbDisassemblerWindow.css";
 
+/**
+ * Disassembler window component.
+ * Provides address/function selection controls and disassembly grid.
+ */
 export default function GdbDisassemblerWindow(): JSX.Element {
+  // Refs for grid and form controls
+  const menuIdBase = useId();
   const gridRef = useRef<GridComponent>(null);
   const functionNameRef = useRef<ComboBoxComponent>(null);
-  //const pendingDataRef = useRef<gdbAsmRow[] | null>(null);
   const addressErrorRef = useRef<HTMLTableCellElement>(null);
   const lengthErrorRef = useRef<HTMLTableCellElement>(null);
   const startRef = useRef<HTMLInputElement>(null);
   const lengthRef = useRef<HTMLInputElement>(null);
+
+  // State for disassembly data and function list
   const [functionList, setFunctionList] = useState<gdbFunction[]>([]);
   const [disasmData, setDisasmData] = useState<gdbAsmRow[]>([]);
 
+  /** Grid selection settings: allow multiple row/cell selection */
   const selectionOptions: SelectionSettingsModel = useMemo(
     () => ({
       mode: "Both",
@@ -40,6 +66,10 @@ export default function GdbDisassemblerWindow(): JSX.Element {
     [],
   );
 
+  /**
+   * Subscribe to disassembly and function list updates on mount.
+   * Also initializes error message visibility.
+   */
   useEffect(() => {
     window.ipcToMain.dataDisasm((data: gdbAsmRow[]) => {
       setDisasmData(data);
@@ -55,16 +85,10 @@ export default function GdbDisassemblerWindow(): JSX.Element {
     }
   }, []);
 
-  // const onGridCreated = (): void => {
-  //   if (gridRef.current) {
-  //     gridRef.current.autoFitColumns(["address", "offset", "opcodes", "instruction"], 0);
-  //     if (pendingDataRef.current) {
-  //       setDisasmData(pendingDataRef.current);
-  //       pendingDataRef.current = null;
-  //     }
-  //   }
-  // };
-
+  /**
+   * Template function for rendering disassembled instructions.
+   * Applies syntax highlighting based on token type (instruction, address, register, etc.).
+   */
   const instructionsTemplate = (props: gdbAsmRow): JSX.Element => {
     const instParts: JSX.Element[] = [];
 
@@ -306,17 +330,17 @@ export default function GdbDisassemblerWindow(): JSX.Element {
               clipMode="EllipsisWithTooltip"
               template={instructionsTemplate}
             />
-            <ColumnDirective
-              field="func"
-              headerText="Function"
-              visible={false}
-              allowSorting={false}
-            />
           </ColumnsDirective>
           <Inject services={[Resize, Group]} />
         </GridComponent>
-        <ContextMenuComponent target="#disassembly-grid" items={menuCopy} select={doCopy} />
         <ContextMenuComponent
+          id={`disasm-grid-menu-${menuIdBase}`}
+          target="#disassembly-grid"
+          items={menuCopy}
+          select={doCopy}
+        />
+        <ContextMenuComponent
+          id={`disasm-func-menu-${menuIdBase}`}
           target="#function-names"
           items={menuCutCopyPaste}
           select={(e) =>
@@ -328,11 +352,13 @@ export default function GdbDisassemblerWindow(): JSX.Element {
         />
       </div>
       <ContextMenuComponent
+        id={`disasm-start-menu-${menuIdBase}`}
         target={`#asm-start`}
         items={menuCutCopyPaste}
         select={(e) => doCutCopyPaste(e.item.text, startRef.current!)}
       />
       <ContextMenuComponent
+        id={`disasm-length-menu-${menuIdBase}`}
         target={`#asm-length`}
         items={menuCutCopyPaste}
         select={(e) => doCutCopyPaste(e.item.text, lengthRef.current!)}
