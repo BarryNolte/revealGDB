@@ -1,11 +1,7 @@
 # UI Related
-  * Connection Model Dialog with status while connecting
   * Themeing
   * Connection manager
     * args
-    * environment (set/unset)
-    * path to exe
-    * working directory
   * Cleanup menus
   * Convience variables
   * Save column widths with layout
@@ -17,6 +13,7 @@
   * Disassembly Window
     * Highlight registers?
     * "Show Disassembly" button working in source window
+  * Click on breakpoint list and goto source
   * Python Window for running python commands
   * Values on hover in source
   * Thread markers in source (better with multiple source windows)
@@ -27,7 +24,6 @@
     * Code detection for source viewer
 
 # Project Related
-  * Convert all react components to function based
   * github workflow working
     * Real Debug/Release builds
     * Product Icon
@@ -39,6 +35,7 @@
 # New Settings
   * rowHeight for grid toolwindows
 
+~~Connection Model Dialog with status while connecting~~
 ~~Command Window Clear Button~~
 ~~Cut/Copy/Paste/drag/drop~~
 ~~Click on function name for disassembly~~

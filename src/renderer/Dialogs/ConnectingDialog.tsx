@@ -1,11 +1,16 @@
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
-import { forwardRef, JSX, useEffect, useImperativeHandle, useRef } from "react";
+import { forwardRef, JSX, useEffect, useImperativeHandle, useRef, useState } from "react";
 import "./ConnectingDialog.css";
 import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns";
 import { ProgressBarComponent } from "@syncfusion/ej2-react-progressbar";
 import { ColumnDirective, ColumnsDirective, GridComponent } from "@syncfusion/ej2-react-grids";
-import { GdbAny } from "../../common/gdb-common";
+import { GdbAny, Step, StepAndState } from "../../common/gdb-common";
+
+import pendingIcon from "../icons/icons8-pending-48.png";
+import inProcessIcon from "../icons/icons8-process.gif";
+import completedIcon from "../icons/icons8-complete-48.png";
+import failedIcon from "../icons/icons8-failed-48.png";
 
 const testConnections: string[] = [
   "Connection 1",
@@ -20,18 +25,10 @@ const testConnections: string[] = [
   "Connection 10",
 ];
 
-type StepAndState = {
-  step: number;
-  name: string;
-  state: "pending" | "in-progress" | "completed" | "failed";
-};
-
-const connectionStates: Record<string, StepAndState> = {
+const states: Record<Step, StepAndState> = {
   "starting-shell": { step: 0, name: "Starting Shell", state: "pending" },
-  "finding-gdb": { step: 1, name: "Finding GDB", state: "pending" },
-  "gdb-starting": { step: 2, name: "GDB Starting", state: "pending" },
-  "running-commands": { step: 3, name: "Running Commands", state: "pending" },
-  "target-running": { step: 4, name: "Target Running", state: "pending" },
+  "running-commands": { step: 1, name: "Running Commands", state: "pending" },
+  "target-running": { step: 2, name: "Target Running", state: "pending" },
 };
 
 export type WhileConnectingDialogHandle = {
@@ -43,49 +40,44 @@ export const WhileConnectingDialog = forwardRef<WhileConnectingDialogHandle>((_p
   const connDlgRef = useRef<DialogComponent>(null);
   const gridRef = useRef<GridComponent>(null);
   const progressRef = useRef<ProgressBarComponent>(null);
+  const outputRef = useRef<HTMLDivElement | null>(null);
+  const [connectionState, setConnectionState] = useState(states);
 
   useEffect(() => {
     connDlgRef.current?.show();
-    window.ipcToMain.connectionStatus((status: string) => {
-      switch (status) {
-        case "target-running":
+    window.ipcToMain.connectionStatus((status: GdbAny) => {
+      console.log(`Connection status: ${JSON.stringify(status)}`);
+      switch (status[0]) {
+        case "console-capture":
           {
-            connDlgRef.current?.hide();
+            const { error, line } = status[1];
+            const div = document.createElement("div");
+            div.textContent = line;
+            div.className = error ? "consoleError" : "consoleOutput";
+            outputRef.current?.appendChild(div);
+            div.scrollIntoView({ behavior: "smooth", block: "end" });
           }
           break;
-        case "finding-gdb":
+        case "gdb-startup":
           {
-            console.log(`Finding GDB: ${Date.now()}`);
-          }
-          break;
-        case "gdb-found":
-          {
-            console.log(`GDB Found: ${Date.now()}`);
-          }
-          break;
-        case "gdb-not-found":
-          {
-            console.log(`GDB Not Found: ${Date.now()}`);
-          }
-          break;
-        case "gdb-starting":
-          {
-            console.log(`GDB Starting: ${Date.now()}`);
-          }
-          break;
-        case "gdb-started":
-          {
-            console.log(`GDB Started: ${Date.now()}`);
-          }
-          break;
-        case "gdb-start-failed":
-          {
-            console.log(`GDB Start Failed: ${Date.now()}`);
+            const step = status[1] as Step;
+            const stepState = status[2] as StepAndState["state"];
+            setConnectionState((prev) => {
+              const newState = { ...prev };
+              newState[step] = { ...newState[step], state: stepState };
+              return newState;
+            });
+
+            if (step === "target-running" && stepState === "completed") {
+              setTimeout(() => {
+                connDlgRef.current?.hide();
+              }, 500);
+            }
           }
           break;
         default:
           {
-            console.log(`Unknown status: ${status}`);
+            console.error(`Unknown status: ${status}`);
           }
           break;
       }
@@ -138,6 +130,32 @@ export const WhileConnectingDialog = forwardRef<WhileConnectingDialogHandle>((_p
     return <div className="column-header-template">{h.headerText}</div>;
   };
 
+  const stateCellTemplate = (props: GdbAny): JSX.Element => {
+    const state = props!.state as StepAndState["state"];
+    let src = "";
+    switch (state) {
+      case "pending":
+        src = pendingIcon;
+        break;
+      case "in-progress":
+        src = inProcessIcon;
+        break;
+      case "completed":
+        src = completedIcon;
+        break;
+      case "failed":
+        src = failedIcon;
+        break;
+      default:
+        break;
+    }
+    return (
+      <div>
+        <img className="statusIcon" src={src} alt={state} />
+      </div>
+    );
+  };
+
   return (
     <div>
       <DialogComponent
@@ -145,7 +163,7 @@ export const WhileConnectingDialog = forwardRef<WhileConnectingDialogHandle>((_p
         ref={connDlgRef}
         title="Connecting..."
         width={500}
-        height={700}
+        height="70vh"
         position={{ X: "center", Y: "center" }}
         showCloseIcon={true}
         close={dialogCloseFunc}
@@ -153,21 +171,26 @@ export const WhileConnectingDialog = forwardRef<WhileConnectingDialogHandle>((_p
         footerTemplate={footer}
         isModal={true}
       >
-        <div id="connectionLabel">
+        <div className="connectionContainer">
           <label className="connectionLabel" htmlFor="definedConnections">
             Select a connection
           </label>
-          <ComboBoxComponent
-            id="definedConnections"
-            name="definedConnections"
-            readOnly={true}
-            placeholder="Select a connection..."
-            disabled={false}
-            dataSource={testConnections}
-          />
-        </div>
-        <div className="state-container">
-          <GridComponent ref={gridRef} id="stepsTable" dataSource={Object.values(connectionStates)}>
+          <div className="connectionItem">
+            <ComboBoxComponent
+              id="definedConnections"
+              name="definedConnections"
+              readOnly={true}
+              placeholder="Select a connection..."
+              disabled={false}
+              dataSource={testConnections}
+            />
+          </div>
+          <GridComponent
+            ref={gridRef}
+            className="connectionItem"
+            rowHeight={16}
+            dataSource={Object.values(connectionState)}
+          >
             <ColumnsDirective>
               <ColumnDirective field="step" visible={false} />
               <ColumnDirective
@@ -175,6 +198,7 @@ export const WhileConnectingDialog = forwardRef<WhileConnectingDialogHandle>((_p
                 headerText="State"
                 autoFit={true}
                 headerTemplate={columnHeaderTemplate}
+                template={stateCellTemplate}
               />
               <ColumnDirective
                 field="name"
@@ -184,14 +208,19 @@ export const WhileConnectingDialog = forwardRef<WhileConnectingDialogHandle>((_p
               />
             </ColumnsDirective>
           </GridComponent>
+          <label className="connectionLabel connectionItem" htmlFor="connectionOutputContainer">
+            Connection Output:
+          </label>
+          <div ref={outputRef} className="connectionItem2" id="connectionOutputContainer" />
           <ProgressBarComponent
             ref={progressRef}
             id="connectionProgress"
+            className="connectionItem"
             type="Linear"
             trackThickness={20}
             progressThickness={20}
             height="40"
-            width="500"
+            width="450"
             value={0}
             animation={{ enable: true, duration: 2000, delay: 0 }}
           />

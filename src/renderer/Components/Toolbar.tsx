@@ -29,6 +29,9 @@ export default class RevealToolbar extends Component<RevealToolbarProps, RevealT
     };
   }
 
+  private onConnect = () => {};
+  private onDisconnect = () => {};
+
   private onContinue = () => {
     window.ipcToMain.sendGdbCommand("continue");
   };
@@ -97,6 +100,19 @@ export default class RevealToolbar extends Component<RevealToolbarProps, RevealT
       <div className="flex-container-row">
         <ToolbarComponent id="toolbar" className="flex-item-grow">
           <ItemsDirective>
+            <ItemDirective
+              click={this.onConnect}
+              prefixIcon="tb-icon tb-connected"
+              tooltipText="Connect"
+              text="Connect"
+            />
+            <ItemDirective
+              click={this.onDisconnect}
+              prefixIcon="tb-icon tb-disconnected"
+              tooltipText="Disconnect"
+              text="Disconnect"
+            />
+            <ItemDirective type="Separator" />
             <ItemDirective
               click={this.onContinue}
               prefixIcon="tb-icon tb-go"

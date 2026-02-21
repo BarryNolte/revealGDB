@@ -5,6 +5,14 @@
   padding-right: 16px;
 }
 
+.tb-connected {
+  background-image: url("../icons/icons8-connected-48.png");
+}
+
+.tb-disconnected {
+  background-image: url("../icons/icons8-disconnected-48.png");
+}
+
 .tb-step-over {
   background-image: url("../icons/icons8-step-over-48.png");
 }

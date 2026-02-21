@@ -14,6 +14,7 @@ export default defineConfig({
   ],
   root: "src/renderer",
   base: "./",
+  assetsInclude: ["**/*.gif"],
   server: {
     port: 5173,
   },

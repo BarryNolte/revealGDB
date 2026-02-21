@@ -67,6 +67,7 @@ export default defineConfig({
     plugins: [react()],
     base: "./",
     define: buildDefines,
+    assetsInclude: ["**/*.gif"],
     build: {
       outDir: "out/renderer",
       emptyOutDir: true,

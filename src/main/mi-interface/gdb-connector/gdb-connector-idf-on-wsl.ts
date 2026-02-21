@@ -1,6 +1,6 @@
+import { ChildProcess, spawn } from "child_process";
 import { ConnectionNotifier } from "../../utilities/ConnectionNotifier";
 import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector";
-import { ChildProcess, spawn } from "child_process";
 
 export class gdbConnectorIdfOnWsl extends GdbConnector {
   private gdbExe: ChildProcess | null = null;
@@ -11,45 +11,58 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
   }
 
   override async Start(): Promise<boolean> {
-    ConnectionNotifier.getInstance().notifyFindingGdb();
-    //const extraArgs: string[] = await AppSettings.get('connections[0].extraArgs') as string[] ?? [];
-    //TODO: figure out how to add arguments to the command line
-    const args: string[] = [
-      "bash",
-      "-c",
-      "cd ~/perftool; source ~/.profile; idf.py gdb --gdb-commands --interpreter=mi2",
+    const cmds = [
+      "echo '(revealGDB) Shell Running (revealGDB)'",
+      "cd ~/perftool",
+      "source ~/.profile",
+      "echo '(revealGDB) (revealGDB)'",
+      "idf.py gdb --gdb-commands --interpreter=mi4",
     ];
 
-    ConnectionNotifier.getInstance().notifyGdbFound();
+    ConnectionNotifier.getInstance().notifyGdbStartup("starting-shell", "in-progress");
 
-    console.log(`ARGS: ${args}`);
-    console.log("");
-
-    ConnectionNotifier.getInstance().notifyGdbStarting();
-
-    this.gdbExe = spawn("wsl", args, {
+    this.gdbExe = spawn("wsl", undefined, {
       cwd: "",
       shell: false,
       windowsHide: true,
     });
+    console.log(`Spawned WSL process with PID: ${this.gdbExe.pid}`);
+
     //TODO: handle errors when starting the process (e.g. wsl not installed, command fails, etc.)
 
-    ConnectionNotifier.getInstance().notifyGdbStarted();
+    cmds.forEach((cmd) => {
+      this.Send(cmd + "\n");
+    });
 
     this.gdbExe.on("close", (code, signal) => {
       console.log(`Child process exited with code ${code} and signal ${signal}`);
       this.emit("gdb-end", code, signal);
     });
 
-    this.gdbExe.stdout?.on("data", (data: Uint8Array) => {
+    this.gdbExe.stdout?.on("data", (data: Uint8Array): void => {
       const text = new TextDecoder().decode(data);
-      //console.log("<< " + text);
+      console.log(`GDB Output: ${text}`);
+      if (ConnectionNotifier.getInstance().isWatchingConsole() && "~@&^*=+".includes(text[0])) {
+        ConnectionNotifier.getInstance().endWatchingConsole();
+        ConnectionNotifier.getInstance().notifyGdbStartup("target-running", "completed");
+      }
+
+      if (ConnectionNotifier.getInstance().isWatchingConsole()) {
+        ConnectionNotifier.getInstance().consoleCapture(false, text);
+        return;
+      }
+
       this.emit("gdb-data", new OutputAvailableEventArgs(text));
     });
 
-    this.gdbExe.stderr?.on("data", (data: Uint8Array) => {
+    this.gdbExe.stderr?.on("data", (data: Uint8Array): void => {
       const text = new TextDecoder().decode(data);
-      //console.log("!! " + text);
+      console.log(`GDB Error: ${text}`);
+      if (ConnectionNotifier.getInstance().isWatchingConsole()) {
+        ConnectionNotifier.getInstance().consoleCapture(true, text);
+        return;
+      }
+
       this.emit("gdb-error", new OutputAvailableEventArgs(text));
     });
 

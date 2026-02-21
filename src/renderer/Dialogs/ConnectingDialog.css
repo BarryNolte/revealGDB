@@ -1,19 +1,46 @@
-#connectionLabel {
-  font-size: 16px;
-  font-weight: bold;
-  margin: 10px;
-}
-
-.state-container {
+.connectionContainer {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 10px;
 }
 
-#stepsTable {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+.connectionItem {
+  flex-grow: 0;
+  margin: 5px;
+}
+
+.connectionItem2 {
+  flex-grow: 1;
+  margin: 5px;
+}
+
+.connectionLabel {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 5px;
+}
+
+#connectionOutputContainer {
+  background-color: var(--console-background-color);
+  overflow: scroll;
+}
+
+.consoleOutput {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: bold;
+  width: 132ch;
+  color: var(--console-text-color);
+  background-color: var(--console-background-color);
+}
+
+.consoleError {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: bold;
+  width: 132ch;
+  color: var(--error-text-color);
+  background-color: var(--error-background-color);
 }
 
 #stepsTable.e-grid .e-headercell {
@@ -28,5 +55,11 @@
 }
 
 #connectionProgress {
-  margin-top: 35px;
+  margin: 0px;
+  align-self: center;
+}
+
+.statusIcon {
+  width: 32px;
+  height: 32px;
 }

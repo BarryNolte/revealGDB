@@ -18,3 +18,12 @@ export function wait(ms: number): void {
   }
   console.log("Waited for " + ms + " milliseconds.");
 }
+
+export type Step = "starting-shell" | "running-commands" | "target-running";
+export type StepState = "pending" | "in-progress" | "completed" | "failed";
+
+export type StepAndState = {
+  step: number;
+  name: string;
+  state: StepState;
+};
