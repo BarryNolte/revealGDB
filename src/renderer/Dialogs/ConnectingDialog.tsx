@@ -40,13 +40,14 @@ export const WhileConnectingDialog = forwardRef<WhileConnectingDialogHandle>((_p
   const connDlgRef = useRef<DialogComponent>(null);
   const gridRef = useRef<GridComponent>(null);
   const progressRef = useRef<ProgressBarComponent>(null);
-  const outputRef = useRef<HTMLDivElement | null>(null);
+  const outputRef = useRef<HTMLDivElement>(null);
   const [connectionState, setConnectionState] = useState(states);
 
   useEffect(() => {
     connDlgRef.current?.show();
+
     window.ipcToMain.connectionStatus((status: GdbAny) => {
-      console.log(`Connection status: ${JSON.stringify(status)}`);
+      //console.log(`Connection status: ${JSON.stringify(status)}`);
       switch (status[0]) {
         case "console-capture":
           {
@@ -110,13 +111,23 @@ export const WhileConnectingDialog = forwardRef<WhileConnectingDialogHandle>((_p
   }
 
   const header = (): JSX.Element => {
-    return <div className="dialogHeader">Connecting...</div>;
+    return (
+      <div className="dialogHeader" id="connectingDialogHeader">
+        Connecting...
+      </div>
+    );
   };
 
   const footer = (): JSX.Element => {
     return (
       <div>
-        <ButtonComponent onClick={() => enableProgressBar(true)} disabled={false}>
+        <ButtonComponent
+          onClick={() => {
+            enableProgressBar(true);
+            dialogCloseFunc();
+          }}
+          disabled={false}
+        >
           Connect
         </ButtonComponent>
         <ButtonComponent onClick={dialogCloseFunc} disabled={true}>
@@ -162,11 +173,12 @@ export const WhileConnectingDialog = forwardRef<WhileConnectingDialogHandle>((_p
         className="dialogHeaderContainer"
         ref={connDlgRef}
         title="Connecting..."
-        width={500}
-        height="70vh"
+        width="500px"
+        height="185%"
         position={{ X: "center", Y: "center" }}
         showCloseIcon={true}
         close={dialogCloseFunc}
+        closeOnEscape={false}
         header={header}
         footerTemplate={footer}
         isModal={true}

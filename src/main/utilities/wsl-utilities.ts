@@ -1,10 +1,24 @@
 /**
- * WSL helper utilities for listing distros and serial ports.
+ * @file WSL-Utilities
+ * @description Provides helper utilities for Windows Subsystem for Linux (WSL) integration.
+ * This module contains functionality for discovering and listing WSL distributions and
+ * serial ports available within WSL environments. Used for configuring GDB connections
+ * to targets running in WSL instances.
+ *
+ * @author revealGDB
+ * @version 1.0.0
  */
+
 import { Buffer } from "node:buffer";
 import { execSync } from "node:child_process";
 
 export class WslUtilities {
+  /**
+   * Retrieves a list of available WSL distributions installed on the system.
+   * Executes 'wsl.exe -l -v' command and parses the output to extract distribution names.
+   *
+   * @returns {string[]} Array of WSL distribution names
+   */
   static getWslDistributions(): string[] {
     const buf = execSync("wsl.exe -l -v", { encoding: "buffer" });
     const stdoutString = WslUtilities.bufferToAsciiString(buf);
@@ -15,6 +29,12 @@ export class WslUtilities {
     return distros;
   }
 
+  /**
+   * Discovers and returns a list of serial ports available within the WSL environment.
+   * Executes a command within the default WSL distribution to list TTY devices and their drivers.
+   *
+   * @returns {string[]} Array of available serial port names (e.g., 'ttyS0', 'ttyUSB0')
+   */
   static getWslSerialPorts(): string[] {
     const buf = execSync('wsl -e sh -c "ls -l /sys/class/tty/*/device/driver"', {
       encoding: "buffer",
@@ -33,6 +53,14 @@ export class WslUtilities {
     return distros;
   }
 
+  /**
+   * Converts a Buffer containing raw bytes into an ASCII string representation.
+   * Filters characters to include only printable ASCII (0x20-0x7E) and control characters CR/LF.
+   * This ensures deterministic parsing of command output.
+   *
+   * @param {Buffer} buffer - The buffer to convert
+   * @returns {string} ASCII-filtered string representation of the buffer
+   */
   private static bufferToAsciiString(buffer: Buffer): string {
     let asciiString = "";
 

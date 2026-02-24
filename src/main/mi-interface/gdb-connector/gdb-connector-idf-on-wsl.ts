@@ -75,7 +75,11 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
 
   override Send(data: string): void {
     this.gdbExe?.stdin?.write(data + "\n", (error) => {
-      console.log(`>>  ${data} > Error: ${error}`);
+      if (error) {
+        console.error(`>>  ${data} > Error: ${error}`);
+      } else {
+        console.log(`>>  ${data}`);
+      }
       this.emit("gdb-input", data);
     });
   }

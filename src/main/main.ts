@@ -154,7 +154,7 @@ app.on("ready", () => {
       mainWindow.setPosition(x, y);
     }
 
-    if (w & h) {
+    if (w && h) {
       mainWindow.setSize(w, h);
     }
 

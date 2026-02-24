@@ -48,6 +48,10 @@
   height: 12px;
 }
 
+.connectingDialogHeader {
+  width: 500px;
+}
+
 .column-header-template {
   font-size: 14px;
   font-weight: bold;

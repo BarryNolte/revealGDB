@@ -1,0 +1,118 @@
+.drag-drop-list-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.drag-drop-list-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 4px;
+  width: 100%;
+}
+
+.drag-drop-list-input {
+  flex: 1 1 auto;
+  padding: 4px 8px;
+  border: 1px solid #c9c9c9;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.drag-drop-list-add-button {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  border: 1px solid #007acc;
+  border-radius: 4px;
+  background-color: #007acc;
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.drag-drop-list-add-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.drag-drop-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: auto;
+  overflow-x: auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5px;
+  width: 100%;
+  height: 100%;
+  align-content: flex-start;
+  flex: 1 1 auto;
+}
+
+.drag-drop-list-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 1px 3px;
+  margin: 0;
+  background-color: #fcfcfc;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: grab;
+  transition: all 0.2s ease;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: element;
+  pointer-events: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  width: calc(100% - 10px);
+}
+
+.drag-drop-list-item-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drag-drop-list-item-delete {
+  border: 1px solid #d9534f;
+  background-color: #d9534f;
+  color: #fff;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.drag-drop-list-item-delete:hover {
+  background-color: #c9302c;
+  border-color: #c12e2a;
+}
+
+.drag-drop-list-item:hover {
+  background-color: #e9e9e9;
+  border-color: #007acc;
+}
+
+.drag-drop-list-item:active {
+  cursor: grabbing;
+}
+
+.drag-drop-list-item.is-dragging {
+  opacity: 0.4;
+  cursor: grabbing;
+  transform: scale(0.95);
+}

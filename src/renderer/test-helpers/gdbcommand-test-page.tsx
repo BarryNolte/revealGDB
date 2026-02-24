@@ -59,6 +59,15 @@ type WindowWithTestApi = Window & {
  * the component during tests.
  */
 export function setupGdbCommandTestApi(): void {
+  // Skip setup if ipcToMain already exists and is from the real app
+  if (window.ipcToMain) {
+    const descriptor = Object.getOwnPropertyDescriptor(window.ipcToMain, "consoleMessage");
+    if (descriptor && !descriptor.writable && !descriptor.configurable) {
+      console.warn("Test API setup skipped: ipcToMain already exists with read-only properties");
+      return;
+    }
+  }
+
   // Track commands sent to GDB and saved history
   const sentCommands: string[] = [];
   let savedHistory: string[] = [];
