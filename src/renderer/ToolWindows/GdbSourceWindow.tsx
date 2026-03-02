@@ -454,10 +454,14 @@ export default function GdbSourceWindow(): JSX.Element {
               </tr>
             </tbody>
           </table>
-          <div>
-            <button className="no-source-button button-disassemble">Show Diassembly</button>
-            <button className="no-source-button button-open-file">Open File...</button>
-          </div>
+          {/* <div>
+            <button className="no-source-button button-disassemble" type="button">
+              Show Diassembly
+            </button>
+            <button className="no-source-button button-open-file" type="button">
+              Open File...
+            </button>
+          </div> */}
         </div>
       </div>
     </div>

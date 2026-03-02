@@ -6,12 +6,18 @@
  * - Select connection target (local, remote, WSL)
  * - Configure GDB executable paths and startup commands
  *
- * Note: Currently a placeholder implementation.
  */
 
 import { ColumnDirective, ColumnsDirective, GridComponent } from "@syncfusion/ej2-react-grids";
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
-import { forwardRef, JSX, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+  type ReactElement,
+} from "react";
 import { GdbAny } from "../../common/gdb-common";
 import DragAndDropList, {
   DragAndDropListItem,
@@ -39,24 +45,20 @@ const shells: Record<string, ShellOption> = {
   pwsh: { type: "PowerShell", platform: ["win32"], cmdLine: "pwsh" },
 };
 
-/** Imperative handle interface for parent components */
-export type ConnectionManagerHandle = {
-  /** Shows the connection manager dialog */
+export interface ConnectionManagerHandle {
   ShowDialog: () => void;
-};
+}
 
-/**
- * Connection manager component with forward ref for imperative control.
- * Placeholder implementation - full connection management UI to be implemented.
- */
-export const ConnectionManager = forwardRef<ConnectionManagerHandle, undefined>(
-  (_props, ref): JSX.Element => {
-    //console.log("[ConnectionManager] Rendering");
+// If there are no props, keep this as an empty object type.
+type ConnectionManagerProps = Record<never, never>;
+
+export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionManagerProps>(
+  function ConnectionManager(_props, ref) {
     const [hideDialog, setHideDialog] = useState(false);
     const [connections] = useState<string[]>([]);
 
     useImperativeHandle(ref, () => ({
-      ShowDialog: () => {
+      ShowDialog() {
         console.log("[ConnectionManager] ShowDialog called");
         setHideDialog(true);
       },
@@ -70,11 +72,11 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, undefined>(
       setHideDialog(false);
     };
 
-    const header = (): JSX.Element => {
+    const header = (): ReactElement => {
       return <div className="dialogHeader">Connections</div>;
     };
 
-    const footer = (): JSX.Element => {
+    const footer = (): ReactElement => {
       return (
         <div>
           <button type="button" onClick={dialogCloseFunc}>

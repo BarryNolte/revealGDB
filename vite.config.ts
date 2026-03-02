@@ -27,6 +27,19 @@ export default defineConfig({
         hexeditor: resolve(__dirname, "src/renderer/hexeditor-test.html"),
         gdbcommand: resolve(__dirname, "src/renderer/gdbcommand-test.html"),
       },
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) {
+            return undefined;
+          }
+
+          if (id.includes("node_modules/@syncfusion")) {
+            return "syncfusion-vendor";
+          }
+
+          return "vendor";
+        },
+      },
     },
   },
   resolve: {

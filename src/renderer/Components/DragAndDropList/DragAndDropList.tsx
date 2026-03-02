@@ -1,4 +1,4 @@
-import { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./DragAndDropList.css";
 
 //console.log("[DragAndDropList] Module loaded");
