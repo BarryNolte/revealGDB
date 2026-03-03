@@ -1,7 +1,6 @@
 /**
  * GDB MI interface: parse MI output and push structured updates to the UI.
  */
-//import { gdbConnectorWsl } from "./gdb-connector/gdb-connector-wsl";
 import { EventEmitter } from "events";
 import { GdbAny } from "../../common/gdb-common";
 import { AppSettings, mainWindow } from "../main";
@@ -481,7 +480,10 @@ export class miInterface extends EventEmitter {
               break;
             case "features":
               {
-                const features = resList.split(",");
+                // Extract the content within brackets first, similar to register-names
+                const rgxCleanList: RegExp = /\[(?<list>.*)\]/;
+                const cleanList = rgxCleanList.exec(resList)?.groups?.list || "";
+                const features = cleanList.split(",");
                 features.forEach((feature: string) => {
                   this.gdbDB.addFeature(feature.replaceAll('"', ""));
                 });
