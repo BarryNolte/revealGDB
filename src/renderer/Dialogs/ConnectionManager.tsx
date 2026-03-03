@@ -15,7 +15,9 @@ import {
   useEffect,
   useImperativeHandle,
   useMemo,
+  useRef,
   useState,
+  type ChangeEvent,
   type ReactElement,
 } from "react";
 import { GdbAny } from "../../common/gdb-common";
@@ -56,10 +58,15 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
   function ConnectionManager(_props, ref) {
     const [hideDialog, setHideDialog] = useState(false);
     const [connections] = useState<string[]>([]);
+    const shellSelectRef = useRef<HTMLSelectElement | null>(null);
+    const shellOptions = useMemo(
+      () => Object.entries(shells).map(([key, shell]) => ({ key, label: shell.type })),
+      [],
+    );
+    const [selectedShellKey, setSelectedShellKey] = useState<string>(shellOptions[0]?.key ?? "");
 
     useImperativeHandle(ref, () => ({
       ShowDialog() {
-        console.log("[ConnectionManager] ShowDialog called");
         setHideDialog(true);
       },
     }));
@@ -67,6 +74,23 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
     useEffect(() => {
       // Placeholder: Load connection profiles from settings or backend
     }, []);
+
+    useEffect(() => {
+      const shellSelect = shellSelectRef.current;
+      if (!shellSelect) {
+        return;
+      }
+
+      const onNativeChange = (event: Event) => {
+        const target = event.target as HTMLSelectElement;
+        setSelectedShellKey(target.value);
+      };
+
+      shellSelect.addEventListener("change", onNativeChange);
+      return () => {
+        shellSelect.removeEventListener("change", onNativeChange);
+      };
+    }, [hideDialog]);
 
     const dialogCloseFunc = () => {
       setHideDialog(false);
@@ -86,21 +110,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
       );
     };
 
-    const data: GdbAny[] = useMemo(
-      () => [
-        { text: "Hennessey Venom", id: "list-01" },
-        { text: "Bugatti Chiron", id: "list-02" },
-        { text: "Bugatti Veyron Super Sport", id: "list-03" },
-        { text: "SSC Ultimate Aero", id: "list-04" },
-        { text: "Koenigsegg CCR", id: "list-05" },
-        { text: "McLaren F1", id: "list-06" },
-        { text: "Aston Martin One- 77", id: "list-07" },
-        { text: "Jaguar XJ220", id: "list-08" },
-        { text: "McLaren P1", id: "list-09" },
-        { text: "Ferrari LaFerrari", id: "list-10" },
-      ],
-      [],
-    );
+    const data: GdbAny[] = useMemo(() => [{ text: "gdb", id: "list-01" }], []);
 
     function handleOnReorder(items: DragAndDropListItem[]): void {
       items.forEach((item) => {
@@ -109,12 +119,9 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
       });
     }
 
-    function getShells(): string[] {
-      return Object.values(shells).map((shell) => shell.type);
-    }
-
-    function shellChangeHandler(e: GdbAny): void {
-      console.log(`Shell changed to: ${e.value}`);
+    function shellChangeHandler(e: ChangeEvent<HTMLSelectElement>): void {
+      setSelectedShellKey(e.target.value);
+      console.log(`Shell changed to: ${e.target.value}`);
     }
 
     return (
@@ -137,19 +144,29 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
               <div className="controlGroup">
                 <label htmlFor="shellSelect">Shell</label>
                 <select
+                  ref={shellSelectRef}
                   id="shellSelect"
-                  onChange={(e) => shellChangeHandler({ value: e.target.value })}
+                  value={selectedShellKey}
+                  onChange={shellChangeHandler}
                 >
-                  {getShells().map((shell) => (
-                    <option key={shell} value={shell}>
-                      {shell}
+                  {shellOptions.map((shell) => (
+                    <option key={shell.key} value={shell.key}>
+                      {shell.label}
                     </option>
                   ))}
                 </select>
               </div>
               <div className="controlGroup">
                 <label htmlFor="wslDistros">WSL Distros</label>
-                <select id="wslDistros">
+                <select
+                  id="wslDistros"
+                  disabled={selectedShellKey !== "wsl"}
+                  title={
+                    selectedShellKey !== "wsl"
+                      ? "Select WSL in Shell to enable this list"
+                      : undefined
+                  }
+                >
                   {(shells.wsl.subType?.() ?? []).map((distro) => (
                     <option key={distro} value={distro}>
                       {distro}

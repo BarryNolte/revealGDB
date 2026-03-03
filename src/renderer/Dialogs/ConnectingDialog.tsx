@@ -3,7 +3,6 @@ import { DialogComponent } from "@syncfusion/ej2-react-popups";
 import { forwardRef, JSX, useEffect, useImperativeHandle, useRef, useState } from "react";
 import "./ConnectingDialog.css";
 import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns";
-import { ProgressBarComponent } from "@syncfusion/ej2-react-progressbar";
 import { ColumnDirective, ColumnsDirective, GridComponent } from "@syncfusion/ej2-react-grids";
 import { GdbAny, Step, StepAndState } from "../../common/gdb-common";
 
@@ -39,7 +38,6 @@ export type WhileConnectingDialogHandle = {
 export const WhileConnectingDialog = forwardRef<WhileConnectingDialogHandle>((_props, ref) => {
   const connDlgRef = useRef<DialogComponent>(null);
   const gridRef = useRef<GridComponent>(null);
-  const progressRef = useRef<ProgressBarComponent>(null);
   const outputRef = useRef<HTMLDivElement>(null);
   const [connectionState, setConnectionState] = useState(states);
 
@@ -94,18 +92,6 @@ export const WhileConnectingDialog = forwardRef<WhileConnectingDialogHandle>((_p
     },
   }));
 
-  function enableProgressBar(b: boolean): void {
-    if (progressRef.current) {
-      if (b) {
-        progressRef.current.isIndeterminate = true;
-        progressRef.current.value = 40;
-      } else {
-        progressRef.current.isIndeterminate = false;
-        progressRef.current.value = 0;
-      }
-    }
-  }
-
   function dialogCloseFunc() {
     connDlgRef.current?.hide();
   }
@@ -123,7 +109,6 @@ export const WhileConnectingDialog = forwardRef<WhileConnectingDialogHandle>((_p
       <div>
         <ButtonComponent
           onClick={() => {
-            enableProgressBar(true);
             dialogCloseFunc();
           }}
           disabled={false}
@@ -224,18 +209,6 @@ export const WhileConnectingDialog = forwardRef<WhileConnectingDialogHandle>((_p
             Connection Output:
           </label>
           <div ref={outputRef} className="connectionItem2" id="connectionOutputContainer" />
-          <ProgressBarComponent
-            ref={progressRef}
-            id="connectionProgress"
-            className="connectionItem"
-            type="Linear"
-            trackThickness={20}
-            progressThickness={20}
-            height="40"
-            width="450"
-            value={0}
-            animation={{ enable: true, duration: 2000, delay: 0 }}
-          />
         </div>
       </DialogComponent>
     </div>

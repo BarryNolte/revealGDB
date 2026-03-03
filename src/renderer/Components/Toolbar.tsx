@@ -250,12 +250,12 @@ export default class RevealToolbar extends Component<RevealToolbarProps, RevealT
               tooltipText="Settings"
               text="Settings"
             />
-            <ItemDirective type="Separator" />
-            <ItemDirective
+            {/* <ItemDirective type="Separator" /> */}
+            {/* <ItemDirective
               prefixIcon="tb-icon tb-python"
               tooltipText="Python Editor"
               text="Python"
-            />
+            /> */}
           </ItemsDirective>
         </ToolbarComponent>
         <SplitButtonComponent
