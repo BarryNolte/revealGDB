@@ -39,6 +39,7 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   box-sizing: border-box;
+  height: 200px;
 }
 
 #shellSelect {
@@ -58,4 +59,23 @@
   border-radius: 4px;
   width: 100%;
   height: 100%;
+}
+
+.connection-delete-button {
+  padding: 4px 8px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.connection-delete-button:hover {
+  background-color: #c82333;
+}
+
+.connection-delete-button:active {
+  background-color: #bd2130;
 }

@@ -262,6 +262,11 @@ ipcMain.handle("getFunctionNames", (): Promise<gdbFunction[]> => {
 // General messages from the UI
 ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
   switch (msg?.command) {
+    case "save-connections":
+      {
+        await AppSettings.set("gdb.connections", msg.data.connections);
+      }
+      break;
     case "save-app-show-debug-info":
       {
         await AppSettings.set("gdb.gui.showDebugInfo", msg.data);

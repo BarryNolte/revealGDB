@@ -1,4 +1,4 @@
-import React, { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./DragAndDropList.css";
 
 //console.log("[DragAndDropList] Module loaded");
@@ -52,6 +52,10 @@ export default function DragAndDropList({
   useEffect(() => {
     internalItemsRef.current = internalItems ?? items;
   }, [internalItems, items]);
+
+  useEffect(() => {
+    internalItemsRef.current = items;
+  }, [items]);
 
   useEffect(() => {
     const listElement = listRef.current;
@@ -180,7 +184,7 @@ export default function DragAndDropList({
 
   const listClassName = useMemo(() => "drag-drop-list", []);
 
-  const renderItems = internalItems ?? items;
+  const renderItems = internalItems || items;
   const handleAddItem = useCallback(() => {
     const inputElement = inputRef.current;
     if (!inputElement) return;
@@ -196,6 +200,7 @@ export default function DragAndDropList({
     setDraggedIndex(null);
     onReorder?.(nextItems);
     inputElement.value = "";
+    // Focus will be handled by autoFocus attribute on remount
   }, [onReorder]);
 
   useEffect(() => {
@@ -229,7 +234,13 @@ export default function DragAndDropList({
   return (
     <div className={containerClassName}>
       <div className="drag-drop-list-controls">
-        <input type="text" className="drag-drop-list-input" aria-label="Add item" ref={inputRef} />
+        <input
+          type="text"
+          className="drag-drop-list-input"
+          aria-label="Add item"
+          ref={inputRef}
+          autoFocus
+        />
         <button
           type="button"
           className="drag-drop-list-add-button"
