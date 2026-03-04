@@ -1,9 +1,6 @@
 # Priority Items
   * Themeing
-  * Connection manager
-    * args
-  * Clean up regex for performance in mi-interface
-  * Replace settings code
+  * Replace settings code??
   * Cleanup menus
   * Convience variables
   * Save column widths with layout

@@ -390,7 +390,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
           isModal={true} // Makes the dialog modal
         >
           <div className="connectionManagerContainer">
-            <div className="controlGroup">
+            <div className="controlGroup controlGroupOfOne">
               <label htmlFor="connectionName">Connection Name</label>
               <input
                 ref={connectionNameInputRef}

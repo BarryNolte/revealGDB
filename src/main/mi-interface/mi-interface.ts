@@ -31,7 +31,7 @@ export class miInterface extends EventEmitter {
     super();
   }
 
-  async connect(): Promise<boolean> {
+  connect(): boolean {
     ConnectionNotifier.getInstance().startWatchingConsole();
     this.conn = new gdbConnectorIdfOnWsl();
 
@@ -60,21 +60,22 @@ export class miInterface extends EventEmitter {
       totalStream += args.Output;
 
       const lines = totalStream.split("\n");
-      lines.forEach(async (line: string) => {
+
+      for (const line of lines) {
         // console.log(`Raw Output: ${line}`);
         try {
           if (this.outputCapture.CaptureLine(line)) {
-            return;
+            continue;
           }
           // console.error(`Raw Output: ${line}`);
-          await this.parseRawOutput(line);
+          this.parseRawOutput(line);
         } catch (ex) {
           this.emit(
             "error-stream",
             `\n*************************************\nEXCEPTION: ${ex}\n*************************************\n`,
           );
         }
-      });
+      }
 
       return;
     });
@@ -92,7 +93,7 @@ export class miInterface extends EventEmitter {
       console.log("GDB is idle");
     });
 
-    return await this.conn.Start();
+    return this.conn.Start();
   }
 
   send(data: string): void {
@@ -109,25 +110,25 @@ export class miInterface extends EventEmitter {
 
     switch (output[0]) {
       case "~":
-        await this.parseConsoleStream(output);
+        this.parseConsoleStream(output);
         break;
       case "@":
-        await this.parseTargetStream(output);
+        this.parseTargetStream(output);
         break;
       case "&":
-        await this.parseLogStream(output);
+        this.parseLogStream(output);
         break;
       case "^":
         await this.parseResultRecord(output);
         break;
       case "*":
-        await this.parseExecAsyncRecord(output);
+        this.parseExecAsyncRecord(output);
         break;
       case "=":
         await this.parseNotifyAsyncRecord(output);
         break;
       case "+":
-        await this.parseStatusAsyncRecord(output);
+        this.parseStatusAsyncRecord(output);
         break;
       case "(":
         {
@@ -157,6 +158,44 @@ export class miInterface extends EventEmitter {
   rgxParamValue: RegExp = /^param="(?<cmdParam>.*?)",value="(?<value>.*?)"$/;
   rgxBkpt: RegExp =
     /^bkpt={number="(?<number>[^"]*)",type="(?<type>[^"]*)",disp="(?<disp>[^"]*)",enabled="(?<enabled>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",thread-groups=\[(?<tg>[^\]]*)\],times="(?<times>[^"]*)",(installed="(?<installed>[^"]*)",)?original-location="(?<orgloc>[^"]*)"}$/;
+  // Cached RegExp patterns for parseResultRecord and related methods
+  readonly rgxResultRecord: RegExp = /^\^(?<result>[^,]*),?(?<data>.*)?$/;
+  readonly rgxResultList: RegExp = /^(?<result>.*?)=(?<list>.*)$/;
+  readonly rgxAsmData: RegExp = /asm_insns=\[(?<asm_list>.*)]$/;
+  readonly rgxAsmRow: RegExp =
+    /(?<asm_row>address="(?<address>[^"]*)",func-name="(?<func>[^"]*)",offset="(?<offset>[^"]*)",opcodes="(?<opcodes>[^"]*)",inst="(?<inst>[^"]*)")/g;
+  readonly rgxMemData: RegExp =
+    /\[\{begin="(?<begin>[^"]*)",offset="(?<offset>[^"]*)",end="(?<end>[^"]*)",contents="(?<contents>[^"]*)"\}\]/;
+  readonly rgxBps: RegExp =
+    /bkpt={number="(?<number>[^"]*)",type="(?<type>[^"]*)",disp="(?<disp>[^"]*)",enabled="(?<enabled>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",thread-groups=\[(?<tg>[^\]]*)],times="(?<times>[^"]*)",original-location="(?<orgLoc>[^"]*)"}/g;
+  readonly rgxCleanList: RegExp = /\[(?<list>.*)\]/;
+  readonly rgxThreads: RegExp = /\[(?<data>.*)\],current-thread-id="(?<curTid>.*)"/;
+  readonly rgxThreadData: RegExp =
+    /{id="(?<tid>[^"]*)",target-id="(?<targId>[^"]*)",details="(?<details>[^"]*)",frame={level="(?<level>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",args=\[(?<args>[^\]]*)\],file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",arch="(?<arch>[^"]*)"\},state="(?<state>[^"]*)"}/g;
+  readonly rgxRegisterValues: RegExp = /{number="(?<number>[^"]*)",value="(?<value>[^"]*)"}/g;
+  readonly rgxFrame: RegExp =
+    /frame={level="(?<level>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",arch="(?<arch>[^"]*)"},/g;
+  readonly rgxErrorMsg: RegExp = /^msg="(?<msg>[^"]*)"$/;
+  readonly rgxExecAsyncRecord: RegExp = /^\*(?<result>[^,]*),?(?<data>.*)?$/;
+  readonly rgxThreadIdExtractor: RegExp = /thread-id="(?<tid>[^"]*)"/;
+  readonly rgxStoppedThreadsExtractor: RegExp = /stopped-threads="(?<stoppedThreads>[^"]*)"/;
+  readonly rgxCoreExtractor: RegExp = /core="(?<core>[^"]*)"/;
+  readonly rgxReasonExtractor: RegExp = /reason="(?<reason>[^"]*)"/;
+  readonly rgxBphExtractor: RegExp =
+    /disp="(?<disp>[^"]*)",bkptno="(?<bkptno>[^"]*)",frame={(?<frame>[^}]*)}/;
+
+  // Cached RegExp patterns for stream parsing methods
+  readonly rgxLogStream: RegExp = /^&"(?<line>.*?)"$/;
+  readonly rgxConsoleStream: RegExp = /^~"(?<line>.*?)"$/;
+
+  // Cached RegExp patterns for parseNotifyAsyncRecord inline patterns
+  readonly rgxThreadGroupId: RegExp = /id="(?<id>[^"]+)"/;
+  readonly rgxThreadGroupIdPid: RegExp = /^id="(?<id>[^"]*)",pid="(?<pid>[^"]*)"$/;
+  readonly rgxThreadGroupExited: RegExp = /^id="(?<id>[^"]*)"$/;
+  readonly rgxThreadCreated: RegExp = /^id="(?<id>[^"]*)",group-id="(?<grpid>[^"]*)"$/;
+  readonly rgxThreadExited: RegExp = /^id="(?<id>[^"]*)",group-id="(?<grpid>[^"]*)"$/;
+  readonly rgxThreadSelected: RegExp = /frame={level="(?<level>[^"]*)"/;
+  readonly rgxBreakpointDeleted: RegExp = /id="(?<id>[^"]+)"/;
   private async parseNotifyAsyncRecord(output: string): Promise<boolean> {
     const chunks = this.rgxNotify.exec(output);
 
@@ -166,7 +205,7 @@ export class miInterface extends EventEmitter {
     switch (cmd) {
       case "thread-group-added":
         {
-          const idChunks = /id="(?<id>[^"]+)"/.exec(data);
+          const idChunks = this.rgxThreadGroupId.exec(data);
           const id = idChunks?.groups?.id;
           if (id) {
             this.gdbDB.addThreadGroup(id);
@@ -180,7 +219,7 @@ export class miInterface extends EventEmitter {
         break;
       case "thread-group-started":
         {
-          const idChunks = /^id="(?<id>[^"]*)",pid="(?<pid>[^"]*)"$/.exec(data);
+          const idChunks = this.rgxThreadGroupIdPid.exec(data);
           const id = idChunks?.groups?.id;
           // const pid = idChunks?.groups?.pid;
           if (id) {
@@ -196,7 +235,7 @@ export class miInterface extends EventEmitter {
       case "thread-group-exited":
         {
           //TODO: remove all threads from group
-          const idChunks = /^id="(?<id>[^"]*)"$/.exec(data);
+          const idChunks = this.rgxThreadGroupExited.exec(data);
           const id = idChunks?.groups?.id;
 
           if (id) {
@@ -219,7 +258,7 @@ export class miInterface extends EventEmitter {
         break;
       case "thread-created":
         {
-          const idChunks = /^id="(?<id>[^"]*)",group-id="(?<grpid>[^"]*)"$/.exec(data);
+          const idChunks = this.rgxThreadCreated.exec(data);
           const id = idChunks?.groups?.id;
           const grpid = idChunks?.groups?.grpid;
           if (id && grpid) {
@@ -234,7 +273,7 @@ export class miInterface extends EventEmitter {
         break;
       case "thread-exited":
         {
-          const idChunks = /^id="(?<id>[^"]*)",group-id="(?<grpid>[^"]*)"$/.exec(data);
+          const idChunks = this.rgxThreadExited.exec(data);
           const id = idChunks?.groups?.id;
           // const grpid = idChunks?.groups?.grpid;
           if (id) {
@@ -246,7 +285,7 @@ export class miInterface extends EventEmitter {
         {
           // This is received when the stack frame is changed when the process
           // is stopped.
-          const idChunks = /frame={level="(?<level>[^"]*)"/g.exec(data);
+          const idChunks = this.rgxThreadSelected.exec(data);
           const level: number = parseInt(idChunks?.groups?.level || "0");
 
           this.send("-data-list-register-values x");
@@ -275,8 +314,10 @@ export class miInterface extends EventEmitter {
         break;
       case "breakpoint-created":
         {
+          console.log(`NotifyAsyncRecord (breakpoint-created): ${data}`);
           const idChunks = this.rgxBkpt.exec(data);
           if (!idChunks || !idChunks.groups) {
+            console.error(`Failed to parse breakpoint-created: ${data}`);
             return false;
           }
           this.gdbDB.createBreakpoint(idChunks.groups as gdbBreakpoint);
@@ -285,8 +326,10 @@ export class miInterface extends EventEmitter {
         break;
       case "breakpoint-modified":
         {
+          console.log(`NotifyAsyncRecord (breakpoint-modified): ${data}`);
           const idChunks = this.rgxBkpt.exec(data);
           if (!idChunks || !idChunks.groups) {
+            console.error(`Failed to parse breakpoint-modified: ${data}`);
             return false;
           }
           this.gdbDB.updateBreakpoint(idChunks.groups as gdbBreakpoint);
@@ -295,11 +338,14 @@ export class miInterface extends EventEmitter {
         break;
       case "breakpoint-deleted":
         {
-          const idChunks = /id="(?<id>[^"]+)"/.exec(data);
+          console.log(`NotifyAsyncRecord (breakpoint-deleted): ${data}`);
+          const idChunks = this.rgxBreakpointDeleted.exec(data);
           const id = idChunks?.groups?.id;
           if (id) {
+            console.log(`Deleting breakpoint with id: ${id}`);
             this.gdbDB.deleteBreakpoint(id);
           }
+          console.log(`Remaining breakpoints: ${JSON.stringify(this.gdbDB.breakpoints)}`);
           mainWindow.webContents.send("data-brkpts", this.gdbDB.breakpoints);
         }
         break;
@@ -313,8 +359,7 @@ export class miInterface extends EventEmitter {
   }
 
   private async parseResultRecord(output: string): Promise<boolean> {
-    const rgxResultRecord: RegExp = /^\^(?<result>[^,]*),?(?<data>.*)?$/;
-    const chunks = rgxResultRecord.exec(output);
+    const chunks = this.rgxResultRecord.exec(output);
 
     const result = chunks?.groups?.result || "";
     const data = chunks?.groups?.data || "";
@@ -325,8 +370,7 @@ export class miInterface extends EventEmitter {
     switch (result) {
       case "done":
         {
-          const rgxResultList: RegExp = /^(?<result>.*?)=(?<list>.*)$/;
-          const resChunks = rgxResultList.exec(data);
+          const resChunks = this.rgxResultList.exec(data);
 
           const resResult: string = resChunks?.groups?.result || "";
           const resList: string = resChunks?.groups?.list || "";
@@ -334,13 +378,10 @@ export class miInterface extends EventEmitter {
           switch (resResult) {
             case "asm_insns":
               {
-                const rgxAsmData: RegExp = /asm_insns=\[(?<asm_list>.*)]$/gm;
-                const asmData = rgxAsmData.exec(output);
+                const asmData = this.rgxAsmData.exec(output);
                 const asmList = asmData?.groups?.["asm_list"];
 
-                const rgxAsmRow: RegExp =
-                  /(?<asm_row>address="(?<address>[^"]*)",func-name="(?<func>[^"]*)",offset="(?<offset>[^"]*)",opcodes="(?<opcodes>[^"]*)",inst="(?<inst>[^"]*)")/gm;
-                const asmRows = asmList?.matchAll(rgxAsmRow);
+                const asmRows = asmList?.matchAll(this.rgxAsmRow);
 
                 const asmRowsText: gdbAsmRow[] = [];
                 let currentFunc = "";
@@ -379,10 +420,7 @@ export class miInterface extends EventEmitter {
               break;
             case "memory":
               {
-                const rgxMemData: RegExp =
-                  /\[\{begin="(?<begin>[^"]*)",offset="(?<offset>[^"]*)",end="(?<end>[^"]*)",contents="(?<contents>[^"]*)"\}\]/gm;
-
-                const memData = rgxMemData.exec(output);
+                const memData = this.rgxMemData.exec(output);
                 //console.log(memData);
 
                 const hexData = memData?.groups?.contents || "";
@@ -425,14 +463,11 @@ export class miInterface extends EventEmitter {
             //   break;
             case "BreakpointTable":
               {
-                // const rgxBpHdr: RegExp = /nr_rows="(?<nr_rows>[^"]*)",nr_cols="(?<nr_cols>[^"]*)",hdr=\[(?<hdr>[^\]]*)\],body/g;
-                const rgxBps: RegExp =
-                  /bkpt={number="(?<number>[^"]*)",type="(?<type>[^"]*)",disp="(?<disp>[^"]*)",enabled="(?<enabled>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",thread-groups=\[(?<tg>[^\]]*)],times="(?<times>[^"]*)",original-location="(?<orgLoc>[^"]*)"/g;
-                // const bkptHdr = rgxBpHdr.exec(resList);
+                // const bkptHdr = this.rgxBpHdr.exec(resList);
                 // const rows = bkptHdr?.groups?.nr_rows || '';
                 // const cols = bkptHdr?.groups?.nr_cols || '';
                 // const hdr = bkptHdr?.groups?.hdr || '';
-                const bps = resList.matchAll(rgxBps);
+                const bps = resList.matchAll(this.rgxBps);
                 this.gdbDB.clearBreakpoints();
                 bps?.forEach((bkpt) => {
                   this.gdbDB.createBreakpoint(bkpt.groups as gdbBreakpoint);
@@ -443,14 +478,10 @@ export class miInterface extends EventEmitter {
               break;
             case "threads":
               {
-                const rgxThreads: RegExp = /\[(?<data>.*)],current-thread-id="(?<curTid>.*)"/g;
-                const rgxThreadData: RegExp =
-                  /{id="(?<tid>[^"]*)",target-id="(?<targId>[^"]*)",details="(?<details>[^"]*)",frame={level="(?<level>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",args=\[(?<args>[^\]]*)\],file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",arch="(?<arch>[^"]*)"},state="(?<state>[^"]*)"}/g;
-
-                const thVals = rgxThreads.exec(resList);
+                const thVals = this.rgxThreads.exec(resList);
                 const curTid = thVals?.groups?.curTid || "";
                 const tData = thVals?.groups?.data || "";
-                const tValues = tData.matchAll(rgxThreadData);
+                const tValues = tData.matchAll(this.rgxThreadData);
                 this.gdbDB.clearThreadList();
                 tValues.forEach((thread: GdbAny) => {
                   this.gdbDB.addThread({
@@ -481,8 +512,7 @@ export class miInterface extends EventEmitter {
             case "features":
               {
                 // Extract the content within brackets first, similar to register-names
-                const rgxCleanList: RegExp = /\[(?<list>.*)\]/;
-                const cleanList = rgxCleanList.exec(resList)?.groups?.list || "";
+                const cleanList = this.rgxCleanList.exec(resList)?.groups?.list || "";
                 const features = cleanList.split(",");
                 features.forEach((feature: string) => {
                   this.gdbDB.addFeature(feature.replaceAll('"', ""));
@@ -491,8 +521,7 @@ export class miInterface extends EventEmitter {
               break;
             case "register-names":
               {
-                const rgxCleanList: RegExp = /\[(?<list>.*)\]/;
-                const cleanList = rgxCleanList.exec(resList)?.groups?.list || "";
+                const cleanList = this.rgxCleanList.exec(resList)?.groups?.list || "";
                 const registers = cleanList.split(",");
                 registers.forEach((register: string, index: number) => {
                   this.gdbDB.addRegister(index.toString(), register.replaceAll('"', ""));
@@ -502,9 +531,7 @@ export class miInterface extends EventEmitter {
               break;
             case "register-values":
               {
-                const rgxRegisterValues: RegExp =
-                  /{number="(?<number>[^"]*)",value="(?<value>[^"]*)"}/g;
-                const regValues = resList.matchAll(rgxRegisterValues);
+                const regValues = resList.matchAll(this.rgxRegisterValues);
                 regValues.forEach((regChunks: RegExpExecArray) => {
                   const number = regChunks?.groups?.number;
                   const value = regChunks?.groups?.value;
@@ -518,9 +545,7 @@ export class miInterface extends EventEmitter {
               break;
             case "stack":
               {
-                const rgxFrame: RegExp =
-                  /frame={level="(?<level>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",arch="(?<arch>[^"]*)"}/g;
-                const frameValues = resList.matchAll(rgxFrame);
+                const frameValues = resList.matchAll(this.rgxFrame);
 
                 this.gdbDB.clearStackFrames();
                 frameValues.forEach((frameChunk: RegExpExecArray) => {
@@ -590,7 +615,7 @@ export class miInterface extends EventEmitter {
       case "error":
         {
           //  "^error" "," "msg=" c-string [ "," "code=" c-string ]
-          const msg = /^msg="(?<msg>.*)"$/.exec(data);
+          const msg = this.rgxErrorMsg.exec(data);
           const msgText = msg?.groups?.msg
             .replaceAll('\\"', '"')
             .replaceAll("\\t", "\t")
@@ -614,8 +639,7 @@ export class miInterface extends EventEmitter {
     return true;
   }
   private parseExecAsyncRecord(output: string): boolean {
-    const rgxExecAsyncRecord: RegExp = /^\*(?<result>[^,]*),?(?<data>.*)?$/;
-    const chunks = rgxExecAsyncRecord.exec(output);
+    const chunks = this.rgxExecAsyncRecord.exec(output);
 
     const result = chunks?.groups?.result || "";
     const data = chunks?.groups?.data || "";
@@ -623,7 +647,7 @@ export class miInterface extends EventEmitter {
     switch (result) {
       case "running":
         {
-          const tid = /thread-id="(?<tid>[^"]*)"/.exec(data)?.groups?.tid || undefined;
+          const tid = this.rgxThreadIdExtractor.exec(data)?.groups?.tid || undefined;
 
           console.log(`ExecAsyncRecord (running): ${data}`);
           this.gdbDB.startThreads(tid);
@@ -632,12 +656,11 @@ export class miInterface extends EventEmitter {
         break;
       case "stopped":
         {
-          const tid = /thread-id="(?<tid>[^"]*)"/.exec(data)?.groups?.tid || undefined;
+          const tid = this.rgxThreadIdExtractor.exec(data)?.groups?.tid || undefined;
           const stoppedThreads =
-            /stopped-threads="(?<stoppedThreads>[^"]*)"/.exec(data)?.groups?.stoppedThreads ||
-            undefined;
-          const core = /core="(?<core>[^"]*)"/.exec(data)?.groups?.core || undefined;
-          const reason = /reason="(?<reason>[^"]*)"/.exec(data)?.groups?.reason || undefined;
+            this.rgxStoppedThreadsExtractor.exec(data)?.groups?.stoppedThreads || undefined;
+          const core = this.rgxCoreExtractor.exec(data)?.groups?.core || undefined;
+          const reason = this.rgxReasonExtractor.exec(data)?.groups?.reason || undefined;
 
           console.log(
             `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
@@ -653,10 +676,7 @@ export class miInterface extends EventEmitter {
             case "end-stepping-range":
             case "breakpoint-hit":
               {
-                const bph =
-                  /disp="(?<disp>[^"]*)",bkptno="(?<bkptno>[^"]*)",frame={(?<frame>[^}]*)}/.exec(
-                    data,
-                  );
+                const bph = this.rgxBphExtractor.exec(data);
                 const disp = bph?.groups?.disp || undefined;
                 const bphBkptno = bph?.groups?.bkptno || undefined;
                 console.log(`ExecAsyncRecord (stopped): ${disp} ${bphBkptno}`);
@@ -704,8 +724,7 @@ export class miInterface extends EventEmitter {
   }
 
   private parseLogStream(output: string): boolean {
-    const rgxLogStream: RegExp = /^&"(?<line>.*?)"$/;
-    const chunks = rgxLogStream.exec(output);
+    const chunks = this.rgxLogStream.exec(output);
 
     const strLine = chunks?.groups?.line || "";
     if (strLine.endsWith("\\n")) {
@@ -726,8 +745,7 @@ export class miInterface extends EventEmitter {
   private savedStr: string = "";
   private parseConsoleStream(output: string): boolean {
     // Get just the text between the quotes
-    const rgxConsoleStream: RegExp = /^~"(?<line>.*?)"$/;
-    const chunks = rgxConsoleStream.exec(output);
+    const chunks = this.rgxConsoleStream.exec(output);
 
     // Save the text, we *may* need it later if it's not terminated with a \n
     const line = chunks?.groups?.line || "";

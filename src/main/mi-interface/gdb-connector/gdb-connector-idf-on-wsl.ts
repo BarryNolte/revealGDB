@@ -13,7 +13,7 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
     console.log("GdbConnectorIdfOnWsl");
   }
 
-  override async Start(): Promise<boolean> {
+  override Start(): boolean {
     // Bootstrap the shell and then launch gdb in MI mode.
     const cmds = [
       "echo '(revealGDB) Shell Running (revealGDB)'",
@@ -70,7 +70,7 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
       this.emit("gdb-error", new OutputAvailableEventArgs(text));
     });
 
-    return await Promise.resolve(true);
+    return true;
   }
 
   override Send(data: string): void {

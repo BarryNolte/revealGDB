@@ -74,11 +74,6 @@ export default function GdbRegistersWindow(): JSX.Element {
 
   useEffect(() => {
     const unsubscribe = window.ipcToMain.dataRegisters((data: gdbRegisters[]) => {
-      const grid = gridRef.current;
-      if (!grid) {
-        return;
-      }
-
       const dataList: GdbAny[] = [];
       data.forEach((reg) => {
         dataList.push({
@@ -89,17 +84,35 @@ export default function GdbRegistersWindow(): JSX.Element {
       });
 
       setRegisterData(dataList as gdbRegisters[]);
-      // grid.setProperties({
-      //   dataSource: dataList,
-      // });
 
-      grid.autoFitColumns(["name", "value"], 0);
+      // Directly update grid's dataSource to ensure it clears properly
+      const grid = gridRef.current;
+      if (grid) {
+        grid.dataSource = dataList;
+        grid.refresh(); // Must call refresh() to update internal currentViewData
+      }
     });
 
     return () => {
       unsubscribe();
     };
   }, []);
+
+  /**
+   * Auto-fit columns after data updates.
+   * Runs after React has updated the grid with new register data.
+   */
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) {
+      return;
+    }
+
+    // Only auto-fit columns when there's data to fit
+    if (registerData.length > 0) {
+      grid.autoFitColumns(["name", "value"], 0);
+    }
+  }, [registerData]);
 
   const emptyMessageTemplate = useCallback((): JSX.Element => {
     return (

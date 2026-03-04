@@ -36,15 +36,10 @@ export default function GdbCallStackWindow(): JSX.Element {
 
   /**
    * Subscribe to stack frame updates from GDB.
-   * Transforms GDB stack data into grid-compatible format and auto-fits columns.
+   * Transforms GDB stack data into grid-compatible format.
    */
   useEffect(() => {
     const unsubscribe = window.ipcToMain.stackFrames((data: gdbStackFrame[]) => {
-      const grid = gridRef.current;
-      if (!grid) {
-        return;
-      }
-
       const dataList: GdbAny[] = [];
 
       data.forEach((frame) => {
@@ -62,22 +57,39 @@ export default function GdbCallStackWindow(): JSX.Element {
         });
       });
 
-      // grid.setProperties({
-      //   dataSource: dataList,
-      // });
-
       setStackData(dataList as gdbStackFrame[]);
 
-      grid.autoFitColumns(
-        ["active", "level", "func", "addr", "file", "fullName", "line", "from", "args", "arch"],
-        0,
-      );
+      // Directly update grid's dataSource to ensure it clears properly
+      const grid = gridRef.current;
+      if (grid) {
+        grid.dataSource = dataList;
+        grid.refresh(); // Must call refresh() to update internal currentViewData
+      }
     });
 
     return () => {
       unsubscribe();
     };
   }, []);
+
+  /**
+   * Auto-fit columns after data updates.
+   * Runs after React has updated the grid with new stack frame data.
+   */
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) {
+      return;
+    }
+
+    // Only auto-fit columns when there's data to fit
+    if (stackData.length > 0) {
+      grid.autoFitColumns(
+        ["active", "level", "func", "addr", "file", "fullName", "line", "from", "args", "arch"],
+        0,
+      );
+    }
+  }, [stackData]);
 
   /**
    * Template for empty grid state.

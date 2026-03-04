@@ -24,6 +24,11 @@
   height: 100%;
 }
 
+.controlGroupOfOne {
+  margin: 4px;
+  width: auto;
+}
+
 .connectionManagerItem {
   flex-grow: 0;
   margin: 5px;

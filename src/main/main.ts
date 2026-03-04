@@ -185,10 +185,10 @@ app.on("ready", () => {
 
   let needToRunStartupCmds = true;
   // When we stop, then run all the stop commands
-  gdbInterface.on("gdb-stopped", async () => {
+  gdbInterface.on("gdb-stopped", () => {
     if (needToRunStartupCmds) {
       needToRunStartupCmds = false;
-      const ros: string[] = (await AppSettings.get("gdb.run.onStartup")) as string[];
+      const ros: string[] = AppSettings.getSync("gdb.run.onStartup") as string[];
       console.log("** ON STARTUP COMMANDS **");
       ros?.forEach((ros: string) => {
         gdbInterface.send(ros);
@@ -203,7 +203,7 @@ app.on("ready", () => {
       gdbInterface.send("echo >>>>end-capture<<<<");
     }
 
-    const ros: string[] = (await AppSettings.get("gdb.run.onStopped")) as string[];
+    const ros: string[] = AppSettings.getSync("gdb.run.onStopped") as string[];
     console.log(
       `***********************\nRunning ${ros?.length} Stop Commands\n***********************`,
     );
@@ -243,8 +243,8 @@ nativeTheme.on("updated", () => {
   mainWindow.webContents.send("theme-changed", nativeTheme);
 });
 
-ipcMain.handle("getSettings", async (): Promise<string[]> => {
-  return (await AppSettings.get("gdb")) as string[];
+ipcMain.handle("getSettings", (): string[] => {
+  return AppSettings.getSync("gdb") as string[];
 });
 
 ipcMain.handle("getSystemFonts", (): Promise<string[]> => {
@@ -260,46 +260,46 @@ ipcMain.handle("getFunctionNames", (): Promise<gdbFunction[]> => {
 });
 
 // General messages from the UI
-ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
+ipcMain.on("notify-main", (_event: GdbAny, msg: GdbAny) => {
   switch (msg?.command) {
     case "save-connections":
       {
-        await AppSettings.set("gdb.connections", msg.data.connections);
+        AppSettings.setSync("gdb.connections", msg.data.connections);
       }
       break;
     case "save-app-show-debug-info":
       {
-        await AppSettings.set("gdb.gui.showDebugInfo", msg.data);
+        AppSettings.setSync("gdb.gui.showDebugInfo", msg.data);
       }
       break;
     case "save-app-theme":
       {
-        await AppSettings.set("gdb.gui.applicationTheme", msg.data);
+        AppSettings.setSync("gdb.gui.applicationTheme", msg.data);
       }
       break;
     case "save-cmd-history":
       {
-        await AppSettings.set("gdb.command.history", msg.data);
+        AppSettings.setSync("gdb.command.history", msg.data);
       }
       break;
     case "save-source-viewer-theme":
       {
-        await AppSettings.set("gdb.gui.sourceViewerTheme", msg.data);
+        AppSettings.setSync("gdb.gui.sourceViewerTheme", msg.data);
       }
       break;
     case "save-source-viewer-font-size":
       {
-        await AppSettings.set("gdb.gui.sourceViewerFontSize", msg.data);
+        AppSettings.setSync("gdb.gui.sourceViewerFontSize", msg.data);
       }
       break;
     case "save-source-viewer-font-name":
       {
-        await AppSettings.set("gdb.gui.sourceViewerFontName", msg.data);
+        AppSettings.setSync("gdb.gui.sourceViewerFontName", msg.data);
       }
       break;
     case "save-main-theme":
       {
-        await AppSettings.set("gdb.gui.mainTheme", msg.data);
+        AppSettings.setSync("gdb.gui.mainTheme", msg.data);
       }
       break;
     case "save-dock-layout":
@@ -337,25 +337,16 @@ ipcMain.on("notify-main", async (_event: GdbAny, msg: GdbAny) => {
         });
 
         // Connect once renderer is ready to accept GDB events.
-        gdbInterface
-          .connect()
-          .then((success: boolean) => {
-            if (success) {
-              mainWindow.webContents.send("notify-render", {
-                command: "connection-success",
-              });
-            } else {
-              mainWindow.webContents.send("notify-render", {
-                command: "connection-failed",
-              });
-            }
-          })
-          .catch((reason: GdbAny) => {
-            mainWindow.webContents.send("notify-render", {
-              command: "connection-failed",
-              data: reason,
-            });
+        const connected = gdbInterface.connect();
+        if (connected) {
+          mainWindow.webContents.send("notify-render", {
+            command: "connection-success",
           });
+        } else {
+          mainWindow.webContents.send("notify-render", {
+            command: "connection-failed",
+          });
+        }
       }
       break;
   }

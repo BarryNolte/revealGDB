@@ -1,4 +1,5 @@
 import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
 
 const buildVariant = process.env.REVEALGDB_BUILD === "debug" ? "debug" : "release";
 const isDebugBuild =
@@ -11,10 +12,11 @@ const buildDefines = {
 };
 
 export default defineConfig({
+  plugins: [react()],
   define: buildDefines,
   test: {
     globals: true,
-    environment: "node",
+    environment: "jsdom",
     include: ["src/**/*.test.ts", "src/**/*.spec.ts", "src/**/*.test.tsx", "src/**/*.spec.tsx"],
     setupFiles: ["./vitest.setup.ts"],
   },

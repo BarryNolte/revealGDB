@@ -15,7 +15,7 @@ import { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
 import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
-import imgUrl from "../icons/icons8-delete-48.png";
+import imgDelete from "../icons/icons8-delete-48.png";
 import "./GdbBreakpointsWindow.css";
 
 /**
@@ -37,15 +37,10 @@ export default function GdbBreakPointWindow(): JSX.Element {
 
   /**
    * Subscribe to breakpoint data updates from GDB.
-   * Transforms GDB breakpoint data into grid-compatible format and auto-fits columns.
+   * Transforms GDB breakpoint data into grid-compatible format.
    */
   useEffect(() => {
     const unsubscribe = window.ipcToMain.dataBrkPts((data: Map<string, gdbBreakpoint>) => {
-      const grid = gridRef.current;
-      if (!grid) {
-        return;
-      }
-
       const dataList: GdbAny[] = [];
       data.forEach((bp) => {
         dataList.push({
@@ -67,6 +62,31 @@ export default function GdbBreakPointWindow(): JSX.Element {
 
       setBreakpointData(dataList);
 
+      // Directly update grid's dataSource and refresh to ensure it clears properly
+      const grid = gridRef.current;
+      if (grid) {
+        grid.dataSource = dataList;
+        grid.refresh();
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  /**
+   * Auto-fit columns after data updates.
+   * Runs after React has updated the grid with new breakpoint data.
+   */
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) {
+      return;
+    }
+
+    // Only auto-fit columns when there's data to fit
+    if (breakpointData.length > 0) {
       grid.autoFitColumns(
         [
           "number",
@@ -84,12 +104,8 @@ export default function GdbBreakPointWindow(): JSX.Element {
         ],
         0,
       );
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+    }
+  }, [breakpointData]);
 
   const emptyMessageTemplate = useCallback((): GdbAny => {
     return (
@@ -112,7 +128,7 @@ export default function GdbBreakPointWindow(): JSX.Element {
           }}
           data-id={props!.number}
         >
-          <img className="bp-delete-img" src={imgUrl} alt="Delete Breakpoint"></img>
+          <img className="bp-delete-img" src={imgDelete} alt="Delete Breakpoint"></img>
         </button>
         <input
           type="checkbox"

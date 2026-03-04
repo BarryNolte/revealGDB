@@ -48,12 +48,6 @@ export default function GdbThreadsWindow(): JSX.Element {
 
   useEffect(() => {
     const unsubscribe = window.ipcToMain.dataThreads((data: GdbAny) => {
-      const grid = gridRef.current;
-      if (!grid) {
-        return;
-      }
-
-      //grid.dataSource = [];
       const threadList: GdbAny[] = [];
 
       const groups = data.grp;
@@ -74,18 +68,36 @@ export default function GdbThreadsWindow(): JSX.Element {
         });
       });
 
-      // grid.setProperties({
-      //   dataSource: grid.dataSource as object[],
-      // });
       setThreadData(threadList);
 
-      grid.autoFitColumns(["active", "id", "details", "frame", "state", "name", "targetId"], 0);
+      // Directly update grid's dataSource to ensure it clears properly
+      const grid = gridRef.current;
+      if (grid) {
+        grid.dataSource = threadList;
+        grid.refresh(); // Must call refresh() to update internal currentViewData
+      }
     });
 
     return () => {
       unsubscribe();
     };
   }, []);
+
+  /**
+   * Auto-fit columns after data updates.
+   * Runs after React has updated the grid with new thread data.
+   */
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) {
+      return;
+    }
+
+    // Only auto-fit columns when there's data to fit
+    if (threadData.length > 0) {
+      grid.autoFitColumns(["active", "id", "details", "frame", "state", "name", "targetId"], 0);
+    }
+  }, [threadData]);
 
   const emptyMessageTemplate = useCallback((): JSX.Element => {
     return (
