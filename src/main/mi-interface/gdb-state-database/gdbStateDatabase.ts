@@ -3,6 +3,9 @@
  */
 import { EventEmitter } from "stream";
 import { gdbSourceFileCache } from "./gdbSourceFileCache";
+import { mainWindow } from "../../main";
+import { LocalsContainer } from "../gdb-parsers/gdb-locals";
+import { gdbShowSourceInfo } from "../mi-interface";
 
 export type gdbFeature = {
   feature: string;
@@ -106,6 +109,7 @@ export type gdbFunction = {
  * Tracks threads, breakpoints, registers, and symbol info from gdb.
  */
 export class gdbStateDatabase extends EventEmitter {
+  locals: LocalsContainer | undefined = undefined;
   readonly threadGroups: Map<string, gdbThreadGroup> = new Map<string, gdbThreadGroup>();
   readonly threads: Map<string, gdbThread> = new Map<string, gdbThread>();
   readonly registers: Map<string, gdbRegisters> = new Map<string, gdbRegisters>();
@@ -121,6 +125,20 @@ export class gdbStateDatabase extends EventEmitter {
 
   constructor() {
     super();
+  }
+
+  // Locals
+  parseAndStoreLocals(localsStr: string): void {
+    this.locals = new LocalsContainer(localsStr);
+  }
+  getLocals(): LocalsContainer | undefined {
+    return this.locals;
+  }
+  clearLocals(): void {
+    this.locals = undefined;
+  }
+  updateLocalsUI(): void {
+    mainWindow.webContents.send("data-locals", this.locals?.locals);
   }
 
   // Function List
@@ -164,6 +182,15 @@ export class gdbStateDatabase extends EventEmitter {
   async getSourceFileContents(file: string): Promise<string | undefined> {
     return await this.gdbSrcFileCache.getSourceFileContents(file);
   }
+  clearSourceFiles(): void {
+    const showSourceInfo: gdbShowSourceInfo = {
+      fileName: " ",
+      line: "0",
+      contents: " ",
+    };
+
+    mainWindow.webContents.send("source-file", showSourceInfo);
+  }
 
   // Stack Frames
   clearStackFrames(): void {
@@ -184,6 +211,11 @@ export class gdbStateDatabase extends EventEmitter {
       }
     });
   }
+
+  stackUpdateUI(): void {
+    mainWindow.webContents.send("stack-frames", this.stackFrames);
+  }
+
   // Breakpoints
   clearBreakpoints(): void {
     this.breakpoints.clear();
@@ -196,6 +228,9 @@ export class gdbStateDatabase extends EventEmitter {
   }
   deleteBreakpoint(id: string): void {
     this.breakpoints.delete(id);
+  }
+  breakpointsUpdateUI(): void {
+    mainWindow.webContents.send("data-brkpts", this.breakpoints);
   }
 
   // Parameters
@@ -239,6 +274,9 @@ export class gdbStateDatabase extends EventEmitter {
   }
   getRegister(index: string): gdbRegisters | undefined {
     return this.registers.get(index);
+  }
+  registersUpdateUI(): void {
+    mainWindow.webContents.send("data-register", this.registers);
   }
 
   // Thread Groups
@@ -364,6 +402,38 @@ export class gdbStateDatabase extends EventEmitter {
     }
   }
 
+  threadUpdateUI() {
+    mainWindow.webContents.send("data-threads", {
+      th: this.threads,
+      grp: this.threadGroups,
+    });
+  }
+
+  clearDatabase(): void {
+    this.threadGroups.clear();
+    this.threads.clear();
+    this.registers.clear();
+    this.features.clear();
+    this.params.clear();
+    this.breakpoints.clear();
+    this.stackFrames.length = 0;
+    this.gdbSrcFileCache.clearCache();
+    this.gdbSymbolFiles.mainSym = "";
+    this.gdbSymbolFiles.sections = [];
+    this.gdbFunctionNames.clear();
+    this.clearLocals();
+    this.clearSourceFiles();
+  }
+
+  allDataUpdateUI(): void {
+    this.threadUpdateUI();
+    this.registersUpdateUI();
+    this.breakpointsUpdateUI();
+    this.stackUpdateUI();
+    this.updateLocalsUI();
+  }
+
+  // Debugging
   dump(): void {
     console.log("GDB State Database");
     console.log("==================");

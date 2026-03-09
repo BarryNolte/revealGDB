@@ -134,6 +134,12 @@ export interface IElectronAPI {
   getVersionInfo: () => Promise<Map<string, GdbAny>>;
 
   /**
+   * Retrieves available WSL distributions from the main process.
+   * @returns Promise resolving to an array of WSL distribution names
+   */
+  getWslDistrobutions: () => Promise<WslDistro[]>;
+
+  /**
    * Sends a GDB MI command to the debugger.
    * @param command - The GDB MI command string to execute
    */

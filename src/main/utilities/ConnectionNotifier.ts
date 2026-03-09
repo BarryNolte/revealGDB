@@ -5,6 +5,10 @@ import { Step, StepState } from "../../common/gdb-common";
 import { mainWindow } from "../main";
 
 export class ConnectionNotifier {
+  public static readonly shellRunning: string = "(revealGDB) Shell Running (revealGDB)";
+  public static readonly runningCommandsComplete: string =
+    "(revealGDB) Commands Complete (revealGDB)";
+
   private static instance: ConnectionNotifier;
   private watchingConsole: boolean = false;
 
@@ -16,21 +20,18 @@ export class ConnectionNotifier {
     }
     return ConnectionNotifier.instance;
   }
+
   public isWatchingConsole(): boolean {
     return this.watchingConsole;
   }
 
   public startWatchingConsole(): void {
-    console.log("Start watching console");
-    console.assert(!this.watchingConsole, "Already watching console");
     if (!this.watchingConsole) {
       this.watchingConsole = true;
     }
   }
 
   public endWatchingConsole(): void {
-    console.log("End watching console");
-    console.assert(this.watchingConsole, "Not watching console");
     if (this.watchingConsole) {
       this.watchingConsole = false;
     }
@@ -39,11 +40,11 @@ export class ConnectionNotifier {
   public consoleCapture(error: boolean, text: string): void {
     // Normalize partial console output into line-based events.
     text.split("\n").forEach((line) => {
-      if (line === "(revealGDB) Shell Running (revealGDB)") {
+      if (line === ConnectionNotifier.shellRunning) {
         this.notifyGdbStartup("starting-shell", "completed");
         this.notifyGdbStartup("running-commands", "in-progress");
         return;
-      } else if (line === "(revealGDB) (revealGDB)") {
+      } else if (line === ConnectionNotifier.runningCommandsComplete) {
         this.notifyGdbStartup("running-commands", "completed");
         this.notifyGdbStartup("target-running", "in-progress");
         return;

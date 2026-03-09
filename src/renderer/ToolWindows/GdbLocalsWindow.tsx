@@ -61,10 +61,10 @@ export default function GdbLocalsWindow(): JSX.Element {
 
   useEffect(() => {
     const unsubscribe = window.ipcToMain.dataLocals((data: GdbAny) => {
-      setLocalData(data);
-    });
+      setLocalData(data ? data : []);
 
-    treeRef.current?.autoFitColumns(["name", "value"]);
+      treeRef.current?.autoFitColumns(["name", "value"]);
+    });
 
     return () => {
       unsubscribe();

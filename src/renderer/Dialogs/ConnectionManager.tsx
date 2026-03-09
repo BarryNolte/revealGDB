@@ -38,15 +38,15 @@ type ShellOption = {
   type: string;
   platform: Platform[];
   cmdLine: string;
-  subType?: () => string[] | undefined;
 };
+
+const DEFAULT_WSL_DISTRO = "none";
 
 const shells: Record<string, ShellOption> = {
   wsl: {
     type: "WSL",
     platform: ["win32"],
     cmdLine: "wsl",
-    subType: () => ["Ubuntu-22.04", "Debian", "Fedora"],
   },
   bash: { type: "Bash", platform: ["linux", "darwin"], cmdLine: "bash" },
   zsh: { type: "Zsh", platform: ["linux", "darwin"], cmdLine: "zsh" },
@@ -55,7 +55,7 @@ const shells: Record<string, ShellOption> = {
 };
 
 export interface ConnectionManagerHandle {
-  ShowDialog: () => void;
+  ShowDialog: (onClose?: () => void) => void;
 }
 
 // If there are no props, keep this as an empty object type.
@@ -68,25 +68,70 @@ type ConnectionGridRow = {
   commands: string;
 };
 
+type NormalizedConnection = {
+  name: string;
+  shell: string;
+  commands: string[];
+  wslDistribution?: string;
+};
+
+function normalizeDistroName(value: string): string {
+  return value.trim().replace(/\s+/g, " ");
+}
+
+function mergeUniqueDistros(...lists: string[][]): string[] {
+  const uniqueMap = new Map<string, string>();
+
+  for (const list of lists) {
+    for (const item of list) {
+      const normalized = normalizeDistroName(String(item ?? ""));
+      if (!normalized) {
+        continue;
+      }
+
+      const dedupeKey = normalized.toLocaleLowerCase();
+      if (!uniqueMap.has(dedupeKey)) {
+        uniqueMap.set(dedupeKey, normalized);
+      }
+    }
+  }
+
+  return Array.from(uniqueMap.values());
+}
+
+function getWslDistroDisplayLabel(distro: string): string {
+  if (distro.toLocaleLowerCase() === DEFAULT_WSL_DISTRO.toLocaleLowerCase()) {
+    return "None (auto/default)";
+  }
+
+  return distro;
+}
+
 export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionManagerProps>(
   function ConnectionManager(_props, ref) {
-    const [hideDialog, setHideDialog] = useState(false);
-    const [connections, setConnections] = useState<ConnectionGridRow[]>([]);
-    const [loadedConnections, setLoadedConnections] = useState<GdbAny[]>([]);
-    const [isAddingConnection, setIsAddingConnection] = useState(false);
-    const connectionNameInputRef = useRef<HTMLInputElement | null>(null);
-    const shellSelectRef = useRef<HTMLSelectElement | null>(null);
-    const addConnectionButtonRef = useRef<HTMLButtonElement | null>(null);
     const shellOptions = useMemo(
       () => Object.entries(shells).map(([key, shell]) => ({ key, label: shell.type })),
       [],
     );
+
+    const [hideDialog, setHideDialog] = useState(false);
+    const [connections, setConnections] = useState<ConnectionGridRow[]>([]);
+    const [loadedConnections, setLoadedConnections] = useState<GdbAny[]>([]);
+    const connectionsGridRef = useRef<GridComponent>(null);
+    const [isAddingConnection, setIsAddingConnection] = useState(false);
     const [connectionName, setConnectionName] = useState<string>("");
     const [selectedShellKey, setSelectedShellKey] = useState<string>(shellOptions[0]?.key ?? "");
-    const [selectedWslDistro, setSelectedWslDistro] = useState<string>("Ubuntu-22.04");
+    const [wslDistros, setWslDistros] = useState<string[]>([DEFAULT_WSL_DISTRO]);
+    const [selectedWslDistro, setSelectedWslDistro] = useState<string>(DEFAULT_WSL_DISTRO);
     const [commandsList, setCommandsList] = useState<DragAndDropListItem[]>([
       { text: "gdb", id: "list-01" },
     ]);
+
+    const connectionNameInputRef = useRef<HTMLInputElement | null>(null);
+    const shellSelectRef = useRef<HTMLSelectElement | null>(null);
+    const onCloseCallbackRef = useRef<(() => void) | null>(null);
+    const addConnectionButtonRef = useRef<HTMLButtonElement | null>(null);
+
     const commandsListKey = useMemo(
       () =>
         commandsList.map((item) => (typeof item === "string" ? item : item.text)).join("\u0001"),
@@ -128,39 +173,94 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
       [shellOptions],
     );
 
-    const toDragAndDropItems = useCallback((commandsValue: unknown): DragAndDropListItem[] => {
-      const commandStrings = Array.isArray(commandsValue)
-        ? commandsValue.map((value) => String(value))
-        : String(commandsValue ?? "")
-            .split("\n")
-            .map((value) => value.trim())
-            .filter((value) => value.length > 0);
-
-      if (commandStrings.length === 0) {
-        return [{ text: "gdb", id: "list-01" }];
+    const toCommandStrings = useCallback((commandsValue: unknown): string[] => {
+      if (Array.isArray(commandsValue)) {
+        return commandsValue
+          .map((value) => String(value).trim())
+          .filter((value) => value.length > 0);
       }
 
-      return commandStrings.map((command, index) => ({
-        text: command,
-        id: `command-${index}`,
-      }));
+      return String(commandsValue ?? "")
+        .split("\n")
+        .map((value) => value.trim())
+        .filter((value) => value.length > 0);
     }, []);
+
+    const toDragAndDropItems = useCallback(
+      (commandsValue: unknown): DragAndDropListItem[] => {
+        const commandStrings = toCommandStrings(commandsValue);
+
+        if (commandStrings.length === 0) {
+          return [{ text: "gdb", id: "list-01" }];
+        }
+
+        return commandStrings.map((command, index) => ({
+          text: command,
+          id: `command-${index}`,
+        }));
+      },
+      [toCommandStrings],
+    );
+
+    const normalizeConnectionForStorage = useCallback(
+      (connection: GdbAny, fallbackName: string): NormalizedConnection => {
+        const shellKey = getShellKeyFromConnection(connection);
+        const normalizedConnection: NormalizedConnection = {
+          name: String(connection.name ?? fallbackName).trim() || fallbackName,
+          shell: shellKey,
+          commands: toCommandStrings(connection.commands ?? connection.extraArguments ?? []),
+        };
+
+        const wslDistribution = normalizeDistroName(String(connection.wslDistribution ?? ""));
+        if (
+          shellKey === "wsl" &&
+          wslDistribution &&
+          wslDistribution.toLocaleLowerCase() !== DEFAULT_WSL_DISTRO.toLocaleLowerCase()
+        ) {
+          normalizedConnection.wslDistribution = wslDistribution;
+        }
+
+        if (normalizedConnection.commands.length === 0) {
+          normalizedConnection.commands = ["gdb"];
+        }
+
+        return normalizedConnection;
+      },
+      [getShellKeyFromConnection, toCommandStrings],
+    );
+
+    const applyConnectionToForm = useCallback(
+      (connection: NormalizedConnection | null): void => {
+        if (!connection) {
+          setConnectionName("");
+          setSelectedShellKey(shellOptions[0]?.key ?? "wsl");
+          setSelectedWslDistro((current) => current || wslDistros[0] || DEFAULT_WSL_DISTRO);
+          setCommandsList([{ text: "gdb", id: "list-01" }]);
+          return;
+        }
+
+        setConnectionName(connection.name);
+        setSelectedShellKey(connection.shell);
+        setSelectedWslDistro(connection.wslDistribution || wslDistros[0] || DEFAULT_WSL_DISTRO);
+        setCommandsList(toDragAndDropItems(connection.commands));
+      },
+      [shellOptions, toDragAndDropItems, wslDistros],
+    );
 
     const normalizeConnection = useCallback(
       (connection: GdbAny, index: number): ConnectionGridRow => {
-        const commandsValue = connection.commands ?? connection.extraArguments ?? [];
-        const commands = Array.isArray(commandsValue)
-          ? commandsValue.map((value: unknown) => String(value)).join("\n")
-          : String(commandsValue ?? "");
+        const commands = toCommandStrings(connection.commands).join("\n");
+        const shellKey = getShellKeyFromConnection(connection);
+        const shellLabel = shells[shellKey]?.type ?? String(connection.shell ?? shellKey);
 
         return {
           connectionIndex: index,
           name: String(connection.name ?? ""),
-          shell: String(connection.shell ?? connection.connectionType ?? ""),
+          shell: shellLabel,
           commands,
         };
       },
-      [],
+      [getShellKeyFromConnection, toCommandStrings],
     );
 
     const handleConnectionRowSelected = useCallback(
@@ -170,57 +270,120 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
           return;
         }
 
-        const selectedConnection = loadedConnections[selectedIndex];
+        const selectedConnection = loadedConnections[selectedIndex] as
+          | NormalizedConnection
+          | undefined;
         if (!selectedConnection) {
           return;
         }
 
-        setConnectionName(String(selectedConnection.name ?? ""));
-        setSelectedShellKey(getShellKeyFromConnection(selectedConnection));
-
-        const selectedDistro = String(selectedConnection.wslDistribution ?? "").trim();
-        setSelectedWslDistro(selectedDistro || "Ubuntu-22.04");
-
-        const selectedCommands =
-          selectedConnection.commands ?? selectedConnection.extraArguments ?? [];
-        setCommandsList(toDragAndDropItems(selectedCommands));
+        applyConnectionToForm(selectedConnection);
       },
-      [getShellKeyFromConnection, loadedConnections, toDragAndDropItems],
+      [applyConnectionToForm, loadedConnections],
     );
 
-    const loadConnectionsFromSettings = useCallback(async (): Promise<void> => {
+    const loadConnectionsFromSettings = useCallback(async (): Promise<NormalizedConnection[]> => {
       try {
         const settings = (await window.ipcToMain.getSettings()) as GdbAny;
-        const settingsConnections = settings?.connections;
-        if (!Array.isArray(settingsConnections)) {
-          setLoadedConnections([]);
-          setConnections([]);
-          return;
-        }
+        const settingsConnections = Array.isArray(settings?.connections)
+          ? settings.connections
+          : Array.isArray(settings?.gdb?.connections)
+            ? settings.gdb.connections
+            : [];
 
-        setLoadedConnections(settingsConnections as GdbAny[]);
+        const normalizedSourceConnections: NormalizedConnection[] = (
+          settingsConnections as GdbAny[]
+        )
+          .filter((connection: unknown) => connection && typeof connection === "object")
+          .map((connection: GdbAny, index: number) =>
+            normalizeConnectionForStorage(connection, `Connection ${index + 1}`),
+          );
+
+        setLoadedConnections(normalizedSourceConnections);
         setConnections(
-          settingsConnections.map((connection, index) => normalizeConnection(connection, index)),
+          normalizedSourceConnections.map((connection, index) =>
+            normalizeConnection(connection, index),
+          ),
         );
+        applyConnectionToForm(normalizedSourceConnections[0] ?? null);
+        return normalizedSourceConnections;
       } catch (error) {
         console.error("Failed to load connections from settings", error);
         setLoadedConnections([]);
         setConnections([]);
+        applyConnectionToForm(null);
+        return [];
       }
-    }, [normalizeConnection]);
+    }, [applyConnectionToForm, normalizeConnection, normalizeConnectionForStorage]);
+
+    const loadWslDistrosFromSystem = useCallback(
+      async (connectionsToInspect: NormalizedConnection[] = []): Promise<void> => {
+        try {
+          const distros = await window.ipcToMain.getWslDistrobutions();
+          const systemDistroNames = distros
+            .map((distro) => normalizeDistroName(String(distro.name ?? "")))
+            .filter((name) => name.length > 0);
+
+          const persistedDistroNames = connectionsToInspect
+            .map((connection) => normalizeDistroName(String(connection.wslDistribution ?? "")))
+            .filter((name) => name.length > 0);
+
+          const distroNames = mergeUniqueDistros(
+            [DEFAULT_WSL_DISTRO],
+            systemDistroNames,
+            persistedDistroNames,
+          );
+
+          if (distroNames.length === 0) {
+            distroNames.push(DEFAULT_WSL_DISTRO);
+          }
+
+          setWslDistros(distroNames);
+          setSelectedWslDistro((current) =>
+            distroNames.includes(current) ? current : (distroNames[0] ?? DEFAULT_WSL_DISTRO),
+          );
+        } catch (error) {
+          console.error("Failed to load WSL distributions", error);
+          const persistedDistroNames = connectionsToInspect
+            .map((connection) => normalizeDistroName(String(connection.wslDistribution ?? "")))
+            .filter((name) => name.length > 0);
+          const fallbackDistros = mergeUniqueDistros([DEFAULT_WSL_DISTRO], persistedDistroNames);
+
+          setWslDistros(fallbackDistros);
+          setSelectedWslDistro((current) => current || DEFAULT_WSL_DISTRO);
+        }
+      },
+      [],
+    );
+
+    useEffect(() => {
+      if (!hideDialog) {
+        return;
+      }
+
+      // Grid is rendered inside a popup layer; force a refresh after data changes.
+      window.setTimeout(() => {
+        connectionsGridRef.current?.refresh();
+      }, 0);
+    }, [connections, hideDialog]);
 
     const saveConnectionsToSettings = useCallback(
       async (connectionsToSave: GdbAny[]): Promise<void> => {
         try {
+          const normalizedConnectionsToSave = connectionsToSave.map(
+            (connection: GdbAny, index: number) =>
+              normalizeConnectionForStorage(connection, `Connection ${index + 1}`),
+          );
+
           await window.ipcToMain.notifyMain({
             command: "save-connections",
-            data: { connections: connectionsToSave },
+            data: { connections: normalizedConnectionsToSave },
           });
         } catch (error) {
           console.error("Failed to save connections to settings", error);
         }
       },
-      [],
+      [normalizeConnectionForStorage],
     );
 
     const handleDeleteConnection = useCallback(
@@ -252,15 +415,15 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
           })
           .filter((value) => value.length > 0);
 
-        const newConnection: GdbAny = {
-          name: connectionNameForSave.trim() || "Unnamed Connection",
-          shell: shells[selectedShellKey]?.type ?? selectedShellKey,
-          commands: commandsArray,
-        };
-
-        if (selectedShellKey === "wsl") {
-          newConnection.wslDistribution = selectedWslDistro;
-        }
+        const newConnection = normalizeConnectionForStorage(
+          {
+            name: connectionNameForSave.trim() || "Unnamed Connection",
+            shell: selectedShellKey,
+            commands: commandsArray,
+            wslDistribution: selectedWslDistro,
+          },
+          "Unnamed Connection",
+        );
 
         const updatedLoadedConnections = [...loadedConnections, newConnection];
 
@@ -278,7 +441,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
         // Reset form fields to default values for new connection
         setConnectionName("");
         setSelectedShellKey(shellOptions[0]?.key ?? "wsl");
-        setSelectedWslDistro("Ubuntu-22.04");
+        setSelectedWslDistro(wslDistros[0] ?? DEFAULT_WSL_DISTRO);
         setCommandsList([{ text: "gdb", id: "list-01" }]);
       } catch (error) {
         console.error("Failed to add connection", error);
@@ -291,10 +454,12 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
       isAddingConnection,
       loadedConnections,
       normalizeConnection,
+      normalizeConnectionForStorage,
       saveConnectionsToSettings,
       selectedShellKey,
       selectedWslDistro,
       shellOptions,
+      wslDistros,
     ]);
 
     useEffect(() => {
@@ -349,8 +514,18 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
       };
     }, [hideDialog, handleAddConnection]);
 
+    useEffect(() => {
+      if (wslDistros.includes(selectedWslDistro)) {
+        return;
+      }
+
+      setSelectedWslDistro(wslDistros[0] ?? DEFAULT_WSL_DISTRO);
+    }, [selectedWslDistro, wslDistros]);
+
     const dialogCloseFunc = useCallback(() => {
       setHideDialog(false);
+      onCloseCallbackRef.current?.();
+      onCloseCallbackRef.current = null;
     }, []);
 
     const header = (): ReactElement => {
@@ -368,11 +543,18 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
     };
 
     useImperativeHandle(ref, () => ({
-      ShowDialog() {
-        void loadConnectionsFromSettings();
+      ShowDialog(onClose?: () => void) {
+        onCloseCallbackRef.current = onClose ?? null;
         setHideDialog(true);
       },
     }));
+
+    const dialogOpenFunc = useCallback(() => {
+      void (async () => {
+        const openedConnections = await loadConnectionsFromSettings();
+        await loadWslDistrosFromSystem(openedConnections);
+      })();
+    }, [loadConnectionsFromSettings, loadWslDistrosFromSystem]);
 
     return (
       <div>
@@ -386,6 +568,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
           footerTemplate={footer}
           closeOnEscape={true}
           showCloseIcon={true}
+          open={dialogOpenFunc}
           close={dialogCloseFunc}
           isModal={true} // Makes the dialog modal
         >
@@ -430,9 +613,9 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
                       : undefined
                   }
                 >
-                  {(shells.wsl.subType?.() ?? []).map((distro) => (
+                  {wslDistros.map((distro) => (
                     <option key={distro} value={distro}>
-                      {distro}
+                      {getWslDistroDisplayLabel(distro)}
                     </option>
                   ))}
                 </select>
@@ -457,20 +640,39 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
               Add Connection
             </button>
             <GridComponent
+              ref={connectionsGridRef}
               id="connectionsGrid"
               className="connectionManagerItem"
               dataSource={connections}
               rowSelected={handleConnectionRowSelected}
               allowResizing={true}
+              rowHeight={22}
             >
               <ColumnsDirective>
-                <ColumnDirective field="name" headerText="Name" width="100" allowResizing={true} />
-                <ColumnDirective field="shell" headerText="Shell" width="70" allowResizing={true} />
-                <ColumnDirective field="commands" headerText="Commands" allowResizing={true} />
+                <ColumnDirective
+                  field="name"
+                  headerText="Name"
+                  width="100"
+                  allowResizing={true}
+                  clipMode="Ellipsis"
+                />
+                <ColumnDirective
+                  field="shell"
+                  headerText="Shell"
+                  width="60"
+                  allowResizing={true}
+                  clipMode="Ellipsis"
+                />
+                <ColumnDirective
+                  field="commands"
+                  headerText="Commands"
+                  allowResizing={true}
+                  clipMode="Ellipsis"
+                />
                 <ColumnDirective
                   headerText="Action"
-                  width="80"
-                  allowResizing={true}
+                  width="45"
+                  allowResizing={false}
                   template={(props: ConnectionGridRow): ReactElement => (
                     <button
                       type="button"

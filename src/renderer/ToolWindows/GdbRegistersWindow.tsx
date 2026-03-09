@@ -83,14 +83,14 @@ export default function GdbRegistersWindow(): JSX.Element {
         });
       });
 
-      setRegisterData(dataList as gdbRegisters[]);
+      setRegisterData(dataList);
 
       // Directly update grid's dataSource to ensure it clears properly
-      const grid = gridRef.current;
-      if (grid) {
-        grid.dataSource = dataList;
-        grid.refresh(); // Must call refresh() to update internal currentViewData
-      }
+      // const grid = gridRef.current;
+      // if (grid) {
+      //   grid.dataSource = dataList;
+      //   grid.refresh(); // Must call refresh() to update internal currentViewData
+      // }
     });
 
     return () => {
@@ -103,14 +103,14 @@ export default function GdbRegistersWindow(): JSX.Element {
    * Runs after React has updated the grid with new register data.
    */
   useEffect(() => {
-    const grid = gridRef.current;
-    if (!grid) {
-      return;
-    }
+    // const grid = gridRef.current;
+    // if (!grid) {
+    //   return;
+    // }
 
     // Only auto-fit columns when there's data to fit
     if (registerData.length > 0) {
-      grid.autoFitColumns(["name", "value"], 0);
+      gridRef?.current?.autoFitColumns(["name", "value"], 0);
     }
   }, [registerData]);
 

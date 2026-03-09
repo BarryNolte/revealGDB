@@ -226,6 +226,12 @@ contextBridge.exposeInMainWorld("ipcToMain", {
   getVersionInfo: () => ipcRenderer.invoke("getVersionInfo"),
 
   /**
+   * Retrieves available WSL distributions from the main process.
+   * Used by connection management UI for WSL target selection.
+   */
+  getWslDistrobutions: () => ipcRenderer.invoke("getWslDistrobutions"),
+
+  /**
    * Sends a GDB Machine Interface (MI) command to the debugger.
    * Fire-and-forget pattern for executing debugger commands.
    */

@@ -1,7 +1,7 @@
 # Priority Items
+  * Arbitrary Connections
   * Themeing
-  * Replace settings code??
-  * Cleanup menus
+  * Cleanup menus/toolbar
   * Convience variables
   * Save column widths with layout
 

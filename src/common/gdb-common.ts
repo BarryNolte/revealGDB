@@ -6,6 +6,12 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type GdbAny = any;
 
+export type SelectedConnection = {
+  name: string;
+  shell: string;
+  commands: string[];
+};
+
 /* Debug Only */
 export function wait(ms: number): void {
   // Busy-wait helper to simulate timing delays during debugging.

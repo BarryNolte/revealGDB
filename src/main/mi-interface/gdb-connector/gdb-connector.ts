@@ -2,6 +2,7 @@
  * Base connector abstraction for launching and talking to gdb.
  */
 import { EventEmitter } from "events";
+import { SelectedConnection } from "../../../common/gdb-common";
 
 export class OutputAvailableEventArgs {
   private static lineNumCounter: number = 0;
@@ -19,7 +20,7 @@ export class GdbConnector extends EventEmitter {
     super();
   }
 
-  public Start(): boolean {
+  public Start(_selectedConnection: SelectedConnection): boolean {
     return false;
   }
   public End(): boolean {

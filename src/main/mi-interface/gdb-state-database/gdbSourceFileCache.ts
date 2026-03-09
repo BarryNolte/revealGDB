@@ -11,6 +11,10 @@ export class gdbSourceFileCache extends EventEmitter {
     super();
   }
 
+  clearCache(): void {
+    this.sourceFiles.clear();
+  }
+
   hasSourceFile(file: string): boolean {
     return this.sourceFiles.has(file);
   }

@@ -12,21 +12,44 @@
 import { Buffer } from "node:buffer";
 import { execSync } from "node:child_process";
 
+export type WslDistro = {
+  name: string;
+  version: string;
+  state: string;
+  default: boolean;
+};
+
 export class WslUtilities {
   /**
    * Retrieves a list of available WSL distributions installed on the system.
    * Executes 'wsl.exe -l -v' command and parses the output to extract distribution names.
    *
-   * @returns {string[]} Array of WSL distribution names
+   * @returns {WslDistro[]} Array of WSL distribution objects containing name, version, state, and default status.
    */
-  static getWslDistributions(): string[] {
+  static getWslDistrobutions(): WslDistro[] {
+    const wslDistroRegex =
+      /(?<default>[*\s]*)(?<distro>[0-9a-zA-Z-.]*)\s*(?<status>[\S]*)\s*(?<version>[\S]*)/;
+
     const buf = execSync("wsl.exe -l -v", { encoding: "buffer" });
     const stdoutString = WslUtilities.bufferToAsciiString(buf);
     const distros = stdoutString.split("\r\n");
     distros.shift();
     distros.pop();
 
-    return distros;
+    const wslDistros: WslDistro[] = [];
+    for (const distro of distros) {
+      const match = wslDistroRegex.exec(distro);
+      if (match && match.groups) {
+        wslDistros.push({
+          name: match.groups.distro,
+          version: match.groups.version,
+          state: match.groups.status,
+          default: match.groups.default === "*",
+        });
+      }
+    }
+
+    return wslDistros;
   }
 
   /**

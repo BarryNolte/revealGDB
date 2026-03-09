@@ -2,13 +2,13 @@
  * GDB MI interface: parse MI output and push structured updates to the UI.
  */
 import { EventEmitter } from "events";
-import { GdbAny } from "../../common/gdb-common";
+import { GdbAny, SelectedConnection } from "../../common/gdb-common";
 import { AppSettings, mainWindow } from "../main";
 import { ConnectionNotifier } from "../utilities/ConnectionNotifier";
 import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector/gdb-connector";
 import { gdbConnectorIdfOnWsl } from "./gdb-connector/gdb-connector-idf-on-wsl";
 import { parseDisasmTokens } from "./gdb-parsers/disasmParser";
-import { LocalsContainer } from "./gdb-parsers/gdb-locals";
+//import { LocalsContainer } from "./gdb-parsers/gdb-locals";
 import { GdbOutputCapture } from "./gdb-parsers/gdb-output-capture";
 import { gdbAsmRow, gdbBreakpoint, gdbStateDatabase } from "./gdb-state-database/gdbStateDatabase";
 
@@ -31,7 +31,7 @@ export class miInterface extends EventEmitter {
     super();
   }
 
-  connect(): boolean {
+  connect(selectedConnection: SelectedConnection): boolean {
     ConnectionNotifier.getInstance().startWatchingConsole();
     this.conn = new gdbConnectorIdfOnWsl();
 
@@ -93,7 +93,22 @@ export class miInterface extends EventEmitter {
       console.log("GDB is idle");
     });
 
-    return this.conn.Start();
+    return this.conn.Start(selectedConnection);
+  }
+
+  disconnect(): void {
+    console.log("Disconnecting from GDB");
+
+    ConnectionNotifier.getInstance().endWatchingConsole();
+
+    if (this.conn) {
+      this.conn.removeAllListeners();
+      this.conn.End();
+      this.conn = null;
+    }
+
+    this.streamSave = [];
+    this.savedStr = "";
   }
 
   send(data: string): void {
@@ -154,48 +169,47 @@ export class miInterface extends EventEmitter {
     throw new Error("Method not implemented.");
   }
 
-  rgxNotify: RegExp = /^=(?<cmd>.*?),(?<data>.*$)/;
-  rgxParamValue: RegExp = /^param="(?<cmdParam>.*?)",value="(?<value>.*?)"$/;
-  rgxBkpt: RegExp =
+  // Cached RegExp patterns
+  private readonly rgxNotify: RegExp = /^=(?<cmd>.*?),(?<data>.*$)/;
+  private readonly rgxParamValue: RegExp = /^param="(?<cmdParam>.*?)",value="(?<value>.*?)"$/;
+  private readonly rgxBkpt: RegExp =
     /^bkpt={number="(?<number>[^"]*)",type="(?<type>[^"]*)",disp="(?<disp>[^"]*)",enabled="(?<enabled>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",thread-groups=\[(?<tg>[^\]]*)\],times="(?<times>[^"]*)",(installed="(?<installed>[^"]*)",)?original-location="(?<orgloc>[^"]*)"}$/;
-  // Cached RegExp patterns for parseResultRecord and related methods
-  readonly rgxResultRecord: RegExp = /^\^(?<result>[^,]*),?(?<data>.*)?$/;
-  readonly rgxResultList: RegExp = /^(?<result>.*?)=(?<list>.*)$/;
-  readonly rgxAsmData: RegExp = /asm_insns=\[(?<asm_list>.*)]$/;
-  readonly rgxAsmRow: RegExp =
+  private readonly rgxResultRecord: RegExp = /^\^(?<result>[^,]*),?(?<data>.*)?$/;
+  private readonly rgxResultList: RegExp = /^(?<result>.*?)=(?<list>.*)$/;
+  private readonly rgxAsmData: RegExp = /asm_insns=\[(?<asm_list>.*)]$/;
+  private readonly rgxAsmRow: RegExp =
     /(?<asm_row>address="(?<address>[^"]*)",func-name="(?<func>[^"]*)",offset="(?<offset>[^"]*)",opcodes="(?<opcodes>[^"]*)",inst="(?<inst>[^"]*)")/g;
-  readonly rgxMemData: RegExp =
+  private readonly rgxMemData: RegExp =
     /\[\{begin="(?<begin>[^"]*)",offset="(?<offset>[^"]*)",end="(?<end>[^"]*)",contents="(?<contents>[^"]*)"\}\]/;
-  readonly rgxBps: RegExp =
+  private readonly rgxBps: RegExp =
     /bkpt={number="(?<number>[^"]*)",type="(?<type>[^"]*)",disp="(?<disp>[^"]*)",enabled="(?<enabled>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",thread-groups=\[(?<tg>[^\]]*)],times="(?<times>[^"]*)",original-location="(?<orgLoc>[^"]*)"}/g;
-  readonly rgxCleanList: RegExp = /\[(?<list>.*)\]/;
-  readonly rgxThreads: RegExp = /\[(?<data>.*)\],current-thread-id="(?<curTid>.*)"/;
-  readonly rgxThreadData: RegExp =
+  private readonly rgxCleanList: RegExp = /\[(?<list>.*)\]/;
+  private readonly rgxThreads: RegExp = /\[(?<data>.*)\],current-thread-id="(?<curTid>.*)"/;
+  private readonly rgxThreadData: RegExp =
     /{id="(?<tid>[^"]*)",target-id="(?<targId>[^"]*)",details="(?<details>[^"]*)",frame={level="(?<level>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",args=\[(?<args>[^\]]*)\],file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",arch="(?<arch>[^"]*)"\},state="(?<state>[^"]*)"}/g;
-  readonly rgxRegisterValues: RegExp = /{number="(?<number>[^"]*)",value="(?<value>[^"]*)"}/g;
-  readonly rgxFrame: RegExp =
+  private readonly rgxRegisterValues: RegExp =
+    /{number="(?<number>[^"]*)",value="(?<value>[^"]*)"}/g;
+  private readonly rgxFrame: RegExp =
     /frame={level="(?<level>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",arch="(?<arch>[^"]*)"},/g;
-  readonly rgxErrorMsg: RegExp = /^msg="(?<msg>[^"]*)"$/;
-  readonly rgxExecAsyncRecord: RegExp = /^\*(?<result>[^,]*),?(?<data>.*)?$/;
-  readonly rgxThreadIdExtractor: RegExp = /thread-id="(?<tid>[^"]*)"/;
-  readonly rgxStoppedThreadsExtractor: RegExp = /stopped-threads="(?<stoppedThreads>[^"]*)"/;
-  readonly rgxCoreExtractor: RegExp = /core="(?<core>[^"]*)"/;
-  readonly rgxReasonExtractor: RegExp = /reason="(?<reason>[^"]*)"/;
-  readonly rgxBphExtractor: RegExp =
+  private readonly rgxErrorMsg: RegExp = /^msg="(?<msg>[^"]*)"$/;
+  private readonly rgxExecAsyncRecord: RegExp = /^\*(?<result>[^,]*),?(?<data>.*)?$/;
+  private readonly rgxThreadIdExtractor: RegExp = /thread-id="(?<tid>[^"]*)"/;
+  private readonly rgxStoppedThreadsExtractor: RegExp =
+    /stopped-threads="(?<stoppedThreads>[^"]*)"/;
+  private readonly rgxCoreExtractor: RegExp = /core="(?<core>[^"]*)"/;
+  private readonly rgxReasonExtractor: RegExp = /reason="(?<reason>[^"]*)"/;
+  private readonly rgxBphExtractor: RegExp =
     /disp="(?<disp>[^"]*)",bkptno="(?<bkptno>[^"]*)",frame={(?<frame>[^}]*)}/;
+  private readonly rgxLogStream: RegExp = /^&"(?<line>.*?)"$/;
+  private readonly rgxConsoleStream: RegExp = /^~"(?<line>.*?)"$/;
+  private readonly rgxThreadGroupId: RegExp = /id="(?<id>[^"]+)"/;
+  private readonly rgxThreadGroupIdPid: RegExp = /^id="(?<id>[^"]*)",pid="(?<pid>[^"]*)"$/;
+  private readonly rgxThreadGroupExited: RegExp = /^id="(?<id>[^"]*)"$/;
+  private readonly rgxThreadCreated: RegExp = /^id="(?<id>[^"]*)",group-id="(?<grpid>[^"]*)"$/;
+  private readonly rgxThreadExited: RegExp = /^id="(?<id>[^"]*)",group-id="(?<grpid>[^"]*)"$/;
+  private readonly rgxThreadSelected: RegExp = /frame={level="(?<level>[^"]*)"/;
+  private readonly rgxBreakpointDeleted: RegExp = /id="(?<id>[^"]+)"/;
 
-  // Cached RegExp patterns for stream parsing methods
-  readonly rgxLogStream: RegExp = /^&"(?<line>.*?)"$/;
-  readonly rgxConsoleStream: RegExp = /^~"(?<line>.*?)"$/;
-
-  // Cached RegExp patterns for parseNotifyAsyncRecord inline patterns
-  readonly rgxThreadGroupId: RegExp = /id="(?<id>[^"]+)"/;
-  readonly rgxThreadGroupIdPid: RegExp = /^id="(?<id>[^"]*)",pid="(?<pid>[^"]*)"$/;
-  readonly rgxThreadGroupExited: RegExp = /^id="(?<id>[^"]*)"$/;
-  readonly rgxThreadCreated: RegExp = /^id="(?<id>[^"]*)",group-id="(?<grpid>[^"]*)"$/;
-  readonly rgxThreadExited: RegExp = /^id="(?<id>[^"]*)",group-id="(?<grpid>[^"]*)"$/;
-  readonly rgxThreadSelected: RegExp = /frame={level="(?<level>[^"]*)"/;
-  readonly rgxBreakpointDeleted: RegExp = /id="(?<id>[^"]+)"/;
   private async parseNotifyAsyncRecord(output: string): Promise<boolean> {
     const chunks = this.rgxNotify.exec(output);
 
@@ -211,10 +225,7 @@ export class miInterface extends EventEmitter {
             this.gdbDB.addThreadGroup(id);
           }
 
-          mainWindow.webContents.send("data-threads", {
-            th: this.gdbDB.threads,
-            grp: this.gdbDB.threadGroups,
-          });
+          this.gdbDB.threadUpdateUI();
         }
         break;
       case "thread-group-started":
@@ -226,10 +237,7 @@ export class miInterface extends EventEmitter {
             this.gdbDB.startThreadGroup(id);
           }
 
-          mainWindow.webContents.send("data-threads", {
-            th: this.gdbDB.threads,
-            grp: this.gdbDB.threadGroups,
-          });
+          this.gdbDB.threadUpdateUI();
         }
         break;
       case "thread-group-exited":
@@ -241,19 +249,13 @@ export class miInterface extends EventEmitter {
           if (id) {
             this.gdbDB.stopThreadGroup(id);
           }
-          mainWindow.webContents.send("data-threads", {
-            th: this.gdbDB.threads,
-            grp: this.gdbDB.threadGroups,
-          });
+          this.gdbDB.threadUpdateUI();
         }
         break;
       case "thread-group-removed":
         {
           //TODO: remove group from collection
-          mainWindow.webContents.send("data-threads", {
-            th: this.gdbDB.threads,
-            grp: this.gdbDB.threadGroups,
-          });
+          this.gdbDB.threadUpdateUI();
         }
         break;
       case "thread-created":
@@ -265,10 +267,7 @@ export class miInterface extends EventEmitter {
             this.gdbDB.createThread(id, grpid);
           }
 
-          mainWindow.webContents.send("data-threads", {
-            th: this.gdbDB.threads,
-            grp: this.gdbDB.threadGroups,
-          });
+          this.gdbDB.threadUpdateUI();
         }
         break;
       case "thread-exited":
@@ -279,6 +278,7 @@ export class miInterface extends EventEmitter {
           if (id) {
             this.gdbDB.deleteThread(id);
           }
+          this.gdbDB.threadUpdateUI();
         }
         break;
       case "thread-selected":
@@ -321,19 +321,18 @@ export class miInterface extends EventEmitter {
             return false;
           }
           this.gdbDB.createBreakpoint(idChunks.groups as gdbBreakpoint);
-          mainWindow.webContents.send("data-brkpts", this.gdbDB.breakpoints);
+          this.gdbDB.breakpointsUpdateUI();
         }
         break;
       case "breakpoint-modified":
         {
-          console.log(`NotifyAsyncRecord (breakpoint-modified): ${data}`);
           const idChunks = this.rgxBkpt.exec(data);
           if (!idChunks || !idChunks.groups) {
             console.error(`Failed to parse breakpoint-modified: ${data}`);
             return false;
           }
           this.gdbDB.updateBreakpoint(idChunks.groups as gdbBreakpoint);
-          mainWindow.webContents.send("data-brkpts", this.gdbDB.breakpoints);
+          this.gdbDB.breakpointsUpdateUI();
         }
         break;
       case "breakpoint-deleted":
@@ -346,7 +345,7 @@ export class miInterface extends EventEmitter {
             this.gdbDB.deleteBreakpoint(id);
           }
           console.log(`Remaining breakpoints: ${JSON.stringify(this.gdbDB.breakpoints)}`);
-          mainWindow.webContents.send("data-brkpts", this.gdbDB.breakpoints);
+          this.gdbDB.breakpointsUpdateUI();
         }
         break;
       default: {
@@ -526,7 +525,7 @@ export class miInterface extends EventEmitter {
                 registers.forEach((register: string, index: number) => {
                   this.gdbDB.addRegister(index.toString(), register.replaceAll('"', ""));
                 });
-                mainWindow.webContents.send("data-register", this.gdbDB.registers);
+                this.gdbDB.registersUpdateUI();
               }
               break;
             case "register-values":
@@ -540,7 +539,7 @@ export class miInterface extends EventEmitter {
                     this.gdbDB.addRegisterValue(number, value);
                   }
                 });
-                mainWindow.webContents.send("data-register", this.gdbDB.registers);
+                this.gdbDB.registersUpdateUI();
               }
               break;
             case "stack":
@@ -564,8 +563,9 @@ export class miInterface extends EventEmitter {
                   });
                 });
                 this.gdbDB.stackFrames[0].active = true;
-                mainWindow.webContents.send("stack-frames", this.gdbDB.stackFrames);
+                this.gdbDB.stackUpdateUI();
 
+                // Show source file for top stack frame
                 const srcFileName = this.gdbDB.stackFrames[0].fullName || "";
                 const showSourceInfo: gdbShowSourceInfo = {
                   fileName: srcFileName,
@@ -579,10 +579,10 @@ export class miInterface extends EventEmitter {
             case "locals":
             case "variables":
               {
-                const lc = new LocalsContainer(resList);
-                //console.log(lc.locals);
-
-                mainWindow.webContents.send("data-locals", lc.locals);
+                this.gdbDB.parseAndStoreLocals(resList);
+                //const lc = new LocalsContainer(resList);
+                //mainWindow.webContents.send("data-locals", lc.locals);
+                this.gdbDB.updateLocalsUI();
               }
               break;
             case "":

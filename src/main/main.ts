@@ -9,11 +9,11 @@ import getSystemFonts from "get-system-fonts";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path, { join } from "path";
-import { GdbAny, wait } from "../common/gdb-common";
+import { GdbAny, SelectedConnection, wait } from "../common/gdb-common";
 import { GdbMenu } from "./menu";
 import { gdbFunction } from "./mi-interface/gdb-state-database/gdbStateDatabase";
 import { miInterface } from "./mi-interface/mi-interface";
-import { WslUtilities } from "./utilities/wsl-utilities";
+import { WslUtilities, type WslDistro } from "./utilities/wsl-utilities";
 
 console.log(`PRELOAD: ${path.resolve("./out/preload/preload.js")}`);
 
@@ -41,6 +41,20 @@ let debugWindow: BrowserWindow | undefined;
 export let gdbInterface: miInterface;
 
 export const gdbAppInfo: Map<string, GdbAny> = new Map<string, GdbAny>();
+
+function isSelectedConnection(value: unknown): value is SelectedConnection {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Partial<SelectedConnection>;
+  return (
+    typeof candidate.name === "string" &&
+    typeof candidate.shell === "string" &&
+    Array.isArray(candidate.commands) &&
+    candidate.commands.every((cmd) => typeof cmd === "string")
+  );
+}
 
 app.on("ready", () => {
   AppSettings.configure({
@@ -255,6 +269,15 @@ ipcMain.handle("getVersionInfo", (): Promise<Map<string, GdbAny>> => {
   return Promise.resolve(gdbAppInfo);
 });
 
+ipcMain.handle("getWslDistrobutions", (): Promise<WslDistro[]> => {
+  try {
+    return Promise.resolve(WslUtilities.getWslDistrobutions());
+  } catch (error) {
+    console.error("Failed to get WSL distributions", error);
+    return Promise.resolve([]);
+  }
+});
+
 ipcMain.handle("getFunctionNames", (): Promise<gdbFunction[]> => {
   return Promise.resolve(gdbInterface.gdbDB.getAllFunctionNames());
 });
@@ -262,6 +285,37 @@ ipcMain.handle("getFunctionNames", (): Promise<gdbFunction[]> => {
 // General messages from the UI
 ipcMain.on("notify-main", (_event: GdbAny, msg: GdbAny) => {
   switch (msg?.command) {
+    case "connect-selected-connection":
+      {
+        const selectedConnection: unknown = msg?.data?.connection;
+        console.log("Received selected connection from renderer", selectedConnection);
+        if (isSelectedConnection(selectedConnection)) {
+          doConnection(selectedConnection);
+        } else {
+          console.error("Invalid selected connection payload", selectedConnection);
+        }
+      }
+      break;
+    case "cancel-connection":
+      {
+        gdbInterface.disconnect();
+        mainWindow.webContents.send("notify-render", {
+          command: "cancel-connection",
+        });
+
+        gdbInterface.gdbDB.clearDatabase();
+        gdbInterface.gdbDB.allDataUpdateUI();
+
+        const msg: string[] = [];
+        msg.push("***************************************************");
+        msg.push("***************************************************");
+        msg.push("*.............Debugger Disconnected...............*");
+        msg.push("***************************************************");
+        msg.push("***************************************************");
+
+        msg.forEach((line) => mainWindow.webContents.send("debug-message", line));
+      }
+      break;
     case "save-connections":
       {
         AppSettings.setSync("gdb.connections", msg.data.connections);
@@ -330,27 +384,31 @@ ipcMain.on("notify-main", (_event: GdbAny, msg: GdbAny) => {
         mainWindow.webContents.send("notify-render", {
           command: "command-entry",
         });
-
-        // Don't connect until the UI is ready to recieve updates.
-        mainWindow.webContents.send("notify-render", {
-          command: "connection-started",
-        });
-
-        // Connect once renderer is ready to accept GDB events.
-        const connected = gdbInterface.connect();
-        if (connected) {
-          mainWindow.webContents.send("notify-render", {
-            command: "connection-success",
-          });
-        } else {
-          mainWindow.webContents.send("notify-render", {
-            command: "connection-failed",
-          });
-        }
       }
       break;
   }
 });
+
+function doConnection(selectedConnection: SelectedConnection) {
+  console.log(`Connecting using profile: ${selectedConnection.name} (${selectedConnection.shell})`);
+
+  // Don't connect until the UI is ready to recieve updates.
+  mainWindow.webContents.send("notify-render", {
+    command: "connection-started",
+  });
+
+  const connected = gdbInterface.connect(selectedConnection);
+
+  if (connected) {
+    mainWindow.webContents.send("notify-render", {
+      command: "connection-success",
+    });
+  } else {
+    mainWindow.webContents.send("notify-render", {
+      command: "connection-failed",
+    });
+  }
+}
 
 /**
  * IPC *FROM* RENDERER
@@ -378,7 +436,7 @@ function OnGdbCommand(command: string): void {
         break;
       case "wsl":
         {
-          const distros = WslUtilities.getWslDistributions();
+          const distros = WslUtilities.getWslDistrobutions();
           console.log("*********************************************************");
           console.log("WSL Distros");
           console.log("*********************************************************");

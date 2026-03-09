@@ -4,6 +4,7 @@
 import { ChildProcess, spawn } from "child_process";
 import { ConnectionNotifier } from "../../utilities/ConnectionNotifier";
 import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector";
+import { SelectedConnection } from "../../../common/gdb-common";
 
 export class gdbConnectorIdfOnWsl extends GdbConnector {
   private gdbExe: ChildProcess | null = null;
@@ -13,15 +14,21 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
     console.log("GdbConnectorIdfOnWsl");
   }
 
-  override Start(): boolean {
+  override Start(selectedConnection: SelectedConnection): boolean {
     // Bootstrap the shell and then launch gdb in MI mode.
-    const cmds = [
-      "echo '(revealGDB) Shell Running (revealGDB)'",
-      "cd ~/perftool",
-      "source ~/.profile",
-      "echo '(revealGDB) (revealGDB)'",
-      "idf.py gdb --gdb-commands --interpreter=mi4",
-    ];
+    const cmds = [];
+    cmds.push(`echo '${ConnectionNotifier.shellRunning}'`);
+
+    const lastCmd = selectedConnection.commands.pop();
+    if (selectedConnection.commands.length > 0) {
+      cmds.push(...selectedConnection.commands);
+    }
+
+    cmds.push(`echo '${ConnectionNotifier.runningCommandsComplete}'`);
+
+    if (lastCmd) {
+      cmds.push(lastCmd);
+    }
 
     ConnectionNotifier.getInstance().notifyGdbStartup("starting-shell", "in-progress");
 

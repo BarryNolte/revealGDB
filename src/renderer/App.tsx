@@ -19,10 +19,7 @@ import { GdbAny } from "../common/gdb-common";
 
 /* Dialogs */
 import { AboutBox, type AboutBoxHandle } from "./Dialogs/AboutBox";
-import {
-  WhileConnectingDialog,
-  type WhileConnectingDialogHandle,
-} from "./Dialogs/ConnectingDialog.jsx";
+import { ConnectionDialog, type WhileConnectingDialogHandle } from "./Dialogs/ConnectionDialog.jsx";
 import { ConnectionManager, type ConnectionManagerHandle } from "./Dialogs/ConnectionManager";
 
 /* Tool Windows */
@@ -93,7 +90,6 @@ window.ipcToMain.getVersionInfo().then((e) => {
  */
 export default function App(): JSX.Element {
   // Refs for imperative access to child components
-  const toolbarRef = useRef<RevealToolbar>(null);
   const aboutBoxRef = useRef<AboutBoxHandle>(null);
   const settingsRef = useRef<SettingsHandle>(null);
   const connectionsRef = useRef<ConnectionManagerHandle>(null);
@@ -210,9 +206,9 @@ export default function App(): JSX.Element {
       }
     });
 
-    // Synchronize panel state and populate window list in toolbar
+    // Synchronize panel state and trigger toolbar window list update
     dockMenuConnector.reconsilePanels();
-    toolbarRef.current?.FillWindowList();
+    window.dispatchEvent(new Event("update-window-list"));
 
     // Handle window resize events to adjust dock layout
     const handleResize = () => {
@@ -241,8 +237,8 @@ export default function App(): JSX.Element {
   return (
     <div className={"main-page-container"}>
       <RevealToolbar
-        ref={toolbarRef}
         connectionsRef={connectionsRef as RefObject<ConnectionManagerHandle>}
+        whileConnectingRef={whileConnectingRef as RefObject<WhileConnectingDialogHandle>}
         settingsRef={settingsRef as RefObject<SettingsHandle>}
       />
       <div id="revealDockDiv" className="full-size">
@@ -308,7 +304,10 @@ export default function App(): JSX.Element {
       <AboutBox ref={aboutBoxRef} />
       <Settings ref={settingsRef} />
       <ConnectionManager ref={connectionsRef} />
-      <WhileConnectingDialog ref={whileConnectingRef} />
+      <ConnectionDialog
+        ref={whileConnectingRef}
+        connectionsRef={connectionsRef as RefObject<ConnectionManagerHandle>}
+      />
     </div>
   );
 }
