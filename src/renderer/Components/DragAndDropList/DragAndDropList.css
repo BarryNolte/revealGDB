@@ -1,7 +1,8 @@
 .drag-drop-list-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
+  width: 100%;
   height: 100%;
 }
 
@@ -11,18 +12,24 @@
   align-items: stretch;
   gap: 4px;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  flex: 0 0 auto;
 }
 
 .drag-drop-list-input {
   flex: 1 1 auto;
+  min-width: 0;
   padding: 4px 8px;
   border: 1px solid #c9c9c9;
   border-radius: 4px;
   font-size: 12px;
+  box-sizing: border-box;
 }
 
 .drag-drop-list-add-button {
   flex: 0 0 auto;
+  max-width: 100%;
   padding: 4px 10px;
   border: 1px solid #007acc;
   border-radius: 4px;
@@ -31,6 +38,7 @@
   font-size: 12px;
   cursor: pointer;
   white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .drag-drop-list-add-button:disabled {
@@ -52,9 +60,11 @@
   flex-wrap: wrap;
   gap: 0.5px;
   width: 100%;
+  max-width: 100%;
   height: 100%;
   align-content: flex-start;
   flex: 1 1 auto;
+  box-sizing: border-box;
 }
 
 .drag-drop-list-item {

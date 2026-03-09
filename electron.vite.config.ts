@@ -22,6 +22,7 @@ const rendererInputs = {
   main: resolve(__dirname, "src/renderer/index.html"),
   hexeditor: resolve(__dirname, "src/renderer/hexeditor-test.html"),
   gdbcommand: resolve(__dirname, "src/renderer/gdbcommand-test.html"),
+  connectionmanager: resolve(__dirname, "src/renderer/connectionmanager-test.html"),
 };
 
 export default defineConfig({

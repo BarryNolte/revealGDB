@@ -40,7 +40,7 @@ type ShellOption = {
   cmdLine: string;
 };
 
-const DEFAULT_WSL_DISTRO = "none";
+const DEFAULT_WSL_DISTRO = "default";
 
 const shells: Record<string, ShellOption> = {
   wsl: {
@@ -99,14 +99,6 @@ function mergeUniqueDistros(...lists: string[][]): string[] {
   return Array.from(uniqueMap.values());
 }
 
-function getWslDistroDisplayLabel(distro: string): string {
-  if (distro.toLocaleLowerCase() === DEFAULT_WSL_DISTRO.toLocaleLowerCase()) {
-    return "None (auto/default)";
-  }
-
-  return distro;
-}
-
 export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionManagerProps>(
   function ConnectionManager(_props, ref) {
     const shellOptions = useMemo(
@@ -118,6 +110,9 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
     const [connections, setConnections] = useState<ConnectionGridRow[]>([]);
     const [loadedConnections, setLoadedConnections] = useState<GdbAny[]>([]);
     const connectionsGridRef = useRef<GridComponent>(null);
+    const connectionNameInputRef = useRef<HTMLInputElement>(null);
+    const shellSelectRef = useRef<HTMLSelectElement>(null);
+    const addConnectionButtonRef = useRef<HTMLButtonElement>(null);
     const [isAddingConnection, setIsAddingConnection] = useState(false);
     const [connectionName, setConnectionName] = useState<string>("");
     const [selectedShellKey, setSelectedShellKey] = useState<string>(shellOptions[0]?.key ?? "");
@@ -127,10 +122,12 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
       { text: "gdb", id: "list-01" },
     ]);
 
-    const connectionNameInputRef = useRef<HTMLInputElement | null>(null);
-    const shellSelectRef = useRef<HTMLSelectElement | null>(null);
     const onCloseCallbackRef = useRef<(() => void) | null>(null);
-    const addConnectionButtonRef = useRef<HTMLButtonElement | null>(null);
+
+    const selectedShellLabel = useMemo(() => {
+      const matchedShell = shellOptions.find((shellOption) => shellOption.key === selectedShellKey);
+      return matchedShell?.label ?? shells.wsl.type;
+    }, [selectedShellKey, shellOptions]);
 
     const commandsListKey = useMemo(
       () =>
@@ -142,10 +139,76 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
       setCommandsList(items);
     }, []);
 
-    const shellChangeHandler = useCallback((e: ChangeEvent<HTMLSelectElement>): void => {
-      setSelectedShellKey(e.target.value);
-      console.log(`Shell changed to: ${e.target.value}`);
-    }, []);
+    const normalizeShellKey = useCallback(
+      (shellValue: string): string => {
+        const normalizedValue = shellValue.trim().toLocaleLowerCase();
+        if (normalizedValue in shells) {
+          return normalizedValue;
+        }
+
+        const matchedEntry = Object.entries(shells).find(
+          ([, shellOption]) => shellOption.type.toLocaleLowerCase() === normalizedValue,
+        );
+
+        return matchedEntry?.[0] ?? shellOptions[0]?.key ?? "wsl";
+      },
+      [shellOptions],
+    );
+
+    const shellChangeHandler = useCallback(
+      (e: ChangeEvent<HTMLSelectElement>): void => {
+        setSelectedShellKey(normalizeShellKey(e.target.value));
+      },
+      [normalizeShellKey],
+    );
+
+    useEffect(() => {
+      const shellElement = shellSelectRef.current;
+      if (!shellElement) {
+        return;
+      }
+
+      const nativeShellChangeHandler = (event: Event): void => {
+        const target = event.target as HTMLSelectElement | null;
+        if (!target) {
+          return;
+        }
+
+        setSelectedShellKey(normalizeShellKey(target.value));
+      };
+
+      shellElement.addEventListener("change", nativeShellChangeHandler);
+
+      return () => {
+        shellElement.removeEventListener("change", nativeShellChangeHandler);
+      };
+    }, [hideDialog, normalizeShellKey]);
+
+    useEffect(() => {
+      const connectionNameElement = connectionNameInputRef.current;
+      if (!connectionNameElement) {
+        return;
+      }
+
+      const nativeConnectionNameInputHandler = (event: Event): void => {
+        const target = event.target as HTMLInputElement | null;
+        if (!target) {
+          return;
+        }
+
+        setConnectionName(target.value);
+      };
+
+      connectionNameElement.addEventListener("input", nativeConnectionNameInputHandler);
+      connectionNameElement.addEventListener("change", nativeConnectionNameInputHandler);
+
+      return () => {
+        connectionNameElement.removeEventListener("input", nativeConnectionNameInputHandler);
+        connectionNameElement.removeEventListener("change", nativeConnectionNameInputHandler);
+      };
+    }, [hideDialog]);
+
+    const isWslShellSelected = selectedShellLabel.toLocaleLowerCase() === "wsl";
 
     const wslDistroChangeHandler = useCallback((e: ChangeEvent<HTMLSelectElement>): void => {
       setSelectedWslDistro(e.target.value);
@@ -233,18 +296,18 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
       (connection: NormalizedConnection | null): void => {
         if (!connection) {
           setConnectionName("");
-          setSelectedShellKey(shellOptions[0]?.key ?? "wsl");
+          setSelectedShellKey(normalizeShellKey(shellOptions[0]?.key ?? "wsl"));
           setSelectedWslDistro((current) => current || wslDistros[0] || DEFAULT_WSL_DISTRO);
           setCommandsList([{ text: "gdb", id: "list-01" }]);
           return;
         }
 
         setConnectionName(connection.name);
-        setSelectedShellKey(connection.shell);
+        setSelectedShellKey(normalizeShellKey(connection.shell));
         setSelectedWslDistro(connection.wslDistribution || wslDistros[0] || DEFAULT_WSL_DISTRO);
         setCommandsList(toDragAndDropItems(connection.commands));
       },
-      [shellOptions, toDragAndDropItems, wslDistros],
+      [normalizeShellKey, shellOptions, toDragAndDropItems, wslDistros],
     );
 
     const normalizeConnection = useCallback(
@@ -316,45 +379,29 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
       }
     }, [applyConnectionToForm, normalizeConnection, normalizeConnectionForStorage]);
 
-    const loadWslDistrosFromSystem = useCallback(
-      async (connectionsToInspect: NormalizedConnection[] = []): Promise<void> => {
-        try {
-          const distros = await window.ipcToMain.getWslDistrobutions();
-          const systemDistroNames = distros
-            .map((distro) => normalizeDistroName(String(distro.name ?? "")))
-            .filter((name) => name.length > 0);
+    const loadWslDistrosFromSystem = useCallback(async (): Promise<void> => {
+      try {
+        const distros = await window.ipcToMain.getWslDistrobutions();
+        const systemDistroNames = distros
+          .map((distro) => normalizeDistroName(String(distro.name ?? "")))
+          .filter((name) => name.length > 0);
 
-          const persistedDistroNames = connectionsToInspect
-            .map((connection) => normalizeDistroName(String(connection.wslDistribution ?? "")))
-            .filter((name) => name.length > 0);
+        const distroNames = mergeUniqueDistros(systemDistroNames, [DEFAULT_WSL_DISTRO]);
 
-          const distroNames = mergeUniqueDistros(
-            [DEFAULT_WSL_DISTRO],
-            systemDistroNames,
-            persistedDistroNames,
-          );
-
-          if (distroNames.length === 0) {
-            distroNames.push(DEFAULT_WSL_DISTRO);
-          }
-
-          setWslDistros(distroNames);
-          setSelectedWslDistro((current) =>
-            distroNames.includes(current) ? current : (distroNames[0] ?? DEFAULT_WSL_DISTRO),
-          );
-        } catch (error) {
-          console.error("Failed to load WSL distributions", error);
-          const persistedDistroNames = connectionsToInspect
-            .map((connection) => normalizeDistroName(String(connection.wslDistribution ?? "")))
-            .filter((name) => name.length > 0);
-          const fallbackDistros = mergeUniqueDistros([DEFAULT_WSL_DISTRO], persistedDistroNames);
-
-          setWslDistros(fallbackDistros);
-          setSelectedWslDistro((current) => current || DEFAULT_WSL_DISTRO);
+        if (distroNames.length === 0) {
+          distroNames.push(DEFAULT_WSL_DISTRO);
         }
-      },
-      [],
-    );
+
+        setWslDistros(distroNames);
+        setSelectedWslDistro((current) =>
+          distroNames.includes(current) ? current : (distroNames[0] ?? DEFAULT_WSL_DISTRO),
+        );
+      } catch (error) {
+        console.error("Failed to load WSL distributions", error);
+        setWslDistros([DEFAULT_WSL_DISTRO]);
+        setSelectedWslDistro((current) => current || DEFAULT_WSL_DISTRO);
+      }
+    }, []);
 
     useEffect(() => {
       if (!hideDialog) {
@@ -440,7 +487,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
 
         // Reset form fields to default values for new connection
         setConnectionName("");
-        setSelectedShellKey(shellOptions[0]?.key ?? "wsl");
+        setSelectedShellKey(normalizeShellKey(shellOptions[0]?.key ?? "wsl"));
         setSelectedWslDistro(wslDistros[0] ?? DEFAULT_WSL_DISTRO);
         setCommandsList([{ text: "gdb", id: "list-01" }]);
       } catch (error) {
@@ -455,6 +502,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
       loadedConnections,
       normalizeConnection,
       normalizeConnectionForStorage,
+      normalizeShellKey,
       saveConnectionsToSettings,
       selectedShellKey,
       selectedWslDistro,
@@ -463,54 +511,19 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
     ]);
 
     useEffect(() => {
-      const connectionNameInput = connectionNameInputRef.current;
-      if (!connectionNameInput) {
-        return;
-      }
-
-      const onNativeInput = (event: Event) => {
-        const target = event.target as HTMLInputElement;
-        setConnectionName(target.value);
-      };
-
-      connectionNameInput.addEventListener("input", onNativeInput);
-      connectionNameInput.addEventListener("change", onNativeInput);
-      return () => {
-        connectionNameInput.removeEventListener("input", onNativeInput);
-        connectionNameInput.removeEventListener("change", onNativeInput);
-      };
-    }, [hideDialog]);
-
-    useEffect(() => {
-      const shellSelect = shellSelectRef.current;
-      if (!shellSelect) {
-        return;
-      }
-
-      const onNativeChange = (event: Event) => {
-        const target = event.target as HTMLSelectElement;
-        setSelectedShellKey(target.value);
-      };
-
-      shellSelect.addEventListener("change", onNativeChange);
-      return () => {
-        shellSelect.removeEventListener("change", onNativeChange);
-      };
-    }, [hideDialog]);
-
-    useEffect(() => {
       const addButton = addConnectionButtonRef.current;
       if (!addButton) {
         return;
       }
 
-      const onNativeClick = () => {
+      const nativeAddConnectionClickHandler = (): void => {
         void handleAddConnection();
       };
 
-      addButton.addEventListener("click", onNativeClick);
+      addButton.addEventListener("click", nativeAddConnectionClickHandler);
+
       return () => {
-        addButton.removeEventListener("click", onNativeClick);
+        addButton.removeEventListener("click", nativeAddConnectionClickHandler);
       };
     }, [hideDialog, handleAddConnection]);
 
@@ -551,8 +564,8 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
 
     const dialogOpenFunc = useCallback(() => {
       void (async () => {
-        const openedConnections = await loadConnectionsFromSettings();
-        await loadWslDistrosFromSystem(openedConnections);
+        await loadConnectionsFromSettings();
+        await loadWslDistrosFromSystem();
       })();
     }, [loadConnectionsFromSettings, loadWslDistrosFromSystem]);
 
@@ -577,6 +590,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
               <label htmlFor="connectionName">Connection Name</label>
               <input
                 ref={connectionNameInputRef}
+                className="controlInput"
                 type="text"
                 id="connectionName"
                 value={connectionName}
@@ -589,12 +603,13 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
                 <label htmlFor="shellSelect">Shell</label>
                 <select
                   ref={shellSelectRef}
+                  className="controlInput"
                   id="shellSelect"
-                  value={selectedShellKey}
+                  value={selectedShellLabel}
                   onChange={shellChangeHandler}
                 >
                   {shellOptions.map((shell) => (
-                    <option key={shell.key} value={shell.key}>
+                    <option key={shell.key} value={shell.label}>
                       {shell.label}
                     </option>
                   ))}
@@ -603,19 +618,18 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
               <div className="controlGroup">
                 <label htmlFor="wslDistros">WSL Distros</label>
                 <select
+                  className="controlInput"
                   id="wslDistros"
                   value={selectedWslDistro}
                   onChange={wslDistroChangeHandler}
-                  disabled={selectedShellKey !== "wsl"}
+                  disabled={!isWslShellSelected}
                   title={
-                    selectedShellKey !== "wsl"
-                      ? "Select WSL in Shell to enable this list"
-                      : undefined
+                    !isWslShellSelected ? "Select WSL in Shell to enable this list" : undefined
                   }
                 >
                   {wslDistros.map((distro) => (
                     <option key={distro} value={distro}>
-                      {getWslDistroDisplayLabel(distro)}
+                      {distro}
                     </option>
                   ))}
                 </select>

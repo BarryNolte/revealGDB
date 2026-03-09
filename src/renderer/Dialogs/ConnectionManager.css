@@ -2,14 +2,15 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  box-sizing: border-box;
 }
 
 .horizontalControls {
   display: flex;
-  flex-direction: row;
   gap: 10px;
   align-items: flex-start;
-  margin: 10px;
   height: 150px;
 }
 
@@ -20,22 +21,28 @@
   font-size: 14px;
   font-weight: bold;
   flex: 1;
-  width: 100%;
-  height: 100%;
+  min-width: 0;
 }
 
 .controlGroupOfOne {
-  margin: 4px;
-  width: auto;
+  flex: 0 0 auto;
 }
 
 .connectionManagerItem {
-  flex-grow: 0;
-  margin: 5px;
+  margin: 0;
 }
 
 .connectionAddButton {
   width: 150px;
+  align-self: flex-start;
+}
+
+.controlInput {
+  height: 24px;
+  padding: 2px 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 #commandsTreeView {
@@ -45,18 +52,6 @@
   border-radius: 4px;
   box-sizing: border-box;
   height: 200px;
-}
-
-#shellSelect {
-  border-color: #ddd;
-  border-radius: 4px;
-  height: 24px;
-}
-
-#wslDistros {
-  border-color: #ddd;
-  border-radius: 4px;
-  height: 24px;
 }
 
 #connectionsGrid {
