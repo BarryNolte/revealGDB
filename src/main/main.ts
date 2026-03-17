@@ -1,19 +1,30 @@
 /**
  * Main process entry point: window lifecycle, IPC, and GDB wiring.
  */
-import { app, BrowserWindow, ipcMain, nativeTheme, screen } from "electron";
-import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
+import { app, BrowserWindow, ipcMain, nativeTheme } from "electron";
 import settings from "electron-settings";
-import { fontace } from "fontace";
-import getSystemFonts from "get-system-fonts";
-import fs from "node:fs/promises";
-import os from "node:os";
-import path, { join } from "path";
-import { GdbAny, SelectedConnection, wait } from "../common/gdb-common";
+import path from "path";
+import { GdbAny, SelectedConnection } from "../common/gdb-common";
+import { registerAppEvents } from "./app-events";
+import {
+  collectVersionInfo,
+  configureAppSettings,
+  logStartupDiagnostics,
+  maybeInstallDevTools,
+  warmSystemFonts,
+} from "./bootstrap";
+import { createGdbInterface } from "./gdb-lifecycle";
+import { registerIpcHandlers } from "./ipc-registration";
 import { GdbMenu } from "./menu";
-import { gdbFunction } from "./mi-interface/gdb-state-database/gdbStateDatabase";
 import { miInterface } from "./mi-interface/mi-interface";
-import { WslUtilities, type WslDistro } from "./utilities/wsl-utilities";
+import {
+  createDebugWindow,
+  createMainWindow,
+  loadMainWindow,
+  resolvePreloadPath,
+  restoreWindowBounds,
+  wireWindowCloseHandlers,
+} from "./window-manager";
 
 console.log(`PRELOAD: ${path.resolve("./out/preload/preload.js")}`);
 
@@ -57,122 +68,24 @@ function isSelectedConnection(value: unknown): value is SelectedConnection {
 }
 
 app.on("ready", () => {
-  AppSettings.configure({
-    atomicSave: true,
-    fileName: "settings.json",
-    numSpaces: 2,
-    prettify: true,
-  });
-
-  /**
-   * DEBUG: Usefull Information
-   */
-  const settingsFile = AppSettings.file();
-  console.log(`Settings File: ${settingsFile}`);
-  const displays = screen.getAllDisplays();
-  displays.forEach((display: GdbAny) => {
-    console.log(
-      `Display: (${Math.floor(
-        display.scaleFactor * display.bounds.width,
-      )} x ${Math.floor(display.scaleFactor * display.bounds.height)})`,
-    );
-  });
-  /* END DEBUG */
-
-  // Cache system font names for renderer font pickers.
-  getSystemFonts().then((fontArray: string[]) => {
-    fontArray.forEach((fontFile) => {
-      fs.readFile(fontFile).then((fileBuffer) => {
-        try {
-          const metaData = fontace(fileBuffer);
-          fontList.set(metaData.family, "");
-        } catch {
-          return;
-        }
-      });
-    });
-  });
-
-  if (isDebug) {
-    installExtension(REACT_DEVELOPER_TOOLS)
-      .then((name) => {
-        console.log(`Installed DevTools extension: ${name}`);
-      })
-      .catch((err) => {
-        console.warn("Failed to install React DevTools extension:", err);
-      });
-  }
-
-  gdbAppInfo.set("Node Version", process.version);
-  gdbAppInfo.set("Architecture", os.arch());
-  gdbAppInfo.set("Platform", process.platform);
-  gdbAppInfo.set("OS Version", os.version());
-  gdbAppInfo.set("Machine", os.machine());
-  gdbAppInfo.set("Chrome Version", process.versions.chrome);
-  gdbAppInfo.set("Electron Version", process.versions.electron);
-  gdbAppInfo.set("v8 Version", process.versions.v8);
-  gdbAppInfo.set("System Version", process.getSystemVersion());
-  gdbAppInfo.set("Package Versions", process.versions);
+  configureAppSettings(AppSettings);
+  logStartupDiagnostics(AppSettings);
+  warmSystemFonts(fontList);
+  maybeInstallDevTools(isDebug);
+  collectVersionInfo(gdbAppInfo);
   //console.log("Version Info\n------------");
   //console.log(gdbAppInfo);
 
-  mainWindow = new BrowserWindow({
-    webPreferences: {
-      /**
-       * preload must be a absolute path for security reasons
-       */
-      preload: path.resolve("./out/preload/preload.js"),
-    },
-    show: false,
-  });
+  mainWindow = createMainWindow(resolvePreloadPath());
 
   if (isDebug) {
-    debugWindow = new BrowserWindow({
-      x: 0,
-      y: 0,
-      width: 1200,
-      height: 1200,
-      autoHideMenuBar: true,
-    });
-    mainWindow.webContents.setDevToolsWebContents(debugWindow.webContents);
-    mainWindow.webContents.openDevTools({
-      mode: "detach",
-      title: "revealGDB - I'm Special, I know how to debug...",
-    });
+    debugWindow = createDebugWindow(mainWindow);
   }
-
-  //TODO!: Wait for GDB to be ready before loading the UI (Debug ONLY)
-  if (isDebug) {
-    wait(5000);
-  }
-
-  let devUrl = process.env.ELECTRON_RENDERER_URL;
-
-  if (devUrl) {
-    console.log("Loading URL:", devUrl);
-    mainWindow.loadURL(devUrl);
-  } else {
-    console.log("Loading file:", join(__dirname, "..", "..", "out", "renderer", "index.html"));
-    devUrl = join(__dirname, "..", "..", "out", "renderer", "index.html");
-    mainWindow.loadFile(devUrl);
-  }
+  loadMainWindow(mainWindow, isDebug);
 
   // Restore persisted window bounds on first show.
   mainWindow.once("ready-to-show", () => {
-    const x = AppSettings.getSync("gdb.gui.windowSize.x") as number;
-    const y = AppSettings.getSync("gdb.gui.windowSize.y") as number;
-    const w = AppSettings.getSync("gdb.gui.windowSize.width") as number;
-    const h = AppSettings.getSync("gdb.gui.windowSize.height") as number;
-
-    if (x && y) {
-      mainWindow.setPosition(x, y);
-    }
-
-    if (w && h) {
-      mainWindow.setSize(w, h);
-    }
-
-    mainWindow.fullScreen = AppSettings.getSync("gdb.gui.windowSize.fullscreen") as boolean;
+    restoreWindowBounds(mainWindow, AppSettings);
 
     mainWindow.show();
   });
@@ -182,285 +95,17 @@ app.on("ready", () => {
   /**
    * UI is now up and running, now we can interact with GDB
    */
-  // Initialize MI interface only after the UI exists.
-  gdbInterface = new miInterface();
-  gdbInterface.on("console-stream", (line: string) => {
-    mainWindow.webContents.send("console-message", line);
-  });
-  gdbInterface.on("log-stream", (line: string) => {
-    mainWindow.webContents.send("log-message", line);
-  });
-  gdbInterface.on("error-stream", (line: string) => {
-    mainWindow.webContents.send("error-message", line);
-  });
-  gdbInterface.on("debug-stream", (line: string) => {
-    mainWindow.webContents.send("debug-message", line);
-  });
-
-  let needToRunStartupCmds = true;
-  // When we stop, then run all the stop commands
-  gdbInterface.on("gdb-stopped", () => {
-    if (needToRunStartupCmds) {
-      needToRunStartupCmds = false;
-      const ros: string[] = AppSettings.getSync("gdb.run.onStartup") as string[];
-      console.log("** ON STARTUP COMMANDS **");
-      ros?.forEach((ros: string) => {
-        gdbInterface.send(ros);
-      });
-
-      gdbInterface.send("echo <<<<file-info>>>>");
-      gdbInterface.send("info files");
-      gdbInterface.send("echo >>>>end-capture<<<<");
-
-      gdbInterface.send("echo <<<<function-names>>>>");
-      gdbInterface.send("info functions");
-      gdbInterface.send("echo >>>>end-capture<<<<");
-    }
-
-    const ros: string[] = AppSettings.getSync("gdb.run.onStopped") as string[];
-    console.log(
-      `***********************\nRunning ${ros?.length} Stop Commands\n***********************`,
-    );
-    ros?.forEach((cmd: string) => {
-      gdbInterface.send(cmd);
-    });
-  });
-
-  let debugWindowClosed = false;
-  mainWindow.on("closed", () => {
-    if (debugWindow && !debugWindowClosed) {
-      debugWindow.close();
-    }
-  });
-
-  if (isDebug && debugWindow) {
-    debugWindow.on("closed", () => {
-      debugWindowClosed = true;
-    });
-  }
+  gdbInterface = createGdbInterface(mainWindow, AppSettings);
+  wireWindowCloseHandlers(mainWindow, isDebug ? debugWindow : undefined);
 });
+registerAppEvents(app, nativeTheme, () => mainWindow);
 
-app.on("did-resign-active", () => {
-  mainWindow.webContents.send("notify-render", {
-    command: "theme-changed",
-    data: nativeTheme,
-  });
+registerIpcHandlers({
+  ipcMain,
+  appSettings: AppSettings,
+  fontList,
+  gdbAppInfo,
+  getMainWindow: () => mainWindow,
+  getGdbInterface: () => gdbInterface,
+  isSelectedConnection,
 });
-
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
-});
-
-nativeTheme.on("updated", () => {
-  mainWindow.webContents.send("theme-changed", nativeTheme);
-});
-
-ipcMain.handle("getSettings", (): string[] => {
-  return AppSettings.getSync("gdb") as string[];
-});
-
-ipcMain.handle("getSystemFonts", (): Promise<string[]> => {
-  return Promise.resolve(fontList.keys().toArray());
-});
-
-ipcMain.handle("getVersionInfo", (): Promise<Map<string, GdbAny>> => {
-  return Promise.resolve(gdbAppInfo);
-});
-
-ipcMain.handle("getWslDistrobutions", (): Promise<WslDistro[]> => {
-  try {
-    return Promise.resolve(WslUtilities.getWslDistrobutions());
-  } catch (error) {
-    console.error("Failed to get WSL distributions", error);
-    return Promise.resolve([]);
-  }
-});
-
-ipcMain.handle("getFunctionNames", (): Promise<gdbFunction[]> => {
-  return Promise.resolve(gdbInterface.gdbDB.getAllFunctionNames());
-});
-
-// General messages from the UI
-ipcMain.on("notify-main", (_event: GdbAny, msg: GdbAny) => {
-  switch (msg?.command) {
-    case "connect-selected-connection":
-      {
-        const selectedConnection: unknown = msg?.data?.connection;
-        console.log("Received selected connection from renderer", selectedConnection);
-        if (isSelectedConnection(selectedConnection)) {
-          doConnection(selectedConnection);
-        } else {
-          console.error("Invalid selected connection payload", selectedConnection);
-        }
-      }
-      break;
-    case "cancel-connection":
-      {
-        gdbInterface.disconnect();
-        mainWindow.webContents.send("notify-render", {
-          command: "cancel-connection",
-        });
-
-        gdbInterface.gdbDB.clearDatabase();
-        gdbInterface.gdbDB.allDataUpdateUI();
-
-        const msg: string[] = [];
-        msg.push("***************************************************");
-        msg.push("***************************************************");
-        msg.push("*.............Debugger Disconnected...............*");
-        msg.push("***************************************************");
-        msg.push("***************************************************");
-
-        msg.forEach((line) => mainWindow.webContents.send("debug-message", line));
-      }
-      break;
-    case "save-connections":
-      {
-        AppSettings.setSync("gdb.connections", msg.data.connections);
-      }
-      break;
-    case "save-app-show-debug-info":
-      {
-        AppSettings.setSync("gdb.gui.showDebugInfo", msg.data);
-      }
-      break;
-    case "save-app-theme":
-      {
-        AppSettings.setSync("gdb.gui.applicationTheme", msg.data);
-      }
-      break;
-    case "save-cmd-history":
-      {
-        AppSettings.setSync("gdb.command.history", msg.data);
-      }
-      break;
-    case "save-source-viewer-theme":
-      {
-        AppSettings.setSync("gdb.gui.sourceViewerTheme", msg.data);
-      }
-      break;
-    case "save-source-viewer-font-size":
-      {
-        AppSettings.setSync("gdb.gui.sourceViewerFontSize", msg.data);
-      }
-      break;
-    case "save-source-viewer-font-name":
-      {
-        AppSettings.setSync("gdb.gui.sourceViewerFontName", msg.data);
-      }
-      break;
-    case "save-main-theme":
-      {
-        AppSettings.setSync("gdb.gui.mainTheme", msg.data);
-      }
-      break;
-    case "save-dock-layout":
-      {
-        AppSettings.setSync("gdb.gui.dockLayout", msg.data);
-
-        const winPos = {
-          /**
-           * The -2 is for, I guess, the border around the window.
-           */
-          x: mainWindow.getPosition()[0],
-          y: mainWindow.getPosition()[1],
-          width: mainWindow.getSize()[0] - 2,
-          height: mainWindow.getSize()[1] - 2,
-          fullscreen: mainWindow.fullScreen,
-        };
-        AppSettings.setSync("gdb.gui.windowSize", winPos);
-      }
-      break;
-    case "renderStart":
-      {
-        console.log("Notifying GDB Interface that rendering is starting.");
-      }
-      break;
-    case "renderEnd":
-      {
-        console.log("Notifying GDB Interface that rendering is complete.");
-        mainWindow.webContents.send("notify-render", {
-          command: "command-entry",
-        });
-      }
-      break;
-  }
-});
-
-function doConnection(selectedConnection: SelectedConnection) {
-  console.log(`Connecting using profile: ${selectedConnection.name} (${selectedConnection.shell})`);
-
-  // Don't connect until the UI is ready to recieve updates.
-  mainWindow.webContents.send("notify-render", {
-    command: "connection-started",
-  });
-
-  const connected = gdbInterface.connect(selectedConnection);
-
-  if (connected) {
-    mainWindow.webContents.send("notify-render", {
-      command: "connection-success",
-    });
-  } else {
-    mainWindow.webContents.send("notify-render", {
-      command: "connection-failed",
-    });
-  }
-}
-
-/**
- * IPC *FROM* RENDERER
- */
-ipcMain.on("gdb-command", (_event: GdbAny, command: string) => {
-  OnGdbCommand(command);
-});
-
-function OnGdbCommand(command: string): void {
-  // DOT commands, good for debugging, etc.
-  if (command.startsWith(".")) {
-    const cmdrgx = /.(?<cmd>.*)/.exec(command);
-    const cmd = cmdrgx?.groups?.cmd || "";
-    switch (cmd) {
-      case "db":
-        {
-          gdbInterface.gdbDB.dump();
-        }
-        break;
-      case "debug":
-        {
-          // eslint-disable-next-line no-debugger
-          debugger;
-        }
-        break;
-      case "wsl":
-        {
-          const distros = WslUtilities.getWslDistrobutions();
-          console.log("*********************************************************");
-          console.log("WSL Distros");
-          console.log("*********************************************************");
-          console.log(distros);
-          console.log("*********************************************************");
-
-          const sports = WslUtilities.getWslSerialPorts();
-          console.log("*********************************************************");
-          console.log("WSL Serial Ports");
-          console.log("*********************************************************");
-          console.log(sports);
-          console.log("*********************************************************");
-        }
-        break;
-      case "screen":
-        {
-          console.log("*********************************************************");
-          console.log("Main Window Bounds: " + JSON.stringify(mainWindow.getBounds()));
-          console.log("Full Screen       : " + JSON.stringify(mainWindow.fullScreen));
-          console.log("*********************************************************");
-        }
-        break;
-    }
-  } else {
-    gdbInterface.send(command);
-  }
-}
