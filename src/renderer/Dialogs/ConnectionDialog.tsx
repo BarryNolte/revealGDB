@@ -1,3 +1,16 @@
+/**
+ * Connection progress dialog for RevealGDB.
+ *
+ * Displays and controls an active connection attempt:
+ * - Selects a saved connection profile
+ * - Starts/cancels connection from the renderer
+ * - Shows startup step status with icons
+ * - Streams console output while connecting
+ *
+ * The dialog coordinates with the Connection Manager modal so users can edit
+ * profiles without losing the current connection flow context.
+ */
+
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns";
 import { ColumnDirective, ColumnsDirective, GridComponent } from "@syncfusion/ej2-react-grids";
@@ -27,6 +40,7 @@ const states: Record<Step, StepAndState> = {
   "target-running": { step: 2, name: "Target Running", state: "pending" },
 };
 
+// Returns a fresh copy so state transitions do not mutate shared constants.
 const createPendingStates = (): Record<Step, StepAndState> => ({
   "starting-shell": { ...states["starting-shell"] },
   "running-commands": { ...states["running-commands"] },
@@ -38,7 +52,10 @@ type DefinedConnection = {
 } & GdbAny;
 
 export type WhileConnectingDialogHandle = {
+  /** Shows the dialog and resets in-progress status/output. */
   ShowDialog: () => void;
+
+  /** Hides the dialog immediately. */
   HideDialog: () => void;
 };
 
@@ -56,6 +73,7 @@ export const ConnectionDialog = forwardRef<WhileConnectingDialogHandle, Connecti
     const [selectedConnection, setSelectedConnection] = useState<DefinedConnection | null>(null);
     const [disconnectAvailable, setDisconnectAvailable] = useState<boolean>(false);
 
+    // Reset transient UI state each time the dialog is shown.
     const resetDialogState = useCallback((): void => {
       setConnectionState(createPendingStates());
       if (outputRef.current) {
@@ -63,6 +81,7 @@ export const ConnectionDialog = forwardRef<WhileConnectingDialogHandle, Connecti
       }
     }, []);
 
+    // Load connection profiles from settings and normalize names for the combobox.
     const loadConnectionsFromSettings = useCallback(async (): Promise<void> => {
       try {
         const settings = (await window.ipcToMain.getSettings()) as GdbAny;
@@ -89,6 +108,7 @@ export const ConnectionDialog = forwardRef<WhileConnectingDialogHandle, Connecti
       }
     }, []);
 
+    // Subscribe once to connection status channels and initialize dialog state.
     useEffect(() => {
       window.ipcToMain
         .getSettings()
@@ -156,6 +176,7 @@ export const ConnectionDialog = forwardRef<WhileConnectingDialogHandle, Connecti
             break;
           case "gdb-startup":
             {
+              // Map startup step notifications into row-level status updates.
               const step = status[1] as Step;
               const stepState = status[2] as StepAndState["state"];
               setConnectionState((prev) => {
@@ -213,6 +234,7 @@ export const ConnectionDialog = forwardRef<WhileConnectingDialogHandle, Connecti
       dialogCloseFunc();
     }, []);
 
+    // Temporarily close this modal, open manager, then restore this dialog.
     const openConnectionManagerClickHandler = useCallback((): void => {
       connDlgRef.current?.hide();
 
@@ -231,6 +253,7 @@ export const ConnectionDialog = forwardRef<WhileConnectingDialogHandle, Connecti
     }, [connectionsRef, loadConnectionsFromSettings]);
 
     useEffect(() => {
+      // Capture phase guarantees this handler runs even if a child blocks bubbling.
       const onDocumentClickCapture = (event: MouseEvent): void => {
         const eventTarget = event.target;
         if (!(eventTarget instanceof Element)) {

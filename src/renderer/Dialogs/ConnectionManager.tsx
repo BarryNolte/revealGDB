@@ -55,6 +55,7 @@ const shells: Record<string, ShellOption> = {
 };
 
 export interface ConnectionManagerHandle {
+  /** Opens the manager dialog and optionally invokes callback when closed. */
   ShowDialog: (onClose?: () => void) => void;
 }
 
@@ -79,6 +80,7 @@ function normalizeDistroName(value: string): string {
   return value.trim().replace(/\s+/g, " ");
 }
 
+// Merges distro name lists and de-duplicates case-insensitively.
 function mergeUniqueDistros(...lists: string[][]): string[] {
   const uniqueMap = new Map<string, string>();
 
@@ -130,6 +132,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
     }, [selectedShellKey, shellOptions]);
 
     const commandsListKey = useMemo(
+      // Force DragAndDropList remount when command content changes.
       () =>
         commandsList.map((item) => (typeof item === "string" ? item : item.text)).join("\u0001"),
       [commandsList],
@@ -141,6 +144,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
 
     const normalizeShellKey = useCallback(
       (shellValue: string): string => {
+        // Accept either internal shell keys (wsl/pwsh/...) or user-facing labels.
         const normalizedValue = shellValue.trim().toLocaleLowerCase();
         if (normalizedValue in shells) {
           return normalizedValue;
@@ -168,6 +172,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
         return;
       }
 
+      // Native listener keeps select behavior stable in popup/modal contexts.
       const nativeShellChangeHandler = (event: Event): void => {
         const target = event.target as HTMLSelectElement | null;
         if (!target) {
@@ -190,6 +195,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
         return;
       }
 
+      // Keep state synchronized with native input events.
       const nativeConnectionNameInputHandler = (event: Event): void => {
         const target = event.target as HTMLInputElement | null;
         if (!target) {
@@ -237,6 +243,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
     );
 
     const toCommandStrings = useCallback((commandsValue: unknown): string[] => {
+      // Support both legacy newline strings and array-based command lists.
       if (Array.isArray(commandsValue)) {
         return commandsValue
           .map((value) => String(value).trim())
@@ -267,6 +274,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
 
     const normalizeConnectionForStorage = useCallback(
       (connection: GdbAny, fallbackName: string): NormalizedConnection => {
+        // Persist connections in a stable, schema-friendly shape.
         const shellKey = getShellKeyFromConnection(connection);
         const normalizedConnection: NormalizedConnection = {
           name: String(connection.name ?? fallbackName).trim() || fallbackName,
@@ -362,6 +370,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
             normalizeConnectionForStorage(connection, `Connection ${index + 1}`),
           );
 
+        // Keep grid data and editor form in sync with the same normalized source.
         setLoadedConnections(normalizedSourceConnections);
         setConnections(
           normalizedSourceConnections.map((connection, index) =>
@@ -452,6 +461,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
         return;
       }
 
+      // Guard against duplicate click dispatch while save is in flight.
       setIsAddingConnection(true);
       try {
         const connectionNameForSave = connectionNameInputRef.current?.value ?? connectionName;
@@ -516,6 +526,7 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
         return;
       }
 
+      // Native click avoids event edge cases in embedded dialog layers.
       const nativeAddConnectionClickHandler = (): void => {
         void handleAddConnection();
       };

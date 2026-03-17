@@ -1,3 +1,17 @@
+/**
+ * Drag-and-drop reorderable list component.
+ *
+ * Provides a simple list editor with:
+ * - Drag-and-drop reordering
+ * - Item deletion
+ * - Item insertion from a text input
+ * - Keyboard support for adding items (Enter)
+ *
+ * This component keeps an internal working copy during interaction so drag
+ * updates remain responsive, while still supporting controlled updates from
+ * parent props via `items` and `onReorder`.
+ */
+
 import { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./DragAndDropList.css";
 
@@ -13,6 +27,10 @@ export type DragAndDropListProps = {
   className?: string;
 };
 
+/**
+ * Returns a new array where one item has been moved from `fromIndex` to
+ * `toIndex`.
+ */
 function moveItem(
   items: DragAndDropListItem[],
   fromIndex: number,
@@ -35,7 +53,7 @@ export default function DragAndDropList({
   ariaLabel = "Reorder list",
   className,
 }: DragAndDropListProps): JSX.Element {
-  //console.log("[DragAndDropList] Rendering with items:", items);
+  // Keep a local copy while interacting so drag updates are immediate.
   const [internalItems, setInternalItems] = useState<DragAndDropListItem[] | null>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -53,6 +71,7 @@ export default function DragAndDropList({
     internalItemsRef.current = internalItems ?? items;
   }, [internalItems, items]);
 
+  // If parent provides new items, refresh internal reference.
   useEffect(() => {
     internalItemsRef.current = items;
   }, [items]);
@@ -66,6 +85,7 @@ export default function DragAndDropList({
 
   const handleDeleteItem = useCallback(
     (index: number) => {
+      // Remove by index from the current working list and publish change.
       const nextItems = internalItemsRef.current.filter((_, itemIndex) => itemIndex !== index);
       internalItemsRef.current = nextItems;
       setInternalItems(nextItems);
@@ -75,7 +95,8 @@ export default function DragAndDropList({
     [onReorder],
   );
 
-  // Use native DOM event listeners since Syncfusion Dialog might interfere with React events
+  // Use native listeners because some host dialog/event boundaries can swallow
+  // React synthetic drag events in this UI.
   useEffect(() => {
     const listElement = listRef.current;
     if (!listElement) return;
@@ -113,6 +134,7 @@ export default function DragAndDropList({
         return;
       }
 
+      // Live-reorder while hovering over list items.
       const nextItems = moveItem(internalItemsRef.current, currentDraggedIndex, index);
       setInternalItems(nextItems);
       setDraggedIndex(index);
@@ -185,6 +207,8 @@ export default function DragAndDropList({
   const listClassName = useMemo(() => "drag-drop-list", []);
 
   const renderItems = internalItems || items;
+
+  // Prepends a new item to the list and clears the input field.
   const handleAddItem = useCallback(() => {
     const inputElement = inputRef.current;
     if (!inputElement) return;
@@ -210,6 +234,7 @@ export default function DragAndDropList({
       return;
     }
 
+    // Bind native handlers to keep behavior consistent in embedded contexts.
     const handleNativeKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter") {
         event.preventDefault();

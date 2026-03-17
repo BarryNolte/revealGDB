@@ -148,9 +148,7 @@ export class miInterface extends EventEmitter {
       case "(":
         {
           if (output.startsWith("(gdb)")) {
-            //console.log("IDLE...");
             this.emit("gdb-idle");
-            //this.gdbDB.dump();
           }
         }
         break;
@@ -462,10 +460,6 @@ export class miInterface extends EventEmitter {
             //   break;
             case "BreakpointTable":
               {
-                // const bkptHdr = this.rgxBpHdr.exec(resList);
-                // const rows = bkptHdr?.groups?.nr_rows || '';
-                // const cols = bkptHdr?.groups?.nr_cols || '';
-                // const hdr = bkptHdr?.groups?.hdr || '';
                 const bps = resList.matchAll(this.rgxBps);
                 this.gdbDB.clearBreakpoints();
                 bps?.forEach((bkpt) => {
@@ -580,9 +574,7 @@ export class miInterface extends EventEmitter {
             case "variables":
               {
                 this.gdbDB.parseAndStoreLocals(resList);
-                //const lc = new LocalsContainer(resList);
-                //mainWindow.webContents.send("data-locals", lc.locals);
-                this.gdbDB.updateLocalsUI();
+                this.gdbDB.localsUpdateUI();
               }
               break;
             case "":
@@ -614,7 +606,6 @@ export class miInterface extends EventEmitter {
         break;
       case "error":
         {
-          //  "^error" "," "msg=" c-string [ "," "code=" c-string ]
           const msg = this.rgxErrorMsg.exec(data);
           const msgText = msg?.groups?.msg
             .replaceAll('\\"', '"')
@@ -718,6 +709,7 @@ export class miInterface extends EventEmitter {
 
     return true;
   }
+
   private parseTargetStream(output: string): boolean {
     this.emit("log-error", `Target Stream: ${output}`);
     return true;

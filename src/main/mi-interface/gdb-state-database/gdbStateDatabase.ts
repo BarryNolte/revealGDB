@@ -2,10 +2,10 @@
  * In-memory database for gdb state snapshots and derived metadata.
  */
 import { EventEmitter } from "stream";
-import { gdbSourceFileCache } from "./gdbSourceFileCache";
 import { mainWindow } from "../../main";
 import { LocalsContainer } from "../gdb-parsers/gdb-locals";
 import { gdbShowSourceInfo } from "../mi-interface";
+import { gdbSourceFileCache } from "./gdbSourceFileCache";
 
 export type gdbFeature = {
   feature: string;
@@ -137,7 +137,7 @@ export class gdbStateDatabase extends EventEmitter {
   clearLocals(): void {
     this.locals = undefined;
   }
-  updateLocalsUI(): void {
+  localsUpdateUI(): void {
     mainWindow.webContents.send("data-locals", this.locals?.locals);
   }
 
@@ -430,7 +430,7 @@ export class gdbStateDatabase extends EventEmitter {
     this.registersUpdateUI();
     this.breakpointsUpdateUI();
     this.stackUpdateUI();
-    this.updateLocalsUI();
+    this.localsUpdateUI();
   }
 
   // Debugging

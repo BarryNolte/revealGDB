@@ -28,8 +28,8 @@ export default function GdbCommandWindow(): JSX.Element {
   const idBase = useId();
   const outputId = `cmdOutput-${idBase}`;
   const inputId = `cmdInput-${idBase}`;
-  const outputMenuId = `cmdOutputMenu-${idBase}-menu`;
-  const inputMenuId = `cmdInputMenu-${idBase}-menu`;
+  const outputMenuId = `cmdOutputMenu-${idBase}`;
+  const inputMenuId = `cmdInputMenu-${idBase}`;
 
   // Refs for managing state and DOM elements
   const cmdHistoryRef = useRef<CommandHistory>(new CommandHistory());
