@@ -2,382 +2,282 @@
  * In-memory database for gdb state snapshots and derived metadata.
  */
 import { EventEmitter } from "stream";
-import { mainWindow } from "../../main";
-import { LocalsContainer } from "../gdb-parsers/gdb-locals";
-import { gdbShowSourceInfo } from "../mi-interface";
-import { gdbSourceFileCache } from "./gdbSourceFileCache";
+import { ElectronUINotifier } from "./notifiers/ElectronUINotifier";
+import { UINotifier } from "./notifiers/UINotifier";
+import { StateLifecycleCoordinator } from "./orchestration/StateLifecycleCoordinator";
+import { StateUpdateBroadcaster } from "./orchestration/StateUpdateBroadcaster";
+import { BreakpointStore } from "./stores/BreakpointStore";
+import { FeatureStore } from "./stores/FeatureStore";
+import { FunctionStore } from "./stores/FunctionStore";
+import { LocalsStore } from "./stores/LocalsStore";
+import { ParameterStore } from "./stores/ParameterStore";
+import { RegisterStore } from "./stores/RegisterStore";
+import { SourceFileStore } from "./stores/SourceFileStore";
+import { StackFrameStore } from "./stores/StackFrameStore";
+import { SymbolStore } from "./stores/SymbolStore";
+import { ThreadGroupStore } from "./stores/ThreadGroupStore";
+import { ThreadStore } from "./stores/ThreadStore";
+import {
+  AddThreadArgs,
+  DisasmToken,
+  DisasmTokenType,
+  gdbAsmRow,
+  gdbBreakpoint,
+  gdbFeature,
+  gdbFunction,
+  gdbParams,
+  gdbRegisters,
+  gdbSection,
+  gdbShowSourceInfo,
+  gdbStackFrame,
+  gdbSymbolFiles,
+  gdbThread,
+  gdbThreadGroup,
+} from "./types/gdbStateTypes";
 
-export type gdbFeature = {
-  feature: string;
-  available: boolean;
-};
-
-export type gdbThread = {
-  active: boolean;
-  id: string;
-  targetId: string;
-  details: string;
-  name: string;
-  state: string;
-  frame: gdbStackFrame;
-};
-
-export type gdbThreadGroup = {
-  gid: string;
-  threads: Map<string, string>;
-};
-
-export type gdbStackFrame = {
-  active: boolean;
-  level: string;
-  func: string;
-  addr: string;
-  args: string;
-  file: string;
-  fullName: string;
-  line: string;
-  from: string;
-  arch: string;
-};
-
-export type gdbRegisters = {
-  name: string;
-  value: string;
-  changed: boolean;
-};
-
-export type gdbParams = {
-  name: string;
-  value: string;
-};
-
-export type gdbBreakpoint = {
-  number: string;
-  type: string;
-  disp: string;
-  enabled: string;
-  addr: string;
-  func: string;
-  file: string;
-  fullname: string;
-  line: string;
-  tg: string;
-  times: string;
-  installed: string;
-  orgloc: string;
-};
-
-export type DisasmTokenType =
-  | "address"
-  | "function"
-  | "leftparen"
-  | "rightparen"
-  | "text"
-  | "instruction";
-
-export type DisasmToken = {
-  value: string;
-  type: DisasmTokenType;
-};
-
-export type gdbAsmRow = {
-  address: string;
-  func: string;
-  offset: string;
-  opcodes: string;
-  instructions: DisasmToken[];
-};
-
-export type gdbSection = {
-  startAddr: string;
-  endAddr: string;
-  section: string;
-  file?: string;
-};
-
-export type gdbSymbolFiles = {
-  mainSym: string;
-  sections: gdbSection[];
-};
-
-export type gdbFunction = {
-  line: string;
-  function: string;
+export type {
+  DisasmToken,
+  DisasmTokenType,
+  gdbAsmRow,
+  gdbBreakpoint,
+  gdbFeature,
+  gdbFunction,
+  gdbParams,
+  gdbRegisters,
+  gdbSection,
+  gdbShowSourceInfo,
+  gdbStackFrame,
+  gdbSymbolFiles,
+  gdbThread,
+  gdbThreadGroup,
 };
 
 /**
  * Tracks threads, breakpoints, registers, and symbol info from gdb.
  */
 export class gdbStateDatabase extends EventEmitter {
-  locals: LocalsContainer | undefined = undefined;
-  readonly threadGroups: Map<string, gdbThreadGroup> = new Map<string, gdbThreadGroup>();
-  readonly threads: Map<string, gdbThread> = new Map<string, gdbThread>();
-  readonly registers: Map<string, gdbRegisters> = new Map<string, gdbRegisters>();
-  readonly features: Map<string, gdbFeature> = new Map<string, gdbFeature>();
-  readonly params: Map<string, gdbParams> = new Map<string, gdbParams>();
-  readonly breakpoints: Map<string, gdbBreakpoint> = new Map<string, gdbBreakpoint>();
-  readonly stackFrames: gdbStackFrame[] = [];
+  private readonly notifier: UINotifier;
+  private readonly lifecycle: StateLifecycleCoordinator;
+  private readonly updater: StateUpdateBroadcaster;
 
-  readonly gdbSrcFileCache: gdbSourceFileCache = new gdbSourceFileCache();
+  private readonly localsStore: LocalsStore = new LocalsStore();
+  private readonly threadGroupStore: ThreadGroupStore = new ThreadGroupStore();
+  private readonly threadStore: ThreadStore = new ThreadStore();
+  private readonly registerStore: RegisterStore = new RegisterStore();
+  private readonly featureStore: FeatureStore = new FeatureStore();
+  private readonly paramStore: ParameterStore = new ParameterStore();
+  private readonly breakpointStore: BreakpointStore = new BreakpointStore();
+  private readonly stackFrameStore: StackFrameStore = new StackFrameStore();
+  private readonly sourceFileStore: SourceFileStore = new SourceFileStore();
+  private readonly symbolStore: SymbolStore = new SymbolStore();
+  private readonly functionStore: FunctionStore = new FunctionStore();
 
-  readonly gdbSymbolFiles: gdbSymbolFiles = { mainSym: "", sections: [] };
-  readonly gdbFunctionNames: Map<string, gdbFunction[]> = new Map<string, gdbFunction[]>();
+  readonly threadGroups: Map<string, gdbThreadGroup> = this.threadGroupStore.threadGroups;
+  readonly threads: Map<string, gdbThread> = this.threadStore.threads;
+  readonly registers: Map<string, gdbRegisters> = this.registerStore.registers;
+  readonly features: Map<string, gdbFeature> = this.featureStore.features;
+  readonly params: Map<string, gdbParams> = this.paramStore.params;
+  readonly breakpoints: Map<string, gdbBreakpoint> = this.breakpointStore.breakpoints;
+  readonly stackFrames: gdbStackFrame[] = this.stackFrameStore.stackFrames;
+  readonly gdbSrcFileCache = this.sourceFileStore.gdbSrcFileCache;
+  readonly gdbSymbolFiles: gdbSymbolFiles = this.symbolStore.symbolFiles;
+  readonly gdbFunctionNames: Map<string, gdbFunction[]> = this.functionStore.functionNames;
 
-  constructor() {
+  constructor(notifier?: UINotifier) {
     super();
+    this.notifier = notifier || new ElectronUINotifier();
+    this.updater = new StateUpdateBroadcaster(
+      this.notifier,
+      this.localsStore,
+      this.stackFrameStore,
+      this.breakpointStore,
+      this.registerStore,
+      this.threadStore,
+      this.threadGroupStore,
+    );
+    this.lifecycle = new StateLifecycleCoordinator(
+      this.notifier,
+      this.localsStore,
+      this.threadGroupStore,
+      this.threadStore,
+      this.registerStore,
+      this.featureStore,
+      this.paramStore,
+      this.breakpointStore,
+      this.stackFrameStore,
+      this.sourceFileStore,
+      this.symbolStore,
+      this.functionStore,
+    );
   }
 
   // Locals
   parseAndStoreLocals(localsStr: string): void {
-    this.locals = new LocalsContainer(localsStr);
+    this.localsStore.parseAndStoreLocals(localsStr);
   }
-  getLocals(): LocalsContainer | undefined {
-    return this.locals;
+  getLocals() {
+    return this.localsStore.getLocals();
   }
   clearLocals(): void {
-    this.locals = undefined;
+    this.localsStore.clearLocals();
   }
   localsUpdateUI(): void {
-    mainWindow.webContents.send("data-locals", this.locals?.locals);
+    this.updater.localsUpdateUI();
   }
 
   // Function List
   addFunctionNames(fileName: string, line: string, func: string): void {
-    const functions = this.gdbFunctionNames.get(fileName) || [];
-    functions.push({ line, function: func });
-    this.gdbFunctionNames.set(fileName, functions);
+    this.functionStore.addFunctionNames(fileName, line, func);
   }
   getFunctionNames(fileName: string): gdbFunction[] | undefined {
-    return this.gdbFunctionNames.get(fileName);
+    return this.functionStore.getFunctionNames(fileName);
   }
   getFunction(): Map<string, gdbFunction[]> {
-    return this.gdbFunctionNames;
+    return this.functionStore.getFunction();
   }
   getAllFunctionNames(): gdbFunction[] {
-    const allFunctions: gdbFunction[] = [];
-    this.gdbFunctionNames.forEach((funcs) => {
-      funcs.forEach((f) => {
-        allFunctions.push(f);
-      });
-    });
-    allFunctions.sort((a, b) => a.function.localeCompare(b.function));
-    return allFunctions;
+    return this.functionStore.getAllFunctionNames();
   }
 
   // Symbol Files
   addMainSymbolFile(mainSym: string): void {
-    this.gdbSymbolFiles.mainSym = mainSym;
+    this.symbolStore.addMainSymbolFile(mainSym);
   }
   addSection(section: gdbSection): void {
-    this.gdbSymbolFiles.sections.push(section);
+    this.symbolStore.addSection(section);
   }
   getSymbolFiles(): gdbSymbolFiles {
-    return this.gdbSymbolFiles;
+    return this.symbolStore.getSymbolFiles();
   }
 
   // Source Files
   hasSourceFile(file: string): boolean {
-    return this.gdbSrcFileCache.hasSourceFile(file);
+    return this.sourceFileStore.hasSourceFile(file);
   }
   async getSourceFileContents(file: string): Promise<string | undefined> {
-    return await this.gdbSrcFileCache.getSourceFileContents(file);
+    return await this.sourceFileStore.getSourceFileContents(file);
   }
   clearSourceFiles(): void {
-    const showSourceInfo: gdbShowSourceInfo = {
-      fileName: " ",
-      line: "0",
-      contents: " ",
-    };
-
-    mainWindow.webContents.send("source-file", showSourceInfo);
+    this.lifecycle.clearSourceFiles();
   }
 
   // Stack Frames
   clearStackFrames(): void {
-    this.stackFrames.length = 0;
+    this.stackFrameStore.clear();
   }
   addStackFrame(frame: gdbStackFrame): void {
-    this.stackFrames.push(frame);
+    this.stackFrameStore.add(frame);
   }
   setActiveFrame(af: number): void {
-    if (af < 0 || af >= this.stackFrames.length) {
-      return;
-    }
-
-    this.stackFrames.forEach((sf: gdbStackFrame, idx) => {
-      sf.active = false;
-      if (af == idx) {
-        sf.active = true;
-      }
-    });
+    this.stackFrameStore.setActiveFrame(af);
   }
 
   stackUpdateUI(): void {
-    mainWindow.webContents.send("stack-frames", this.stackFrames);
+    this.updater.stackUpdateUI();
   }
 
   // Breakpoints
   clearBreakpoints(): void {
-    this.breakpoints.clear();
+    this.breakpointStore.clear();
   }
   createBreakpoint(bkpt: gdbBreakpoint): void {
-    this.breakpoints.set(bkpt.number, bkpt);
+    this.breakpointStore.create(bkpt);
   }
   updateBreakpoint(bkpt: gdbBreakpoint): void {
-    this.breakpoints.set(bkpt.number, bkpt);
+    this.breakpointStore.update(bkpt);
   }
   deleteBreakpoint(id: string): void {
-    this.breakpoints.delete(id);
+    this.breakpointStore.delete(id);
   }
   breakpointsUpdateUI(): void {
-    mainWindow.webContents.send("data-brkpts", this.breakpoints);
+    this.updater.breakpointsUpdateUI();
   }
 
   // Parameters
   addParam(paramName: string, paramValue: string): void {
-    this.params.set(paramName, { name: paramName, value: paramValue });
+    this.paramStore.add(paramName, paramValue);
   }
   getParam(paramName: string): gdbParams | undefined {
-    return this.params.get(paramName);
+    return this.paramStore.get(paramName);
   }
 
   // Features
   addFeature(feature: string): void {
-    this.features.set(feature, { feature: feature, available: true });
+    this.featureStore.add(feature);
   }
   removeFeature(feature: string): void {
-    this.features.delete(feature);
+    this.featureStore.remove(feature);
   }
   hasFeature(feature: string): boolean {
-    return this.features.get(feature)?.available || false;
+    return this.featureStore.has(feature);
   }
   featureList(): gdbFeature[] {
-    return Array.from(this.features.values());
+    return this.featureStore.list();
   }
 
   // Registers
   addRegister(index: string, regName: string): void {
-    const reg = this.registers.get(index);
-    if (reg) {
-      reg.name = regName;
-    } else {
-      this.registers.set(index, { name: regName, value: "", changed: false });
-    }
+    this.registerStore.addRegister(index, regName);
   }
   addRegisterValue(index: string, regValue: string): void {
-    const reg = this.registers.get(index);
-    this.registers.set(index, {
-      name: reg ? reg.name : index,
-      value: regValue,
-      changed: regValue !== (reg ? reg.value : ""),
-    });
+    this.registerStore.addRegisterValue(index, regValue);
   }
   getRegister(index: string): gdbRegisters | undefined {
-    return this.registers.get(index);
+    return this.registerStore.get(index);
   }
   registersUpdateUI(): void {
-    mainWindow.webContents.send("data-register", this.registers);
+    this.updater.registersUpdateUI();
   }
 
   // Thread Groups
   addThreadGroup(gid: string): void {
-    this.threadGroups.set(gid, { gid: gid, threads: new Map<string, string>() });
+    this.threadGroupStore.addThreadGroup(gid);
   }
 
   removeThreadGroup(id: string): void {
-    this.threadGroups.delete(id);
+    this.threadGroupStore.removeThreadGroup(id);
   }
 
   getThreadGroup(id: string): gdbThreadGroup | undefined {
-    return this.threadGroups.get(id);
+    return this.threadGroupStore.getThreadGroup(id);
   }
 
   hasThreadGroup(id: string): boolean {
-    return this.threadGroups.has(id);
+    return this.threadGroupStore.hasThreadGroup(id);
   }
 
   removeThreadFromGroup(groupId: string, threadId: string): void {
-    this.threadGroups.get(groupId)?.threads.delete(threadId);
+    this.threadGroupStore.removeThreadFromGroup(groupId, threadId);
   }
 
   startThreadGroup(groupId: string): void {
-    this.threadGroups.get(groupId)?.threads.forEach((thread: string) => {
-      const th = this.threads.get(thread);
-      if (th) {
-        th.state = "running";
-      }
-    });
+    this.threadStore.startThreadGroup(groupId, this.threadGroups);
   }
 
   stopThreadGroup(groupId: string): void {
-    this.threadGroups.get(groupId)?.threads.forEach((thread: string) => {
-      this.threads.delete(thread);
-    });
+    this.threadStore.stopThreadGroup(groupId, this.threadGroups);
   }
 
   // Threads
   clearThreadList(): void {
-    this.threads.clear();
+    this.threadStore.clearThreadList();
   }
 
-  addThread(arg0: {
-    id: string;
-    targetId: string;
-    details: string;
-    frame: {
-      level: string;
-      addr: string;
-      func: string;
-      args: string;
-      file: string;
-      fullName: string;
-      line: string;
-      arch: string;
-    };
-    state: string;
-    active: boolean;
-  }) {
-    this.threads.set(arg0.id, {
-      active: arg0.active,
-      id: arg0.id,
-      targetId: arg0.targetId,
-      details: arg0.details,
-      name: arg0.frame.func,
-      state: arg0.state,
-      frame: {
-        active: false,
-        level: arg0.frame.level,
-        func: arg0.frame.func,
-        addr: arg0.frame.addr,
-        args: arg0.frame.args,
-        file: arg0.frame.file,
-        fullName: arg0.frame.fullName,
-        line: arg0.frame.line,
-        arch: arg0.frame.arch,
-        from: "",
-      },
-    });
+  addThread(arg0: AddThreadArgs): void {
+    this.threadStore.addThread(arg0);
   }
 
-  deleteThread(id: string) {
-    this.threads.delete(id);
+  deleteThread(id: string): void {
+    this.threadStore.deleteThread(id);
   }
 
   createThread(threadId: string, groupId: string): void {
-    this.threadGroups.get(groupId)?.threads.set(threadId, threadId);
+    this.threadGroupStore.createThread(threadId, groupId);
   }
 
   stopThreads(tid: string | undefined, stoppedThreads: string | undefined): void {
-    // TODO: Need to figure out if we get a list of threads or just a single thread
     if (stoppedThreads === "all") {
-      this.threadGroups.forEach((threadGroup) => {
-        threadGroup.threads.forEach((thread) => {
-          const th = this.threads.get(thread);
-          if (th) {
-            th.state = "stopped";
-          }
-        });
-      });
+      this.threadStore.stopThreadsAll(this.threadGroups);
     } else {
       this.emit(
         "error-stream",
@@ -386,76 +286,28 @@ export class gdbStateDatabase extends EventEmitter {
     }
   }
 
-  startThreads(tid: string | undefined) {
-    // TODO: Need to figure out if we get a list of threads or just a single thread
+  startThreads(tid: string | undefined): void {
     if (tid === "all") {
-      this.threadGroups.forEach((threadGroup) => {
-        threadGroup.threads.forEach((thread) => {
-          const th = this.threads.get(thread);
-          if (th) {
-            th.state = "running";
-          }
-        });
-      });
+      this.threadStore.startThreadsAll(this.threadGroups);
     } else {
       this.emit("error-stream", `Unknown tid value, tid: ${tid}`);
     }
   }
 
-  threadUpdateUI() {
-    mainWindow.webContents.send("data-threads", {
-      th: this.threads,
-      grp: this.threadGroups,
-    });
+  threadUpdateUI(): void {
+    this.updater.threadUpdateUI();
   }
 
   clearDatabase(): void {
-    this.threadGroups.clear();
-    this.threads.clear();
-    this.registers.clear();
-    this.features.clear();
-    this.params.clear();
-    this.breakpoints.clear();
-    this.stackFrames.length = 0;
-    this.gdbSrcFileCache.clearCache();
-    this.gdbSymbolFiles.mainSym = "";
-    this.gdbSymbolFiles.sections = [];
-    this.gdbFunctionNames.clear();
-    this.clearLocals();
-    this.clearSourceFiles();
+    this.lifecycle.clearDatabase();
   }
 
   allDataUpdateUI(): void {
-    this.threadUpdateUI();
-    this.registersUpdateUI();
-    this.breakpointsUpdateUI();
-    this.stackUpdateUI();
-    this.localsUpdateUI();
+    this.updater.allDataUpdateUI();
   }
 
   // Debugging
   dump(): void {
-    console.log("GDB State Database");
-    console.log("==================");
-    console.log("Features:");
-    console.log(this.features);
-    console.log("Thread Groups:");
-    console.log(this.threadGroups);
-    console.log("Threads:");
-    console.log(this.threads);
-    console.log("Stack Frames:");
-    console.log(this.stackFrames);
-    console.log("Registers:");
-    console.log(this.registers);
-    console.log("Parameters:");
-    console.log(this.params);
-    console.log("Breakpoints:");
-    console.log(this.breakpoints);
-    console.log("Source Files:");
-    console.log(this.gdbSrcFileCache.dump());
-    console.log("Symbol Files:");
-    console.log(this.gdbSymbolFiles);
-    console.log("Function Names:");
-    console.log(this.gdbFunctionNames);
+    this.lifecycle.dump();
   }
 }
