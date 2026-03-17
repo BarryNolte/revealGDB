@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { GdbAny } from "../common/gdb-common";
+import { IPC_CHANNELS, NotifyMainRequest } from "../common/ipc-contracts";
 
 /**
  * Preload script for Electron renderer process.
@@ -25,9 +26,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   consoleMessage: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("console-message", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.consoleMessage, listener);
     return () => {
-      ipcRenderer.removeListener("console-message", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.consoleMessage, listener);
     };
   },
 
@@ -37,9 +38,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   logMessage: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("log-message", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.logMessage, listener);
     return () => {
-      ipcRenderer.removeListener("log-message", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.logMessage, listener);
     };
   },
 
@@ -49,9 +50,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   errorMessage: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("error-message", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.errorMessage, listener);
     return () => {
-      ipcRenderer.removeListener("error-message", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.errorMessage, listener);
     };
   },
 
@@ -61,9 +62,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   debugMessage: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("debug-message", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.debugMessage, listener);
     return () => {
-      ipcRenderer.removeListener("debug-message", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.debugMessage, listener);
     };
   },
 
@@ -73,9 +74,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   connectionStatus: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("connection-status", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.connectionStatus, listener);
     return () => {
-      ipcRenderer.removeListener("connection-status", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.connectionStatus, listener);
     };
   },
 
@@ -85,9 +86,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   notifyRender: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("notify-render", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.notifyRender, listener);
     return () => {
-      ipcRenderer.removeListener("notify-render", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.notifyRender, listener);
     };
   },
 
@@ -101,9 +102,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   dataRegisters: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("data-register", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.dataRegisters, listener);
     return () => {
-      ipcRenderer.removeListener("data-register", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.dataRegisters, listener);
     };
   },
 
@@ -113,9 +114,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   stackFrames: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("stack-frames", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.stackFrames, listener);
     return () => {
-      ipcRenderer.removeListener("stack-frames", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.stackFrames, listener);
     };
   },
 
@@ -125,9 +126,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   sourceFile: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("source-file", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.sourceFile, listener);
     return () => {
-      ipcRenderer.removeListener("source-file", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.sourceFile, listener);
     };
   },
 
@@ -137,9 +138,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   dataLocals: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("data-locals", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.dataLocals, listener);
     return () => {
-      ipcRenderer.removeListener("data-locals", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.dataLocals, listener);
     };
   },
 
@@ -149,9 +150,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   dataThreads: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("data-threads", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.dataThreads, listener);
     return () => {
-      ipcRenderer.removeListener("data-threads", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.dataThreads, listener);
     };
   },
 
@@ -161,9 +162,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   dataBrkPts: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("data-brkpts", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.dataBrkPts, listener);
     return () => {
-      ipcRenderer.removeListener("data-brkpts", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.dataBrkPts, listener);
     };
   },
 
@@ -173,9 +174,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   dataMemory: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("data-memory", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.dataMemory, listener);
     return () => {
-      ipcRenderer.removeListener("data-memory", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.dataMemory, listener);
     };
   },
 
@@ -185,9 +186,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   dataDisasm: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("data-disasm", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.dataDisasm, listener);
     return () => {
-      ipcRenderer.removeListener("data-disasm", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.dataDisasm, listener);
     };
   },
 
@@ -197,9 +198,9 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    */
   dataFunctions: (callback: GdbAny) => {
     const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
-    ipcRenderer.on("data-disasm-functions", listener);
+    ipcRenderer.on(IPC_CHANNELS.mainToRenderer.dataFunctions, listener);
     return () => {
-      ipcRenderer.removeListener("data-disasm-functions", listener);
+      ipcRenderer.removeListener(IPC_CHANNELS.mainToRenderer.dataFunctions, listener);
     };
   },
 
@@ -211,35 +212,37 @@ contextBridge.exposeInMainWorld("ipcToMain", {
    * Retrieves application settings from the main process.
    * Uses invoke pattern for request-response communication.
    */
-  getSettings: () => ipcRenderer.invoke("getSettings"),
+  getSettings: () => ipcRenderer.invoke(IPC_CHANNELS.rendererInvoke.getSettings),
 
   /**
    * Retrieves the list of available system fonts.
    * Used to populate font selection in settings.
    */
-  getSystemFonts: () => ipcRenderer.invoke("getSystemFonts"),
+  getSystemFonts: () => ipcRenderer.invoke(IPC_CHANNELS.rendererInvoke.getSystemFonts),
 
   /**
    * Retrieves version information for the application and dependencies.
    * Displayed in the about dialog.
    */
-  getVersionInfo: () => ipcRenderer.invoke("getVersionInfo"),
+  getVersionInfo: () => ipcRenderer.invoke(IPC_CHANNELS.rendererInvoke.getVersionInfo),
 
   /**
    * Retrieves available WSL distributions from the main process.
    * Used by connection management UI for WSL target selection.
    */
-  getWslDistrobutions: () => ipcRenderer.invoke("getWslDistrobutions"),
+  getWslDistrobutions: () => ipcRenderer.invoke(IPC_CHANNELS.rendererInvoke.getWslDistrobutions),
 
   /**
    * Sends a GDB Machine Interface (MI) command to the debugger.
    * Fire-and-forget pattern for executing debugger commands.
    */
-  sendGdbCommand: (command: string) => ipcRenderer.send("gdb-command", command),
+  sendGdbCommand: (command: string) =>
+    ipcRenderer.send(IPC_CHANNELS.rendererSend.gdbCommand, command),
 
   /**
    * Sends a general notification/command to the main process.
    * Used for UI-initiated actions and state changes.
    */
-  notifyMain: (command: GdbAny) => ipcRenderer.send("notify-main", command),
+  notifyMain: (command: NotifyMainRequest) =>
+    ipcRenderer.send(IPC_CHANNELS.rendererSend.notifyMain, command),
 });

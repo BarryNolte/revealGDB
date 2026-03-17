@@ -14,7 +14,7 @@ import {
   warmSystemFonts,
 } from "./bootstrap";
 import { createGdbInterface } from "./gdb-lifecycle";
-import { registerIpcHandlers } from "./ipc-registration";
+import { registerIpcHandlers } from "./ipc";
 import { GdbMenu } from "./menu";
 import { miInterface } from "./mi-interface/mi-interface";
 import {

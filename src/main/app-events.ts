@@ -1,4 +1,5 @@
 import { App, BrowserWindow, NativeTheme } from "electron";
+import { IPC_CHANNELS } from "../common/ipc-contracts";
 
 export function registerAppEvents(
   appInstance: App,
@@ -10,7 +11,7 @@ export function registerAppEvents(
     if (!mainWindow || mainWindow.isDestroyed()) {
       return;
     }
-    mainWindow.webContents.send("notify-render", {
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.notifyRender, {
       command: "theme-changed",
       data: nativeTheme,
     });
@@ -27,6 +28,6 @@ export function registerAppEvents(
     if (!mainWindow || mainWindow.isDestroyed()) {
       return;
     }
-    mainWindow.webContents.send("theme-changed", nativeTheme);
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.themeChanged, nativeTheme);
   });
 }

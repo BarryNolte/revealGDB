@@ -75,7 +75,14 @@ export function setupConnectionManagerTestApi(): void {
       .__CONNECTION_MANAGER_TEST_SETTINGS__;
     const distros = settings?.wslDistros ?? ["Ubuntu", "Debian"];
 
-    return Promise.resolve(distros.map((name) => ({ name })));
+    return Promise.resolve(
+      distros.map((name, idx) => ({
+        name,
+        version: "2",
+        state: "Running",
+        default: idx === 0,
+      })),
+    );
   };
 
   (window as WindowWithConnectionManagerTest).__CONNECTION_MANAGER_TEST_API__ = {

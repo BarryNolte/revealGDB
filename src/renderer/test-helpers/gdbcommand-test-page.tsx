@@ -16,11 +16,12 @@
  */
 
 import type { JSX } from "react";
+import { NotifyRenderMessage } from "../../common/ipc-contracts";
 import GdbCommandWindow from "../ToolWindows/GdbCommandWindow";
 import "./gdbcommand-test-page.css";
 
 /** Notification message format */
-type NotifyMessage = { command: string };
+type NotifyMessage = NotifyRenderMessage;
 
 /** Test settings structure for command history */
 type GdbCommandTestSettings = {

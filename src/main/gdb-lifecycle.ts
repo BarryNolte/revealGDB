@@ -1,4 +1,5 @@
 import { BrowserWindow } from "electron";
+import { IPC_CHANNELS } from "../common/ipc-contracts";
 import { miInterface } from "./mi-interface/mi-interface";
 
 type SettingsLike = {
@@ -11,16 +12,16 @@ export function createGdbInterface(
 ): miInterface {
   const gdbInterface = new miInterface();
   gdbInterface.on("console-stream", (line: string) => {
-    mainWindow.webContents.send("console-message", line);
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.consoleMessage, line);
   });
   gdbInterface.on("log-stream", (line: string) => {
-    mainWindow.webContents.send("log-message", line);
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.logMessage, line);
   });
   gdbInterface.on("error-stream", (line: string) => {
-    mainWindow.webContents.send("error-message", line);
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.errorMessage, line);
   });
   gdbInterface.on("debug-stream", (line: string) => {
-    mainWindow.webContents.send("debug-message", line);
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.debugMessage, line);
   });
 
   let needToRunStartupCmds = true;

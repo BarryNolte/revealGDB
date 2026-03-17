@@ -1,3 +1,8 @@
+import { GdbAny } from "../common/gdb-common";
+import { NotifyMainRequest, NotifyRenderMessage } from "../common/ipc-contracts";
+import { gdbBreakpoint } from "../main/mi-interface/gdb-state-database/gdbStateDatabase";
+import { WslDistro } from "../main/utilities/wsl-utilities";
+
 /**
  * Electron IPC API interface exposed to the renderer process.
  * This interface defines all communication channels between the main and renderer processes.
@@ -46,7 +51,7 @@ export interface IElectronAPI {
    * @param callback - Function to handle notification messages
    * @returns Cleanup function to remove the listener
    */
-  notifyRender: (callback: GdbAny) => () => void;
+  notifyRender: (callback: (data: NotifyRenderMessage) => void) => () => void;
 
   // === GDB Data Channels (Main -> Renderer) ===
 
@@ -149,7 +154,7 @@ export interface IElectronAPI {
    * Sends a general notification/command to the main process.
    * @param command - The notification data to send
    */
-  notifyMain: (command: GdbAny) => void;
+  notifyMain: (command: NotifyMainRequest) => void;
 }
 
 /**
