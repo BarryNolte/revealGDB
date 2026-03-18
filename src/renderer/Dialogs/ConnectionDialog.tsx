@@ -76,4 +76,4 @@ export const ConnectionDialog = forwardRef<WhileConnectingDialogHandle, Connecti
   },
 );
 
-ConnectionDialog.displayName = "Connection Status";
+ConnectionDialog.displayName = "Connection Dialog";

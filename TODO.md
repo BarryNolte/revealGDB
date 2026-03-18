@@ -111,5 +111,5 @@
 ### Sprint 3 (Parser + Interaction Hardening)
 
 - [x] Refactor src/main/mi-interface/gdb-parsers/gdb-locals.ts to reduce branching via staged/table-driven parsing
-- [ ] Refactor src/renderer/ToolWindows/GdbCommandWindow.tsx by moving command state/history behavior to hooks
+- [x] Refactor src/renderer/ToolWindows/GdbCommandWindow.tsx by moving command state/history behavior to hooks
 - [x] Refactor src/renderer/Components/HexEditor/MouseKeyboardHandler.ts by separating keymap from cursor/selection math
