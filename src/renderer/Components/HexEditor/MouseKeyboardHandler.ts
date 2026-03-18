@@ -5,6 +5,7 @@
  */
 
 import { convertCharValue } from "./common";
+import { ArrayChangeCallback } from "./HexEditor";
 import {
   clampIndex,
   getColumnFromIndex,
@@ -12,7 +13,6 @@ import {
   parseIndexFromId,
 } from "./HexEditorCursorMath";
 import { resolveKeyAction } from "./HexEditorKeymap";
-import { ArrayChangeCallback } from "./HexEditor";
 
 /** Type definition for mouse event types */
 export type MouseEventType = "Over" | "Leave" | "Click";
