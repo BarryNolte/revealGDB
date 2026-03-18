@@ -6,7 +6,7 @@ import { SelectedConnection } from "../../common/gdb-common";
 import { AppSettings } from "../main";
 import { ConnectionNotifier } from "../utilities/ConnectionNotifier";
 import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector/gdb-connector";
-import { gdbConnectorIdfOnWsl } from "./gdb-connector/gdb-connector-idf-on-wsl";
+import { gdbConnectorIdfOnWsl } from "./gdb-connector/gdb-connector-general";
 import { GdbOutputCapture } from "./gdb-parsers/gdb-output-capture";
 import { gdbStateDatabase } from "./gdb-state-database/gdbStateDatabase";
 import { gdbShowSourceInfo, MiOutputProcessor } from "./mi-output-processor";
@@ -35,7 +35,7 @@ export class miInterface extends EventEmitter {
 
   connect(selectedConnection: SelectedConnection): boolean {
     ConnectionNotifier.getInstance().startWatchingConsole();
-    this.conn = new gdbConnectorIdfOnWsl();
+    this.conn = new gdbConnectorIdfOnWsl(this.gdbDB);
 
     this.conn.on("gdb-exit", () => {
       console.log("GDB exited");

@@ -5,13 +5,16 @@ import { ChildProcess, spawn } from "child_process";
 import { ConnectionNotifier } from "../../utilities/ConnectionNotifier";
 import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector";
 import { SelectedConnection } from "../../../common/gdb-common";
+import { gdbStateDatabase } from "../gdb-state-database/gdbStateDatabase";
+import { NormalizedConnection } from "../../../renderer/Dialogs/useConnectionManagerController";
 
 export class gdbConnectorIdfOnWsl extends GdbConnector {
   private gdbExe: ChildProcess | null = null;
+  private gdbDB: gdbStateDatabase;
 
-  constructor() {
+  constructor(db: gdbStateDatabase) {
     super();
-    console.log("GdbConnectorIdfOnWsl");
+    this.gdbDB = db;
   }
 
   override Start(selectedConnection: SelectedConnection): boolean {
@@ -32,12 +35,18 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
 
     ConnectionNotifier.getInstance().notifyGdbStartup("starting-shell", "in-progress");
 
-    this.gdbExe = spawn("wsl", undefined, {
+    if (selectedConnection.shell === "wsl") {
+      this.gdbDB.gdbSrcFileCache.setFilePrefix(
+        "//wsl$/" + (selectedConnection as NormalizedConnection).wslDistribution,
+      );
+    }
+
+    this.gdbExe = spawn(selectedConnection.shell, undefined, {
       cwd: "",
       shell: false,
       windowsHide: true,
     });
-    console.log(`Spawned WSL process with PID: ${this.gdbExe.pid}`);
+    console.log(`Spawned ${selectedConnection.shell} process with PID: ${this.gdbExe.pid}`);
 
     //TODO: handle errors when starting the process (e.g. wsl not installed, command fails, etc.)
 

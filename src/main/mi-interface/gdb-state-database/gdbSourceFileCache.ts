@@ -6,9 +6,14 @@ import { readFile } from "fs/promises";
 
 export class gdbSourceFileCache extends EventEmitter {
   private sourceFiles: Map<string, string> = new Map<string, string>();
+  private filePrefix: string = "";
 
   constructor() {
     super();
+  }
+
+  setFilePrefix(prefix: string): void {
+    this.filePrefix = prefix;
   }
 
   clearCache(): void {
@@ -25,7 +30,7 @@ export class gdbSourceFileCache extends EventEmitter {
     if (!have && file.length > 0) {
       try {
         // TODO: Resolve actual path using the active connector.
-        const data = await readFile("//wsl$/Ubuntu" + file, "utf-8");
+        const data = await readFile(this.filePrefix + file, "utf-8");
         this.sourceFiles.set(file, data);
         srcHtml = data;
       } catch (ex) {
