@@ -1,3 +1,4 @@
+// @vitest-environment node
 /**
  * Tests for gdbSourceFileCache behavior.
  */
@@ -6,9 +7,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { gdbSourceFileCache } from "./gdbSourceFileCache";
 
 // Mock the fs/promises module
-vi.mock("fs/promises", () => ({
-  readFile: vi.fn(),
-}));
+vi.mock("fs/promises", () => {
+  return {
+    readFile: vi.fn(),
+  };
+});
 
 describe("gdbSourceFileCache class", () => {
   let cache: gdbSourceFileCache;

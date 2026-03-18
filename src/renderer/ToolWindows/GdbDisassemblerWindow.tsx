@@ -28,15 +28,15 @@ import {
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
-import React, { JSX, useEffect, useId, useMemo, useRef, useState } from "react";
+import { JSX, useEffect, useId, useMemo, useRef, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
 import {
-  DisasmToken,
   gdbAsmRow,
   gdbFunction,
 } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { doCutCopyPaste, menuCopy, menuCutCopyPaste } from "../utilities/Clipboard";
 import { validateValue, ValueType } from "../utilities/valueValidation";
+import { renderGroupCaption, renderInstructionParts } from "./GdbDisassemblerLineModel";
 import "./GdbDisassemblerWindow.css";
 
 /**
@@ -90,43 +90,12 @@ export default function GdbDisassemblerWindow(): JSX.Element {
    * Applies syntax highlighting based on token type (instruction, address, register, etc.).
    */
   const instructionsTemplate = (props: gdbAsmRow): JSX.Element => {
-    const instParts: JSX.Element[] = [];
-
-    props.instructions.forEach((token: DisasmToken) => {
-      switch (token.type) {
-        case "instruction":
-          instParts.push(<span className="disasmInstruction">{token.value}</span>);
-          break;
-        case "address":
-          instParts.push(<span className="disasmOpAddress">{token.value}&nbsp;</span>);
-          break;
-        case "function":
-          instParts.push(
-            <span
-              className="disasmFunction"
-              onClick={(e: React.MouseEvent<HTMLSpanElement>) => {
-                const value = e.currentTarget.textContent?.trim().slice(1, -1) || "";
-                window.ipcToMain.sendGdbCommand(`-data-disassemble -a ${value} --opcodes bytes`);
-                if (functionNameRef.current) {
-                  functionNameRef.current.value = value;
-                }
-              }}
-            >
-              {token.value}&nbsp;
-            </span>,
-          );
-          break;
-        case "leftparen":
-        case "rightparen":
-          instParts.push(<span className="disasmParen">{token.value}&nbsp;</span>);
-          break;
-        case "text":
-        default:
-          instParts.push(<span className="disasmText">{token.value}&nbsp;</span>);
-          break;
+    return renderInstructionParts(props.instructions, (functionAddress: string) => {
+      window.ipcToMain.sendGdbCommand(`-data-disassemble -a ${functionAddress} --opcodes bytes`);
+      if (functionNameRef.current) {
+        functionNameRef.current.value = functionAddress;
       }
     });
-    return <div>{instParts}</div>;
   };
 
   function emptyMessageTemplate(): JSX.Element {
@@ -138,27 +107,12 @@ export default function GdbDisassemblerWindow(): JSX.Element {
   }
 
   // Custom caption template function
-  const groupCaptionTemplate = (props: {
-    field?: string;
-    groupKey?: string;
-    key?: string;
-    count?: string;
-  }): JSX.Element => {
-    const functionName = props.groupKey?.replace(/.*-/, "") || "Unknown Function";
-    return (
-      <div className="e-groupcaption disasm-function-group-header">
-        <strong>{functionName}:&nbsp;&nbsp;&nbsp;&nbsp;</strong>
-        <span>({props!.count} lines)</span>
-      </div>
-    );
-  };
-
   const groupOptions: GroupSettingsModel = {
     columns: ["func"],
     showDropArea: false,
     showUngroupButton: false,
     showToggleButton: false,
-    captionTemplate: groupCaptionTemplate,
+    captionTemplate: renderGroupCaption,
   };
 
   const itemTemplate = (item: gdbFunction): JSX.Element => {

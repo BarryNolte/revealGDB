@@ -1,10 +1,13 @@
-import { EventEmitter } from "events";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createGdbInterface } from "./gdb-lifecycle";
 
-const sendMock = vi.fn();
+const { sendMock } = vi.hoisted(() => ({
+  sendMock: vi.fn(),
+}));
 
-vi.mock("./mi-interface/mi-interface", () => {
+vi.mock("./mi-interface/mi-interface", async () => {
+  const { EventEmitter } = await import("events");
+
   class MockMiInterface extends EventEmitter {
     send = sendMock;
   }
