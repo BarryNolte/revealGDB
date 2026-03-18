@@ -45,6 +45,7 @@
     "vite-watch": "cross-env REVEALGDB_BUILD=debug REVEALGDB_DEBUG=true electron-vite dev --watch",
     "vite-watch:release": "cross-env REVEALGDB_BUILD=release REVEALGDB_DEBUG=false electron-vite dev --watch",
     "playwright:install": "playwright install",
+    "metrics:maintainability": "node scripts/maintainability-metrics.cjs",
     "test:playwright": "npm run build:renderer && playwright test",
     "test": "vitest && npm run test:playwright"
   },

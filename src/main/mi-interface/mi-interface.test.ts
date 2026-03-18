@@ -17,18 +17,21 @@ vi.mock("../utilities/ConnectionNotifier", () => ({
   },
 }));
 
-vi.mock("./gdb-connector/gdb-connector-idf-on-wsl", () => ({
-  gdbConnectorIdfOnWsl: vi.fn(),
-}));
-
 // Use vi.hoisted() to ensure these mocks are initialized before vi.mock() calls
-const { mockSettings, mockWebContents } = vi.hoisted(() => ({
+const { mockSettings, mockWebContents, mockConnectorFactory } = vi.hoisted(() => ({
   mockSettings: {
     getSync: vi.fn(() => false),
   },
   mockWebContents: {
     send: vi.fn(),
   },
+  mockConnectorFactory: vi.fn(),
+}));
+
+vi.mock("./gdb-connector/gdb-connector-idf-on-wsl", () => ({
+  gdbConnectorIdfOnWsl: vi.fn(function () {
+    return mockConnectorFactory();
+  }),
 }));
 
 vi.mock("../main", () => ({
@@ -55,7 +58,9 @@ describe("miInterface", () => {
     miInterface_instance = new miInterface();
     mockConnector = new EventEmitter();
     (mockConnector as GdbAny).Send = vi.fn();
-    (mockConnector as GdbAny).Start = vi.fn().mockResolvedValue(true);
+    (mockConnector as GdbAny).Start = vi.fn().mockReturnValue(true);
+    mockConnectorFactory.mockReset();
+    mockConnectorFactory.mockReturnValue(mockConnector as GdbAny);
   });
 
   afterEach(() => {
@@ -390,7 +395,6 @@ describe("miInterface", () => {
       const listener = vi.fn();
       miInterface_instance.on("console-stream", listener);
       // First call with partial data (no newline)
-      miInterface_instance["savedStr"] = "";
       miInterface_instance["parseConsoleStream"]('~"first"');
       expect(listener).not.toHaveBeenCalled();
       // Second call continues the line (still no newline)
@@ -428,6 +432,22 @@ describe("miInterface", () => {
       miInterface_instance.on("log-error", listener);
       miInterface_instance["parseTargetStream"]('@"error"');
       expect(listener).toHaveBeenCalled();
+    });
+
+    it("should reassemble split gdb-data chunks before parsing", async () => {
+      const listener = vi.fn();
+      miInterface_instance.on("console-stream", listener);
+
+      const connected = miInterface_instance.connect({} as GdbAny);
+      expect(connected).toBe(true);
+
+      mockConnector.emit("gdb-data", { Output: '~"hello ' });
+      mockConnector.emit("gdb-data", { Output: 'world\\n"\n' });
+
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(listener).toHaveBeenCalledWith("hello world");
     });
   });
 

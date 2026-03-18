@@ -61,55 +61,22 @@
 - Hotkey map
 - How to contribute
 
-# Maintainability Remediation Plan (MI)
+# Maintainability Remediation (MI)
 
-## Group Summary
+- [x] MI-1: Refactor src/main/mi-interface/mi-interface.ts (MI 0.00 -> 33.93)
+  - Goal: raise MI to >= 60 and reduce cyclomatic complexity from 127 to <= 60.
+  - Actions: extract parser/dispatch helpers, apply guard clauses, split orchestration from transforms.
+  - Validation: add focused parser tests and rerun `npm run metrics:maintainability`.
+  - Result: parsing/dispatch logic moved to mi-output-processor; mi-interface now acts as orchestration facade.
+  - Follow-up complete: split mi-output-processor into focused handlers (result/notify/exec) with focused unit tests.
+  - Next follow-up: decompose mi-result-handler into smaller strategy handlers to continue pushing MI toward >= 60.
 
-- Build: files 4, LOC 231, weighted MI 36.33
-- Render: files 35, LOC 4929, weighted MI 17.52
-- Main: files 13, LOC 2250, weighted MI 12.12
-- Preload: files 2, LOC 143, weighted MI 31.68
+- [ ] MI-2: Refactor src/renderer/Dialogs/useConnectionManagerController.ts (MI 5.24)
+  - Goal: raise MI to >= 60 and reduce cyclomatic complexity from 64 to <= 30.
+  - Actions: split command handlers into pure reducers/helpers, flatten conditional branches, isolate persistence side effects.
+  - Validation: add controller-unit tests and rerun `npm run metrics:maintainability`.
 
-## Ranked Remediation List (Top 20)
-
-- [ ] 1. src/main/mi-interface/mi-interface.ts (MI 0.00, LOC 633, CC 326)
-- [ ] 2. src/renderer/Dialogs/ConnectionManager.tsx (MI 0.00, LOC 611, CC 142)
-- [ ] 3. src/main/main.ts (MI 5.06, LOC 380, CC 54)
-- [ ] 4. src/renderer/ToolWindows/GdbSourceWindow.tsx (MI 6.43, LOC 382, CC 45)
-- [ ] 5. src/renderer/Dialogs/ConnectionDialog.tsx (MI 7.71, LOC 343, CC 54)
-- [ ] 6. src/main/mi-interface/gdb-state-database/gdbStateDatabase.ts (MI 10.32, LOC 395, CC 21)
-- [ ] 7. src/renderer/ToolWindows/GdbDisassemblerWindow.tsx (MI 10.92, LOC 312, CC 38)
-- [ ] 8. src/main/mi-interface/gdb-parsers/gdb-locals.ts (MI 10.98, LOC 226, CC 69)
-- [ ] 9. src/renderer/ToolWindows/GdbCommandWindow.tsx (MI 12.04, LOC 271, CC 45)
-- [ ] 10. src/renderer/Components/HexEditor/MouseKeyboardHandler.ts (MI 14.20, LOC 218, CC 48)
-- [ ] 11. src/renderer/Components/DragAndDropList/DragAndDropList.tsx (MI 14.98, LOC 228, CC 37)
-- [ ] 12. src/renderer/App.tsx (MI 16.61, LOC 235, CC 19)
-- [ ] 13. src/renderer/Dialogs/Settings.tsx (MI 18.28, LOC 234, CC 14)
-- [ ] 14. src/renderer/Components/Toolbar.tsx (MI 19.72, LOC 198, CC 20)
-- [ ] 15. src/renderer/ToolWindows/GdbBreakpointsWindow.tsx (MI 20.51, LOC 207, CC 9)
-- [ ] 16. src/main/menu.ts (MI 22.37, LOC 213, CC 3)
-- [ ] 17. src/renderer/ToolWindows/GdbMemoryWindow.tsx (MI 24.43, LOC 129, CC 21)
-- [ ] 18. src/renderer/ToolWindows/GdbRegistersWindow.tsx (MI 24.49, LOC 145, CC 11)
-- [ ] 19. src/main/mi-interface/gdb-parsers/gdb-output-capture.ts (MI 24.52, LOC 111, CC 36)
-- [ ] 20. src/renderer/ToolWindows/GdbThreadsWindow.tsx (MI 24.69, LOC 162, CC 5)
-
-## Sprint Order
-
-### Sprint 1 (Core Architecture, Highest ROI)
-
-- [x] Refactor src/main/mi-interface/mi-interface.ts into command router, event handlers, and state transition modules
-- [x] Refactor src/renderer/Dialogs/ConnectionManager.tsx by extracting reducer/hooks for validation and persistence
-- [x] Refactor src/main/main.ts by separating bootstrap, IPC registration, and window lifecycle
-
-### Sprint 2 (Secondary Hotspots)
-
-- [x] Split src/main/mi-interface/gdb-state-database/gdbStateDatabase.ts by domain slices
-- [x] Refactor src/renderer/Dialogs/ConnectionDialog.tsx into form schema and connector-specific panels
-- [x] Refactor src/renderer/ToolWindows/GdbSourceWindow.tsx to separate source rendering and navigation logic
-- [x] Refactor src/renderer/ToolWindows/GdbDisassemblerWindow.tsx to separate line-model transforms from rendering
-
-### Sprint 3 (Parser + Interaction Hardening)
-
-- [x] Refactor src/main/mi-interface/gdb-parsers/gdb-locals.ts to reduce branching via staged/table-driven parsing
-- [x] Refactor src/renderer/ToolWindows/GdbCommandWindow.tsx by moving command state/history behavior to hooks
-- [x] Refactor src/renderer/Components/HexEditor/MouseKeyboardHandler.ts by separating keymap from cursor/selection math
+- [ ] MI-3: Refactor src/renderer/ToolWindows/GdbSourceWindow.tsx (MI 12.79)
+  - Goal: raise MI to >= 60 and reduce cyclomatic complexity from 32 to <= 16.
+  - Actions: extract rendering helpers/components, move state derivation into selector helpers, reduce branch-heavy JSX blocks.
+  - Validation: add view-model and render-path tests and rerun `npm run metrics:maintainability`.
