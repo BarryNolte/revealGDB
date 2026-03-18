@@ -241,6 +241,39 @@ describe("LocalsContainer class", () => {
     expect(current.value).toBe("42");
   });
 
+  it("should preserve sibling locals when parsing array-style nested values", () => {
+    const input = '{name="wrap",value="{arr = {0x1, 0x2, 0x3}, tail = 0x9}"}';
+    const container = new LocalsContainer(input);
+
+    const wrap = container.locals[0];
+    expect(wrap.fullpath).toBe("wrap");
+
+    const arr = wrap.sublocals.find((s) => s.name === "arr");
+    const tail = wrap.sublocals.find((s) => s.name === "tail");
+
+    expect(arr).toBeDefined();
+    expect(arr?.fullpath).toBe("wrap.arr");
+    expect(tail).toBeDefined();
+    expect(tail?.fullpath).toBe("wrap.tail");
+    expect(tail?.value).toBe("0x9");
+  });
+
+  it("should parse mixed plain/simple/complex locals in one container", () => {
+    const input =
+      '{name="plain",value="7"},{name="simple",value="{x = 1, y = 2}"},{name="complex",value="{a = 1, b = {c = 2}}"}';
+    const container = new LocalsContainer(input);
+
+    expect(container.locals).toHaveLength(3);
+
+    const plain = container.locals.find((l) => l.name === "plain");
+    const simple = container.locals.find((l) => l.name === "simple");
+    const complex = container.locals.find((l) => l.name === "complex");
+
+    expect(plain?.value).toBe("7");
+    expect(simple?.sublocals.map((s) => s.name)).toEqual(["x", "y"]);
+    expect(complex?.sublocals.find((s) => s.name === "b")?.sublocals[0]?.name).toBe("c");
+  });
+
   describe("anonymous union/struct handling", () => {
     it("should exclude anonymous markers from fullpath", () => {
       const input = '{name="struct",value="{a = 0x1, {b = 0x2, c = 0x3}}"}';

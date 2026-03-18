@@ -78,6 +78,11 @@ enum streamType {
   equals = 3, // Equals sign token
 }
 
+type TokenChunk = {
+  val: string;
+  type: streamType;
+};
+
 /**
  * Container class that parses and stores local variables in a tree structure
  * Handles complex nested structures using a character-by-character parsing approach
@@ -94,6 +99,12 @@ export class LocalsContainer {
 
   /** Tracks the type of each character in the input string during parsing */
   nameValMask: streamType[] = [];
+
+  private valueParsers: Record<valueType, (name: string, value: string) => Local> = {
+    [valueType.plain]: (name: string, value: string) => new Local(name, value),
+    [valueType.simpleGroup]: (name: string, value: string) => this.parseSimpleValue(name, value),
+    [valueType.complexGroup]: (name: string, value: string) => this.parseComplexValue(name, value),
+  };
 
   /**
    * Creates a new LocalsContainer and parses the input string
@@ -117,28 +128,8 @@ export class LocalsContainer {
       const name = rr.groups?.name ?? "";
       const value = this.cleanValue(rr.groups?.value ?? "");
 
-      const vType = this.getValueType(value);
-
-      switch (vType) {
-        case valueType.plain:
-          {
-            // value is the value
-            this.locals.push(new Local(name, value));
-          }
-          break;
-        case valueType.simpleGroup:
-          {
-            // simple group
-            this.locals.push(this.parseSimpleValue(name, value));
-          }
-          break;
-        case valueType.complexGroup:
-          {
-            // complex group
-            this.locals.push(this.parseComplexValue(name, value));
-          }
-          break;
-      }
+      const parser = this.valueParsers[this.getValueType(value)];
+      this.locals.push(parser(name, value));
     });
   }
 
@@ -150,106 +141,108 @@ export class LocalsContainer {
    * @returns A Local object containing the parsed nested structure
    */
   private parseComplexValue(name: string, value: string): Local {
-    const complexValue = value;
+    const chunks = this.createComplexChunks(value);
+    return this.parseComplexChunks(name, chunks);
+  }
 
-    // Identify all the bits and pieces of the complex value
-    this.initMasks(complexValue);
-    this.createNameValMask(complexValue);
-    this.createBracketMask(complexValue);
-    this.createEqualsMask(complexValue);
+  private createComplexChunks(value: string): TokenChunk[] {
+    // Stage 1: classify each character into token stream masks.
+    this.initMasks(value);
+    this.createNameValMask(value);
+    this.createBracketMask(value);
+    this.createEqualsMask(value);
 
-    const chunks: { val: string; type: streamType }[] = [];
+    // Stage 2: compress per-character masks into token chunks.
+    const chunks: TokenChunk[] = [];
+    let lastMaskVal = this.nameValMask[0];
+    let chunk = "";
 
-    let lastMaskVal: number = this.nameValMask[0];
-    let chunk: string = "";
+    for (let i = 0; i < value.length; i++) {
+      const currentMask = this.nameValMask[i];
+      const ch = value[i];
 
-    for (let i = 0; i < complexValue.length; i++) {
-      const nv = this.nameValMask[i];
-      const ch = complexValue[i];
-
-      if (nv !== lastMaskVal || ch === "{" || ch === "}") {
+      if (currentMask !== lastMaskVal || ch === "{" || ch === "}") {
         chunks.push({ val: chunk, type: lastMaskVal });
         chunk = "";
       }
+
       chunk += ch;
-
-      lastMaskVal = nv;
+      lastMaskVal = currentMask;
     }
-    chunks.push({ val: chunk, type: lastMaskVal }); // push the last chunk
 
-    const rootLocal: Local = new Local(name, "");
+    chunks.push({ val: chunk, type: lastMaskVal });
+    return chunks;
+  }
+
+  private parseComplexChunks(name: string, chunks: TokenChunk[]): Local {
+    const rootLocal = new Local(name, "");
     let curLocal: Local = rootLocal;
-
     const localStack: Local[] = [];
 
-    /**
-     * Returns the Local object at the top of the parsing stack
-     * @returns The top Local object or undefined if stack is empty
-     */
-    function topOfStack(): Local | undefined {
-      if (localStack.length === 0) return undefined;
+    const topOfStack = (): Local | undefined => {
+      if (localStack.length === 0) {
+        return undefined;
+      }
       return localStack[localStack.length - 1];
-    }
+    };
 
-    /**
-     * Collapses the top Local object into its parent in the stack
-     * Only collapses if there are at least two items in the stack
-     */
-    function collapseTopOfStack(): void {
-      if (localStack.length < 2) return;
+    const collapseTopOfStack = (): void => {
+      if (localStack.length < 2) {
+        return;
+      }
       localStack[localStack.length - 2].addLocal(localStack.pop()!);
-    }
+    };
 
-    chunks.forEach((c) => {
-      switch (c.type) {
-        case streamType.value:
-          {
-            if (c.val.length === 2 && c.val.startsWith(", ")) {
-              // This is an artifact of the parsing, ignore it.
-              break;
-            } else {
-              const delim = c.val.endsWith(", ");
-
-              if (delim) {
-                c.val = c.val.substring(0, c.val.length - 2);
-              }
-            }
-
-            curLocal.value = c.val;
-
-            if (topOfStack() !== curLocal) {
-              topOfStack()?.addLocal(curLocal);
-            } else {
-              // This is probably an array, should we do anything about it?
-            }
+    const handlers = new Map<streamType, (chunk: TokenChunk) => void>([
+      [
+        streamType.value,
+        (chunk: TokenChunk) => {
+          if (chunk.val.length === 2 && chunk.val.startsWith(", ")) {
+            return;
           }
-          break;
-        case streamType.name:
-          {
-            // Get the parent's fullpath if there's one on the stack
-            const parentFullpath = topOfStack()?.fullpath;
-            curLocal = new Local(c.val, "", parentFullpath);
+
+          if (chunk.val.endsWith(", ")) {
+            chunk.val = chunk.val.substring(0, chunk.val.length - 2);
           }
-          break;
-        case streamType.leftBracket:
-          {
-            if (c.val === "") break;
-            // Left Bracket
+
+          curLocal.value = chunk.val;
+
+          if (topOfStack() !== curLocal) {
+            topOfStack()?.addLocal(curLocal);
+          }
+        },
+      ],
+      [
+        streamType.name,
+        (chunk: TokenChunk) => {
+          const parentFullpath = topOfStack()?.fullpath;
+          curLocal = new Local(chunk.val, "", parentFullpath);
+        },
+      ],
+      [
+        streamType.leftBracket,
+        (chunk: TokenChunk) => {
+          if (chunk.val !== "") {
             localStack.push(curLocal);
           }
-          break;
-        case streamType.rightBracket:
-          {
-            // Right Bracket
-            collapseTopOfStack();
-          }
-          break;
-        case streamType.equals:
-          {
-            // Ignore the equals sign
-          }
-          break;
-      }
+        },
+      ],
+      [
+        streamType.rightBracket,
+        () => {
+          collapseTopOfStack();
+        },
+      ],
+      [
+        streamType.equals,
+        () => {
+          // Ignore the equals sign.
+        },
+      ],
+    ]);
+
+    chunks.forEach((chunk) => {
+      handlers.get(chunk.type)?.(chunk);
     });
 
     return rootLocal;
