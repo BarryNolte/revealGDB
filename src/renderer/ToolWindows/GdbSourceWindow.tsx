@@ -79,10 +79,10 @@ import AceEditor, { IMarker } from "react-ace";
 import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { gdbShowSourceInfo } from "../../main/mi-interface/mi-interface";
 
-import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { GdbAny } from "../../common/gdb-common";
-import { menuCopy, sendTextToClipboard } from "../utilities/Clipboard";
+import { sendTextToClipboard } from "../utilities/Clipboard";
 import "./GdbSourceWindow.css";
+import GdbSourceWindowView from "./GdbSourceWindowView";
 
 /** Default editor theme */
 const defaultTheme = "gruvbox";
@@ -396,74 +396,29 @@ export default function GdbSourceWindow(): JSX.Element {
     editor.clearSelection();
   }, []);
 
+  const copySelection = useCallback(() => {
+    const text = editorRef.current?.editor.getSelectedText();
+    sendTextToClipboard(text ?? "");
+  }, []);
+
   return (
-    <div className="full-size">
-      <div className="full-size" ref={srcViewRef} hidden={false}>
-        <div id="gdb-ace-editor" className="full-size flex-container">
-          <div className="file-name flex-item-grow">{fullpath}</div>
-          <AceEditor
-            ref={editorRef}
-            className="flex-item"
-            mode={mode}
-            theme={theme}
-            fontSize={fontSize}
-            lineHeight={lineHeight}
-            onLoad={onLoad}
-            value={source}
-            markers={stackMarkers}
-            readOnly={true}
-            showPrintMargin={false}
-            showGutter={true}
-            name="code-editor-instance"
-            setOptions={{ fontFamily: fontName }}
-            style={{ width: "100%", height: "100%" }}
-          />
-        </div>
-        <ContextMenuComponent
-          id={`source-menu-${menuId}`}
-          target="#gdb-ace-editor"
-          items={menuCopy}
-          select={() => {
-            const text = editorRef.current?.editor.getSelectedText();
-            sendTextToClipboard(text ?? "");
-          }}
-        />
-      </div>
-      <div ref={noSrcViewRef} hidden>
-        <div className="no-source">
-          <table className="no-source-table">
-            <caption className="no-source-header">No Source Found:</caption>
-            <tbody>
-              <tr>
-                <td className="no-source-row-header">Filename:</td>
-                <td className="no-source-row-data">
-                  <span className="no-source-filename">{filename}</span>
-                </td>
-              </tr>
-              <tr>
-                <td className="no-source-row-header">Line:</td>
-                <td className="no-source-row-data">
-                  <span className="no-source-lineno">{line}</span>
-                </td>
-              </tr>
-              <tr>
-                <td className="no-source-row-header">Full Path:</td>
-                <td className="no-source-row-data">
-                  <span className="no-source-fullpath">{fullpath}</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          {/* <div>
-            <button className="no-source-button button-disassemble" type="button">
-              Show Diassembly
-            </button>
-            <button className="no-source-button button-open-file" type="button">
-              Open File...
-            </button>
-          </div> */}
-        </div>
-      </div>
-    </div>
+    <GdbSourceWindowView
+      menuId={menuId}
+      srcViewRef={srcViewRef}
+      noSrcViewRef={noSrcViewRef}
+      editorRef={editorRef}
+      fullpath={fullpath}
+      filename={filename}
+      line={line}
+      source={source}
+      mode={mode}
+      theme={theme}
+      fontSize={fontSize}
+      lineHeight={lineHeight}
+      fontName={fontName}
+      stackMarkers={stackMarkers}
+      onLoad={onLoad}
+      onCopySelection={copySelection}
+    />
   );
 }

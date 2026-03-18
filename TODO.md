@@ -105,7 +105,7 @@
 
 - [x] Split src/main/mi-interface/gdb-state-database/gdbStateDatabase.ts by domain slices
 - [ ] Refactor src/renderer/Dialogs/ConnectionDialog.tsx into form schema and connector-specific panels
-- [ ] Refactor src/renderer/ToolWindows/GdbSourceWindow.tsx to separate source rendering and navigation logic
+- [x] Refactor src/renderer/ToolWindows/GdbSourceWindow.tsx to separate source rendering and navigation logic
 - [x] Refactor src/renderer/ToolWindows/GdbDisassemblerWindow.tsx to separate line-model transforms from rendering
 
 ### Sprint 3 (Parser + Interaction Hardening)
