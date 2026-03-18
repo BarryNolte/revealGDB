@@ -98,13 +98,13 @@
 ### Sprint 1 (Core Architecture, Highest ROI)
 
 - [x] Refactor src/main/mi-interface/mi-interface.ts into command router, event handlers, and state transition modules
-- [ ] Refactor src/renderer/Dialogs/ConnectionManager.tsx by extracting reducer/hooks for validation and persistence
+- [x] Refactor src/renderer/Dialogs/ConnectionManager.tsx by extracting reducer/hooks for validation and persistence
 - [x] Refactor src/main/main.ts by separating bootstrap, IPC registration, and window lifecycle
 
 ### Sprint 2 (Secondary Hotspots)
 
 - [x] Split src/main/mi-interface/gdb-state-database/gdbStateDatabase.ts by domain slices
-- [ ] Refactor src/renderer/Dialogs/ConnectionDialog.tsx into form schema and connector-specific panels
+- [x] Refactor src/renderer/Dialogs/ConnectionDialog.tsx into form schema and connector-specific panels
 - [x] Refactor src/renderer/ToolWindows/GdbSourceWindow.tsx to separate source rendering and navigation logic
 - [x] Refactor src/renderer/ToolWindows/GdbDisassemblerWindow.tsx to separate line-model transforms from rendering
 
