@@ -2,7 +2,7 @@ import { mainWindow } from "../../main";
 import { parseDisasmTokens } from "../gdb-parsers/disasmParser";
 import { MiOutputHost } from "../mi-output-types";
 import { MiDoneResultStrategy } from "./mi-result-strategy-types";
-import { parseAsmRows } from "./regex-parsing-helpers";
+import { parseAsmRows } from "./asm-parsing-helpers";
 
 export class AsmResultStrategy implements MiDoneResultStrategy {
   private readonly rgxAsmData: RegExp = /asm_insns=\[(?<asm_list>.*)]$/;

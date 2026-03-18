@@ -1,6 +1,6 @@
 import { MiOutputHost } from "../mi-output-types";
 import { MiDoneResultStrategy } from "./mi-result-strategy-types";
-import { parseRegisterPayload } from "./regex-parsing-helpers";
+import { parseRegisterPayload } from "./register-parsing-helpers";
 
 export class RegistersResultStrategy implements MiDoneResultStrategy {
   private readonly rgxCleanList: RegExp = /\[(?<list>.*)\]/;

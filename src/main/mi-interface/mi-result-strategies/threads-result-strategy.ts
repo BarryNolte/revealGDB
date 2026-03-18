@@ -1,7 +1,8 @@
 import { mainWindow } from "../../main";
 import { MiOutputHost } from "../mi-output-types";
 import { MiDoneResultStrategy } from "./mi-result-strategy-types";
-import { getRegexGroups, getRegexMatches, parseFrameDataFromGroups } from "./regex-parsing-helpers";
+import { getRegexGroups, getRegexMatches } from "./regex-parsing-helpers";
+import { parseThreadFrameFromGroups } from "./thread-parsing-helpers";
 
 export class ThreadsResultStrategy implements MiDoneResultStrategy {
   private readonly rgxThreads: RegExp = /\[(?<data>.*)\],current-thread-id="(?<curTid>.*)"/;
@@ -20,7 +21,7 @@ export class ThreadsResultStrategy implements MiDoneResultStrategy {
 
     host.gdbDB.clearThreadList();
     tValues.forEach((thread) => {
-      const threadFrame = parseFrameDataFromGroups(thread.groups);
+      const threadFrame = parseThreadFrameFromGroups(thread.groups);
       host.gdbDB.addThread({
         id: thread.groups?.tid || "",
         targetId: thread.groups?.targId || thread.groups?.targid || "",

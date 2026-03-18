@@ -6,8 +6,7 @@ import { menuCopy } from "../utilities/Clipboard";
 
 type GdbSourceWindowViewProps = {
   menuId: string;
-  srcViewRef: RefObject<HTMLDivElement | null>;
-  noSrcViewRef: RefObject<HTMLDivElement | null>;
+  hasSource: boolean;
   editorRef: RefObject<AceEditor | null>;
   fullpath: string;
   filename: string;
@@ -26,8 +25,7 @@ type GdbSourceWindowViewProps = {
 export default function GdbSourceWindowView(props: GdbSourceWindowViewProps): JSX.Element {
   const {
     menuId,
-    srcViewRef,
-    noSrcViewRef,
+    hasSource,
     editorRef,
     fullpath,
     filename,
@@ -45,7 +43,7 @@ export default function GdbSourceWindowView(props: GdbSourceWindowViewProps): JS
 
   return (
     <div className="full-size">
-      <div className="full-size" ref={srcViewRef} hidden={false}>
+      <div className="full-size" data-testid="source-pane" hidden={!hasSource}>
         <div id="gdb-ace-editor" className="full-size flex-container">
           <div className="file-name flex-item-grow">{fullpath}</div>
           <AceEditor
@@ -73,7 +71,7 @@ export default function GdbSourceWindowView(props: GdbSourceWindowViewProps): JS
           select={onCopySelection}
         />
       </div>
-      <div ref={noSrcViewRef} hidden>
+      <div data-testid="no-source-pane" hidden={hasSource}>
         <div className="no-source">
           <table className="no-source-table">
             <caption className="no-source-header">No Source Found:</caption>

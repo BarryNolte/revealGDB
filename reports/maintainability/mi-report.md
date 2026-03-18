@@ -1,15 +1,15 @@
 # Maintainability Metrics Report
 
-Generated: 2026-03-18T02:35:42.084Z
+Generated: 2026-03-18T03:16:59.089Z
 
 Test files are excluded by filename and test-only directories.
 
 ## main
 
-- Files analyzed: 49
-- Average MI: 45.42
-- Median MI: 45.84
-- Poor/Moderate/Good: 31/17/1
+- Files analyzed: 53
+- Average MI: 46.42
+- Median MI: 47.22
+- Poor/Moderate/Good: 32/20/1
 
 | File | MI | Rating | Cyclomatic | SLOC | Halstead Volume |
 | --- | ---: | --- | ---: | ---: | ---: |
@@ -21,7 +21,6 @@ Test files are excluded by filename and test-only directories.
 | src/main/mi-interface/mi-output-processor.ts | 27.16 | Poor | 20 | 136 | 2355.82 |
 | src/main/mi-interface/gdb-parsers/gdb-output-capture.ts | 29.62 | Poor | 24 | 111 | 1656.04 |
 | src/main/mi-interface/mi-result-handler.ts | 30.29 | Poor | 18 | 108 | 1885.31 |
-| src/main/mi-interface/mi-result-strategies/regex-parsing-helpers.ts | 31.48 | Poor | 23 | 90 | 1803.91 |
 | src/main/mi-interface/mi-exec-handler.ts | 32.91 | Poor | 31 | 76 | 1337.77 |
 | src/main/mi-interface/mi-interface.ts | 33.93 | Poor | 4 | 92 | 1741.06 |
 | src/main/mi-interface/gdb-connector/gdb-connector-idf-on-wsl.ts | 34.44 | Poor | 9 | 79 | 1895.75 |
@@ -33,18 +32,18 @@ Test files are excluded by filename and test-only directories.
 | src/main/mi-interface/gdb-state-database/stores/ThreadStore.ts | 38.26 | Poor | 4 | 65 | 1238.67 |
 | src/main/utilities/wsl-utilities.ts | 38.46 | Poor | 10 | 63 | 980.54 |
 | src/main/gdb-lifecycle.ts | 42.68 | Poor | 2 | 46 | 927.96 |
+| src/main/utilities/ConnectionNotifier.ts | 43.40 | Poor | 6 | 46 | 613.17 |
 
 ## renderer
 
-- Files analyzed: 37
-- Average MI: 32.41
-- Median MI: 32.62
-- Poor/Moderate/Good: 34/3/0
+- Files analyzed: 43
+- Average MI: 34.05
+- Median MI: 33.67
+- Poor/Moderate/Good: 39/4/0
 
 | File | MI | Rating | Cyclomatic | SLOC | Halstead Volume |
 | --- | ---: | --- | ---: | ---: | ---: |
 | src/renderer/Dialogs/useConnectionManagerController.ts | 5.24 | Poor | 64 | 458 | 10334.15 |
-| src/renderer/ToolWindows/GdbSourceWindow.tsx | 12.79 | Poor | 32 | 343 | 8747.41 |
 | src/renderer/ToolWindows/GdbDisassemblerWindow.tsx | 18.96 | Poor | 16 | 268 | 5031.44 |
 | src/renderer/Components/DragAndDropList/DragAndDropList.tsx | 19.03 | Poor | 26 | 228 | 5226.68 |
 | src/renderer/Components/HexEditor/MouseKeyboardHandler.ts | 20.33 | Poor | 32 | 195 | 4253.47 |
@@ -61,8 +60,9 @@ Test files are excluded by filename and test-only directories.
 | src/renderer/ToolWindows/GdbCallstackWindow.tsx | 28.40 | Poor | 2 | 157 | 2219.07 |
 | src/renderer/ToolWindows/GdbRegistersWindow.tsx | 28.81 | Poor | 5 | 145 | 2172.00 |
 | src/renderer/ToolWindows/GdbLocalsWindow.tsx | 30.10 | Poor | 5 | 134 | 1822.00 |
+| src/renderer/ToolWindows/GdbSourceEditorConfig.ts | 31.54 | Poor | 1 | 129 | 1524.47 |
 | src/renderer/utilities/DockMenuConnector.ts | 32.62 | Poor | 10 | 94 | 1923.33 |
-| src/renderer/Dialogs/AboutBox.tsx | 33.67 | Poor | 2 | 101 | 1549.13 |
+| src/renderer/ToolWindows/GdbSourceWindowModel.ts | 32.71 | Poor | 10 | 100 | 1538.12 |
 
 ## preload
 
@@ -80,7 +80,6 @@ Test files are excluded by filename and test-only directories.
 | File | Bucket | MI | Rating | Cyclomatic | SLOC | Halstead Volume |
 | --- | --- | ---: | --- | ---: | ---: | ---: |
 | src/renderer/Dialogs/useConnectionManagerController.ts | renderer | 5.24 | Poor | 64 | 458 | 10334.15 |
-| src/renderer/ToolWindows/GdbSourceWindow.tsx | renderer | 12.79 | Poor | 32 | 343 | 8747.41 |
 | src/main/mi-interface/gdb-parsers/gdb-locals.ts | main | 17.46 | Poor | 37 | 233 | 5031.77 |
 | src/renderer/ToolWindows/GdbDisassemblerWindow.tsx | renderer | 18.96 | Poor | 16 | 268 | 5031.44 |
 | src/renderer/Components/DragAndDropList/DragAndDropList.tsx | renderer | 19.03 | Poor | 26 | 228 | 5226.68 |
@@ -89,4 +88,5 @@ Test files are excluded by filename and test-only directories.
 | src/main/mi-interface/gdb-state-database/gdbStateDatabase.ts | main | 20.94 | Poor | 4 | 263 | 4738.48 |
 | src/renderer/Dialogs/Settings.tsx | renderer | 21.40 | Poor | 13 | 234 | 3933.89 |
 | src/renderer/App.tsx | renderer | 21.51 | Poor | 6 | 235 | 5104.52 |
+| src/renderer/Dialogs/useConnectionDialogController.ts | renderer | 22.53 | Poor | 21 | 189 | 3708.38 |
 

@@ -80,3 +80,5 @@
   - Goal: raise MI to >= 60 and reduce cyclomatic complexity from 32 to <= 16.
   - Actions: extract rendering helpers/components, move state derivation into selector helpers, reduce branch-heavy JSX blocks.
   - Validation: add view-model and render-path tests and rerun `npm run metrics:maintainability`.
+  - Progress: extracted source view-model helpers/editor config and moved event/IPC orchestration into a dedicated source-window controller hook with regression tests.
+  - Current result: `GdbSourceWindow.tsx` MI improved from 12.79 to 46.91 (CC 32 -> 1); maintainability hotspot shifted to `useGdbSourceWindowController.ts` (MI 22.17, CC 22), so additional decomposition is still needed to reach target.

@@ -1,7 +1,8 @@
 import { mainWindow } from "../../main";
 import { MiOutputHost, gdbShowSourceInfo } from "../mi-output-types";
 import { MiDoneResultStrategy } from "./mi-result-strategy-types";
-import { getRegexMatches, parseFrameDataFromGroups } from "./regex-parsing-helpers";
+import { getRegexMatches } from "./regex-parsing-helpers";
+import { parseStackFrameFromGroups } from "./stack-parsing-helpers";
 
 export class StackResultStrategy implements MiDoneResultStrategy {
   private readonly rgxFrame: RegExp =
@@ -18,7 +19,7 @@ export class StackResultStrategy implements MiDoneResultStrategy {
     frameValues.forEach((frameChunk) => {
       host.gdbDB.addStackFrame({
         active: false,
-        ...parseFrameDataFromGroups(frameChunk.groups, ""),
+        ...parseStackFrameFromGroups(frameChunk.groups, ""),
       });
     });
     host.gdbDB.stackFrames[0].active = true;
