@@ -5,6 +5,13 @@
  */
 
 import { convertCharValue } from "./common";
+import {
+  clampIndex,
+  getColumnFromIndex,
+  getRowFromIndex,
+  parseIndexFromId,
+} from "./HexEditorCursorMath";
+import { resolveKeyAction } from "./HexEditorKeymap";
 import { ArrayChangeCallback } from "./HexEditor";
 
 /** Type definition for mouse event types */
@@ -102,37 +109,6 @@ export class MouseKeyboardHandler {
   }
 
   /**
-   * Clamps an index to valid range [0, datasourceLength).
-   * Used for arrow key navigation to prevent out-of-bounds access.
-   * @private
-   * @param {number} index - Index to clamp
-   * @returns {number} Clamped index within valid range
-   */
-  private clampIndex(index: number): number {
-    if (index < 0) {
-      return 0;
-    } else if (index >= this.datasourceLength) {
-      return this.datasourceLength - 1;
-    }
-
-    return index;
-  }
-
-  /**
-   * Extracts byte index from element ID.
-   * Element IDs follow format: "{prefix}-{index}" (e.g., "dIdx-42")
-   * @private
-   * @param {string} id - Element ID to parse
-   * @returns {number|null} Parsed index, or null if ID format is invalid
-   */
-  private parseIndexFromId(id: string): number | null {
-    const parts = id.split("-");
-    if (parts.length < 2) return null;
-    const parsed = parseInt(parts[1], 10);
-    return isNaN(parsed) ? null : parsed;
-  }
-
-  /**
    * Handles keyboard events while a cell is in edit mode.
    * Supports:
    * - Arrow keys for navigation
@@ -152,60 +128,39 @@ export class MouseKeyboardHandler {
     }
     const vt = viewTypeInfo[t as ViewType];
 
-    // Handle navigation and special keys
-    switch (e.key) {
-      case "ArrowUp": {
-        const newIndex = this.clampIndex(this.savedElementIndex - 16);
-        this.moveEditControl(vt, newIndex);
-        return;
-      }
-      case "ArrowDown": {
-        const newIndex = this.clampIndex(this.savedElementIndex + 16);
-        this.moveEditControl(vt, newIndex);
-        return;
-      }
-      case "ArrowLeft": {
-        const newIndex = this.clampIndex(this.savedElementIndex - 1);
-        this.moveEditControl(vt, newIndex);
-        return;
-      }
-      case "Enter":
-      case "Tab":
-      case "ArrowRight": {
-        const newIndex = this.clampIndex(this.savedElementIndex + 1);
-        this.moveEditControl(vt, newIndex);
+    const action = resolveKeyAction(e.key, vt.validChars);
+
+    if (action.type === "move") {
+      const newIndex = clampIndex(this.savedElementIndex + action.delta, this.datasourceLength);
+      this.moveEditControl(vt, newIndex);
+      if (action.preventDefault) {
         e.preventDefault();
-        return;
       }
-      case "Escape": {
-        // Revert to original value
-        if (this.savedElementForEdit) {
-          this.savedElementForEdit.textContent = this.savedElementText || "";
-        }
-        this.restoreEditableElement();
-        return;
-      }
-      default:
-        break;
+      return;
     }
 
-    // Handle data input
-    if (this.savedElementForEdit) {
-      if (vt.validChars.test(e.key)) {
-        // Clear cell on first keystroke
-        if (this.freshEdit) {
-          this.savedElementForEdit.textContent = "";
-          this.freshEdit = false;
-        }
+    if (action.type === "cancel") {
+      if (this.savedElementForEdit) {
+        this.savedElementForEdit.textContent = this.savedElementText || "";
+      }
+      this.restoreEditableElement();
+      return;
+    }
 
-        // Accumulate input
-        this.savedElementForEdit.textContent += e.key;
+    if (action.type === "input" && this.savedElementForEdit) {
+      // Clear cell on first keystroke
+      if (this.freshEdit) {
+        this.savedElementForEdit.textContent = "";
+        this.freshEdit = false;
+      }
 
-        // Auto-advance to next cell when max chars reached
-        if (this.savedElementForEdit.textContent.length >= vt.numAllowedChars) {
-          const newIndex = this.clampIndex(this.savedElementIndex + 1);
-          this.moveEditControl(vt, newIndex);
-        }
+      // Accumulate input
+      this.savedElementForEdit.textContent += action.value;
+
+      // Auto-advance to next cell when max chars reached
+      if (this.savedElementForEdit.textContent.length >= vt.numAllowedChars) {
+        const newIndex = clampIndex(this.savedElementIndex + 1, this.datasourceLength);
+        this.moveEditControl(vt, newIndex);
       }
     }
   }
@@ -234,7 +189,7 @@ export class MouseKeyboardHandler {
   private setupElementForEdit(id: string) {
     if (!this.savedElementForEdit) return;
 
-    const index = this.parseIndexFromId(id);
+    const index = parseIndexFromId(id);
     if (index === null) {
       return;
     }
@@ -313,14 +268,19 @@ export class MouseKeyboardHandler {
    * @param {string} id - Element ID that triggered the hover
    */
   private addDynamicStyles(id: string) {
-    const row = Math.floor(parseInt(id.split("-")[1]) / 16);
+    const parsedIndex = parseIndexFromId(id);
+    if (parsedIndex === null) {
+      return;
+    }
+
+    const row = getRowFromIndex(parsedIndex);
     this.dynamicRowStyleIdx = this.styleSheet.insertRule(
       `.row-${row} { background-color: rgba(255, 127, 47, 0.4); }`,
     );
 
     // Don't highlight columns for offset view (prefix 'o')
     if (id.charAt(0) !== "o") {
-      const col = parseInt(id.split("-")[1]) % 16;
+      const col = getColumnFromIndex(parsedIndex);
       this.dynamicColStyleIdx = this.styleSheet.insertRule(
         `.col-${col} { background-color: rgba(255, 127, 47, 0.4); }`,
       );
