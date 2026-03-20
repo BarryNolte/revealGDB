@@ -1,6 +1,5 @@
 import { BrowserWindow } from "electron";
 import path, { join } from "path";
-import { wait } from "../common/gdb-common";
 
 type WindowSizeSettings = {
   getSync: (key: string) => unknown;
@@ -32,11 +31,7 @@ export function createDebugWindow(mainWindow: BrowserWindow): BrowserWindow {
   return debugWindow;
 }
 
-export function loadMainWindow(mainWindow: BrowserWindow, isDebug: boolean): void {
-  if (isDebug) {
-    wait(5000);
-  }
-
+export function loadMainWindow(mainWindow: BrowserWindow): void {
   let devUrl = process.env.ELECTRON_RENDERER_URL;
   if (devUrl) {
     console.log("Loading URL:", devUrl);

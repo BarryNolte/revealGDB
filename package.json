@@ -46,6 +46,8 @@
     "vite-watch:release": "cross-env REVEALGDB_BUILD=release REVEALGDB_DEBUG=false electron-vite dev --watch",
     "playwright:install": "playwright install",
     "metrics:maintainability": "node scripts/maintainability-metrics.cjs",
+    "benchmark:startup": "node scripts/startup-benchmark.cjs",
+    "benchmark:startup:set-baseline": "node scripts/startup-benchmark.cjs --set-baseline",
     "test:playwright": "npm run build:renderer && playwright test",
     "test": "vitest && npm run test:playwright"
   },

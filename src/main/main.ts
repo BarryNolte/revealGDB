@@ -45,6 +45,12 @@ console.log(`Build Info: ${JSON.stringify(globalThis.revealGdbBuild, null, 2)}`)
 
 export const AppSettings = settings;
 const fontList: Map<string, string> = new Map<string, string>();
+const startupEpochMs = Date.now();
+
+function logStartupMilestone(label: string): void {
+  const elapsedMs = Date.now() - startupEpochMs;
+  console.log(`[startup] ${label}: ${elapsedMs}ms`);
+}
 
 export let mainWindow: BrowserWindow;
 let debugWindow: BrowserWindow | undefined;
@@ -68,10 +74,10 @@ function isSelectedConnection(value: unknown): value is SelectedConnection {
 }
 
 app.on("ready", () => {
+  logStartupMilestone("app.ready");
+
   configureAppSettings(AppSettings);
   logStartupDiagnostics(AppSettings);
-  warmSystemFonts(fontList);
-  maybeInstallDevTools(isDebug);
   collectVersionInfo(gdbAppInfo);
   //console.log("Version Info\n------------");
   //console.log(gdbAppInfo);
@@ -81,13 +87,27 @@ app.on("ready", () => {
   if (isDebug) {
     debugWindow = createDebugWindow(mainWindow);
   }
-  loadMainWindow(mainWindow, isDebug);
+
+  logStartupMilestone("main-window-created");
+  loadMainWindow(mainWindow);
+  logStartupMilestone("main-window-load-started");
 
   // Restore persisted window bounds on first show.
   mainWindow.once("ready-to-show", () => {
+    logStartupMilestone("main-window-ready-to-show");
     restoreWindowBounds(mainWindow, AppSettings);
 
     mainWindow.show();
+    logStartupMilestone("main-window-shown");
+
+    // Keep non-critical font metadata warming off the startup critical path.
+    setImmediate(() => {
+      warmSystemFonts(fontList);
+
+      if (isDebug) {
+        maybeInstallDevTools(true);
+      }
+    });
   });
 
   GdbMenu.installMenu();
@@ -96,6 +116,7 @@ app.on("ready", () => {
    * UI is now up and running, now we can interact with GDB
    */
   gdbInterface = createGdbInterface(mainWindow, AppSettings);
+  logStartupMilestone("gdb-interface-created");
   wireWindowCloseHandlers(mainWindow, isDebug ? debugWindow : undefined);
 });
 registerAppEvents(app, nativeTheme, () => mainWindow);

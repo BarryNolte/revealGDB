@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "timestamp": "2026-03-19T01:48:57.104Z",
+  "commit": "6d8ba6c0b76047849ee8d59183bd211728725389",
+  "shortCommit": "6d8ba6c0",
+  "parentCommit": "6d8ba6c0b76047849ee8d59183bd211728725389",
+  "sampleCount": 3,
+  "timeoutMs": 30000,
+  "thresholds": {
+    "maxRegressionMs": 200,
+    "maxRegressionPct": 10
+  },
+  "metrics": {
+    "app.ready": {
+      "medianMs": 119,
+      "minMs": 114,
+      "maxMs": 144,
+      "samples": [
+        114,
+        119,
+        144
+      ]
+    },
+    "main-window-created": {
+      "medianMs": 788,
+      "minMs": 773,
+      "maxMs": 867,
+      "samples": [
+        773,
+        788,
+        867
+      ]
+    },
+    "main-window-load-started": {
+      "medianMs": 836,
+      "minMs": 799,
+      "maxMs": 914,
+      "samples": [
+        799,
+        836,
+        914
+      ]
+    },
+    "gdb-interface-created": {
+      "medianMs": 860,
+      "minMs": 808,
+      "maxMs": 920,
+      "samples": [
+        808,
+        860,
+        920
+      ]
+    },
+    "main-window-ready-to-show": {
+      "medianMs": 2132,
+      "minMs": 1860,
+      "maxMs": 6143,
+      "samples": [
+        1860,
+        2132,
+        6143
+      ]
+    },
+    "main-window-shown": {
+      "medianMs": 3091,
+      "minMs": 2850,
+      "maxMs": 7035,
+      "samples": [
+        2850,
+        3091,
+        7035
+      ]
+    }
+  },
+  "samples": [
+    {
+      "milestones": {
+        "app.ready": 119,
+        "main-window-created": 788,
+        "main-window-load-started": 836,
+        "gdb-interface-created": 860,
+        "main-window-ready-to-show": 6143,
+        "main-window-shown": 7035
+      },
+      "rawLines": [
+        "> revealgdb@0.1.0 start",
+        "> electron . --remote-debugging-port=9222",
+        "PRELOAD: C:\\Users\\barry\\Documents\\Projects\\revealGDB\\out\\preload\\preload.js",
+        "Build Info: {",
+        "  \"debug\": false,",
+        "  \"mode\": \"release\"",
+        "}",
+        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/62ce975b-be06-4613-98d2-0d2d5f8e097b",
+        "[startup] app.ready: 119ms",
+        "Settings File: C:\\Users\\barry\\AppData\\Roaming\\revealgdb\\settings.json",
+        "Display: (2560 x 1600)",
+        "Display: (3840 x 2160)",
+        "[startup] main-window-created: 788ms",
+        "Loading file: C:\\Users\\barry\\Documents\\Projects\\revealGDB\\out\\renderer\\index.html",
+        "[startup] main-window-load-started: 836ms",
+        "[startup] gdb-interface-created: 860ms",
+        "[startup] renderer-start",
+        "Notifying GDB Interface that rendering is starting.",
+        "[startup] renderer-end",
+        "Notifying GDB Interface that rendering is complete.",
+        "[startup] main-window-ready-to-show: 6143ms",
+        "[startup] main-window-shown: 7035ms"
+      ]
+    },
+    {
+      "milestones": {
+        "app.ready": 144,
+        "main-window-created": 773,
+        "main-window-load-started": 799,
+        "gdb-interface-created": 808,
+        "main-window-ready-to-show": 1860,
+        "main-window-shown": 2850
+      },
+      "rawLines": [
+        "> revealgdb@0.1.0 start",
+        "> electron . --remote-debugging-port=9222",
+        "PRELOAD: C:\\Users\\barry\\Documents\\Projects\\revealGDB\\out\\preload\\preload.js",
+        "Build Info: {",
+        "  \"debug\": false,",
+        "  \"mode\": \"release\"",
+        "}",
+        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/2e03c097-571d-4d98-8329-b3989f548434",
+        "[startup] app.ready: 144ms",
+        "Settings File: C:\\Users\\barry\\AppData\\Roaming\\revealgdb\\settings.json",
+        "Display: (2560 x 1600)",
+        "Display: (3840 x 2160)",
+        "[startup] main-window-created: 773ms",
+        "Loading file: C:\\Users\\barry\\Documents\\Projects\\revealGDB\\out\\renderer\\index.html",
+        "[startup] main-window-load-started: 799ms",
+        "[startup] gdb-interface-created: 808ms",
+        "[startup] renderer-start",
+        "Notifying GDB Interface that rendering is starting.",
+        "[startup] renderer-end",
+        "Notifying GDB Interface that rendering is complete.",
+        "[startup] main-window-ready-to-show: 1860ms",
+        "[startup] main-window-shown: 2850ms"
+      ]
+    },
+    {
+      "milestones": {
+        "app.ready": 114,
+        "main-window-created": 867,
+        "main-window-load-started": 914,
+        "gdb-interface-created": 920,
+        "main-window-ready-to-show": 2132,
+        "main-window-shown": 3091
+      },
+      "rawLines": [
+        "> revealgdb@0.1.0 start",
+        "> electron . --remote-debugging-port=9222",
+        "PRELOAD: C:\\Users\\barry\\Documents\\Projects\\revealGDB\\out\\preload\\preload.js",
+        "Build Info: {",
+        "  \"debug\": false,",
+        "  \"mode\": \"release\"",
+        "}",
+        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/1063c090-d651-48a7-87b4-1b437182fe6f",
+        "[startup] app.ready: 114ms",
+        "Settings File: C:\\Users\\barry\\AppData\\Roaming\\revealgdb\\settings.json",
+        "Display: (2560 x 1600)",
+        "Display: (3840 x 2160)",
+        "[startup] main-window-created: 867ms",
+        "Loading file: C:\\Users\\barry\\Documents\\Projects\\revealGDB\\out\\renderer\\index.html",
+        "[startup] main-window-load-started: 914ms",
+        "[startup] gdb-interface-created: 920ms",
+        "[startup] renderer-start",
+        "Notifying GDB Interface that rendering is starting.",
+        "[startup] renderer-end",
+        "Notifying GDB Interface that rendering is complete.",
+        "[startup] main-window-ready-to-show: 2132ms",
+        "[startup] main-window-shown: 3091ms"
+      ]
+    }
+  ]
+}

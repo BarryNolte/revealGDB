@@ -127,9 +127,6 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
     case "save-source-viewer-font-name":
       context.appSettings.setSync("gdb.gui.sourceViewerFontName", msg.data as never);
       break;
-    case "save-main-theme":
-      context.appSettings.setSync("gdb.gui.mainTheme", msg.data as never);
-      break;
     case "save-dock-layout": {
       context.appSettings.setSync("gdb.gui.dockLayout", msg.data as never);
 
@@ -144,9 +141,11 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       break;
     }
     case "renderStart":
+      console.log("[startup] renderer-start");
       console.log("Notifying GDB Interface that rendering is starting.");
       break;
     case "renderEnd":
+      console.log("[startup] renderer-end");
       console.log("Notifying GDB Interface that rendering is complete.");
       sendNotifyRender(context, { command: "command-entry" });
       break;

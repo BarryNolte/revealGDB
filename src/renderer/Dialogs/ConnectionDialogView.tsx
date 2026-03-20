@@ -103,7 +103,7 @@ export default function ConnectionDialogView(props: ConnectionDialogViewProps): 
         ref={connDlgRef}
         title="Connecting..."
         width="500px"
-        height="185%"
+        height="800px"
         position={{ X: "center", Y: "center" }}
         showCloseIcon={true}
         close={onDialogClose}

@@ -56,7 +56,6 @@ export type NotifyMainCommand =
   | "save-source-viewer-theme"
   | "save-source-viewer-font-size"
   | "save-source-viewer-font-name"
-  | "save-main-theme"
   | "save-dock-layout"
   | "renderStart"
   | "renderEnd";

@@ -14,6 +14,7 @@ import { registerLicense } from "@syncfusion/ej2-base";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import "./syncfusion.css";
 
 // Register Syncfusion component license
 // Required for Syncfusion UI components (Grid, Docking, Dialog, etc.)
