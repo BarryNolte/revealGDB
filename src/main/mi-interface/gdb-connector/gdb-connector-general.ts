@@ -77,7 +77,7 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
 
     this.gdbExe.stderr?.on("data", (data: Uint8Array): void => {
       const text = new TextDecoder().decode(data);
-      console.log(`GDB Error: ${text}`);
+      // console.log(`GDB Error: ${text}`);
       if (ConnectionNotifier.getInstance().isWatchingConsole()) {
         ConnectionNotifier.getInstance().consoleCapture(true, text);
         return;
@@ -90,12 +90,12 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
   }
 
   override Send(data: string): void {
-    this.gdbExe?.stdin?.write(data + "\n", (error) => {
-      if (error) {
-        console.error(`>>  ${data} > Error: ${error}`);
-      } else {
-        console.log(`>>  ${data}`);
-      }
+    this.gdbExe?.stdin?.write(data + "\n", (_error) => {
+      // if (error) {
+      //   console.error(`>>  ${data} > Error: ${error}`);
+      // } else {
+      //   console.log(`>>  ${data}`);
+      // }
       this.emit("gdb-input", data);
     });
   }
@@ -106,9 +106,5 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
 
   override IsRunning(): boolean {
     return this.gdbExe?.exitCode === null;
-  }
-
-  override ConvertFilePath(path: string): string {
-    return "//wsl$/Ubuntu-20.04" + path;
   }
 }

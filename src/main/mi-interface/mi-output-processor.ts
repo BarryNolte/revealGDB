@@ -86,7 +86,7 @@ export class MiOutputProcessor {
         break;
       }
       default: {
-        console.error(`Raw Output Type Unknown: ${output}`);
+        // console.error(`Raw Output Type Unknown: ${output}`);
         this.host.emit("error-stream", output);
         return false;
       }

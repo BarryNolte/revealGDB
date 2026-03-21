@@ -115,8 +115,8 @@ export default function GdbMemoryWindow(): JSX.Element {
         datasource={datasource}
         offset={parseInt(address, 16) || 0}
         changeCallback={(index: number, value: number) => {
-          console.log(`Data changed at index ${index} to value ${value}`);
-          console.log(`${parseInt(address, 16) || 0}:${value}`);
+          // console.log(`Data changed at index ${index} to value ${value}`);
+          // console.log(`${parseInt(address, 16) || 0}:${value}`);
           const addr = parseInt(address, 16) + index;
           window.ipcToMain.sendGdbCommand(`set {char}${addr.toString(16)} = ${value.toString(16)}`);
         }}

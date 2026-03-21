@@ -6,10 +6,10 @@ export class MiExecAsyncHandler {
   private readonly rgxThreadIdExtractor: RegExp = /thread-id="(?<tid>[^"]*)"/;
   private readonly rgxStoppedThreadsExtractor: RegExp =
     /stopped-threads="(?<stoppedThreads>[^"]*)"/;
-  private readonly rgxCoreExtractor: RegExp = /core="(?<core>[^"]*)"/;
+  // private readonly rgxCoreExtractor: RegExp = /core="(?<core>[^"]*)"/;
   private readonly rgxReasonExtractor: RegExp = /reason="(?<reason>[^"]*)"/;
-  private readonly rgxBphExtractor: RegExp =
-    /disp="(?<disp>[^"]*)",bkptno="(?<bkptno>[^"]*)",frame={(?<frame>[^}]*)}/;
+  //private readonly rgxBphExtractor: RegExp =
+  //  /disp="(?<disp>[^"]*)",bkptno="(?<bkptno>[^"]*)",frame={(?<frame>[^}]*)}/;
 
   constructor(private readonly host: MiOutputHost) {}
 
@@ -31,12 +31,12 @@ export class MiExecAsyncHandler {
         const tid = this.rgxThreadIdExtractor.exec(data)?.groups?.tid || undefined;
         const stoppedThreads =
           this.rgxStoppedThreadsExtractor.exec(data)?.groups?.stoppedThreads || undefined;
-        const core = this.rgxCoreExtractor.exec(data)?.groups?.core || undefined;
+        // const core = this.rgxCoreExtractor.exec(data)?.groups?.core || undefined;
         const reason = this.rgxReasonExtractor.exec(data)?.groups?.reason || undefined;
 
-        console.log(
-          `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-        );
+        // console.log(
+        //   `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
+        // );
 
         switch (reason) {
           case undefined: {
@@ -45,10 +45,10 @@ export class MiExecAsyncHandler {
           }
           case "end-stepping-range":
           case "breakpoint-hit": {
-            const bph = this.rgxBphExtractor.exec(data);
-            const disp = bph?.groups?.disp || undefined;
-            const bphBkptno = bph?.groups?.bkptno || undefined;
-            console.log(`ExecAsyncRecord (stopped): ${disp} ${bphBkptno}`);
+            // const bph = this.rgxBphExtractor.exec(data);
+            // const disp = bph?.groups?.disp || undefined;
+            // const bphBkptno = bph?.groups?.bkptno || undefined;
+            // console.log(`ExecAsyncRecord (stopped): ${disp} ${bphBkptno}`);
             break;
           }
           case "watchpoint-trigger":
@@ -76,7 +76,7 @@ export class MiExecAsyncHandler {
         break;
       }
       default: {
-        console.error(`ExecAsyncRecord (Unknown): ${result} --> ${data}`);
+        // console.error(`ExecAsyncRecord (Unknown): ${result} --> ${data}`);
         return false;
       }
     }

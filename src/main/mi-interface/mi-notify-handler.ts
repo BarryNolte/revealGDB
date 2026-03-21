@@ -108,7 +108,7 @@ export class MiNotifyAsyncHandler {
       case "breakpoint-created": {
         const idChunks = this.rgxBkpt.exec(data);
         if (!idChunks || !idChunks.groups) {
-          console.error(`Failed to parse breakpoint-created: ${data}`);
+          // console.error(`Failed to parse breakpoint-created: ${data}`);
           return false;
         }
         this.host.gdbDB.createBreakpoint(idChunks.groups as gdbBreakpoint);
@@ -118,7 +118,7 @@ export class MiNotifyAsyncHandler {
       case "breakpoint-modified": {
         const idChunks = this.rgxBkpt.exec(data);
         if (!idChunks || !idChunks.groups) {
-          console.error(`Failed to parse breakpoint-modified: ${data}`);
+          // console.error(`Failed to parse breakpoint-modified: ${data}`);
           return false;
         }
         this.host.gdbDB.updateBreakpoint(idChunks.groups as gdbBreakpoint);

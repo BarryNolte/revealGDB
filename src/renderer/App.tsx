@@ -390,9 +390,9 @@ export default function App(): JSX.Element {
  * Ensures user's window arrangement is preserved across sessions.
  */
 window.addEventListener("beforeunload", () => {
-  console.log("******************************************");
-  console.log("Before Unloading Browser Window");
-  console.log("******************************************");
+  // console.log("******************************************");
+  // console.log("Before Unloading Browser Window");
+  // console.log("******************************************");
 
   window.dispatchEvent(new Event("save-dock-layout"));
 });
