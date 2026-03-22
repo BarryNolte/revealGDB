@@ -505,6 +505,7 @@ describe("gdbStateDatabase class", () => {
           id: "1",
           targetId: "Thread 0x1",
           details: "",
+          name: "main",
           frame: {
             level: "0",
             addr: "0x123",
@@ -535,6 +536,7 @@ describe("gdbStateDatabase class", () => {
           id: "1",
           targetId: "Thread 0x1",
           details: "",
+          name: "main",
           frame: {
             level: "0",
             addr: "0x123",
@@ -561,6 +563,7 @@ describe("gdbStateDatabase class", () => {
       id: "1",
       targetId: "Thread 0x1234",
       details: "main thread",
+      name: "main",
       frame: {
         level: "0",
         addr: "0x12345",

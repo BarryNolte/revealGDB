@@ -90,6 +90,7 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
   }
 
   override Send(data: string): void {
+    this.gdbExe?.stdin?.cork();
     this.gdbExe?.stdin?.write(data + "\n", (_error) => {
       // if (error) {
       //   console.error(`>>  ${data} > Error: ${error}`);
@@ -98,6 +99,7 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
       // }
       this.emit("gdb-input", data);
     });
+    this.gdbExe?.stdin?.uncork();
   }
 
   override End(): boolean {

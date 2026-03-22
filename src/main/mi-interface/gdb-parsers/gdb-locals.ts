@@ -259,19 +259,21 @@ export class LocalsContainer {
     const vars = value.matchAll(varsRegx);
     const retValue: Local = new Local(name, "");
 
-    // if (vars.toArray().length === 0) {
-    //   retValue.value = value;
-    //   return retValue;
-    // }
+    const arr = vars.toArray();
 
-    for (const v of vars) {
+    if (arr.length === 0) {
+      retValue.value = value;
+      return retValue;
+    }
+
+    arr.forEach((v) => {
       const newLocal: Local = new Local(
         v.groups?.name ?? "",
         v.groups?.value ?? "",
         retValue.fullpath,
       );
       retValue.sublocals.push(newLocal);
-    }
+    });
 
     return retValue;
   }

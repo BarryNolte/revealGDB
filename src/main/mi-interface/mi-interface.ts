@@ -31,6 +31,9 @@ export class miInterface extends EventEmitter {
 
   constructor() {
     super();
+    this.gdbDB.on("error-stream", (line: string) => {
+      this.emit("error-stream", line);
+    });
   }
 
   connect(selectedConnection: SelectedConnection): boolean {

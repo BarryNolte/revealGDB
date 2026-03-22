@@ -18,6 +18,7 @@ describe("gdbSourceFileCache class", () => {
 
   beforeEach(() => {
     cache = new gdbSourceFileCache();
+    cache.setFilePrefix("//wsl$/Ubuntu");
     vi.clearAllMocks();
   });
 

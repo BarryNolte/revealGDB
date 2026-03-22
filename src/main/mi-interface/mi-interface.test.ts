@@ -28,7 +28,7 @@ const { mockSettings, mockWebContents, mockConnectorFactory } = vi.hoisted(() =>
   mockConnectorFactory: vi.fn(),
 }));
 
-vi.mock("./gdb-connector/gdb-connector-idf-on-wsl", () => ({
+vi.mock("./gdb-connector/gdb-connector-general", () => ({
   gdbConnectorIdfOnWsl: vi.fn(function () {
     return mockConnectorFactory();
   }),

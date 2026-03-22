@@ -1,4 +1,10 @@
 import {
+  Grid,
+  ColumnMenu as GridColumnMenu,
+  Edit as GridEdit,
+  Resize as GridResize,
+} from "@syncfusion/ej2-grids";
+import {
   CellEditArgs,
   CellSaveArgs,
   IEditCell,
@@ -20,6 +26,9 @@ import { GdbAny } from "../../common/gdb-common";
 import { ToolWindowErrorBoundary } from "../Errors/ToolWindowErrorBoundary";
 import { menuCopy } from "../utilities/Clipboard";
 import "./GdbLocalsWindow.css";
+
+// TreeGrid wraps an internal Grid instance, so inject matching Grid modules too.
+Grid.Inject(GridResize, GridColumnMenu, GridEdit);
 
 /**
  * Locals window component.

@@ -61,16 +61,16 @@ describe("handleNotifyMain", () => {
     });
   });
 
-  it("handles save-main-theme by persisting the setting", () => {
+  it("handles save-app-theme by persisting the setting", () => {
     const { context, appSettings } = createContext();
     const msg: NotifyMainRequest = {
-      command: "save-main-theme",
+      command: "save-app-theme",
       data: "solarized",
     };
 
     handleNotifyMain(msg, context);
 
-    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.mainTheme", msg.data);
+    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.applicationTheme", msg.data);
   });
 
   it("handles cancel-connection by disconnecting and clearing DB", () => {
