@@ -76,6 +76,15 @@ describe("miInterface", () => {
     it("should be an EventEmitter", () => {
       expect(miInterface_instance).toBeInstanceOf(EventEmitter);
     });
+
+    it("should forward gdbDB error-stream events", () => {
+      const listener = vi.fn();
+      miInterface_instance.on("error-stream", listener);
+
+      miInterface_instance.gdbDB.emit("error-stream", "db-error");
+
+      expect(listener).toHaveBeenCalledWith("db-error");
+    });
   });
 
   describe("parseRawOutput", () => {

@@ -213,6 +213,19 @@ describe("LocalsContainer class", () => {
     expect(container.locals[2].fullpath).toBe("z");
   });
 
+  it("should parse rust locals payload with enum and struct values", () => {
+    const input =
+      '{name="shapes",value="Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}"},{name="p",value="rustdebug::Point {x: 3, y: 4}"},{name="origin",value="rustdebug::Point {x: 0, y: 0}"}';
+    const container = new LocalsContainer(input);
+
+    // This fixture captures a real-world Rust payload with nested enums and structs.
+    // For now, validate that the parser accepts the input and surfaces key locals.
+    expect(container.locals.length).toBeGreaterThan(0);
+    expect(container.locals.some((local) => local.name === "shapes")).toBe(true);
+    expect(container.locals.some((local) => local.name === "p")).toBe(true);
+    expect(container.locals.some((local) => local.name === "origin")).toBe(true);
+  });
+
   it("should preserve numeric string values", () => {
     const input = '{name="count",value="0"}';
     const container = new LocalsContainer(input);

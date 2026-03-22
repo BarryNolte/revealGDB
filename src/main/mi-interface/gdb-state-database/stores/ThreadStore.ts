@@ -9,7 +9,7 @@ export class ThreadStore {
       id: thread.id,
       targetId: thread.targetId,
       details: thread.details,
-      name: thread.frame.func,
+      name: thread.name,
       state: thread.state,
       frame: {
         active: false,

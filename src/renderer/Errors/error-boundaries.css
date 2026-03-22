@@ -1,0 +1,48 @@
+.toolwindow-error-boundary-fallback {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+  min-height: 100px;
+  width: 100%;
+  padding: 10px;
+  background-color: var(--error-background-color);
+  color: var(--error-text-color);
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.toolwindow-error-boundary-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.toolwindow-error-boundary-message {
+  margin: 0;
+  font-size: 12px;
+}
+
+.toolwindow-error-boundary-retry {
+  width: fit-content;
+  padding: 4px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #111;
+  cursor: pointer;
+}
+
+.toolwindows-host-error-boundary-fallback {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+  width: 100%;
+  padding: 12px;
+  background-color: var(--error-background-color);
+  color: var(--error-text-color);
+  font-family: "Segoe UI", system-ui, sans-serif;
+}

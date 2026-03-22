@@ -85,6 +85,10 @@ export class gdbStateDatabase extends EventEmitter {
 
   constructor(notifier?: UINotifier) {
     super();
+    this.sourceFileStore.gdbSrcFileCache.on("error-stream", (line: string) => {
+      this.emit("error-stream", line);
+    });
+
     this.notifier = notifier || new ElectronUINotifier();
     this.updater = new StateUpdateBroadcaster(
       this.notifier,

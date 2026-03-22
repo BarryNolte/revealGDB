@@ -5,6 +5,7 @@
 - Cleanup menus/toolbar
 - Convience variables
 - Save column widths with layout
+- Look at GDB source code for possible data columns not seen yet and what order they could appear in.
 
 # Bugs
 

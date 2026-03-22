@@ -729,5 +729,14 @@ describe("gdbStateDatabase class", () => {
       expect(listener1).toHaveBeenCalled();
       expect(listener2).toHaveBeenCalled();
     });
+
+    it("should forward source file cache errors", async () => {
+      const listener = vi.fn();
+      db.on("error-stream", listener);
+
+      await db.getSourceFileContents("/file/that/does/not/exist.c");
+
+      expect(listener).toHaveBeenCalledWith(expect.stringContaining("Error reading file"));
+    });
   });
 });

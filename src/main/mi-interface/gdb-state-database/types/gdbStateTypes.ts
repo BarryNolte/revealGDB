@@ -108,6 +108,7 @@ export type AddThreadArgs = {
   id: string;
   targetId: string;
   details: string;
+  name: string;
   frame: {
     level: string;
     addr: string;

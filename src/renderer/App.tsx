@@ -25,6 +25,8 @@ import type { ConnectionManagerHandle } from "./Dialogs/ConnectionManager";
 /* Tool Windows */
 import RevealToolbar from "./Components/Toolbar.jsx";
 import type { SettingsHandle } from "./Dialogs/Settings.jsx";
+import { ToolWindowErrorBoundary } from "./Errors/ToolWindowErrorBoundary";
+import { ToolWindowsHostErrorBoundary } from "./Errors/ToolWindowsHostErrorBoundary";
 import GdbCommandWindow from "./ToolWindows/GdbCommandWindow";
 import GdbSourceWindow from "./ToolWindows/GdbSourceWindow";
 import { DockMenuConnector } from "./utilities/DockMenuConnector.js";
@@ -79,8 +81,18 @@ let dockManager: DockManager;
  */
 export let dockMenuConnector: DockMenuConnector | null = null;
 
-function DeferredWindow({ children }: { children: JSX.Element }): JSX.Element {
-  return <Suspense fallback={null}>{children}</Suspense>;
+function DeferredWindow({
+  title,
+  children,
+}: {
+  title: string;
+  children: JSX.Element;
+}): JSX.Element {
+  return (
+    <ToolWindowErrorBoundary title={title}>
+      <Suspense fallback={null}>{children}</Suspense>
+    </ToolWindowErrorBoundary>
+  );
 }
 
 /* Icon Assets - Tool window icons loaded as static assets */
@@ -294,77 +306,98 @@ export default function App(): JSX.Element {
       />
       <div id="revealDockDiv" className="full-size">
         <div id="revealDockManager" className="revealDockManager"></div>
-        <div id="sourceWindow" data-panel-caption="Source" hidden={true} data-panel-icon={iconSrc}>
-          <GdbSourceWindow />
-        </div>
-        <div
-          id="localsWindow"
-          data-panel-caption="Locals"
-          hidden={true}
-          data-panel-icon={iconLocal}
-        >
-          <DeferredWindow>
-            <GdbLocalsWindow />
-          </DeferredWindow>
-        </div>
-        <div
-          id="threadsWindow"
-          data-panel-caption="Threads"
-          data-panel-icon={iconThread}
-          hidden={true}
-        >
-          <DeferredWindow>
-            <GdbThreadsWindow />
-          </DeferredWindow>
-        </div>
-        <div
-          id="registersWindow"
-          data-panel-caption="Registers"
-          hidden={true}
-          data-panel-icon={iconRegister}
-        >
-          <DeferredWindow>
-            <GdbRegistersWindow />
-          </DeferredWindow>
-        </div>
-        <div
-          id="disassemblyWindow"
-          data-panel-caption="Disassembly"
-          hidden={true}
-          data-panel-icon={iconDisa}
-        >
-          <DeferredWindow>
-            <GdbDisassemblerWindow />
-          </DeferredWindow>
-        </div>
-        <div
-          id="commandWindow"
-          data-panel-caption="Command"
-          hidden={true}
-          data-panel-icon={iconCmd}
-        >
-          <GdbCommandWindow />
-        </div>
-        <div id="memoryWindow" data-panel-caption="Memory" hidden={true} data-panel-icon={iconHex}>
-          <DeferredWindow>
-            <GdbMemoryWindow />
-          </DeferredWindow>
-        </div>
-        <div
-          id="callstackWindow"
-          data-panel-caption="Call Stack"
-          hidden={true}
-          data-panel-icon={iconStack}
-        >
-          <DeferredWindow>
-            <GdbCallStackWindow />
-          </DeferredWindow>
-        </div>
-        <div id="bpWindow" data-panel-caption="Breakpoints" hidden={true} data-panel-icon={iconBp}>
-          <DeferredWindow>
-            <GdbBreakPointWindow />
-          </DeferredWindow>
-        </div>
+        <ToolWindowsHostErrorBoundary>
+          <div
+            id="sourceWindow"
+            data-panel-caption="Source"
+            hidden={true}
+            data-panel-icon={iconSrc}
+          >
+            <ToolWindowErrorBoundary title="Source">
+              <GdbSourceWindow />
+            </ToolWindowErrorBoundary>
+          </div>
+          <div
+            id="localsWindow"
+            data-panel-caption="Locals"
+            hidden={true}
+            data-panel-icon={iconLocal}
+          >
+            <DeferredWindow title="Locals">
+              <GdbLocalsWindow />
+            </DeferredWindow>
+          </div>
+          <div
+            id="threadsWindow"
+            data-panel-caption="Threads"
+            data-panel-icon={iconThread}
+            hidden={true}
+          >
+            <DeferredWindow title="Threads">
+              <GdbThreadsWindow />
+            </DeferredWindow>
+          </div>
+          <div
+            id="registersWindow"
+            data-panel-caption="Registers"
+            hidden={true}
+            data-panel-icon={iconRegister}
+          >
+            <DeferredWindow title="Registers">
+              <GdbRegistersWindow />
+            </DeferredWindow>
+          </div>
+          <div
+            id="disassemblyWindow"
+            data-panel-caption="Disassembly"
+            hidden={true}
+            data-panel-icon={iconDisa}
+          >
+            <DeferredWindow title="Disassembly">
+              <GdbDisassemblerWindow />
+            </DeferredWindow>
+          </div>
+          <div
+            id="commandWindow"
+            data-panel-caption="Command"
+            hidden={true}
+            data-panel-icon={iconCmd}
+          >
+            <ToolWindowErrorBoundary title="Command">
+              <GdbCommandWindow />
+            </ToolWindowErrorBoundary>
+          </div>
+          <div
+            id="memoryWindow"
+            data-panel-caption="Memory"
+            hidden={true}
+            data-panel-icon={iconHex}
+          >
+            <DeferredWindow title="Memory">
+              <GdbMemoryWindow />
+            </DeferredWindow>
+          </div>
+          <div
+            id="callstackWindow"
+            data-panel-caption="Call Stack"
+            hidden={true}
+            data-panel-icon={iconStack}
+          >
+            <DeferredWindow title="Call Stack">
+              <GdbCallStackWindow />
+            </DeferredWindow>
+          </div>
+          <div
+            id="bpWindow"
+            data-panel-caption="Breakpoints"
+            hidden={true}
+            data-panel-icon={iconBp}
+          >
+            <DeferredWindow title="Breakpoints">
+              <GdbBreakPointWindow />
+            </DeferredWindow>
+          </div>
+        </ToolWindowsHostErrorBoundary>
       </div>
       <Suspense fallback={null}>
         <AboutBox ref={aboutBoxRef} />

@@ -69,13 +69,6 @@ export default function GdbThreadsWindow(): JSX.Element {
       });
 
       setThreadData(threadList);
-
-      // Directly update grid's dataSource to ensure it clears properly
-      // const grid = gridRef.current;
-      // if (grid) {
-      //   grid.dataSource = threadList;
-      //   grid.refresh(); // Must call refresh() to update internal currentViewData
-      // }
     });
 
     return () => {
@@ -88,11 +81,6 @@ export default function GdbThreadsWindow(): JSX.Element {
    * Runs after React has updated the grid with new thread data.
    */
   useEffect(() => {
-    // const grid = gridRef.current;
-    // if (!grid) {
-    //   return;
-    // }
-
     // Only auto-fit columns when there's data to fit
     if (threadData.length > 0) {
       gridRef?.current?.autoFitColumns(

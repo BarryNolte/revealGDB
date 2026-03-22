@@ -6,7 +6,7 @@ import { parseStackFrameFromGroups } from "./stack-parsing-helpers";
 
 export class StackResultStrategy implements MiDoneResultStrategy {
   private readonly rgxFrame: RegExp =
-    /frame={level="(?<level>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",arch="(?<arch>[^"]*)"},/g;
+    /frame={level="(?<level>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)"(?:,file="(?<file>[^"]*)")?(?:,fullname="(?<fullname>[^"]*)")?(?:,line="(?<line>[^"]*)")?(?:,arch="(?<arch>[^"]*)")?}/g;
 
   canHandle(resResult: string): boolean {
     return resResult === "stack";
@@ -16,6 +16,11 @@ export class StackResultStrategy implements MiDoneResultStrategy {
     const frameValues = getRegexMatches(resList, this.rgxFrame);
 
     host.gdbDB.clearStackFrames();
+    if (frameValues.length === 0) {
+      host.gdbDB.stackUpdateUI();
+      return true;
+    }
+
     frameValues.forEach((frameChunk) => {
       host.gdbDB.addStackFrame({
         active: false,

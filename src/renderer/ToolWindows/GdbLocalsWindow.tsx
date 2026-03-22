@@ -17,6 +17,7 @@ import {
 } from "@syncfusion/ej2-react-treegrid";
 import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
+import { ToolWindowErrorBoundary } from "../Errors/ToolWindowErrorBoundary";
 import { menuCopy } from "../utilities/Clipboard";
 import "./GdbLocalsWindow.css";
 
@@ -91,7 +92,7 @@ export default function GdbLocalsWindow(): JSX.Element {
     }
   }, []);
 
-  return (
+  const content = (
     <div className="full-size flex-container">
       <TreeGridComponent
         ref={treeRef}
@@ -147,4 +148,6 @@ export default function GdbLocalsWindow(): JSX.Element {
       />
     </div>
   );
+
+  return <ToolWindowErrorBoundary title="Locals">{content}</ToolWindowErrorBoundary>;
 }

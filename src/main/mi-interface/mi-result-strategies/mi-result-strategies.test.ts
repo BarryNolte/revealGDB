@@ -123,4 +123,35 @@ describe("MI result strategies", () => {
       }),
     );
   });
+
+  it("StackResultStrategy matches frames when file/fullname/line are absent", async () => {
+    const host = createHost();
+    const strategy = new StackResultStrategy();
+    const resList = '[frame={level="0",addr="0x1",func="main",arch="arm"}]';
+
+    const handled = await strategy.handle(host, "", resList);
+
+    expect(handled).toBe(true);
+    expect(host.gdbDB.stackFrames).toHaveLength(1);
+    expect(host.gdbDB.stackFrames[0]?.func).toBe("main");
+    expect(host.gdbDB.stackFrames[0]?.file).toBe("");
+    expect(host.gdbDB.stackFrames[0]?.fullName).toBe("");
+    expect(host.gdbDB.stackFrames[0]?.line).toBe("");
+  });
+
+  it("StackResultStrategy safely handles an empty frame list", async () => {
+    const host = createHost();
+    const strategy = new StackResultStrategy();
+    const sourceFileCallCount = mockWebContents.send.mock.calls.filter(
+      (call) => call[0] === "source-file",
+    ).length;
+
+    const handled = await strategy.handle(host, "", "[]");
+
+    expect(handled).toBe(true);
+    expect(host.gdbDB.stackFrames).toHaveLength(0);
+    expect(mockWebContents.send.mock.calls.filter((call) => call[0] === "source-file").length).toBe(
+      sourceFileCallCount,
+    );
+  });
 });

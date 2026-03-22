@@ -7,7 +7,7 @@ import { parseThreadFrameFromGroups } from "./thread-parsing-helpers";
 export class ThreadsResultStrategy implements MiDoneResultStrategy {
   private readonly rgxThreads: RegExp = /\[(?<data>.*)\],current-thread-id="(?<curTid>.*)"/;
   private readonly rgxThreadData: RegExp =
-    /{id="(?<tid>[^"]*)",target-id="(?<targId>[^"]*)",details="(?<details>[^"]*)",frame={level="(?<level>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",args=\[(?<args>[^\]]*)\],file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",arch="(?<arch>[^"]*)"\},state="(?<state>[^"]*)"}/g;
+    /{id="(?<tid>[^"]*)",target-id="(?<targId>[^"]*)"(?:,name="(?<name>[^"]*)")?(?:,details="(?<details>[^"]*)")?,frame={level="(?<level>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",args=\[(?<args>[^\]]*)\](?:,file="(?<file>[^"]*)")?(?:,fullname="(?<fullname>[^"]*)")?(?:,line="(?<line>[^"]*)")?(?:,from="(?<from>[^"]*)")?,arch="(?<arch>[^"]*)"\},state="(?<state>[^"]*)"}/g;
 
   canHandle(resResult: string): boolean {
     return resResult === "threads";
@@ -24,7 +24,8 @@ export class ThreadsResultStrategy implements MiDoneResultStrategy {
       const threadFrame = parseThreadFrameFromGroups(thread.groups);
       host.gdbDB.addThread({
         id: thread.groups?.tid || "",
-        targetId: thread.groups?.targId || thread.groups?.targid || "",
+        targetId: thread.groups?.targId || "",
+        name: thread.groups?.name || "",
         details: thread.groups?.details || "",
         frame: threadFrame,
         state: thread.groups?.state || "",
