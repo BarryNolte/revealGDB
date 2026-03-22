@@ -226,6 +226,26 @@ describe("LocalsContainer class", () => {
     expect(container.locals.some((local) => local.name === "origin")).toBe(true);
   });
 
+  it("should preserve brace-heavy rust display values as plain strings", () => {
+    const input =
+      '{name="center",value="0x0"},{name="shape",value="0x66c610"},{name="iter",value="core::slice::iter::Iter<rustdebug::Shape> {ptr: core::ptr::non_null::NonNull<rustdebug::Shape> {pointer: 0x66c648}, end_or_len: 0x66c6b8, _marker: core::marker::PhantomData<&rustdebug::Shape>}"},{name="shapes",value="Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}"},{name="p",value="rustdebug::Point {x: 3, y: 4}"},{name="origin",value="rustdebug::Point {x: 0, y: 0}"}';
+    const container = new LocalsContainer(input);
+
+    const iter = container.locals.find((local) => local.name === "iter");
+    const shapes = container.locals.find((local) => local.name === "shapes");
+
+    expect(iter).toBeDefined();
+    expect(iter?.value).toContain("end_or_len: 0x66c6b8");
+    expect(iter?.sublocals).toHaveLength(0);
+
+    expect(shapes).toBeDefined();
+    expect(shapes?.value).toContain("Vec(size=3)");
+    expect(shapes?.value).toContain("Shape::Rectangle");
+    expect(shapes?.value).toContain("\\n");
+    expect(shapes?.value.endsWith(")\\n")).toBe(false);
+    expect(shapes?.sublocals).toHaveLength(0);
+  });
+
   it("should preserve numeric string values", () => {
     const input = '{name="count",value="0"}';
     const container = new LocalsContainer(input);

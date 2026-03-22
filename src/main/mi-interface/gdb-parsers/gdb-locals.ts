@@ -45,6 +45,14 @@ export class Local {
    * @param local The Local object to add as a child
    */
   addLocal(local: Local): void {
+    if (local === this) {
+      return;
+    }
+
+    if (this.sublocals.includes(local)) {
+      return;
+    }
+
     // Recalculate the child's fullpath based on this local's fullpath
     // Skip anonymous markers in the path - they should be transparent to the fullpath
     if (local.name.startsWith(LocalsContainer.anonMarker)) {
@@ -142,6 +150,18 @@ export class LocalsContainer {
    */
   private parseComplexValue(name: string, value: string): Local {
     const chunks = this.createComplexChunks(value);
+
+    // Some debugger values (for example Rust Display/Debug strings) can contain
+    // many braces but no parseable MI-style `field = value` pairs.
+    // In those cases, preserve the whole value as a plain scalar.
+    const hasNamedFields = chunks.some(
+      (chunk) => chunk.type === streamType.name && chunk.val.trim().length > 0,
+    );
+
+    if (!hasNamedFields) {
+      return new Local(name, value);
+    }
+
     return this.parseComplexChunks(name, chunks);
   }
 
@@ -190,7 +210,15 @@ export class LocalsContainer {
       if (localStack.length < 2) {
         return;
       }
-      localStack[localStack.length - 2].addLocal(localStack.pop()!);
+
+      const child = localStack.pop()!;
+      const parent = localStack[localStack.length - 1];
+
+      if (parent === child) {
+        return;
+      }
+
+      parent.addLocal(child);
     };
 
     const handlers = new Map<streamType, (chunk: TokenChunk) => void>([
@@ -222,7 +250,7 @@ export class LocalsContainer {
       [
         streamType.leftBracket,
         (chunk: TokenChunk) => {
-          if (chunk.val !== "") {
+          if (chunk.val !== "" && topOfStack() !== curLocal) {
             localStack.push(curLocal);
           }
         },
@@ -255,7 +283,7 @@ export class LocalsContainer {
    * @returns A Local object containing the parsed key-value pairs
    */
   private parseSimpleValue(name: string, value: string): Local {
-    const varsRegx = /[{, ](?<name>[^=]*) = (?<value>[^,]*)[,}]/gm;
+    const varsRegx = /[{, ](?<name>[a-zA-Z_][a-zA-Z0-9_]*) = (?<value>[^,]*)[,}]/gm;
     const vars = value.matchAll(varsRegx);
     const retValue: Local = new Local(name, "");
 
@@ -334,7 +362,7 @@ export class LocalsContainer {
    * @param chunk The input string to process
    */
   private createNameValMask(chunk: string): void {
-    const varsRegx = /(?<name>[a-zA-Z0-9_]*)(?<ign> = )/gm;
+    const varsRegx = /(?<name>[a-zA-Z_][a-zA-Z0-9_]*)(?<ign> = )/gm;
     const varNames = chunk.matchAll(varsRegx);
     const varArray = Array.from(varNames);
 
