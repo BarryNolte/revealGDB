@@ -18,6 +18,8 @@ import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { GdbAny } from "../../common/gdb-common";
 import { menuCopy } from "../utilities/Clipboard";
 import "./GdbRegistersWindow.css";
+import { ToolWindowContent } from "./ToolWindowContent";
+import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
 /**
  * Registers window component.
@@ -55,7 +57,7 @@ export default function GdbRegistersWindow(): JSX.Element {
    * Accepts 1-8 hex digits with or without 0x prefix.
    */
   const hexCheck = useCallback((e: { element: Element; value: string }): boolean => {
-    const regex = /^0[x|X][0-9A-Fa-f]{1,8}$|^[0-9A-Fa-f]{1,8}$/gm;
+    const regex = /^0[x|X][0-9A-Fa-f]{1,16}$|^[0-9A-Fa-f]{1,16}$/gm;
 
     const m = regex.exec(e.value);
 
@@ -76,6 +78,12 @@ export default function GdbRegistersWindow(): JSX.Element {
     const unsubscribe = window.ipcToMain.dataRegisters((data: gdbRegisters[]) => {
       const dataList: GdbAny[] = [];
       data.forEach((reg) => {
+        // While debuggig rust on x86, there were some entries with
+        // empty names that caused issues with the grid. Filter them out.
+        if (reg.name === "") {
+          return;
+        }
+
         dataList.push({
           name: reg.name,
           value: reg.value,
@@ -84,13 +92,6 @@ export default function GdbRegistersWindow(): JSX.Element {
       });
 
       setRegisterData(dataList);
-
-      // Directly update grid's dataSource to ensure it clears properly
-      // const grid = gridRef.current;
-      // if (grid) {
-      //   grid.dataSource = dataList;
-      //   grid.refresh(); // Must call refresh() to update internal currentViewData
-      // }
     });
 
     return () => {
@@ -133,56 +134,58 @@ export default function GdbRegistersWindow(): JSX.Element {
   }, []);
 
   return (
-    <div className="full-size flex-container">
-      <GridComponent
-        ref={gridRef}
-        id="registers-grid"
-        dataSource={registerData}
-        emptyRecordTemplate={emptyMessageTemplate}
-        height="100%"
-        rowHeight={16}
-        className="flex-item"
-        queryCellInfo={queryCellInfo}
-        allowResizing={true}
-        allowPaging={false}
-        allowSorting={false}
-        showColumnMenu={true}
-        allowFiltering={false}
-        editSettings={editSettings}
-        gridLines="Both"
-        cellSaved={cellSaved}
-      >
-        <ColumnsDirective>
-          <ColumnDirective
-            field="name"
-            headerText="Register"
-            width="20%"
-            textAlign="Left"
-            minWidth={100}
-            allowEditing={false}
-            isPrimaryKey={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="value"
-            headerText="Value"
-            width="80%"
-            allowEditing={true}
-            clipMode="EllipsisWithTooltip"
-            edit={editParams}
-            validationRules={validationRules}
-          />
-        </ColumnsDirective>
-        <Inject services={[Resize, ColumnMenu, Edit]} />
-      </GridComponent>
-      <ContextMenuComponent
-        id={`registers-menu-${menuId}`}
-        target="#registers-grid"
-        items={menuCopy}
-        select={() => {
-          gridRef.current?.copy();
-        }}
-      />
-    </div>
+    <ToolWindowContent title={TOOL_WINDOW_TITLES.registers}>
+      <div className="full-size flex-container">
+        <GridComponent
+          ref={gridRef}
+          id="registers-grid"
+          dataSource={registerData}
+          emptyRecordTemplate={emptyMessageTemplate}
+          height="100%"
+          rowHeight={16}
+          className="flex-item"
+          queryCellInfo={queryCellInfo}
+          allowResizing={true}
+          allowPaging={false}
+          allowSorting={false}
+          showColumnMenu={true}
+          allowFiltering={false}
+          editSettings={editSettings}
+          gridLines="Both"
+          cellSaved={cellSaved}
+        >
+          <ColumnsDirective>
+            <ColumnDirective
+              field="name"
+              headerText="Register"
+              width="20%"
+              textAlign="Left"
+              minWidth={100}
+              allowEditing={false}
+              isPrimaryKey={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="value"
+              headerText="Value"
+              width="80%"
+              allowEditing={true}
+              clipMode="EllipsisWithTooltip"
+              edit={editParams}
+              validationRules={validationRules}
+            />
+          </ColumnsDirective>
+          <Inject services={[Resize, ColumnMenu, Edit]} />
+        </GridComponent>
+        <ContextMenuComponent
+          id={`registers-menu-${menuId}`}
+          target="#registers-grid"
+          items={menuCopy}
+          select={() => {
+            gridRef.current?.copy();
+          }}
+        />
+      </div>
+    </ToolWindowContent>
   );
 }

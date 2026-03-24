@@ -15,6 +15,8 @@ import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { GdbAny } from "../../common/gdb-common";
 import { menuCopy } from "../utilities/Clipboard";
 import "./GdbCallstackWindow.css";
+import { ToolWindowContent } from "./ToolWindowContent";
+import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
 /**
  * Call stack window component.
@@ -112,93 +114,95 @@ export default function GdbCallStackWindow(): JSX.Element {
   }, []);
 
   return (
-    <div className="full-size flex-container">
-      <GridComponent
-        ref={gridRef}
-        id="callstack-grid"
-        dataSource={stackData}
-        emptyRecordTemplate={emptyMessageTemplate}
-        height="100%"
-        rowHeight={16}
-        allowResizing={true}
-        allowPaging={false}
-        allowSorting={false}
-        showColumnMenu={true}
-        allowFiltering={false}
-        allowSelection={true}
-        selectionSettings={selectionOptions}
-        gridLines="Both"
-        recordDoubleClick={handleRecordDoubleClick}
-      >
-        <ColumnsDirective>
-          <ColumnDirective field="active" headerText="" width={50} showColumnMenu={false} />
-          <ColumnDirective
-            field="level"
-            headerText="Depth"
-            isPrimaryKey={true}
-            textAlign="Left"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="func"
-            headerText="Function"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="addr"
-            headerText="Address"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="file"
-            headerText="File"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="fullName"
-            headerText="Full Path"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="line"
-            headerText="Line"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="from"
-            headerText="From"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="args"
-            headerText="Arguments"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="arch"
-            headerText="Architecture"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-        </ColumnsDirective>
-        <Inject services={[Resize, ColumnMenu]} />
-      </GridComponent>
-      <ContextMenuComponent
-        id={`callstack-menu-${menuId}`}
-        target="#callstack-grid"
-        items={menuCopy}
-        select={() => {
-          gridRef.current?.copy();
-        }}
-      />
-    </div>
+    <ToolWindowContent title={TOOL_WINDOW_TITLES.callstack}>
+      <div className="full-size flex-container">
+        <GridComponent
+          ref={gridRef}
+          id="callstack-grid"
+          dataSource={stackData}
+          emptyRecordTemplate={emptyMessageTemplate}
+          height="100%"
+          rowHeight={16}
+          allowResizing={true}
+          allowPaging={false}
+          allowSorting={false}
+          showColumnMenu={true}
+          allowFiltering={false}
+          allowSelection={true}
+          selectionSettings={selectionOptions}
+          gridLines="Both"
+          recordDoubleClick={handleRecordDoubleClick}
+        >
+          <ColumnsDirective>
+            <ColumnDirective field="active" headerText="" width={50} showColumnMenu={false} />
+            <ColumnDirective
+              field="level"
+              headerText="Depth"
+              isPrimaryKey={true}
+              textAlign="Left"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="func"
+              headerText="Function"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="addr"
+              headerText="Address"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="file"
+              headerText="File"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="fullName"
+              headerText="Full Path"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="line"
+              headerText="Line"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="from"
+              headerText="From"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="args"
+              headerText="Arguments"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="arch"
+              headerText="Architecture"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+          </ColumnsDirective>
+          <Inject services={[Resize, ColumnMenu]} />
+        </GridComponent>
+        <ContextMenuComponent
+          id={`callstack-menu-${menuId}`}
+          target="#callstack-grid"
+          items={menuCopy}
+          select={() => {
+            gridRef.current?.copy();
+          }}
+        />
+      </div>
+    </ToolWindowContent>
   );
 }

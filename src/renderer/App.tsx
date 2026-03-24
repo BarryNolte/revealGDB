@@ -29,6 +29,7 @@ import { ToolWindowErrorBoundary } from "./Errors/ToolWindowErrorBoundary";
 import { ToolWindowsHostErrorBoundary } from "./Errors/ToolWindowsHostErrorBoundary";
 import GdbCommandWindow from "./ToolWindows/GdbCommandWindow";
 import GdbSourceWindow from "./ToolWindows/GdbSourceWindow";
+import { TOOL_WINDOW_TITLES } from "./ToolWindows/toolWindowTitles";
 import { DockMenuConnector } from "./utilities/DockMenuConnector.js";
 
 const AboutBox = lazy(() =>
@@ -175,38 +176,58 @@ export default function App(): JSX.Element {
 
       // Register all tool windows with the dock system
       // Parameters: elementId, displayName, title, iconClass
-      dockMenuConnector.registerPanel("sourceWindow", "Source", "Source Code Window", "wm-source");
+      dockMenuConnector.registerPanel(
+        "sourceWindow",
+        TOOL_WINDOW_TITLES.source,
+        "Source Code Window",
+        "wm-source",
+      );
       dockMenuConnector.registerPanel(
         "localsWindow",
-        "Locals",
+        TOOL_WINDOW_TITLES.locals,
         "Locals Variable Window",
         "wm-locals",
       );
-      dockMenuConnector.registerPanel("threadsWindow", "Threads", "Threads Window", "wm-thread");
+      dockMenuConnector.registerPanel(
+        "threadsWindow",
+        TOOL_WINDOW_TITLES.threads,
+        "Threads Window",
+        "wm-thread",
+      );
       dockMenuConnector.registerPanel(
         "callstackWindow",
-        "Call Stack",
+        TOOL_WINDOW_TITLES.callstack,
         "Call Stack Window",
         "wm-stack",
       );
-      dockMenuConnector.registerPanel("memoryWindow", "Memory", "Memory Window", "wm-hex");
-      dockMenuConnector.registerPanel("bpWindow", "Breakpoints", "Breakpoints Window", "wm-bp");
+      dockMenuConnector.registerPanel(
+        "memoryWindow",
+        TOOL_WINDOW_TITLES.memory,
+        "Memory Window",
+        "wm-hex",
+      );
+      dockMenuConnector.registerPanel(
+        "bpWindow",
+        TOOL_WINDOW_TITLES.breakpoints,
+        "Breakpoints Window",
+        "wm-bp",
+      );
       dockMenuConnector.registerPanel(
         "registersWindow",
-        "Registers",
+        TOOL_WINDOW_TITLES.registers,
         "Registers Window",
         "wm-registers",
       );
       dockMenuConnector.registerPanel(
         "disassemblyWindow",
-        "Disassembly",
+        TOOL_WINDOW_TITLES.disassembly,
         "Disassembly Window",
         "wm-disasm",
       );
 
       dockMenuConnector.registerPanel(
         "commandWindow",
-        "Command",
+        TOOL_WINDOW_TITLES.command,
         "GDB Command Window",
         "wm-command",
       );
@@ -237,24 +258,42 @@ export default function App(): JSX.Element {
 
         const srcNode = dockManager.dockFill(
           documentNode,
-          dockMenuConnector.getPanelByDisplayName("Source"),
+          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.source),
         );
         const cmdNode = dockManager.dockRight(
           srcNode,
-          dockMenuConnector.getPanelByDisplayName("Command"),
+          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.command),
           0.5,
         );
         const localsNode = dockManager.dockUp(
           cmdNode,
-          dockMenuConnector.getPanelByDisplayName("Locals"),
+          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.locals),
           0.5,
         );
-        dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Threads"));
-        dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Call Stack"));
-        dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Memory"));
-        dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Breakpoints"));
-        dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Registers"));
-        dockManager.dockFill(localsNode, dockMenuConnector.getPanelByDisplayName("Disassembly"));
+        dockManager.dockFill(
+          localsNode,
+          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.threads),
+        );
+        dockManager.dockFill(
+          localsNode,
+          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.callstack),
+        );
+        dockManager.dockFill(
+          localsNode,
+          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.memory),
+        );
+        dockManager.dockFill(
+          localsNode,
+          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.breakpoints),
+        );
+        dockManager.dockFill(
+          localsNode,
+          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.registers),
+        );
+        dockManager.dockFill(
+          localsNode,
+          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.disassembly),
+        );
       }
       // Synchronize panel state and trigger toolbar window list update
       dockMenuConnector.reconsilePanels();
@@ -309,91 +348,91 @@ export default function App(): JSX.Element {
         <ToolWindowsHostErrorBoundary>
           <div
             id="sourceWindow"
-            data-panel-caption="Source"
+            data-panel-caption={TOOL_WINDOW_TITLES.source}
             hidden={true}
             data-panel-icon={iconSrc}
           >
-            <ToolWindowErrorBoundary title="Source">
+            <DeferredWindow title={TOOL_WINDOW_TITLES.source}>
               <GdbSourceWindow />
-            </ToolWindowErrorBoundary>
+            </DeferredWindow>
           </div>
           <div
             id="localsWindow"
-            data-panel-caption="Locals"
+            data-panel-caption={TOOL_WINDOW_TITLES.locals}
             hidden={true}
             data-panel-icon={iconLocal}
           >
-            <DeferredWindow title="Locals">
+            <DeferredWindow title={TOOL_WINDOW_TITLES.locals}>
               <GdbLocalsWindow />
             </DeferredWindow>
           </div>
           <div
             id="threadsWindow"
-            data-panel-caption="Threads"
+            data-panel-caption={TOOL_WINDOW_TITLES.threads}
             data-panel-icon={iconThread}
             hidden={true}
           >
-            <DeferredWindow title="Threads">
+            <DeferredWindow title={TOOL_WINDOW_TITLES.threads}>
               <GdbThreadsWindow />
             </DeferredWindow>
           </div>
           <div
             id="registersWindow"
-            data-panel-caption="Registers"
+            data-panel-caption={TOOL_WINDOW_TITLES.registers}
             hidden={true}
             data-panel-icon={iconRegister}
           >
-            <DeferredWindow title="Registers">
+            <DeferredWindow title={TOOL_WINDOW_TITLES.registers}>
               <GdbRegistersWindow />
             </DeferredWindow>
           </div>
           <div
             id="disassemblyWindow"
-            data-panel-caption="Disassembly"
+            data-panel-caption={TOOL_WINDOW_TITLES.disassembly}
             hidden={true}
             data-panel-icon={iconDisa}
           >
-            <DeferredWindow title="Disassembly">
+            <DeferredWindow title={TOOL_WINDOW_TITLES.disassembly}>
               <GdbDisassemblerWindow />
             </DeferredWindow>
           </div>
           <div
             id="commandWindow"
-            data-panel-caption="Command"
+            data-panel-caption={TOOL_WINDOW_TITLES.command}
             hidden={true}
             data-panel-icon={iconCmd}
           >
-            <ToolWindowErrorBoundary title="Command">
+            <DeferredWindow title={TOOL_WINDOW_TITLES.command}>
               <GdbCommandWindow />
-            </ToolWindowErrorBoundary>
+            </DeferredWindow>
           </div>
           <div
             id="memoryWindow"
-            data-panel-caption="Memory"
+            data-panel-caption={TOOL_WINDOW_TITLES.memory}
             hidden={true}
             data-panel-icon={iconHex}
           >
-            <DeferredWindow title="Memory">
+            <DeferredWindow title={TOOL_WINDOW_TITLES.memory}>
               <GdbMemoryWindow />
             </DeferredWindow>
           </div>
           <div
             id="callstackWindow"
-            data-panel-caption="Call Stack"
+            data-panel-caption={TOOL_WINDOW_TITLES.callstack}
             hidden={true}
             data-panel-icon={iconStack}
           >
-            <DeferredWindow title="Call Stack">
+            <DeferredWindow title={TOOL_WINDOW_TITLES.callstack}>
               <GdbCallStackWindow />
             </DeferredWindow>
           </div>
           <div
             id="bpWindow"
-            data-panel-caption="Breakpoints"
+            data-panel-caption={TOOL_WINDOW_TITLES.breakpoints}
             hidden={true}
             data-panel-icon={iconBp}
           >
-            <DeferredWindow title="Breakpoints">
+            <DeferredWindow title={TOOL_WINDOW_TITLES.breakpoints}>
               <GdbBreakPointWindow />
             </DeferredWindow>
           </div>

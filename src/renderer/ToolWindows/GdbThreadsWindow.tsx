@@ -18,6 +18,8 @@ import {
 } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { menuCopy } from "../utilities/Clipboard";
 import "./GdbThreadsWindow.css";
+import { ToolWindowContent } from "./ToolWindowContent";
+import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
 /**
  * Threads window component.
@@ -99,86 +101,88 @@ export default function GdbThreadsWindow(): JSX.Element {
   }, []);
 
   return (
-    <div className="full-size flex-container">
-      <GridComponent
-        ref={gridRef}
-        id="threads-grid"
-        dataSource={threadData}
-        emptyRecordTemplate={emptyMessageTemplate}
-        height="100%"
-        rowHeight={16}
-        className="flex-item"
-        allowResizing={true}
-        allowPaging={false}
-        allowGrouping={true}
-        showColumnMenu={true}
-        allowFiltering={false}
-        groupSettings={groupOptions}
-        selectionSettings={selectionOptions}
-        gridLines="Both"
-      >
-        <ColumnsDirective>
-          <ColumnDirective
-            field="active"
-            headerText="Active"
-            isPrimaryKey={true}
-            textAlign="Left"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="groupId"
-            headerText="Group Id"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="id"
-            headerText="Id"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="details"
-            headerText="Details"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="frame"
-            headerText="Frame"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="state"
-            headerText="State"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="name"
-            headerText="Name"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective
-            field="targetId"
-            headerText="Target Id"
-            autoFit={true}
-            clipMode="EllipsisWithTooltip"
-          />
-        </ColumnsDirective>
-        <Inject services={[Resize, ColumnMenu, Group]} />
-      </GridComponent>
-      <ContextMenuComponent
-        id={`threads-menu-${menuId}`}
-        target="#threads-grid"
-        items={menuCopy}
-        select={() => {
-          gridRef.current?.copy();
-        }}
-      />
-    </div>
+    <ToolWindowContent title={TOOL_WINDOW_TITLES.threads}>
+      <div className="full-size flex-container">
+        <GridComponent
+          ref={gridRef}
+          id="threads-grid"
+          dataSource={threadData}
+          emptyRecordTemplate={emptyMessageTemplate}
+          height="100%"
+          rowHeight={16}
+          className="flex-item"
+          allowResizing={true}
+          allowPaging={false}
+          allowGrouping={true}
+          showColumnMenu={true}
+          allowFiltering={false}
+          groupSettings={groupOptions}
+          selectionSettings={selectionOptions}
+          gridLines="Both"
+        >
+          <ColumnsDirective>
+            <ColumnDirective
+              field="active"
+              headerText="Active"
+              isPrimaryKey={true}
+              textAlign="Left"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="groupId"
+              headerText="Group Id"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="id"
+              headerText="Id"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="details"
+              headerText="Details"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="frame"
+              headerText="Frame"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="state"
+              headerText="State"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="name"
+              headerText="Name"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="targetId"
+              headerText="Target Id"
+              autoFit={true}
+              clipMode="EllipsisWithTooltip"
+            />
+          </ColumnsDirective>
+          <Inject services={[Resize, ColumnMenu, Group]} />
+        </GridComponent>
+        <ContextMenuComponent
+          id={`threads-menu-${menuId}`}
+          target="#threads-grid"
+          items={menuCopy}
+          select={() => {
+            gridRef.current?.copy();
+          }}
+        />
+      </div>
+    </ToolWindowContent>
   );
 }

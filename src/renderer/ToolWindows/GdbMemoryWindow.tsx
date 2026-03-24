@@ -20,6 +20,8 @@ import HexEditor from "../Components/HexEditor/HexEditor";
 import "../Components/HexEditor/HexEditor.css";
 import { validateValue, ValueType } from "../utilities/valueValidation";
 import "./GdbMemoryWindow.css";
+import { ToolWindowContent } from "./ToolWindowContent";
+import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
 /**
  * Memory window component.
@@ -55,73 +57,77 @@ export default function GdbMemoryWindow(): JSX.Element {
   }, []);
 
   return (
-    <div>
-      <div className="memoryControls">
-        <table className="memoryControlTable">
-          <thead>
-            <tr>
-              <td className="memoryTitle">Start:</td>
-              <td className="memoryTitle">Length:</td>
-              <td></td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <input
-                  ref={startRef}
-                  type="text"
-                  placeholder="Memory Address"
-                  defaultValue={address}
-                  maxLength={50}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      validateMemoryParams();
-                    }
-                  }}
-                />
-              </td>
-              <td>
-                <input
-                  ref={lengthRef}
-                  type="text"
-                  placeholder="Length"
-                  defaultValue={length}
-                  maxLength={50}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      validateMemoryParams();
-                    }
-                  }}
-                />
-              </td>
-              <td>
-                <input type="button" value="Refresh Data" onClick={validateMemoryParams} />
-              </td>
-            </tr>
-            <tr>
-              <td ref={startErrorRef}>
-                <span className="validateError">Start is invalid hex</span>
-              </td>
-              <td ref={lengthErrorRef}>
-                <span className="validateError">Length is invalid hex</span>
-              </td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+    <ToolWindowContent title={TOOL_WINDOW_TITLES.memory}>
+      <div>
+        <div className="memoryControls">
+          <table className="memoryControlTable">
+            <thead>
+              <tr>
+                <td className="memoryTitle">Start:</td>
+                <td className="memoryTitle">Length:</td>
+                <td></td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <input
+                    ref={startRef}
+                    type="text"
+                    placeholder="Memory Address"
+                    defaultValue={address}
+                    maxLength={50}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        validateMemoryParams();
+                      }
+                    }}
+                  />
+                </td>
+                <td>
+                  <input
+                    ref={lengthRef}
+                    type="text"
+                    placeholder="Length"
+                    defaultValue={length}
+                    maxLength={50}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        validateMemoryParams();
+                      }
+                    }}
+                  />
+                </td>
+                <td>
+                  <input type="button" value="Refresh Data" onClick={validateMemoryParams} />
+                </td>
+              </tr>
+              <tr>
+                <td ref={startErrorRef}>
+                  <span className="validateError">Start is invalid hex</span>
+                </td>
+                <td ref={lengthErrorRef}>
+                  <span className="validateError">Length is invalid hex</span>
+                </td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <HexEditor
+          datasource={datasource}
+          offset={parseInt(address, 16) || 0}
+          changeCallback={(index: number, value: number) => {
+            // console.log(`Data changed at index ${index} to value ${value}`);
+            // console.log(`${parseInt(address, 16) || 0}:${value}`);
+            const addr = parseInt(address, 16) + index;
+            window.ipcToMain.sendGdbCommand(
+              `set {char}${addr.toString(16)} = ${value.toString(16)}`,
+            );
+          }}
+        ></HexEditor>
       </div>
-      <HexEditor
-        datasource={datasource}
-        offset={parseInt(address, 16) || 0}
-        changeCallback={(index: number, value: number) => {
-          // console.log(`Data changed at index ${index} to value ${value}`);
-          // console.log(`${parseInt(address, 16) || 0}:${value}`);
-          const addr = parseInt(address, 16) + index;
-          window.ipcToMain.sendGdbCommand(`set {char}${addr.toString(16)} = ${value.toString(16)}`);
-        }}
-      ></HexEditor>
-    </div>
+    </ToolWindowContent>
   );
 
   function validateMemoryParams() {

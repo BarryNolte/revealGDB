@@ -3,6 +3,7 @@ import {
   ColumnMenu as GridColumnMenu,
   Edit as GridEdit,
   Resize as GridResize,
+  RowDataBoundEventArgs,
 } from "@syncfusion/ej2-grids";
 import {
   CellEditArgs,
@@ -23,9 +24,10 @@ import {
 } from "@syncfusion/ej2-react-treegrid";
 import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
-import { ToolWindowErrorBoundary } from "../Errors/ToolWindowErrorBoundary";
 import { menuCopy } from "../utilities/Clipboard";
 import "./GdbLocalsWindow.css";
+import { ToolWindowContent } from "./ToolWindowContent";
+import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
 // TreeGrid wraps an internal Grid instance, so inject matching Grid modules too.
 Grid.Inject(GridResize, GridColumnMenu, GridEdit);
@@ -101,6 +103,18 @@ export default function GdbLocalsWindow(): JSX.Element {
     }
   }, []);
 
+  const rowDataBound = (args: RowDataBoundEventArgs) => {
+    console.log(args);
+    const arrRow = (args.data as GdbAny).value.split("\\n").length || 0;
+    (args.row as HTMLElement).style.height = `${arrRow * 16}px`;
+  };
+
+  const valueAccessor = (field: string, data: GdbAny): string => {
+    //const value = data[field];
+    console.log("Value accessor called with field:", field, "data:", data);
+    return `<div class="treeGrid-multiline-cell">${data.value.replaceAll("\\n", "<br>") || ""}</div>`;
+  };
+
   const content = (
     <div className="full-size flex-container">
       <TreeGridComponent
@@ -120,6 +134,7 @@ export default function GdbLocalsWindow(): JSX.Element {
         gridLines="Both"
         cellSaved={cellSaved}
         cellEdit={cellEdit}
+        rowDataBound={rowDataBound}
       >
         <ColumnsDirective>
           <ColumnDirective
@@ -136,6 +151,8 @@ export default function GdbLocalsWindow(): JSX.Element {
             allowEditing={true}
             clipMode="EllipsisWithTooltip"
             edit={editParams}
+            disableHtmlEncode={false}
+            valueAccessor={valueAccessor}
           ></ColumnDirective>
           <ColumnDirective
             field="fullpath"
@@ -158,5 +175,5 @@ export default function GdbLocalsWindow(): JSX.Element {
     </div>
   );
 
-  return <ToolWindowErrorBoundary title="Locals">{content}</ToolWindowErrorBoundary>;
+  return <ToolWindowContent title={TOOL_WINDOW_TITLES.locals}>{content}</ToolWindowContent>;
 }

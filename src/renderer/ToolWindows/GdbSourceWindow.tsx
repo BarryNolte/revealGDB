@@ -18,11 +18,14 @@ import "ace-builds/css/ace.css";
 import { JSX, useId } from "react";
 import { IMarker } from "react-ace";
 
-import "./GdbSourceWindow.css";
 import GdbSourceWindowView from "./GdbSourceWindowView";
 import { useGdbSourceWindowController } from "./useGdbSourceWindowController";
 
 export { editorThemes } from "./GdbSourceEditorConfig";
+
+import "./GdbSourceWindow.css";
+import { ToolWindowContent } from "./ToolWindowContent";
+import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
 export default function GdbSourceWindow(): JSX.Element {
   const menuId = useId();
@@ -39,22 +42,24 @@ export default function GdbSourceWindow(): JSX.Element {
   } = useGdbSourceWindowController();
 
   return (
-    <GdbSourceWindowView
-      menuId={menuId}
-      hasSource={sourceState.hasSource}
-      editorRef={editorRef}
-      fullpath={sourceState.fullpath}
-      filename={sourceState.filename}
-      line={sourceState.line}
-      source={sourceState.source}
-      mode={mode}
-      theme={theme}
-      fontSize={fontSize}
-      lineHeight={lineHeight}
-      fontName={fontName}
-      stackMarkers={sourceState.stackMarkers as IMarker[]}
-      onLoad={onLoad}
-      onCopySelection={onCopySelection}
-    />
+    <ToolWindowContent title={TOOL_WINDOW_TITLES.source}>
+      <GdbSourceWindowView
+        menuId={menuId}
+        hasSource={sourceState.hasSource}
+        editorRef={editorRef}
+        fullpath={sourceState.fullpath}
+        filename={sourceState.filename}
+        line={sourceState.line}
+        source={sourceState.source}
+        mode={mode}
+        theme={theme}
+        fontSize={fontSize}
+        lineHeight={lineHeight}
+        fontName={fontName}
+        stackMarkers={sourceState.stackMarkers as IMarker[]}
+        onLoad={onLoad}
+        onCopySelection={onCopySelection}
+      />
+    </ToolWindowContent>
   );
 }

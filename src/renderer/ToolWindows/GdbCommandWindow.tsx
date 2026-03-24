@@ -17,6 +17,8 @@ import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { JSX, useId } from "react";
 import { doCutCopyPaste, menuCopy, menuCutCopyPaste } from "../utilities/Clipboard";
 import "./GdbCommandWindow.css";
+import { ToolWindowContent } from "./ToolWindowContent";
+import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 import { useGdbCommandController } from "./useGdbCommandController";
 
 /**
@@ -44,71 +46,73 @@ export default function GdbCommandWindow(): JSX.Element {
   } = useGdbCommandController();
 
   return (
-    <div className={"commandWindow full-size"} data-testid="gdb-command-window">
-      <div
-        className={"outputRow"}
-        id={outputId}
-        ref={outputRef}
-        onScroll={onScrollHandler}
-        data-testid="gdb-command-output"
-      />
-      <div className={"historyRow"}>
-        <select
-          className={"historySelect"}
-          ref={historyRef}
-          title={"Command History"}
-          size={15}
-          hidden={true}
-          onKeyDown={onSelectKeydownHandler}
-          data-testid="gdb-command-history"
+    <ToolWindowContent title={TOOL_WINDOW_TITLES.command}>
+      <div className={"commandWindow full-size"} data-testid="gdb-command-window">
+        <div
+          className={"outputRow"}
+          id={outputId}
+          ref={outputRef}
+          onScroll={onScrollHandler}
+          data-testid="gdb-command-output"
+        />
+        <div className={"historyRow"}>
+          <select
+            className={"historySelect"}
+            ref={historyRef}
+            title={"Command History"}
+            size={15}
+            hidden={true}
+            onKeyDown={onSelectKeydownHandler}
+            data-testid="gdb-command-history"
+          />
+        </div>
+        <div className="inputContainer">
+          <input
+            className={"inputRow"}
+            id={inputId}
+            ref={inputRef}
+            type="text"
+            spellCheck={false}
+            placeholder={"Type your command here..."}
+            onKeyDown={onInputKeydownHandler}
+            onKeyUp={onInputKeyupHandler}
+            data-testid="gdb-command-input"
+          />
+          <button
+            className="commandButton commandButtonSend"
+            title="Send Command"
+            type="button"
+            onClick={onSendCommand}
+            data-testid="gdb-command-send"
+          />
+          <button
+            className="commandButton commandButtonHistory"
+            title="History"
+            type="button"
+            onClick={onShowHistory}
+            data-testid="gdb-command-show-history"
+          />
+          <button
+            className="commandButton commandButtonClear"
+            title="Clear Command Window"
+            type="button"
+            onClick={onClearWindow}
+            data-testid="gdb-command-clear"
+          />
+        </div>
+        <ContextMenuComponent
+          id={outputMenuId}
+          target={`#${outputId}`}
+          items={menuCopy}
+          select={(e) => doCutCopyPaste(e.item.text, inputRef.current!)}
+        />
+        <ContextMenuComponent
+          id={inputMenuId}
+          target={`#${inputId}`}
+          items={menuCutCopyPaste}
+          select={(e) => doCutCopyPaste(e.item.text, inputRef.current!)}
         />
       </div>
-      <div className="inputContainer">
-        <input
-          className={"inputRow"}
-          id={inputId}
-          ref={inputRef}
-          type="text"
-          spellCheck={false}
-          placeholder={"Type your command here..."}
-          onKeyDown={onInputKeydownHandler}
-          onKeyUp={onInputKeyupHandler}
-          data-testid="gdb-command-input"
-        />
-        <button
-          className="commandButton commandButtonSend"
-          title="Send Command"
-          type="button"
-          onClick={onSendCommand}
-          data-testid="gdb-command-send"
-        />
-        <button
-          className="commandButton commandButtonHistory"
-          title="History"
-          type="button"
-          onClick={onShowHistory}
-          data-testid="gdb-command-show-history"
-        />
-        <button
-          className="commandButton commandButtonClear"
-          title="Clear Command Window"
-          type="button"
-          onClick={onClearWindow}
-          data-testid="gdb-command-clear"
-        />
-      </div>
-      <ContextMenuComponent
-        id={outputMenuId}
-        target={`#${outputId}`}
-        items={menuCopy}
-        select={(e) => doCutCopyPaste(e.item.text, inputRef.current!)}
-      />
-      <ContextMenuComponent
-        id={inputMenuId}
-        target={`#${inputId}`}
-        items={menuCutCopyPaste}
-        select={(e) => doCutCopyPaste(e.item.text, inputRef.current!)}
-      />
-    </div>
+    </ToolWindowContent>
   );
 }

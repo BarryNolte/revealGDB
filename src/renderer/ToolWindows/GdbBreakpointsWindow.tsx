@@ -17,6 +17,8 @@ import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbSta
 
 import imgDelete from "../icons/icons8-delete-48.png";
 import "./GdbBreakpointsWindow.css";
+import { ToolWindowContent } from "./ToolWindowContent";
+import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
 /**
  * Breakpoints window component.
@@ -164,73 +166,79 @@ export default function GdbBreakPointWindow(): JSX.Element {
   const editing = useMemo(() => ({ allowDeleting: true }), []);
 
   return (
-    <div className="full-size flex-container">
-      <GridComponent
-        className="flex-item"
-        id="breakpoints-grid"
-        dataSource={breakpointData}
-        emptyRecordTemplate={emptyMessageTemplate}
-        height="100%"
-        rowHeight={16}
-        allowResizing={true}
-        allowPaging={false}
-        allowSorting={false}
-        showColumnMenu={true}
-        allowFiltering={false}
-        contextMenuItems={contextMenuItems}
-        selectionSettings={selectionOptions}
-        editSettings={editing}
-        ref={gridRef}
-        gridLines="Both"
-        actionBegin={onAction}
-      >
-        <ColumnsDirective>
-          <ColumnDirective
-            field="enabled"
-            toolTip="BP Enabled"
-            headerText=""
-            allowEditing={true}
-            template={checkboxTemplate}
-            textAlign="Left"
-            showColumnMenu={false}
-            width="55px"
-          />
-          <ColumnDirective
-            field="number"
-            headerText="#"
-            isPrimaryKey={true}
-            textAlign="Left"
-            showColumnMenu={false}
-            width="35px"
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective field="addr" headerText="Address" clipMode="EllipsisWithTooltip" />
-          <ColumnDirective field="func" headerText="Function" clipMode="EllipsisWithTooltip" />
-          <ColumnDirective field="file" headerText="File" clipMode="EllipsisWithTooltip" />
-          <ColumnDirective
-            field="line"
-            headerText="Line"
-            width="35px"
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective field="times" headerText="Times" clipMode="EllipsisWithTooltip" />
-          <ColumnDirective
-            field="installed"
-            headerText="Installed"
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective field="fullName" headerText="Full Path" clipMode="EllipsisWithTooltip" />
-          <ColumnDirective field="tg" headerText="Thread Group" clipMode="EllipsisWithTooltip" />
-          <ColumnDirective
-            field="orgloc"
-            headerText="Original Location"
-            clipMode="EllipsisWithTooltip"
-          />
-          <ColumnDirective field="disp" headerText="Display" clipMode="EllipsisWithTooltip" />
-          <ColumnDirective field="type" headerText="Type" clipMode="EllipsisWithTooltip" />
-        </ColumnsDirective>
-        <Inject services={[Resize, ColumnMenu, ContextMenu]} />
-      </GridComponent>
-    </div>
+    <ToolWindowContent title={TOOL_WINDOW_TITLES.breakpoints}>
+      <div className="full-size flex-container">
+        <GridComponent
+          className="flex-item"
+          id="breakpoints-grid"
+          dataSource={breakpointData}
+          emptyRecordTemplate={emptyMessageTemplate}
+          height="100%"
+          rowHeight={16}
+          allowResizing={true}
+          allowPaging={false}
+          allowSorting={false}
+          showColumnMenu={true}
+          allowFiltering={false}
+          contextMenuItems={contextMenuItems}
+          selectionSettings={selectionOptions}
+          editSettings={editing}
+          ref={gridRef}
+          gridLines="Both"
+          actionBegin={onAction}
+        >
+          <ColumnsDirective>
+            <ColumnDirective
+              field="enabled"
+              toolTip="BP Enabled"
+              headerText=""
+              allowEditing={true}
+              template={checkboxTemplate}
+              textAlign="Left"
+              showColumnMenu={false}
+              width="55px"
+            />
+            <ColumnDirective
+              field="number"
+              headerText="#"
+              isPrimaryKey={true}
+              textAlign="Left"
+              showColumnMenu={false}
+              width="35px"
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective field="addr" headerText="Address" clipMode="EllipsisWithTooltip" />
+            <ColumnDirective field="func" headerText="Function" clipMode="EllipsisWithTooltip" />
+            <ColumnDirective field="file" headerText="File" clipMode="EllipsisWithTooltip" />
+            <ColumnDirective
+              field="line"
+              headerText="Line"
+              width="35px"
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective field="times" headerText="Times" clipMode="EllipsisWithTooltip" />
+            <ColumnDirective
+              field="installed"
+              headerText="Installed"
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective
+              field="fullName"
+              headerText="Full Path"
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective field="tg" headerText="Thread Group" clipMode="EllipsisWithTooltip" />
+            <ColumnDirective
+              field="orgloc"
+              headerText="Original Location"
+              clipMode="EllipsisWithTooltip"
+            />
+            <ColumnDirective field="disp" headerText="Display" clipMode="EllipsisWithTooltip" />
+            <ColumnDirective field="type" headerText="Type" clipMode="EllipsisWithTooltip" />
+          </ColumnsDirective>
+          <Inject services={[Resize, ColumnMenu, ContextMenu]} />
+        </GridComponent>
+      </div>
+    </ToolWindowContent>
   );
 }
