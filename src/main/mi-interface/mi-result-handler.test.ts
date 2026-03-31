@@ -56,4 +56,77 @@ describe("MiResultRecordHandler", () => {
     const ok = await handler.parseResultRecord("^done,unknown-payload=[]");
     expect(ok).toBe(false);
   });
+
+  it("emits gdb-running for ^running result", async () => {
+    const host = createHost();
+    const handler = new MiResultRecordHandler(host);
+
+    const ok = await handler.parseResultRecord("^running");
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith("gdb-running", "");
+  });
+
+  it("emits gdb-connected for ^connected result", async () => {
+    const host = createHost();
+    const handler = new MiResultRecordHandler(host);
+
+    const ok = await handler.parseResultRecord("^connected");
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith("gdb-connected", "");
+  });
+
+  it("emits gdb-exit for ^exit result", async () => {
+    const host = createHost();
+    const handler = new MiResultRecordHandler(host);
+
+    const ok = await handler.parseResultRecord("^exit");
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith("gdb-exit", "");
+  });
+
+  it("logs value result from -data-evaluate-expression", async () => {
+    const host = createHost();
+    const handler = new MiResultRecordHandler(host);
+
+    const ok = await handler.parseResultRecord('^done,value="42"');
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith("log-stream", expect.stringContaining("value="));
+  });
+
+  it("logs name result from -var-create", async () => {
+    const host = createHost();
+    const handler = new MiResultRecordHandler(host);
+
+    const ok = await handler.parseResultRecord('^done,name="var1"');
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith("log-stream", expect.stringContaining("name="));
+  });
+
+  it("logs depth result from -stack-info-depth", async () => {
+    const host = createHost();
+    const handler = new MiResultRecordHandler(host);
+
+    const ok = await handler.parseResultRecord("^done,depth=5");
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith("log-stream", expect.stringContaining("depth="));
+  });
+
+  it("logs changed-registers result", async () => {
+    const host = createHost();
+    const handler = new MiResultRecordHandler(host);
+
+    const ok = await handler.parseResultRecord("^done,changed-registers=[0,1,2]");
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith(
+      "log-stream",
+      expect.stringContaining("changed-registers="),
+    );
+  });
 });

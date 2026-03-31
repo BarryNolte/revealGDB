@@ -65,6 +65,31 @@ export class MiResultRecordHandler {
             this.host.gdbDB.localsUpdateUI();
             break;
           }
+          case "value": {
+            // Response to -data-evaluate-expression
+            this.host.emit("log-stream", `^done value=${resList}`);
+            break;
+          }
+          case "name": {
+            // Response to -var-create
+            this.host.emit("log-stream", `^done name=${resList}`);
+            break;
+          }
+          case "children": {
+            // Response to -var-list-children
+            this.host.emit("log-stream", `^done children=${resList}`);
+            break;
+          }
+          case "depth": {
+            // Response to -stack-info-depth
+            this.host.emit("log-stream", `^done depth=${resList}`);
+            break;
+          }
+          case "changed-registers": {
+            // Response to -data-list-changed-registers
+            this.host.emit("log-stream", `^done changed-registers=${resList}`);
+            break;
+          }
           case "": {
             console.error("ResultRecord (empty): ARE WE DONE??");
             break;
@@ -84,11 +109,11 @@ export class MiResultRecordHandler {
         break;
       }
       case "running": {
-        console.error(`ResultRecord (running): ${data}`);
+        this.host.emit("gdb-running", data);
         break;
       }
       case "connected": {
-        console.error(`ResultRecord (connected): ${data}`);
+        this.host.emit("gdb-connected", data);
         break;
       }
       case "error": {
@@ -103,7 +128,7 @@ export class MiResultRecordHandler {
         break;
       }
       case "exit": {
-        console.error(`ResultRecord (exit): ${data}`);
+        this.host.emit("gdb-exit", data);
         break;
       }
       default: {

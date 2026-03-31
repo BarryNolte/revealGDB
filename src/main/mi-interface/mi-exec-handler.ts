@@ -6,10 +6,11 @@ export class MiExecAsyncHandler {
   private readonly rgxThreadIdExtractor: RegExp = /thread-id="(?<tid>[^"]*)"/;
   private readonly rgxStoppedThreadsExtractor: RegExp =
     /stopped-threads="(?<stoppedThreads>[^"]*)"/;
-  // private readonly rgxCoreExtractor: RegExp = /core="(?<core>[^"]*)"/;
+  private readonly rgxCoreExtractor: RegExp = /core="(?<core>[^"]*)"/;
   private readonly rgxReasonExtractor: RegExp = /reason="(?<reason>[^"]*)"/;
-  //private readonly rgxBphExtractor: RegExp =
-  //  /disp="(?<disp>[^"]*)",bkptno="(?<bkptno>[^"]*)",frame={(?<frame>[^}]*)}/;
+  private readonly rgxSignalName: RegExp = /signal-name="(?<signalName>[^"]*)"/;
+  private readonly rgxSignalMeaning: RegExp = /signal-meaning="(?<signalMeaning>[^"]*)"/;
+  private readonly rgxExitCode: RegExp = /exit-code="(?<exitCode>[^"]*)"/;
 
   constructor(private readonly host: MiOutputHost) {}
 
@@ -31,12 +32,8 @@ export class MiExecAsyncHandler {
         const tid = this.rgxThreadIdExtractor.exec(data)?.groups?.tid || undefined;
         const stoppedThreads =
           this.rgxStoppedThreadsExtractor.exec(data)?.groups?.stoppedThreads || undefined;
-        // const core = this.rgxCoreExtractor.exec(data)?.groups?.core || undefined;
+        const core = this.rgxCoreExtractor.exec(data)?.groups?.core || undefined;
         const reason = this.rgxReasonExtractor.exec(data)?.groups?.reason || undefined;
-
-        // console.log(
-        //   `ExecAsyncRecord (stopped): ${reason} ${tid} ${stoppedThreads} ${core} \n${data}`,
-        // );
 
         switch (reason) {
           case undefined: {
@@ -51,16 +48,39 @@ export class MiExecAsyncHandler {
             // console.log(`ExecAsyncRecord (stopped): ${disp} ${bphBkptno}`);
             break;
           }
+          case "exited-signalled": {
+            const signalName = this.rgxSignalName.exec(data)?.groups?.signalName || "";
+            const signalMeaning = this.rgxSignalMeaning.exec(data)?.groups?.signalMeaning || "";
+            this.host.emit(
+              "log-stream",
+              `*stopped reason="exited-signalled" signal-name="${signalName}" signal-meaning="${signalMeaning}" core="${core}"`,
+            );
+            break;
+          }
+          case "signal-received": {
+            const signalName = this.rgxSignalName.exec(data)?.groups?.signalName || "";
+            const signalMeaning = this.rgxSignalMeaning.exec(data)?.groups?.signalMeaning || "";
+            this.host.emit(
+              "log-stream",
+              `*stopped reason="signal-received" signal-name="${signalName}" signal-meaning="${signalMeaning}" core="${core}"`,
+            );
+            break;
+          }
+          case "exited": {
+            const exitCode = this.rgxExitCode.exec(data)?.groups?.exitCode || "";
+            this.host.emit(
+              "log-stream",
+              `*stopped reason="exited" exit-code="${exitCode}" core="${core}"`,
+            );
+            break;
+          }
           case "watchpoint-trigger":
           case "read-watchpoint-trigger":
           case "access-watchpoint-trigger":
           case "function-finished":
           case "location-reached":
           case "watchpoint-scope":
-          case "exited":
           case "exited-normally":
-          case "exited-signalled":
-          case "signal-received":
           case "solib-event":
           case "fork":
           case "vfork":

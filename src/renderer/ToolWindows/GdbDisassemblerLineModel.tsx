@@ -95,7 +95,7 @@ export function renderGroupCaption(props: GroupCaptionProps): JSX.Element {
 
   return (
     <div className="e-groupcaption disasm-function-group-header">
-      <strong>{functionName}:\u00A0\u00A0\u00A0\u00A0</strong>
+      <strong>{functionName}&nbsp;:&nbsp;</strong>
       <span>({props.count} lines)</span>
     </div>
   );

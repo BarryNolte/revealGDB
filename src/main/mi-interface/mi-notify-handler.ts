@@ -14,6 +14,22 @@ export class MiNotifyAsyncHandler {
   private readonly rgxThreadExited: RegExp = /^id="(?<id>[^"]*)",group-id="(?<grpid>[^"]*)"$/;
   private readonly rgxThreadSelected: RegExp = /frame={level="(?<level>[^"]*)"/;
   private readonly rgxBreakpointDeleted: RegExp = /id="(?<id>[^"]+)"/;
+  private readonly rgxLibraryId: RegExp = /id="(?<id>[^"]*)"/;
+  private readonly rgxLibraryTargetName: RegExp = /target-name="(?<targetName>[^"]*)"/;
+  private readonly rgxLibraryHostName: RegExp = /host-name="(?<hostName>[^"]*)"/;
+  private readonly rgxLibraryThreadGroup: RegExp = /thread-group="(?<threadGroup>[^"]*)"/;
+  private readonly rgxMemoryThreadGroup: RegExp = /thread-group=(?<threadGroup>\S+)/;
+  private readonly rgxMemoryAddr: RegExp = /addr="(?<addr>[^"]*)"/;
+  private readonly rgxMemoryLen: RegExp = /len="(?<len>[^"]*)"/;
+  private readonly rgxMemoryType: RegExp = /type="(?<type>[^"]*)"/;
+  private readonly rgxRecordThreadGroup: RegExp = /thread-group="(?<threadGroup>[^"]*)"/;
+  private readonly rgxRecordMethod: RegExp = /method="(?<method>[^"]*)"/;
+  private readonly rgxRecordFormat: RegExp = /format="(?<format>[^"]*)"/;
+  private readonly rgxTraceframeNum: RegExp = /num=(?<num>\S+)/;
+  private readonly rgxTraceframeTracepoint: RegExp = /tracepoint=(?<tracepoint>\S+)/;
+  private readonly rgxTsvName: RegExp = /name=(?<name>\S+)/;
+  private readonly rgxTsvInitial: RegExp = /initial=(?<initial>\S+)/;
+  private readonly rgxTsvCurrent: RegExp = /current=(?<current>\S+)/;
 
   constructor(private readonly host: MiOutputHost) {}
 
@@ -132,6 +148,86 @@ export class MiNotifyAsyncHandler {
           this.host.gdbDB.deleteBreakpoint(id);
         }
         this.host.gdbDB.breakpointsUpdateUI();
+        break;
+      }
+      case "library-loaded": {
+        const id = this.rgxLibraryId.exec(data)?.groups?.id || "";
+        const targetName = this.rgxLibraryTargetName.exec(data)?.groups?.targetName || "";
+        const hostName = this.rgxLibraryHostName.exec(data)?.groups?.hostName || "";
+        const threadGroup = this.rgxLibraryThreadGroup.exec(data)?.groups?.threadGroup || "";
+        this.host.emit(
+          "log-stream",
+          `=library-loaded id="${id}" target-name="${targetName}" host-name="${hostName}" thread-group="${threadGroup}"`,
+        );
+        break;
+      }
+      case "library-unloaded": {
+        const id = this.rgxLibraryId.exec(data)?.groups?.id || "";
+        const targetName = this.rgxLibraryTargetName.exec(data)?.groups?.targetName || "";
+        const hostName = this.rgxLibraryHostName.exec(data)?.groups?.hostName || "";
+        const threadGroup = this.rgxLibraryThreadGroup.exec(data)?.groups?.threadGroup || "";
+        this.host.emit(
+          "log-stream",
+          `=library-unloaded id="${id}" target-name="${targetName}" host-name="${hostName}" thread-group="${threadGroup}"`,
+        );
+        break;
+      }
+      case "memory-changed": {
+        const threadGroup = this.rgxMemoryThreadGroup.exec(data)?.groups?.threadGroup || "";
+        const addr = this.rgxMemoryAddr.exec(data)?.groups?.addr || "";
+        const len = this.rgxMemoryLen.exec(data)?.groups?.len || "";
+        const type = this.rgxMemoryType.exec(data)?.groups?.type;
+        const typeStr = type !== undefined ? ` type="${type}"` : "";
+        this.host.emit(
+          "log-stream",
+          `=memory-changed thread-group=${threadGroup} addr="${addr}" len="${len}"${typeStr}`,
+        );
+        break;
+      }
+      case "record-started": {
+        const threadGroup = this.rgxRecordThreadGroup.exec(data)?.groups?.threadGroup || "";
+        const method = this.rgxRecordMethod.exec(data)?.groups?.method || "";
+        const format = this.rgxRecordFormat.exec(data)?.groups?.format;
+        const formatStr = format !== undefined ? ` format="${format}"` : "";
+        this.host.emit(
+          "log-stream",
+          `=record-started thread-group="${threadGroup}" method="${method}"${formatStr}`,
+        );
+        break;
+      }
+      case "record-stopped": {
+        const threadGroup = this.rgxRecordThreadGroup.exec(data)?.groups?.threadGroup || "";
+        this.host.emit("log-stream", `=record-stopped thread-group="${threadGroup}"`);
+        break;
+      }
+      case "traceframe-changed": {
+        if (data === "end") {
+          this.host.emit("log-stream", `=traceframe-changed end`);
+        } else {
+          const num = this.rgxTraceframeNum.exec(data)?.groups?.num || "";
+          const tracepoint = this.rgxTraceframeTracepoint.exec(data)?.groups?.tracepoint || "";
+          this.host.emit("log-stream", `=traceframe-changed num=${num} tracepoint=${tracepoint}`);
+        }
+        break;
+      }
+      case "tsv-created": {
+        const name = this.rgxTsvName.exec(data)?.groups?.name || "";
+        const initial = this.rgxTsvInitial.exec(data)?.groups?.initial || "";
+        this.host.emit("log-stream", `=tsv-created name=${name} initial=${initial}`);
+        break;
+      }
+      case "tsv-deleted": {
+        const name = this.rgxTsvName.exec(data)?.groups?.name;
+        const nameStr = name !== undefined ? ` name=${name}` : "";
+        this.host.emit("log-stream", `=tsv-deleted${nameStr}`);
+        break;
+      }
+      case "tsv-modified": {
+        const name = this.rgxTsvName.exec(data)?.groups?.name || "";
+        const initial = this.rgxTsvInitial.exec(data)?.groups?.initial || "";
+        const current = this.rgxTsvCurrent.exec(data)?.groups?.current;
+        const currentStr = current !== undefined ? ` current=${current}` : "";
+        this.host.emit("log-stream", `=tsv-modified name=${name} initial=${initial}${currentStr}`);
         break;
       }
       default: {

@@ -59,4 +59,153 @@ describe("MiNotifyAsyncHandler", () => {
     const ok = await handler.parseNotifyAsyncRecord("=not-real,data=value");
     expect(ok).toBe(false);
   });
+
+  it("handles =library-loaded and logs parsed fields", async () => {
+    const host = createHost();
+    const handler = new MiNotifyAsyncHandler(host);
+
+    const ok = await handler.parseNotifyAsyncRecord(
+      '=library-loaded,id="/lib/libc.so.6",target-name="/lib/libc.so.6",host-name="/lib/libc.so.6",symbols-loaded="0",thread-group="i1",ranges=[{from="0x1000",to="0x2000"}]',
+    );
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith(
+      "log-stream",
+      expect.stringContaining('id="/lib/libc.so.6"'),
+    );
+    expect(host.emit).toHaveBeenCalledWith(
+      "log-stream",
+      expect.stringContaining('thread-group="i1"'),
+    );
+  });
+
+  it("handles =library-unloaded and logs parsed fields", async () => {
+    const host = createHost();
+    const handler = new MiNotifyAsyncHandler(host);
+
+    const ok = await handler.parseNotifyAsyncRecord(
+      '=library-unloaded,id="/lib/libc.so.6",target-name="/lib/libc.so.6",host-name="/lib/libc.so.6",thread-group="i1"',
+    );
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith(
+      "log-stream",
+      expect.stringContaining('id="/lib/libc.so.6"'),
+    );
+  });
+
+  it("handles =memory-changed without type", async () => {
+    const host = createHost();
+    const handler = new MiNotifyAsyncHandler(host);
+
+    const ok = await handler.parseNotifyAsyncRecord(
+      '=memory-changed,thread-group=i1,addr="0x20000000",len="4"',
+    );
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith(
+      "log-stream",
+      expect.stringContaining('addr="0x20000000"'),
+    );
+    expect(host.emit).toHaveBeenCalledWith("log-stream", expect.not.stringContaining("type="));
+  });
+
+  it("handles =memory-changed with type=code", async () => {
+    const host = createHost();
+    const handler = new MiNotifyAsyncHandler(host);
+
+    const ok = await handler.parseNotifyAsyncRecord(
+      '=memory-changed,thread-group=i1,addr="0x08000000",len="16",type="code"',
+    );
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith("log-stream", expect.stringContaining('type="code"'));
+  });
+
+  it("handles =record-started with method and format", async () => {
+    const host = createHost();
+    const handler = new MiNotifyAsyncHandler(host);
+
+    const ok = await handler.parseNotifyAsyncRecord(
+      '=record-started,thread-group="i1",method="btrace",format="bts"',
+    );
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith(
+      "log-stream",
+      expect.stringContaining('method="btrace"'),
+    );
+    expect(host.emit).toHaveBeenCalledWith("log-stream", expect.stringContaining('format="bts"'));
+  });
+
+  it("handles =record-stopped", async () => {
+    const host = createHost();
+    const handler = new MiNotifyAsyncHandler(host);
+
+    const ok = await handler.parseNotifyAsyncRecord('=record-stopped,thread-group="i1"');
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith(
+      "log-stream",
+      expect.stringContaining('thread-group="i1"'),
+    );
+  });
+
+  it("handles =traceframe-changed with num and tracepoint", async () => {
+    const host = createHost();
+    const handler = new MiNotifyAsyncHandler(host);
+
+    const ok = await handler.parseNotifyAsyncRecord("=traceframe-changed,num=0,tracepoint=1");
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith("log-stream", expect.stringContaining("num=0"));
+  });
+
+  it("handles =traceframe-changed end", async () => {
+    const host = createHost();
+    const handler = new MiNotifyAsyncHandler(host);
+
+    const ok = await handler.parseNotifyAsyncRecord("=traceframe-changed,end");
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith("log-stream", expect.stringContaining("end"));
+  });
+
+  it("handles =tsv-created", async () => {
+    const host = createHost();
+    const handler = new MiNotifyAsyncHandler(host);
+
+    const ok = await handler.parseNotifyAsyncRecord("=tsv-created,name=$trace_timestamp,initial=0");
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith(
+      "log-stream",
+      expect.stringContaining("name=$trace_timestamp"),
+    );
+  });
+
+  it("handles =tsv-deleted with name", async () => {
+    const host = createHost();
+    const handler = new MiNotifyAsyncHandler(host);
+
+    const ok = await handler.parseNotifyAsyncRecord("=tsv-deleted,name=$trace_timestamp");
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith(
+      "log-stream",
+      expect.stringContaining("name=$trace_timestamp"),
+    );
+  });
+
+  it("handles =tsv-modified with optional current", async () => {
+    const host = createHost();
+    const handler = new MiNotifyAsyncHandler(host);
+
+    const ok = await handler.parseNotifyAsyncRecord(
+      "=tsv-modified,name=$trace_timestamp,initial=0,current=42",
+    );
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith("log-stream", expect.stringContaining("current=42"));
+  });
 });
