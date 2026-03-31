@@ -3,17 +3,21 @@ import { gdbStateDatabase } from "./gdb-state-database/gdbStateDatabase";
 import { MiOutputHost } from "./mi-output-types";
 import { MiResultRecordHandler } from "./mi-result-handler";
 
-const { mockWebContents } = vi.hoisted(() => ({
-  mockWebContents: {
-    send: vi.fn(),
-  },
+const { mockWebContentsSend } = vi.hoisted(() => ({
+  mockWebContentsSend: vi.fn(),
 }));
 
-vi.mock("../main", () => ({
-  mainWindow: {
-    webContents: mockWebContents,
-  },
-}));
+vi.mock("../main", async () => {
+  const { createMockBrowserWindow } = await import("../../test-helpers/ipc-test-harness.js");
+
+  return {
+    mainWindow: createMockBrowserWindow({
+      webContents: {
+        send: mockWebContentsSend,
+      },
+    }),
+  };
+});
 
 describe("MiResultRecordHandler", () => {
   const createHost = (): MiOutputHost => {
@@ -44,7 +48,7 @@ describe("MiResultRecordHandler", () => {
     expect(ok).toBe(true);
     expect(host.gdbDB.registers.get("0")?.name).toBe("r0");
     expect(host.gdbDB.registers.get("1")?.name).toBe("r1");
-    expect(mockWebContents.send).toHaveBeenCalledWith("data-register", host.gdbDB.registers);
+    expect(mockWebContentsSend).toHaveBeenCalledWith("data-register", host.gdbDB.registers);
   });
 
   it("returns false for unknown done-result payload", async () => {

@@ -7,17 +7,21 @@ import { RegistersResultStrategy } from "./registers-result-strategy";
 import { StackResultStrategy } from "./stack-result-strategy";
 import { ThreadsResultStrategy } from "./threads-result-strategy";
 
-const { mockWebContents } = vi.hoisted(() => ({
-  mockWebContents: {
-    send: vi.fn(),
-  },
+const { mockWebContentsSend } = vi.hoisted(() => ({
+  mockWebContentsSend: vi.fn(),
 }));
 
-vi.mock("../../main", () => ({
-  mainWindow: {
-    webContents: mockWebContents,
-  },
-}));
+vi.mock("../../main", async () => {
+  const { createMockBrowserWindow } = await import("../../../test-helpers/ipc-test-harness.js");
+
+  return {
+    mainWindow: createMockBrowserWindow({
+      webContents: {
+        send: mockWebContentsSend,
+      },
+    }),
+  };
+});
 
 describe("MI result strategies", () => {
   const createHost = (): MiOutputHost => ({
@@ -36,7 +40,7 @@ describe("MI result strategies", () => {
 
     expect(strategy.canHandle("asm_insns")).toBe(true);
     expect(handled).toBe(true);
-    expect(mockWebContents.send).toHaveBeenCalledWith(
+    expect(mockWebContentsSend).toHaveBeenCalledWith(
       "data-disasm",
       expect.arrayContaining([
         expect.objectContaining({
@@ -56,7 +60,7 @@ describe("MI result strategies", () => {
 
     expect(strategy.canHandle("memory")).toBe(true);
     expect(handled).toBe(true);
-    expect(mockWebContents.send).toHaveBeenCalledWith(
+    expect(mockWebContentsSend).toHaveBeenCalledWith(
       "data-memory",
       expect.objectContaining({
         begin: "0x1000",
@@ -77,7 +81,7 @@ describe("MI result strategies", () => {
     expect(strategy.canHandle("threads")).toBe(true);
     expect(handled).toBe(true);
     expect(host.gdbDB.threads.size).toBe(1);
-    expect(mockWebContents.send).toHaveBeenCalledWith(
+    expect(mockWebContentsSend).toHaveBeenCalledWith(
       "data-threads",
       expect.objectContaining({
         th: host.gdbDB.threads,
@@ -115,7 +119,7 @@ describe("MI result strategies", () => {
     expect(strategy.canHandle("stack")).toBe(true);
     expect(handled).toBe(true);
     expect(host.gdbDB.stackFrames[0]?.active).toBe(true);
-    expect(mockWebContents.send).toHaveBeenCalledWith(
+    expect(mockWebContentsSend).toHaveBeenCalledWith(
       "source-file",
       expect.objectContaining({
         fileName: "a.c",
@@ -142,7 +146,7 @@ describe("MI result strategies", () => {
   it("StackResultStrategy safely handles an empty frame list", async () => {
     const host = createHost();
     const strategy = new StackResultStrategy();
-    const sourceFileCallCount = mockWebContents.send.mock.calls.filter(
+    const sourceFileCallCount = mockWebContentsSend.mock.calls.filter(
       (call) => call[0] === "source-file",
     ).length;
 
@@ -150,7 +154,7 @@ describe("MI result strategies", () => {
 
     expect(handled).toBe(true);
     expect(host.gdbDB.stackFrames).toHaveLength(0);
-    expect(mockWebContents.send.mock.calls.filter((call) => call[0] === "source-file").length).toBe(
+    expect(mockWebContentsSend.mock.calls.filter((call) => call[0] === "source-file").length).toBe(
       sourceFileCallCount,
     );
   });

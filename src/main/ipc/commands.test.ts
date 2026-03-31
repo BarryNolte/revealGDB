@@ -1,57 +1,11 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { IPC_CHANNELS, NotifyMainRequest } from "../../common/ipc-contracts";
+import { createIpcRegistrationHarness } from "../../test-helpers/ipc-test-harness";
 import { handleNotifyMain } from "./commands";
-import { IpcRegistrationContext } from "./types";
-
-function createContext() {
-  const send = vi.fn();
-  const getPosition = vi.fn().mockReturnValue([100, 200]);
-  const getSize = vi.fn().mockReturnValue([800, 600]);
-
-  const mainWindow = {
-    fullScreen: false,
-    getPosition,
-    getSize,
-    webContents: {
-      send,
-    },
-  };
-
-  const gdbInterface = {
-    connect: vi.fn().mockReturnValue(true),
-    disconnect: vi.fn(),
-    send: vi.fn(),
-    gdbDB: {
-      clearDatabase: vi.fn(),
-      allDataUpdateUI: vi.fn(),
-      dump: vi.fn(),
-      getAllFunctionNames: vi.fn().mockReturnValue([]),
-    },
-  };
-
-  const appSettings = {
-    setSync: vi.fn(),
-    getSync: vi.fn(),
-  };
-
-  const context: IpcRegistrationContext = {
-    ipcMain: {} as never,
-    appSettings: appSettings as never,
-    fontList: new Map<string, string>(),
-    gdbAppInfo: new Map<string, unknown>() as never,
-    getMainWindow: () => mainWindow as never,
-    getGdbInterface: () => gdbInterface as never,
-    isSelectedConnection: (value): value is never => {
-      return Boolean(value);
-    },
-  };
-
-  return { context, send, appSettings, gdbInterface };
-}
 
 describe("handleNotifyMain", () => {
   it("handles renderEnd by sending command-entry notify-render", () => {
-    const { context, send } = createContext();
+    const { context, send } = createIpcRegistrationHarness();
     const msg: NotifyMainRequest = { command: "renderEnd" };
 
     handleNotifyMain(msg, context);
@@ -62,7 +16,7 @@ describe("handleNotifyMain", () => {
   });
 
   it("handles save-app-theme by persisting the setting", () => {
-    const { context, appSettings } = createContext();
+    const { context, appSettings } = createIpcRegistrationHarness();
     const msg: NotifyMainRequest = {
       command: "save-app-theme",
       data: "solarized",
@@ -74,7 +28,7 @@ describe("handleNotifyMain", () => {
   });
 
   it("handles cancel-connection by disconnecting and clearing DB", () => {
-    const { context, gdbInterface, send } = createContext();
+    const { context, gdbInterface, send } = createIpcRegistrationHarness();
     const msg: NotifyMainRequest = { command: "cancel-connection" };
 
     handleNotifyMain(msg, context);

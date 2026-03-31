@@ -3,17 +3,21 @@ import { gdbStateDatabase } from "./gdb-state-database/gdbStateDatabase";
 import { MiNotifyAsyncHandler } from "./mi-notify-handler";
 import { MiOutputHost } from "./mi-output-types";
 
-const { mockWebContents } = vi.hoisted(() => ({
-  mockWebContents: {
-    send: vi.fn(),
-  },
+const { mockWebContentsSend } = vi.hoisted(() => ({
+  mockWebContentsSend: vi.fn(),
 }));
 
-vi.mock("../main", () => ({
-  mainWindow: {
-    webContents: mockWebContents,
-  },
-}));
+vi.mock("../main", async () => {
+  const { createMockBrowserWindow } = await import("../../test-helpers/ipc-test-harness.js");
+
+  return {
+    mainWindow: createMockBrowserWindow({
+      webContents: {
+        send: mockWebContentsSend,
+      },
+    }),
+  };
+});
 
 describe("MiNotifyAsyncHandler", () => {
   const createHost = (): MiOutputHost => {
@@ -32,7 +36,7 @@ describe("MiNotifyAsyncHandler", () => {
 
     expect(ok).toBe(true);
     expect(host.gdbDB.threadGroups.has("i1")).toBe(true);
-    expect(mockWebContents.send).toHaveBeenCalledWith("data-threads", {
+    expect(mockWebContentsSend).toHaveBeenCalledWith("data-threads", {
       th: host.gdbDB.threads,
       grp: host.gdbDB.threadGroups,
     });

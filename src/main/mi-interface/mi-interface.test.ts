@@ -34,12 +34,18 @@ vi.mock("./gdb-connector/gdb-connector-general", () => ({
   }),
 }));
 
-vi.mock("../main", () => ({
-  AppSettings: mockSettings,
-  mainWindow: {
-    webContents: mockWebContents,
-  },
-}));
+vi.mock("../main", async () => {
+  const { createMockBrowserWindow } = await import("../../test-helpers/ipc-test-harness.js");
+
+  return {
+    AppSettings: mockSettings,
+    mainWindow: createMockBrowserWindow({
+      webContents: {
+        send: mockWebContents.send,
+      },
+    }),
+  };
+});
 
 vi.mock("./gdb-parsers/gdb-output-capture", () => ({
   GdbOutputCapture: vi.fn(function (this: GdbAny) {

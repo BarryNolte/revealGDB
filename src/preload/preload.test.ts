@@ -1,36 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { IPC_CHANNELS } from "../common/ipc-contracts";
+import { createPreloadElectronHarness, loadPreloadApi } from "../test-helpers/preload-test-harness";
 
-const exposeInMainWorld = vi.fn();
-const on = vi.fn();
-const removeListener = vi.fn();
-const invoke = vi.fn();
-const send = vi.fn();
-
-vi.mock("electron", () => ({
-  contextBridge: {
-    exposeInMainWorld,
-  },
-  ipcRenderer: {
-    on,
-    removeListener,
-    invoke,
-    send,
-  },
-}));
-
-async function loadPreloadApi() {
-  vi.resetModules();
-  exposeInMainWorld.mockReset();
-  on.mockReset();
-  removeListener.mockReset();
-  invoke.mockReset();
-  send.mockReset();
-
-  await import("./preload.js");
-
-  return exposeInMainWorld.mock.calls[0]?.[1];
-}
+const electronHarness = createPreloadElectronHarness();
 
 describe("preload IPC bridge", () => {
   beforeEach(() => {
@@ -38,9 +10,9 @@ describe("preload IPC bridge", () => {
   });
 
   it("exposes grouped and legacy IPC APIs", async () => {
-    const api = await loadPreloadApi();
+    const api = await loadPreloadApi(electronHarness);
 
-    expect(exposeInMainWorld).toHaveBeenCalledWith(
+    expect(electronHarness.exposeInMainWorld).toHaveBeenCalledWith(
       "ipcToMain",
       expect.objectContaining({
         messages: expect.objectContaining({
@@ -78,27 +50,33 @@ describe("preload IPC bridge", () => {
   });
 
   it("routes grouped and legacy app queries through the same channels", async () => {
-    const api = await loadPreloadApi();
+    const api = await loadPreloadApi(electronHarness);
 
     api.queries.app.getSettings();
     api.getSettings();
     api.queries.environment.getWslDistrobutions();
     api.getFunctionNames();
 
-    expect(invoke).toHaveBeenNthCalledWith(1, IPC_CHANNELS.rendererToMain.queries.app.settings);
-    expect(invoke).toHaveBeenNthCalledWith(2, IPC_CHANNELS.rendererToMain.queries.app.settings);
-    expect(invoke).toHaveBeenNthCalledWith(
+    expect(electronHarness.invoke).toHaveBeenNthCalledWith(
+      1,
+      IPC_CHANNELS.rendererToMain.queries.app.settings,
+    );
+    expect(electronHarness.invoke).toHaveBeenNthCalledWith(
+      2,
+      IPC_CHANNELS.rendererToMain.queries.app.settings,
+    );
+    expect(electronHarness.invoke).toHaveBeenNthCalledWith(
       3,
       IPC_CHANNELS.rendererToMain.queries.environment.wslDistributions,
     );
-    expect(invoke).toHaveBeenNthCalledWith(
+    expect(electronHarness.invoke).toHaveBeenNthCalledWith(
       4,
       IPC_CHANNELS.rendererToMain.queries.debugger.functionNames,
     );
   });
 
   it("routes grouped subscriptions and commands through normalized channels", async () => {
-    const api = await loadPreloadApi();
+    const api = await loadPreloadApi(electronHarness);
     const callback = vi.fn();
 
     const unsubscribe = api.messages.console(callback);
@@ -106,18 +84,21 @@ describe("preload IPC bridge", () => {
     api.notifyMain({ command: "renderEnd" });
     unsubscribe();
 
-    expect(on).toHaveBeenCalledWith(
+    expect(electronHarness.on).toHaveBeenCalledWith(
       IPC_CHANNELS.mainToRenderer.console.message,
       expect.any(Function),
     );
-    expect(send).toHaveBeenCalledWith(
+    expect(electronHarness.send).toHaveBeenCalledWith(
       IPC_CHANNELS.rendererToMain.commands.debugger.send,
       "continue",
     );
-    expect(send).toHaveBeenCalledWith(IPC_CHANNELS.rendererToMain.commands.app.notify, {
-      command: "renderEnd",
-    });
-    expect(removeListener).toHaveBeenCalledWith(
+    expect(electronHarness.send).toHaveBeenCalledWith(
+      IPC_CHANNELS.rendererToMain.commands.app.notify,
+      {
+        command: "renderEnd",
+      },
+    );
+    expect(electronHarness.removeListener).toHaveBeenCalledWith(
       IPC_CHANNELS.mainToRenderer.console.message,
       expect.any(Function),
     );

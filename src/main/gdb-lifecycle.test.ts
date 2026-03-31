@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createMockAppSettings, createMockBrowserWindow } from "../test-helpers/ipc-test-harness";
 import { createGdbInterface } from "./gdb-lifecycle";
 
 const { sendMock } = vi.hoisted(() => ({
@@ -23,13 +24,9 @@ describe("createGdbInterface", () => {
   });
 
   it("runs startup commands once and stopped commands on each stop", () => {
-    const mainWindow = {
-      webContents: {
-        send: vi.fn(),
-      },
-    };
+    const mainWindow = createMockBrowserWindow();
 
-    const appSettings = {
+    const appSettings = createMockAppSettings({
       getSync: vi.fn((key: string) => {
         if (key === "gdb.run.onStartup") {
           return ["startup-one", "startup-two"];
@@ -39,7 +36,7 @@ describe("createGdbInterface", () => {
         }
         return [];
       }),
-    };
+    });
 
     const gdb = createGdbInterface(mainWindow as never, appSettings);
 

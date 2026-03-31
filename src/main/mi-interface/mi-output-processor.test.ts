@@ -3,17 +3,21 @@ import { gdbStateDatabase } from "./gdb-state-database/gdbStateDatabase";
 import { MiOutputProcessor } from "./mi-output-processor";
 import { MiOutputHost } from "./mi-output-types";
 
-const { mockWebContents } = vi.hoisted(() => ({
-  mockWebContents: {
-    send: vi.fn(),
-  },
+const { mockWebContentsSend } = vi.hoisted(() => ({
+  mockWebContentsSend: vi.fn(),
 }));
 
-vi.mock("../main", () => ({
-  mainWindow: {
-    webContents: mockWebContents,
-  },
-}));
+vi.mock("../main", async () => {
+  const { createMockBrowserWindow } = await import("../../test-helpers/ipc-test-harness.js");
+
+  return {
+    mainWindow: createMockBrowserWindow({
+      webContents: {
+        send: mockWebContentsSend,
+      },
+    }),
+  };
+});
 
 describe("MiOutputProcessor integration", () => {
   const createHost = (): MiOutputHost => ({
@@ -41,13 +45,13 @@ describe("MiOutputProcessor integration", () => {
     expect(host.gdbDB.registers.get("1")?.value).toBe("0x1");
     expect(host.gdbDB.threads.size).toBe(1);
     expect(host.gdbDB.stackFrames[0]?.func).toBe("main");
-    expect(mockWebContents.send).toHaveBeenCalledWith(
+    expect(mockWebContentsSend).toHaveBeenCalledWith(
       "data-threads",
       expect.objectContaining({
         th: host.gdbDB.threads,
       }),
     );
-    expect(mockWebContents.send).toHaveBeenCalledWith(
+    expect(mockWebContentsSend).toHaveBeenCalledWith(
       "source-file",
       expect.objectContaining({
         fileName: "a.c",
