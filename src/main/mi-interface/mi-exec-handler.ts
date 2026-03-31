@@ -59,6 +59,7 @@ export class MiExecAsyncHandler {
           case "watchpoint-scope":
           case "exited":
           case "exited-normally":
+          case "exited-signalled":
           case "signal-received":
           case "solib-event":
           case "fork":

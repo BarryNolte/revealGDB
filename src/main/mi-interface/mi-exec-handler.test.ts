@@ -99,4 +99,43 @@ describe("MiExecAsyncHandler", () => {
     const ok = handler.parseExecAsyncRecord("*not-real,data=value");
     expect(ok).toBe(false);
   });
+
+  it("handles stopped with reason exited-signalled", () => {
+    const host = createHost();
+    const handler = new MiExecAsyncHandler(host);
+
+    const ok = handler.parseExecAsyncRecord(
+      '*stopped,reason="exited-signalled",signal-name="SIGSEGV",thread-id="1",stopped-threads="all"',
+    );
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith("gdb-stopped");
+    expect(mockWebContentsSend).toHaveBeenCalledWith("notify-render", {
+      command: "status-stopped",
+    });
+  });
+
+  it("handles stopped with reason exited-normally", () => {
+    const host = createHost();
+    const handler = new MiExecAsyncHandler(host);
+
+    const ok = handler.parseExecAsyncRecord(
+      '*stopped,reason="exited-normally",thread-id="1",stopped-threads="all"',
+    );
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith("gdb-stopped");
+  });
+
+  it("handles stopped with reason exited (non-zero exit code)", () => {
+    const host = createHost();
+    const handler = new MiExecAsyncHandler(host);
+
+    const ok = handler.parseExecAsyncRecord(
+      '*stopped,reason="exited",exit-code="01",thread-id="1",stopped-threads="all"',
+    );
+
+    expect(ok).toBe(true);
+    expect(host.emit).toHaveBeenCalledWith("gdb-stopped");
+  });
 });

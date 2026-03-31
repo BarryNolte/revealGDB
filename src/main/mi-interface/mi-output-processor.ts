@@ -2,6 +2,7 @@ import { MiExecAsyncHandler } from "./mi-exec-handler";
 import { MiNotifyAsyncHandler } from "./mi-notify-handler";
 import { MiOutputHost, gdbShowSourceInfo } from "./mi-output-types";
 import { MiResultRecordHandler } from "./mi-result-handler";
+import { MiStatusAsyncHandler } from "./mi-status-handler";
 
 export type { MiOutputHost, gdbShowSourceInfo };
 
@@ -15,11 +16,13 @@ export class MiOutputProcessor {
   private readonly resultHandler: MiResultRecordHandler;
   private readonly notifyHandler: MiNotifyAsyncHandler;
   private readonly execHandler: MiExecAsyncHandler;
+  private readonly statusHandler: MiStatusAsyncHandler;
 
   constructor(private readonly host: MiOutputHost) {
     this.resultHandler = new MiResultRecordHandler(host);
     this.notifyHandler = new MiNotifyAsyncHandler(host);
     this.execHandler = new MiExecAsyncHandler(host);
+    this.statusHandler = new MiStatusAsyncHandler(host);
   }
 
   async handleDataChunk(rawOutput: string, captureLine: (line: string) => boolean): Promise<void> {
@@ -141,9 +144,8 @@ export class MiOutputProcessor {
     return true;
   }
 
-  private parseStatusAsyncRecord(output: string): void {
-    console.error(`StatusAsyncRecord: ${output}`);
-    throw new Error("Method not implemented.");
+  private parseStatusAsyncRecord(output: string): boolean {
+    return this.statusHandler.parseStatusAsyncRecord(output);
   }
 
   parseNotifyAsyncRecord(output: string): Promise<boolean> {
