@@ -1,0 +1,4094 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LocalsContainer corpus coverage > parses line-001 from Locals.test.inputs.txt:1 1`] = `[]`;
+
+exports[`LocalsContainer corpus coverage > parses line-002 from Locals.test.inputs.txt:2 1`] = `
+[
+  {
+    "fullpath": "__func__",
+    "name": "__func__",
+    "sublocals": [],
+    "value": "\\"vTaskDelay\\"",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-003 from Locals.test.inputs.txt:3 1`] = `
+[
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-004 from Locals.test.inputs.txt:4 1`] = `
+[
+  {
+    "fullpath": "biggest",
+    "name": "biggest",
+    "sublocals": [],
+    "value": "0x0",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-005 from Locals.test.inputs.txt:5 1`] = `
+[
+  {
+    "fullpath": "biggest",
+    "name": "biggest",
+    "sublocals": [],
+    "value": "0xdcc30",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-006 from Locals.test.inputs.txt:6 1`] = `
+[
+  {
+    "fullpath": "boxed",
+    "name": "boxed",
+    "sublocals": [],
+    "value": "0xde770",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-007 from Locals.test.inputs.txt:7 1`] = `
+[
+  {
+    "fullpath": "center",
+    "name": "center",
+    "sublocals": [],
+    "value": "0x0",
+  },
+  {
+    "fullpath": "shape",
+    "name": "shape",
+    "sublocals": [],
+    "value": "0xdcc30",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::slice::iter::Iter<rustdebug::Shape> {ptr: core::ptr::non_null::NonNull<rustdebug::Shape> {pointer: 0xdcc68}, end_or_len: 0xdccd8, _marker: core::marker::PhantomData<&rustdebug::Shape>}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-008 from Locals.test.inputs.txt:8 1`] = `
+[
+  {
+    "fullpath": "center",
+    "name": "center",
+    "sublocals": [],
+    "value": "0xdcc40",
+  },
+  {
+    "fullpath": "shape",
+    "name": "shape",
+    "sublocals": [],
+    "value": "0xdcc30",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::slice::iter::Iter<rustdebug::Shape> {ptr: core::ptr::non_null::NonNull<rustdebug::Shape> {pointer: 0xdcc68}, end_or_len: 0xdccd8, _marker: core::marker::PhantomData<&rustdebug::Shape>}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-009 from Locals.test.inputs.txt:9 1`] = `
+[
+  {
+    "fullpath": "center",
+    "name": "center",
+    "sublocals": [],
+    "value": "0xdcc40",
+  },
+  {
+    "fullpath": "shape",
+    "name": "shape",
+    "sublocals": [],
+    "value": "0xdcc68",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::slice::iter::Iter<rustdebug::Shape> {ptr: core::ptr::non_null::NonNull<rustdebug::Shape> {pointer: 0xdcca0}, end_or_len: 0xdccd8, _marker: core::marker::PhantomData<&rustdebug::Shape>}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-010 from Locals.test.inputs.txt:10 1`] = `
+[
+  {
+    "fullpath": "center",
+    "name": "center",
+    "sublocals": [],
+    "value": "0xdcc40",
+  },
+  {
+    "fullpath": "shape",
+    "name": "shape",
+    "sublocals": [],
+    "value": "0xdcca0",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::slice::iter::Iter<rustdebug::Shape> {ptr: core::ptr::non_null::NonNull<rustdebug::Shape> {pointer: 0xdccd8}, end_or_len: 0xdccd8, _marker: core::marker::PhantomData<&rustdebug::Shape>}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-011 from Locals.test.inputs.txt:11 1`] = `
+[
+  {
+    "fullpath": "eco_bit0",
+    "name": "eco_bit0",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "eco_bit1",
+    "name": "eco_bit1",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "eco_bit2",
+    "name": "eco_bit2",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "combine_value",
+    "name": "combine_value",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-012 from Locals.test.inputs.txt:12 1`] = `
+[
+  {
+    "fullpath": "eco_bit0",
+    "name": "eco_bit0",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "eco_bit1",
+    "name": "eco_bit1",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "eco_bit2",
+    "name": "eco_bit2",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "combine_value",
+    "name": "combine_value",
+    "sublocals": [],
+    "value": "7",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-013 from Locals.test.inputs.txt:13 1`] = `
+[
+  {
+    "fullpath": "eco_bit0",
+    "name": "eco_bit0",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "eco_bit1",
+    "name": "eco_bit1",
+    "sublocals": [],
+    "value": "0 '\\\\000'",
+  },
+  {
+    "fullpath": "eco_bit2",
+    "name": "eco_bit2",
+    "sublocals": [],
+    "value": "1 '\\\\001'",
+  },
+  {
+    "fullpath": "combine_value",
+    "name": "combine_value",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-014 from Locals.test.inputs.txt:14 1`] = `
+[
+  {
+    "fullpath": "eco_bit0",
+    "name": "eco_bit0",
+    "sublocals": [],
+    "value": "0 '\\\\000'",
+  },
+  {
+    "fullpath": "eco_bit1",
+    "name": "eco_bit1",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "eco_bit2",
+    "name": "eco_bit2",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "combine_value",
+    "name": "combine_value",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-015 from Locals.test.inputs.txt:15 1`] = `
+[
+  {
+    "fullpath": "eco_bit0",
+    "name": "eco_bit0",
+    "sublocals": [],
+    "value": "0 '\\\\000'",
+  },
+  {
+    "fullpath": "eco_bit1",
+    "name": "eco_bit1",
+    "sublocals": [],
+    "value": "0 '\\\\000'",
+  },
+  {
+    "fullpath": "eco_bit2",
+    "name": "eco_bit2",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "combine_value",
+    "name": "combine_value",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-016 from Locals.test.inputs.txt:16 1`] = `
+[
+  {
+    "fullpath": "extra",
+    "name": "extra",
+    "sublocals": [],
+    "value": "\\" (center: Point { x: 0.0, y: 0.0 })\\"",
+  },
+  {
+    "fullpath": "shape",
+    "name": "shape",
+    "sublocals": [],
+    "value": "0xdcc30",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::slice::iter::Iter<rustdebug::Shape> {ptr: core::ptr::non_null::NonNull<rustdebug::Shape> {pointer: 0xdcc68}, end_or_len: 0xdccd8, _marker: core::marker::PhantomData<&rustdebug::Shape>}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-017 from Locals.test.inputs.txt:17 1`] = `
+[
+  {
+    "fullpath": "extra",
+    "name": "extra",
+    "sublocals": [],
+    "value": "\\"\\"",
+  },
+  {
+    "fullpath": "shape",
+    "name": "shape",
+    "sublocals": [],
+    "value": "0xdcc68",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::slice::iter::Iter<rustdebug::Shape> {ptr: core::ptr::non_null::NonNull<rustdebug::Shape> {pointer: 0xdcca0}, end_or_len: 0xdccd8, _marker: core::marker::PhantomData<&rustdebug::Shape>}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-018 from Locals.test.inputs.txt:18 1`] = `
+[
+  {
+    "fullpath": "extra",
+    "name": "extra",
+    "sublocals": [],
+    "value": "\\"\\"",
+  },
+  {
+    "fullpath": "shape",
+    "name": "shape",
+    "sublocals": [],
+    "value": "0xdcca0",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::slice::iter::Iter<rustdebug::Shape> {ptr: core::ptr::non_null::NonNull<rustdebug::Shape> {pointer: 0xdccd8}, end_or_len: 0xdccd8, _marker: core::marker::PhantomData<&rustdebug::Shape>}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-019 from Locals.test.inputs.txt:19 1`] = `
+[
+  {
+    "fullpath": "frame",
+    "name": "frame",
+    "sublocals": [
+      {
+        "fullpath": "frame.pc",
+        "name": "pc",
+        "sublocals": [],
+        "value": "0",
+      },
+      {
+        "fullpath": "frame.sp",
+        "name": "sp",
+        "sublocals": [],
+        "value": "0",
+      },
+      {
+        "fullpath": "frame.next_pc",
+        "name": "next_pc",
+        "sublocals": [],
+        "value": "0",
+      },
+      {
+        "fullpath": "frame.exc_frame",
+        "name": "exc_frame",
+        "sublocals": [],
+        "value": "0x0",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "sp",
+    "name": "sp",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "sf",
+    "name": "sf",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "fn",
+    "name": "fn",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-020 from Locals.test.inputs.txt:20 1`] = `
+[
+  {
+    "fullpath": "frame",
+    "name": "frame",
+    "sublocals": [
+      {
+        "fullpath": "frame.pc",
+        "name": "pc",
+        "sublocals": [],
+        "value": "0",
+      },
+      {
+        "fullpath": "frame.sp",
+        "name": "sp",
+        "sublocals": [],
+        "value": "0",
+      },
+      {
+        "fullpath": "frame.next_pc",
+        "name": "next_pc",
+        "sublocals": [],
+        "value": "0",
+      },
+      {
+        "fullpath": "frame.exc_frame",
+        "name": "exc_frame",
+        "sublocals": [],
+        "value": "0x3ffb3fe4",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "sp",
+    "name": "sp",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "sf",
+    "name": "sf",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "fn",
+    "name": "fn",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-021 from Locals.test.inputs.txt:21 1`] = `
+[
+  {
+    "fullpath": "frame",
+    "name": "frame",
+    "sublocals": [
+      {
+        "fullpath": "frame.pc",
+        "name": "pc",
+        "sublocals": [],
+        "value": "2148360508",
+      },
+      {
+        "fullpath": "frame.sp",
+        "name": "sp",
+        "sublocals": [],
+        "value": "1073430784",
+      },
+      {
+        "fullpath": "frame.next_pc",
+        "name": "next_pc",
+        "sublocals": [],
+        "value": "2148395641",
+      },
+      {
+        "fullpath": "frame.exc_frame",
+        "name": "exc_frame",
+        "sublocals": [],
+        "value": "0x0",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "sp",
+    "name": "sp",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "sf",
+    "name": "sf",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "fn",
+    "name": "fn",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-022 from Locals.test.inputs.txt:22 1`] = `
+[
+  {
+    "fullpath": "i",
+    "name": "i",
+    "sublocals": [],
+    "value": "0",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-023 from Locals.test.inputs.txt:23 1`] = `
+[
+  {
+    "fullpath": "i",
+    "name": "i",
+    "sublocals": [],
+    "value": "1",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-024 from Locals.test.inputs.txt:24 1`] = `
+[
+  {
+    "fullpath": "i",
+    "name": "i",
+    "sublocals": [],
+    "value": "10",
+  },
+  {
+    "fullpath": "mbs",
+    "name": "mbs",
+    "sublocals": [
+      {
+        "fullpath": "mbs.pd",
+        "name": "pd",
+        "sublocals": [],
+        "value": "0x3ffb4180 \\"p&@?\\\\273\\\\v\\"",
+      },
+      {
+        "fullpath": "mbs.ms",
+        "name": "ms",
+        "sublocals": [
+          {
+            "fullpath": "mbs.ms.a",
+            "name": "a",
+            "sublocals": [],
+            "value": "4",
+          },
+          {
+            "fullpath": "mbs.ms.b",
+            "name": "b",
+            "sublocals": [],
+            "value": "252 '\\\\374'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_0",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.c",
+                "name": "c",
+                "sublocals": [],
+                "value": "\\"\`\\", <incomplete sequence \\\\373>",
+              },
+              {
+                "fullpath": "mbs.ms.d",
+                "name": "d",
+                "sublocals": [],
+                "value": "1073430880",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.e",
+            "name": "e",
+            "sublocals": [],
+            "value": "12 '\\\\f'",
+          },
+          {
+            "fullpath": "mbs.ms.embed_t",
+            "name": "embed_t",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.embed_t.i",
+                "name": "i",
+                "sublocals": [],
+                "value": "2 '\\\\002'",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.o",
+                "name": "o",
+                "sublocals": [],
+                "value": "2",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.x",
+                "name": "x",
+                "sublocals": [],
+                "value": "4610350801142439112",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.h",
+            "name": "h",
+            "sublocals": [],
+            "value": "0 '\\\\000'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_1",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.f",
+                "name": "f",
+                "sublocals": [],
+                "value": "0",
+              },
+              {
+                "fullpath": "mbs.ms.g",
+                "name": "g",
+                "sublocals": [],
+                "value": "1073430912",
+              },
+            ],
+            "value": "",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.arr",
+        "name": "arr",
+        "sublocals": [],
+        "value": "12, 1073430912, 1073430880, 12, 2, 1",
+      },
+      {
+        "fullpath": "mbs.bf1",
+        "name": "bf1",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf1.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "-8",
+          },
+          {
+            "fullpath": "mbs.bf1.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "-4",
+          },
+          {
+            "fullpath": "mbs.bf1.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-1",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.bf2",
+        "name": "bf2",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf2.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "0",
+          },
+          {
+            "fullpath": "mbs.bf2.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "52",
+          },
+          {
+            "fullpath": "mbs.bf2.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-304",
+          },
+        ],
+        "value": "",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "chip_info",
+    "name": "chip_info",
+    "sublocals": [
+      {
+        "fullpath": "chip_info.model",
+        "name": "model",
+        "sublocals": [],
+        "value": "CHIP_ESP32",
+      },
+      {
+        "fullpath": "chip_info.features",
+        "name": "features",
+        "sublocals": [],
+        "value": "50",
+      },
+      {
+        "fullpath": "chip_info.revision",
+        "name": "revision",
+        "sublocals": [],
+        "value": "300",
+      },
+      {
+        "fullpath": "chip_info.cores",
+        "name": "cores",
+        "sublocals": [],
+        "value": "2 '\\\\002'",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "flash_size",
+    "name": "flash_size",
+    "sublocals": [],
+    "value": "2097152",
+  },
+  {
+    "fullpath": "major_rev",
+    "name": "major_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "minor_rev",
+    "name": "minor_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-025 from Locals.test.inputs.txt:25 1`] = `
+[
+  {
+    "fullpath": "i",
+    "name": "i",
+    "sublocals": [],
+    "value": "2",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-026 from Locals.test.inputs.txt:26 1`] = `
+[
+  {
+    "fullpath": "i",
+    "name": "i",
+    "sublocals": [],
+    "value": "3",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-027 from Locals.test.inputs.txt:27 1`] = `
+[
+  {
+    "fullpath": "i",
+    "name": "i",
+    "sublocals": [],
+    "value": "4",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-028 from Locals.test.inputs.txt:28 1`] = `
+[
+  {
+    "fullpath": "mbs",
+    "name": "mbs",
+    "sublocals": [
+      {
+        "fullpath": "mbs.pd",
+        "name": "pd",
+        "sublocals": [],
+        "value": "0x3ffb4180 \\"p&@?\\\\003N\\"",
+      },
+      {
+        "fullpath": "mbs.ms",
+        "name": "ms",
+        "sublocals": [
+          {
+            "fullpath": "mbs.ms.a",
+            "name": "a",
+            "sublocals": [],
+            "value": "4",
+          },
+          {
+            "fullpath": "mbs.ms.b",
+            "name": "b",
+            "sublocals": [],
+            "value": "252 '\\\\374'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_0",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.c",
+                "name": "c",
+                "sublocals": [],
+                "value": "\\"\`\\", <incomplete sequence \\\\373>",
+              },
+              {
+                "fullpath": "mbs.ms.d",
+                "name": "d",
+                "sublocals": [],
+                "value": "1073430880",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.e",
+            "name": "e",
+            "sublocals": [],
+            "value": "12 '\\\\f'",
+          },
+          {
+            "fullpath": "mbs.ms.embed_t",
+            "name": "embed_t",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.embed_t.i",
+                "name": "i",
+                "sublocals": [],
+                "value": "2 '\\\\002'",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.o",
+                "name": "o",
+                "sublocals": [],
+                "value": "2",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.x",
+                "name": "x",
+                "sublocals": [],
+                "value": "4610350801142439112",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.h",
+            "name": "h",
+            "sublocals": [],
+            "value": "0 '\\\\000'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_1",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.f",
+                "name": "f",
+                "sublocals": [],
+                "value": "0",
+              },
+              {
+                "fullpath": "mbs.ms.g",
+                "name": "g",
+                "sublocals": [],
+                "value": "1073430912",
+              },
+            ],
+            "value": "",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.arr",
+        "name": "arr",
+        "sublocals": [],
+        "value": "12, 1073430912, 1073430880, 12, 2, 1",
+      },
+      {
+        "fullpath": "mbs.bf1",
+        "name": "bf1",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf1.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "-8",
+          },
+          {
+            "fullpath": "mbs.bf1.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "-4",
+          },
+          {
+            "fullpath": "mbs.bf1.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-1",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.bf2",
+        "name": "bf2",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf2.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "0",
+          },
+          {
+            "fullpath": "mbs.bf2.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "52",
+          },
+          {
+            "fullpath": "mbs.bf2.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-304",
+          },
+        ],
+        "value": "",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "chip_info",
+    "name": "chip_info",
+    "sublocals": [
+      {
+        "fullpath": "chip_info.model",
+        "name": "model",
+        "sublocals": [],
+        "value": "CHIP_ESP32",
+      },
+      {
+        "fullpath": "chip_info.features",
+        "name": "features",
+        "sublocals": [],
+        "value": "50",
+      },
+      {
+        "fullpath": "chip_info.revision",
+        "name": "revision",
+        "sublocals": [],
+        "value": "300",
+      },
+      {
+        "fullpath": "chip_info.cores",
+        "name": "cores",
+        "sublocals": [],
+        "value": "2 '\\\\002'",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "flash_size",
+    "name": "flash_size",
+    "sublocals": [],
+    "value": "2097152",
+  },
+  {
+    "fullpath": "major_rev",
+    "name": "major_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "minor_rev",
+    "name": "minor_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-029 from Locals.test.inputs.txt:29 1`] = `
+[
+  {
+    "fullpath": "mbs",
+    "name": "mbs",
+    "sublocals": [
+      {
+        "fullpath": "mbs.pd",
+        "name": "pd",
+        "sublocals": [],
+        "value": "0x3ffb4180 \\"p&@?\\\\023S\\"",
+      },
+      {
+        "fullpath": "mbs.ms",
+        "name": "ms",
+        "sublocals": [
+          {
+            "fullpath": "mbs.ms.a",
+            "name": "a",
+            "sublocals": [],
+            "value": "4",
+          },
+          {
+            "fullpath": "mbs.ms.b",
+            "name": "b",
+            "sublocals": [],
+            "value": "252 '\\\\374'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_0",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.c",
+                "name": "c",
+                "sublocals": [],
+                "value": "\\"\`\\", <incomplete sequence \\\\373>",
+              },
+              {
+                "fullpath": "mbs.ms.d",
+                "name": "d",
+                "sublocals": [],
+                "value": "1073430880",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.e",
+            "name": "e",
+            "sublocals": [],
+            "value": "12 '\\\\f'",
+          },
+          {
+            "fullpath": "mbs.ms.embed_t",
+            "name": "embed_t",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.embed_t.i",
+                "name": "i",
+                "sublocals": [],
+                "value": "2 '\\\\002'",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.o",
+                "name": "o",
+                "sublocals": [],
+                "value": "2",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.x",
+                "name": "x",
+                "sublocals": [],
+                "value": "4610350801142439112",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.h",
+            "name": "h",
+            "sublocals": [],
+            "value": "0 '\\\\000'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_1",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.f",
+                "name": "f",
+                "sublocals": [],
+                "value": "0",
+              },
+              {
+                "fullpath": "mbs.ms.g",
+                "name": "g",
+                "sublocals": [],
+                "value": "1073430912",
+              },
+            ],
+            "value": "",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.arr",
+        "name": "arr",
+        "sublocals": [],
+        "value": "12, 1073430912, 1073430880, 12, 2, 1",
+      },
+      {
+        "fullpath": "mbs.bf1",
+        "name": "bf1",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf1.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "-8",
+          },
+          {
+            "fullpath": "mbs.bf1.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "-4",
+          },
+          {
+            "fullpath": "mbs.bf1.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-1",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.bf2",
+        "name": "bf2",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf2.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "0",
+          },
+          {
+            "fullpath": "mbs.bf2.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "52",
+          },
+          {
+            "fullpath": "mbs.bf2.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-304",
+          },
+        ],
+        "value": "",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "chip_info",
+    "name": "chip_info",
+    "sublocals": [
+      {
+        "fullpath": "chip_info.model",
+        "name": "model",
+        "sublocals": [],
+        "value": "CHIP_ESP32",
+      },
+      {
+        "fullpath": "chip_info.features",
+        "name": "features",
+        "sublocals": [],
+        "value": "50",
+      },
+      {
+        "fullpath": "chip_info.revision",
+        "name": "revision",
+        "sublocals": [],
+        "value": "300",
+      },
+      {
+        "fullpath": "chip_info.cores",
+        "name": "cores",
+        "sublocals": [],
+        "value": "2 '\\\\002'",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "flash_size",
+    "name": "flash_size",
+    "sublocals": [],
+    "value": "2097152",
+  },
+  {
+    "fullpath": "major_rev",
+    "name": "major_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "minor_rev",
+    "name": "minor_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-030 from Locals.test.inputs.txt:30 1`] = `
+[
+  {
+    "fullpath": "mbs",
+    "name": "mbs",
+    "sublocals": [
+      {
+        "fullpath": "mbs.pd",
+        "name": "pd",
+        "sublocals": [],
+        "value": "0x3ffb4180 \\"p&@?\\\\273\\\\v\\"",
+      },
+      {
+        "fullpath": "mbs.ms",
+        "name": "ms",
+        "sublocals": [
+          {
+            "fullpath": "mbs.ms.a",
+            "name": "a",
+            "sublocals": [],
+            "value": "12",
+          },
+          {
+            "fullpath": "mbs.ms.b",
+            "name": "b",
+            "sublocals": [],
+            "value": "252 '\\\\374'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_0",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.c",
+                "name": "c",
+                "sublocals": [],
+                "value": "\\"\`\\", <incomplete sequence \\\\373>",
+              },
+              {
+                "fullpath": "mbs.ms.d",
+                "name": "d",
+                "sublocals": [],
+                "value": "1073430880",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.e",
+            "name": "e",
+            "sublocals": [],
+            "value": "12 '\\\\f'",
+          },
+          {
+            "fullpath": "mbs.ms.embed_t",
+            "name": "embed_t",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.embed_t.i",
+                "name": "i",
+                "sublocals": [],
+                "value": "2 '\\\\002'",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.o",
+                "name": "o",
+                "sublocals": [],
+                "value": "2",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.x",
+                "name": "x",
+                "sublocals": [],
+                "value": "4610350801142439112",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.h",
+            "name": "h",
+            "sublocals": [],
+            "value": "0 '\\\\000'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_1",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.f",
+                "name": "f",
+                "sublocals": [],
+                "value": "0",
+              },
+              {
+                "fullpath": "mbs.ms.g",
+                "name": "g",
+                "sublocals": [],
+                "value": "1073430912",
+              },
+            ],
+            "value": "",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.arr",
+        "name": "arr",
+        "sublocals": [],
+        "value": "12, 1073430912, 1073430880, 12, 2, 1",
+      },
+      {
+        "fullpath": "mbs.bf1",
+        "name": "bf1",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf1.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "-8",
+          },
+          {
+            "fullpath": "mbs.bf1.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "-4",
+          },
+          {
+            "fullpath": "mbs.bf1.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-1",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.bf2",
+        "name": "bf2",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf2.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "0",
+          },
+          {
+            "fullpath": "mbs.bf2.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "52",
+          },
+          {
+            "fullpath": "mbs.bf2.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-304",
+          },
+        ],
+        "value": "",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "chip_info",
+    "name": "chip_info",
+    "sublocals": [
+      {
+        "fullpath": "chip_info.model",
+        "name": "model",
+        "sublocals": [],
+        "value": "0",
+      },
+      {
+        "fullpath": "chip_info.features",
+        "name": "features",
+        "sublocals": [],
+        "value": "3003",
+      },
+      {
+        "fullpath": "chip_info.revision",
+        "name": "revision",
+        "sublocals": [],
+        "value": "9724",
+      },
+      {
+        "fullpath": "chip_info.cores",
+        "name": "cores",
+        "sublocals": [],
+        "value": "64 '@'",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "flash_size",
+    "name": "flash_size",
+    "sublocals": [],
+    "value": "1073413604",
+  },
+  {
+    "fullpath": "major_rev",
+    "name": "major_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "minor_rev",
+    "name": "minor_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-031 from Locals.test.inputs.txt:31 1`] = `
+[
+  {
+    "fullpath": "mbs",
+    "name": "mbs",
+    "sublocals": [
+      {
+        "fullpath": "mbs.pd",
+        "name": "pd",
+        "sublocals": [],
+        "value": "0x3ffb4180 \\"p&@?\\\\273\\\\v\\"",
+      },
+      {
+        "fullpath": "mbs.ms",
+        "name": "ms",
+        "sublocals": [
+          {
+            "fullpath": "mbs.ms.a",
+            "name": "a",
+            "sublocals": [],
+            "value": "3",
+          },
+          {
+            "fullpath": "mbs.ms.b",
+            "name": "b",
+            "sublocals": [],
+            "value": "252 '\\\\374'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_0",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.c",
+                "name": "c",
+                "sublocals": [],
+                "value": "\\"\`\\", <incomplete sequence \\\\373>",
+              },
+              {
+                "fullpath": "mbs.ms.d",
+                "name": "d",
+                "sublocals": [],
+                "value": "1073430880",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.e",
+            "name": "e",
+            "sublocals": [],
+            "value": "12 '\\\\f'",
+          },
+          {
+            "fullpath": "mbs.ms.embed_t",
+            "name": "embed_t",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.embed_t.i",
+                "name": "i",
+                "sublocals": [],
+                "value": "2 '\\\\002'",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.o",
+                "name": "o",
+                "sublocals": [],
+                "value": "2",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.x",
+                "name": "x",
+                "sublocals": [],
+                "value": "4610350801142439112",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.h",
+            "name": "h",
+            "sublocals": [],
+            "value": "0 '\\\\000'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_1",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.f",
+                "name": "f",
+                "sublocals": [],
+                "value": "0",
+              },
+              {
+                "fullpath": "mbs.ms.g",
+                "name": "g",
+                "sublocals": [],
+                "value": "1073430912",
+              },
+            ],
+            "value": "",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.arr",
+        "name": "arr",
+        "sublocals": [],
+        "value": "12, 1073430912, 1073430880, 12, 2, 1",
+      },
+      {
+        "fullpath": "mbs.bf1",
+        "name": "bf1",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf1.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "-8",
+          },
+          {
+            "fullpath": "mbs.bf1.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "-4",
+          },
+          {
+            "fullpath": "mbs.bf1.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-1",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.bf2",
+        "name": "bf2",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf2.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "0",
+          },
+          {
+            "fullpath": "mbs.bf2.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "52",
+          },
+          {
+            "fullpath": "mbs.bf2.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-304",
+          },
+        ],
+        "value": "",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "chip_info",
+    "name": "chip_info",
+    "sublocals": [
+      {
+        "fullpath": "chip_info.model",
+        "name": "model",
+        "sublocals": [],
+        "value": "0",
+      },
+      {
+        "fullpath": "chip_info.features",
+        "name": "features",
+        "sublocals": [],
+        "value": "3003",
+      },
+      {
+        "fullpath": "chip_info.revision",
+        "name": "revision",
+        "sublocals": [],
+        "value": "9724",
+      },
+      {
+        "fullpath": "chip_info.cores",
+        "name": "cores",
+        "sublocals": [],
+        "value": "64 '@'",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "flash_size",
+    "name": "flash_size",
+    "sublocals": [],
+    "value": "1073413604",
+  },
+  {
+    "fullpath": "major_rev",
+    "name": "major_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "minor_rev",
+    "name": "minor_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-032 from Locals.test.inputs.txt:32 1`] = `
+[
+  {
+    "fullpath": "mbs",
+    "name": "mbs",
+    "sublocals": [
+      {
+        "fullpath": "mbs.pd",
+        "name": "pd",
+        "sublocals": [],
+        "value": "0x3ffb4180 \\"p&@?\\\\273\\\\v\\"",
+      },
+      {
+        "fullpath": "mbs.ms",
+        "name": "ms",
+        "sublocals": [
+          {
+            "fullpath": "mbs.ms.a",
+            "name": "a",
+            "sublocals": [],
+            "value": "4",
+          },
+          {
+            "fullpath": "mbs.ms.b",
+            "name": "b",
+            "sublocals": [],
+            "value": "252 '\\\\374'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_0",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.c",
+                "name": "c",
+                "sublocals": [],
+                "value": "\\"\`\\", <incomplete sequence \\\\373>",
+              },
+              {
+                "fullpath": "mbs.ms.d",
+                "name": "d",
+                "sublocals": [],
+                "value": "1073430880",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.e",
+            "name": "e",
+            "sublocals": [],
+            "value": "12 '\\\\f'",
+          },
+          {
+            "fullpath": "mbs.ms.embed_t",
+            "name": "embed_t",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.embed_t.i",
+                "name": "i",
+                "sublocals": [],
+                "value": "2 '\\\\002'",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.o",
+                "name": "o",
+                "sublocals": [],
+                "value": "2",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.x",
+                "name": "x",
+                "sublocals": [],
+                "value": "4610350801142439112",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.h",
+            "name": "h",
+            "sublocals": [],
+            "value": "0 '\\\\000'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_1",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.f",
+                "name": "f",
+                "sublocals": [],
+                "value": "0",
+              },
+              {
+                "fullpath": "mbs.ms.g",
+                "name": "g",
+                "sublocals": [],
+                "value": "1073430912",
+              },
+            ],
+            "value": "",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.arr",
+        "name": "arr",
+        "sublocals": [],
+        "value": "12, 1073430912, 1073430880, 12, 2, 1",
+      },
+      {
+        "fullpath": "mbs.bf1",
+        "name": "bf1",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf1.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "-8",
+          },
+          {
+            "fullpath": "mbs.bf1.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "-4",
+          },
+          {
+            "fullpath": "mbs.bf1.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-1",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.bf2",
+        "name": "bf2",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf2.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "0",
+          },
+          {
+            "fullpath": "mbs.bf2.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "52",
+          },
+          {
+            "fullpath": "mbs.bf2.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-304",
+          },
+        ],
+        "value": "",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "chip_info",
+    "name": "chip_info",
+    "sublocals": [
+      {
+        "fullpath": "chip_info.model",
+        "name": "model",
+        "sublocals": [],
+        "value": "0",
+      },
+      {
+        "fullpath": "chip_info.features",
+        "name": "features",
+        "sublocals": [],
+        "value": "3003",
+      },
+      {
+        "fullpath": "chip_info.revision",
+        "name": "revision",
+        "sublocals": [],
+        "value": "9724",
+      },
+      {
+        "fullpath": "chip_info.cores",
+        "name": "cores",
+        "sublocals": [],
+        "value": "64 '@'",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "flash_size",
+    "name": "flash_size",
+    "sublocals": [],
+    "value": "1073413604",
+  },
+  {
+    "fullpath": "major_rev",
+    "name": "major_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "minor_rev",
+    "name": "minor_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-033 from Locals.test.inputs.txt:33 1`] = `
+[
+  {
+    "fullpath": "mbs",
+    "name": "mbs",
+    "sublocals": [
+      {
+        "fullpath": "mbs.pd",
+        "name": "pd",
+        "sublocals": [],
+        "value": "0x3ffb4180 \\"p&@?\\\\273\\\\v\\"",
+      },
+      {
+        "fullpath": "mbs.ms",
+        "name": "ms",
+        "sublocals": [
+          {
+            "fullpath": "mbs.ms.a",
+            "name": "a",
+            "sublocals": [],
+            "value": "4",
+          },
+          {
+            "fullpath": "mbs.ms.b",
+            "name": "b",
+            "sublocals": [],
+            "value": "252 '\\\\374'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_0",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.c",
+                "name": "c",
+                "sublocals": [],
+                "value": "\\"\`\\", <incomplete sequence \\\\373>",
+              },
+              {
+                "fullpath": "mbs.ms.d",
+                "name": "d",
+                "sublocals": [],
+                "value": "1073430880",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.e",
+            "name": "e",
+            "sublocals": [],
+            "value": "12 '\\\\f'",
+          },
+          {
+            "fullpath": "mbs.ms.embed_t",
+            "name": "embed_t",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.embed_t.i",
+                "name": "i",
+                "sublocals": [],
+                "value": "2 '\\\\002'",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.o",
+                "name": "o",
+                "sublocals": [],
+                "value": "2",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.x",
+                "name": "x",
+                "sublocals": [],
+                "value": "4610350801142439112",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.h",
+            "name": "h",
+            "sublocals": [],
+            "value": "0 '\\\\000'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_1",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.f",
+                "name": "f",
+                "sublocals": [],
+                "value": "0",
+              },
+              {
+                "fullpath": "mbs.ms.g",
+                "name": "g",
+                "sublocals": [],
+                "value": "1073430912",
+              },
+            ],
+            "value": "",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.arr",
+        "name": "arr",
+        "sublocals": [],
+        "value": "12, 1073430912, 1073430880, 12, 2, 1",
+      },
+      {
+        "fullpath": "mbs.bf1",
+        "name": "bf1",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf1.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "-8",
+          },
+          {
+            "fullpath": "mbs.bf1.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "-4",
+          },
+          {
+            "fullpath": "mbs.bf1.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-1",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.bf2",
+        "name": "bf2",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf2.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "0",
+          },
+          {
+            "fullpath": "mbs.bf2.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "52",
+          },
+          {
+            "fullpath": "mbs.bf2.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-304",
+          },
+        ],
+        "value": "",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "chip_info",
+    "name": "chip_info",
+    "sublocals": [
+      {
+        "fullpath": "chip_info.model",
+        "name": "model",
+        "sublocals": [],
+        "value": "CHIP_ESP32",
+      },
+      {
+        "fullpath": "chip_info.features",
+        "name": "features",
+        "sublocals": [],
+        "value": "50",
+      },
+      {
+        "fullpath": "chip_info.revision",
+        "name": "revision",
+        "sublocals": [],
+        "value": "300",
+      },
+      {
+        "fullpath": "chip_info.cores",
+        "name": "cores",
+        "sublocals": [],
+        "value": "2 '\\\\002'",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "flash_size",
+    "name": "flash_size",
+    "sublocals": [],
+    "value": "1073413604",
+  },
+  {
+    "fullpath": "major_rev",
+    "name": "major_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "minor_rev",
+    "name": "minor_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-034 from Locals.test.inputs.txt:34 1`] = `
+[
+  {
+    "fullpath": "mbs",
+    "name": "mbs",
+    "sublocals": [
+      {
+        "fullpath": "mbs.pd",
+        "name": "pd",
+        "sublocals": [],
+        "value": "0x3ffb4180 \\"p&@?\\\\273\\\\v\\"",
+      },
+      {
+        "fullpath": "mbs.ms",
+        "name": "ms",
+        "sublocals": [
+          {
+            "fullpath": "mbs.ms.a",
+            "name": "a",
+            "sublocals": [],
+            "value": "4",
+          },
+          {
+            "fullpath": "mbs.ms.b",
+            "name": "b",
+            "sublocals": [],
+            "value": "252 '\\\\374'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_0",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.c",
+                "name": "c",
+                "sublocals": [],
+                "value": "\\"\`\\", <incomplete sequence \\\\373>",
+              },
+              {
+                "fullpath": "mbs.ms.d",
+                "name": "d",
+                "sublocals": [],
+                "value": "1073430880",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.e",
+            "name": "e",
+            "sublocals": [],
+            "value": "12 '\\\\f'",
+          },
+          {
+            "fullpath": "mbs.ms.embed_t",
+            "name": "embed_t",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.embed_t.i",
+                "name": "i",
+                "sublocals": [],
+                "value": "2 '\\\\002'",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.o",
+                "name": "o",
+                "sublocals": [],
+                "value": "2",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.x",
+                "name": "x",
+                "sublocals": [],
+                "value": "4610350801142439112",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.h",
+            "name": "h",
+            "sublocals": [],
+            "value": "0 '\\\\000'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_1",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.f",
+                "name": "f",
+                "sublocals": [],
+                "value": "0",
+              },
+              {
+                "fullpath": "mbs.ms.g",
+                "name": "g",
+                "sublocals": [],
+                "value": "1073430912",
+              },
+            ],
+            "value": "",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.arr",
+        "name": "arr",
+        "sublocals": [],
+        "value": "12, 1073430912, 1073430880, 12, 2, 1",
+      },
+      {
+        "fullpath": "mbs.bf1",
+        "name": "bf1",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf1.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "-8",
+          },
+          {
+            "fullpath": "mbs.bf1.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "-4",
+          },
+          {
+            "fullpath": "mbs.bf1.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-1",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.bf2",
+        "name": "bf2",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf2.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "0",
+          },
+          {
+            "fullpath": "mbs.bf2.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "52",
+          },
+          {
+            "fullpath": "mbs.bf2.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-304",
+          },
+        ],
+        "value": "",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "chip_info",
+    "name": "chip_info",
+    "sublocals": [
+      {
+        "fullpath": "chip_info.model",
+        "name": "model",
+        "sublocals": [],
+        "value": "CHIP_ESP32",
+      },
+      {
+        "fullpath": "chip_info.features",
+        "name": "features",
+        "sublocals": [],
+        "value": "50",
+      },
+      {
+        "fullpath": "chip_info.revision",
+        "name": "revision",
+        "sublocals": [],
+        "value": "300",
+      },
+      {
+        "fullpath": "chip_info.cores",
+        "name": "cores",
+        "sublocals": [],
+        "value": "2 '\\\\002'",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "flash_size",
+    "name": "flash_size",
+    "sublocals": [],
+    "value": "1073413604",
+  },
+  {
+    "fullpath": "major_rev",
+    "name": "major_rev",
+    "sublocals": [],
+    "value": "3",
+  },
+  {
+    "fullpath": "minor_rev",
+    "name": "minor_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-035 from Locals.test.inputs.txt:35 1`] = `
+[
+  {
+    "fullpath": "mbs",
+    "name": "mbs",
+    "sublocals": [
+      {
+        "fullpath": "mbs.pd",
+        "name": "pd",
+        "sublocals": [],
+        "value": "0x3ffb4180 \\"p&@?\\\\273\\\\v\\"",
+      },
+      {
+        "fullpath": "mbs.ms",
+        "name": "ms",
+        "sublocals": [
+          {
+            "fullpath": "mbs.ms.a",
+            "name": "a",
+            "sublocals": [],
+            "value": "4",
+          },
+          {
+            "fullpath": "mbs.ms.b",
+            "name": "b",
+            "sublocals": [],
+            "value": "252 '\\\\374'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_0",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.c",
+                "name": "c",
+                "sublocals": [],
+                "value": "\\"\`\\", <incomplete sequence \\\\373>",
+              },
+              {
+                "fullpath": "mbs.ms.d",
+                "name": "d",
+                "sublocals": [],
+                "value": "1073430880",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.e",
+            "name": "e",
+            "sublocals": [],
+            "value": "12 '\\\\f'",
+          },
+          {
+            "fullpath": "mbs.ms.embed_t",
+            "name": "embed_t",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.embed_t.i",
+                "name": "i",
+                "sublocals": [],
+                "value": "2 '\\\\002'",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.o",
+                "name": "o",
+                "sublocals": [],
+                "value": "2",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.x",
+                "name": "x",
+                "sublocals": [],
+                "value": "4610350801142439112",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.h",
+            "name": "h",
+            "sublocals": [],
+            "value": "0 '\\\\000'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_1",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.f",
+                "name": "f",
+                "sublocals": [],
+                "value": "0",
+              },
+              {
+                "fullpath": "mbs.ms.g",
+                "name": "g",
+                "sublocals": [],
+                "value": "1073430912",
+              },
+            ],
+            "value": "",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.arr",
+        "name": "arr",
+        "sublocals": [],
+        "value": "12, 1073430912, 1073430880, 12, 2, 1",
+      },
+      {
+        "fullpath": "mbs.bf1",
+        "name": "bf1",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf1.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "-8",
+          },
+          {
+            "fullpath": "mbs.bf1.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "-4",
+          },
+          {
+            "fullpath": "mbs.bf1.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-1",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.bf2",
+        "name": "bf2",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf2.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "0",
+          },
+          {
+            "fullpath": "mbs.bf2.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "52",
+          },
+          {
+            "fullpath": "mbs.bf2.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-304",
+          },
+        ],
+        "value": "",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "chip_info",
+    "name": "chip_info",
+    "sublocals": [
+      {
+        "fullpath": "chip_info.model",
+        "name": "model",
+        "sublocals": [],
+        "value": "CHIP_ESP32",
+      },
+      {
+        "fullpath": "chip_info.features",
+        "name": "features",
+        "sublocals": [],
+        "value": "50",
+      },
+      {
+        "fullpath": "chip_info.revision",
+        "name": "revision",
+        "sublocals": [],
+        "value": "300",
+      },
+      {
+        "fullpath": "chip_info.cores",
+        "name": "cores",
+        "sublocals": [],
+        "value": "2 '\\\\002'",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "flash_size",
+    "name": "flash_size",
+    "sublocals": [],
+    "value": "1073413604",
+  },
+  {
+    "fullpath": "major_rev",
+    "name": "major_rev",
+    "sublocals": [],
+    "value": "3",
+  },
+  {
+    "fullpath": "minor_rev",
+    "name": "minor_rev",
+    "sublocals": [],
+    "value": "0",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-036 from Locals.test.inputs.txt:36 1`] = `
+[
+  {
+    "fullpath": "mbs",
+    "name": "mbs",
+    "sublocals": [
+      {
+        "fullpath": "mbs.pd",
+        "name": "pd",
+        "sublocals": [],
+        "value": "0x3ffb4180 \\"p&@?\\\\273\\\\v\\"",
+      },
+      {
+        "fullpath": "mbs.ms",
+        "name": "ms",
+        "sublocals": [
+          {
+            "fullpath": "mbs.ms.a",
+            "name": "a",
+            "sublocals": [],
+            "value": "4",
+          },
+          {
+            "fullpath": "mbs.ms.b",
+            "name": "b",
+            "sublocals": [],
+            "value": "252 '\\\\374'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_0",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.c",
+                "name": "c",
+                "sublocals": [],
+                "value": "\\"\`\\", <incomplete sequence \\\\373>",
+              },
+              {
+                "fullpath": "mbs.ms.d",
+                "name": "d",
+                "sublocals": [],
+                "value": "1073430880",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.e",
+            "name": "e",
+            "sublocals": [],
+            "value": "12 '\\\\f'",
+          },
+          {
+            "fullpath": "mbs.ms.embed_t",
+            "name": "embed_t",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.embed_t.i",
+                "name": "i",
+                "sublocals": [],
+                "value": "2 '\\\\002'",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.o",
+                "name": "o",
+                "sublocals": [],
+                "value": "2",
+              },
+              {
+                "fullpath": "mbs.ms.embed_t.x",
+                "name": "x",
+                "sublocals": [],
+                "value": "4610350801142439112",
+              },
+            ],
+            "value": "",
+          },
+          {
+            "fullpath": "mbs.ms.h",
+            "name": "h",
+            "sublocals": [],
+            "value": "0 '\\\\000'",
+          },
+          {
+            "fullpath": "mbs.ms",
+            "name": "anon_union_or_struct_1",
+            "sublocals": [
+              {
+                "fullpath": "mbs.ms.f",
+                "name": "f",
+                "sublocals": [],
+                "value": "0",
+              },
+              {
+                "fullpath": "mbs.ms.g",
+                "name": "g",
+                "sublocals": [],
+                "value": "1073430912",
+              },
+            ],
+            "value": "",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.arr",
+        "name": "arr",
+        "sublocals": [],
+        "value": "12, 1073430912, 1073430880, 12, 2, 1",
+      },
+      {
+        "fullpath": "mbs.bf1",
+        "name": "bf1",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf1.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "-8",
+          },
+          {
+            "fullpath": "mbs.bf1.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "-4",
+          },
+          {
+            "fullpath": "mbs.bf1.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-1",
+          },
+        ],
+        "value": "",
+      },
+      {
+        "fullpath": "mbs.bf2",
+        "name": "bf2",
+        "sublocals": [
+          {
+            "fullpath": "mbs.bf2.x",
+            "name": "x",
+            "sublocals": [],
+            "value": "0",
+          },
+          {
+            "fullpath": "mbs.bf2.y",
+            "name": "y",
+            "sublocals": [],
+            "value": "52",
+          },
+          {
+            "fullpath": "mbs.bf2.z",
+            "name": "z",
+            "sublocals": [],
+            "value": "-304",
+          },
+        ],
+        "value": "",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "chip_info",
+    "name": "chip_info",
+    "sublocals": [
+      {
+        "fullpath": "chip_info.model",
+        "name": "model",
+        "sublocals": [],
+        "value": "CHIP_ESP32",
+      },
+      {
+        "fullpath": "chip_info.features",
+        "name": "features",
+        "sublocals": [],
+        "value": "50",
+      },
+      {
+        "fullpath": "chip_info.revision",
+        "name": "revision",
+        "sublocals": [],
+        "value": "300",
+      },
+      {
+        "fullpath": "chip_info.cores",
+        "name": "cores",
+        "sublocals": [],
+        "value": "2 '\\\\002'",
+      },
+    ],
+    "value": "",
+  },
+  {
+    "fullpath": "flash_size",
+    "name": "flash_size",
+    "sublocals": [],
+    "value": "2097152",
+  },
+  {
+    "fullpath": "major_rev",
+    "name": "major_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "minor_rev",
+    "name": "minor_rev",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-037 from Locals.test.inputs.txt:37 1`] = `
+[
+  {
+    "fullpath": "n",
+    "name": "n",
+    "sublocals": [],
+    "value": "0",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::ops::range::RangeInclusive<u64> {start: 1, end: 10, exhausted: false}",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-038 from Locals.test.inputs.txt:38 1`] = `
+[
+  {
+    "fullpath": "n",
+    "name": "n",
+    "sublocals": [],
+    "value": "1",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::ops::range::RangeInclusive<u64> {start: 2, end: 10, exhausted: false}",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-039 from Locals.test.inputs.txt:39 1`] = `
+[
+  {
+    "fullpath": "n",
+    "name": "n",
+    "sublocals": [],
+    "value": "10",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::ops::range::RangeInclusive<u64> {start: 10, end: 10, exhausted: true}",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-040 from Locals.test.inputs.txt:40 1`] = `
+[
+  {
+    "fullpath": "n",
+    "name": "n",
+    "sublocals": [],
+    "value": "2",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::ops::range::RangeInclusive<u64> {start: 3, end: 10, exhausted: false}",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-041 from Locals.test.inputs.txt:41 1`] = `
+[
+  {
+    "fullpath": "n",
+    "name": "n",
+    "sublocals": [],
+    "value": "3",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::ops::range::RangeInclusive<u64> {start: 4, end: 10, exhausted: false}",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-042 from Locals.test.inputs.txt:42 1`] = `
+[
+  {
+    "fullpath": "n",
+    "name": "n",
+    "sublocals": [],
+    "value": "4",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::ops::range::RangeInclusive<u64> {start: 5, end: 10, exhausted: false}",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-043 from Locals.test.inputs.txt:43 1`] = `
+[
+  {
+    "fullpath": "n",
+    "name": "n",
+    "sublocals": [],
+    "value": "5",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::ops::range::RangeInclusive<u64> {start: 6, end: 10, exhausted: false}",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-044 from Locals.test.inputs.txt:44 1`] = `
+[
+  {
+    "fullpath": "n",
+    "name": "n",
+    "sublocals": [],
+    "value": "6",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::ops::range::RangeInclusive<u64> {start: 7, end: 10, exhausted: false}",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-045 from Locals.test.inputs.txt:45 1`] = `
+[
+  {
+    "fullpath": "n",
+    "name": "n",
+    "sublocals": [],
+    "value": "7",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::ops::range::RangeInclusive<u64> {start: 8, end: 10, exhausted: false}",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-046 from Locals.test.inputs.txt:46 1`] = `
+[
+  {
+    "fullpath": "n",
+    "name": "n",
+    "sublocals": [],
+    "value": "8",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::ops::range::RangeInclusive<u64> {start: 9, end: 10, exhausted: false}",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-047 from Locals.test.inputs.txt:47 1`] = `
+[
+  {
+    "fullpath": "n",
+    "name": "n",
+    "sublocals": [],
+    "value": "9",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::ops::range::RangeInclusive<u64> {start: 10, end: 10, exhausted: false}",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-048 from Locals.test.inputs.txt:48 1`] = `
+[
+  {
+    "fullpath": "names",
+    "name": "names",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = \\"Circle\\",\\n  [1] = \\"Rectangle\\",\\n  [2] = \\"Triangle\\"\\n}",
+  },
+  {
+    "fullpath": "scaled_areas",
+    "name": "scaled_areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 235.61944901923448,\\n  [1] = 72,\\n  [2] = 18\\n}",
+  },
+  {
+    "fullpath": "scale",
+    "name": "scale",
+    "sublocals": [],
+    "value": "3",
+  },
+  {
+    "fullpath": "boxed",
+    "name": "boxed",
+    "sublocals": [],
+    "value": "0xde770",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-049 from Locals.test.inputs.txt:49 1`] = `
+[
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-050 from Locals.test.inputs.txt:50 1`] = `
+[
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-051 from Locals.test.inputs.txt:51 1`] = `
+[
+  {
+    "fullpath": "package",
+    "name": "package",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-052 from Locals.test.inputs.txt:52 1`] = `
+[
+  {
+    "fullpath": "parsed",
+    "name": "parsed",
+    "sublocals": [],
+    "value": "core::result::Result<f64, core::num::dec2flt::ParseFloatError>::Ok(3.1400000000000001)",
+  },
+  {
+    "fullpath": "names",
+    "name": "names",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = \\"Circle\\",\\n  [1] = \\"Rectangle\\",\\n  [2] = \\"Triangle\\"\\n}",
+  },
+  {
+    "fullpath": "scaled_areas",
+    "name": "scaled_areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 235.61944901923448,\\n  [1] = 72,\\n  [2] = 18\\n}",
+  },
+  {
+    "fullpath": "scale",
+    "name": "scale",
+    "sublocals": [],
+    "value": "3",
+  },
+  {
+    "fullpath": "boxed",
+    "name": "boxed",
+    "sublocals": [],
+    "value": "0xde770",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-053 from Locals.test.inputs.txt:53 1`] = `
+[
+  {
+    "fullpath": "prev_int_level",
+    "name": "prev_int_level",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-054 from Locals.test.inputs.txt:54 1`] = `
+[
+  {
+    "fullpath": "pxCurTask",
+    "name": "pxCurTask",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "ret",
+    "name": "ret",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-055 from Locals.test.inputs.txt:55 1`] = `
+[
+  {
+    "fullpath": "pxCurTask",
+    "name": "pxCurTask",
+    "sublocals": [],
+    "value": "0x3ffaf8f0",
+  },
+  {
+    "fullpath": "ret",
+    "name": "ret",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-056 from Locals.test.inputs.txt:56 1`] = `
+[
+  {
+    "fullpath": "scale",
+    "name": "scale",
+    "sublocals": [],
+    "value": "3",
+  },
+  {
+    "fullpath": "boxed",
+    "name": "boxed",
+    "sublocals": [],
+    "value": "0xde770",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-057 from Locals.test.inputs.txt:57 1`] = `
+[
+  {
+    "fullpath": "scaled_areas",
+    "name": "scaled_areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 235.61944901923448,\\n  [1] = 72,\\n  [2] = 18\\n}",
+  },
+  {
+    "fullpath": "scale",
+    "name": "scale",
+    "sublocals": [],
+    "value": "3",
+  },
+  {
+    "fullpath": "boxed",
+    "name": "boxed",
+    "sublocals": [],
+    "value": "0xde770",
+  },
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-058 from Locals.test.inputs.txt:58 1`] = `
+[
+  {
+    "fullpath": "shape",
+    "name": "shape",
+    "sublocals": [],
+    "value": "0xdcc30",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::slice::iter::Iter<rustdebug::Shape> {ptr: core::ptr::non_null::NonNull<rustdebug::Shape> {pointer: 0xdcc68}, end_or_len: 0xdccd8, _marker: core::marker::PhantomData<&rustdebug::Shape>}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-059 from Locals.test.inputs.txt:59 1`] = `
+[
+  {
+    "fullpath": "shape",
+    "name": "shape",
+    "sublocals": [],
+    "value": "0xdcc68",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::slice::iter::Iter<rustdebug::Shape> {ptr: core::ptr::non_null::NonNull<rustdebug::Shape> {pointer: 0xdcca0}, end_or_len: 0xdccd8, _marker: core::marker::PhantomData<&rustdebug::Shape>}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-060 from Locals.test.inputs.txt:60 1`] = `
+[
+  {
+    "fullpath": "shape",
+    "name": "shape",
+    "sublocals": [],
+    "value": "0xdcca0",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::slice::iter::Iter<rustdebug::Shape> {ptr: core::ptr::non_null::NonNull<rustdebug::Shape> {pointer: 0xdccd8}, end_or_len: 0xdccd8, _marker: core::marker::PhantomData<&rustdebug::Shape>}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-061 from Locals.test.inputs.txt:61 1`] = `
+[
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-062 from Locals.test.inputs.txt:62 1`] = `
+[
+  {
+    "fullpath": "total",
+    "name": "total",
+    "sublocals": [],
+    "value": "108.53981633974483",
+  },
+  {
+    "fullpath": "areas",
+    "name": "areas",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = 78.539816339744831,\\n  [1] = 24,\\n  [2] = 6\\n}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-063 from Locals.test.inputs.txt:63 1`] = `
+[
+  {
+    "fullpath": "xReturn",
+    "name": "xReturn",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "uxSavedInterruptStatus",
+    "name": "uxSavedInterruptStatus",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-064 from Locals.test.inputs.txt:64 1`] = `
+[
+  {
+    "fullpath": "xReturn",
+    "name": "xReturn",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "uxSavedInterruptStatus",
+    "name": "uxSavedInterruptStatus",
+    "sublocals": [],
+    "value": "393504",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-065 from Locals.test.inputs.txt:65 1`] = `
+[
+  {
+    "fullpath": "xReturn",
+    "name": "xReturn",
+    "sublocals": [],
+    "value": "<optimized out>",
+  },
+  {
+    "fullpath": "uxSavedInterruptStatus",
+    "name": "uxSavedInterruptStatus",
+    "sublocals": [],
+    "value": "395296",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-066 from Locals.test.inputs.txt:66 1`] = `
+[
+  {
+    "fullpath": "center",
+    "name": "center",
+    "sublocals": [],
+    "value": "0x0",
+  },
+  {
+    "fullpath": "shape",
+    "name": "shape",
+    "sublocals": [],
+    "value": "0x66c610",
+  },
+  {
+    "fullpath": "iter",
+    "name": "iter",
+    "sublocals": [],
+    "value": "core::slice::iter::Iter<rustdebug::Shape> {ptr: core::ptr::non_null::NonNull<rustdebug::Shape> {pointer: 0x66c648}, end_or_len: 0x66c6b8, _marker: core::marker::PhantomData<&rustdebug::Shape>}",
+  },
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;
+
+exports[`LocalsContainer corpus coverage > parses line-067 from Locals.test.inputs.txt:67 1`] = `
+[
+  {
+    "fullpath": "shapes",
+    "name": "shapes",
+    "sublocals": [],
+    "value": "Vec(size=3) = {\\n  [0] = rustdebug::Shape::Circle{center: rustdebug::Point {x: 0, y: 0}, radius: 5},\\n  [1] = rustdebug::Shape::Rectangle{top_left: rustdebug::Point {x: 0, y: 4}, bottom_right: rustdebug::Point {x: 6, y: 0}},\\n  [2] = rustdebug::Shape::Triangle(rustdebug::Point {x: 0, y: 0}, rustdebug::Point {x: 4, y: 0}, rustdebug::Point {x: 0, y: 3})\\n}",
+  },
+  {
+    "fullpath": "p",
+    "name": "p",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 3, y: 4}",
+  },
+  {
+    "fullpath": "origin",
+    "name": "origin",
+    "sublocals": [],
+    "value": "rustdebug::Point {x: 0, y: 0}",
+  },
+]
+`;

@@ -107,6 +107,7 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    // ...other includes
+    "tests/vite/**/*.ts",
+    "tests/vite/**/*.tsx"
   ]
 }
