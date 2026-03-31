@@ -69,8 +69,10 @@ export function createMockBrowserWindow(
   };
 
   const mergedWebContents: BrowserWindowMock["webContents"] = {
-    ...defaultWebContents,
-    ...webContentsOverrides,
+    send: webContentsOverrides?.send ?? defaultWebContents.send,
+    setDevToolsWebContents:
+      webContentsOverrides?.setDevToolsWebContents ?? defaultWebContents.setDevToolsWebContents,
+    openDevTools: webContentsOverrides?.openDevTools ?? defaultWebContents.openDevTools,
   };
 
   return {

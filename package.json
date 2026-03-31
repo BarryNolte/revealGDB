@@ -24,6 +24,7 @@
   "scripts": {
     "dev": "cross-env REVEALGDB_BUILD=debug REVEALGDB_DEBUG=true concurrently \"electron-vite build\" \"vite\" \"wait-on http://localhost:5173 && electron .\"",
     "build:renderer": "vite build",
+    "build:renderer:analyze": "cross-env REVEALGDB_ANALYZE_BUNDLE=true vite build",
     "build:main": "tsc -p tsconfig.main.json",
     "build": "npm run build:release",
     "build:release": "cross-env REVEALGDB_BUILD=release REVEALGDB_DEBUG=false npm run build:renderer && npm run build:main",

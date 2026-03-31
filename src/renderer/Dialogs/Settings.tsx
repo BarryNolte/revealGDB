@@ -208,7 +208,7 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
   };
 
   return (
-    <div className="SettingsTarget">
+    <div className="SettingsTarget" data-testid="settings-dialog-target">
       <DialogComponent
         className="dialogHeaderContainer"
         width="500px"
@@ -237,21 +237,27 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
               <tr>
                 <td>Theme:</td>
                 <td>
-                  <DropDownListComponent
-                    ref={appThemeRef}
-                    className="settingsDropdown"
-                    select={onSelectAppTheme}
-                    dataSource={themes}
-                  />
+                  <div data-testid="settings-app-theme">
+                    <DropDownListComponent
+                      id="settings-app-theme-input"
+                      ref={appThemeRef}
+                      className="settingsDropdown"
+                      select={onSelectAppTheme}
+                      dataSource={themes}
+                    />
+                  </div>
                 </td>
               </tr>
               <tr>
                 <td colSpan={2}>
-                  <CheckBoxComponent
-                    ref={appShowDebugInfoRef}
-                    label="Show debug info in terminal"
-                    change={onChangeShowDebugInfo}
-                  />
+                  <div data-testid="settings-show-debug-info">
+                    <CheckBoxComponent
+                      id="settings-show-debug-info-input"
+                      ref={appShowDebugInfoRef}
+                      label="Show debug info in terminal"
+                      change={onChangeShowDebugInfo}
+                    />
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -271,34 +277,43 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
               <tr>
                 <td>Theme:</td>
                 <td>
-                  <DropDownListComponent
-                    ref={editorThemeRef}
-                    className="settingsDropdown"
-                    select={onSelectEditorTheme}
-                    dataSource={editorThemes.keys().toArray()}
-                  />
+                  <div data-testid="settings-editor-theme">
+                    <DropDownListComponent
+                      id="settings-editor-theme-input"
+                      ref={editorThemeRef}
+                      className="settingsDropdown"
+                      select={onSelectEditorTheme}
+                      dataSource={editorThemes.keys().toArray()}
+                    />
+                  </div>
                 </td>
               </tr>
               <tr>
                 <td>Font:</td>
                 <td>
-                  <DropDownListComponent
-                    ref={editorFontsRef}
-                    className="settingsDropdown"
-                    dataSource={fontNames}
-                    select={onSelectEditorFont}
-                  />
+                  <div data-testid="settings-editor-font">
+                    <DropDownListComponent
+                      id="settings-editor-font-input"
+                      ref={editorFontsRef}
+                      className="settingsDropdown"
+                      dataSource={fontNames}
+                      select={onSelectEditorFont}
+                    />
+                  </div>
                 </td>
               </tr>
               <tr>
                 <td>Font Size:</td>
                 <td>
-                  <DropDownListComponent
-                    ref={editorFontSizeRef}
-                    className="settingsDropdown"
-                    dataSource={fontSizes}
-                    select={onSelectEditorFontSize}
-                  />
+                  <div data-testid="settings-editor-font-size">
+                    <DropDownListComponent
+                      id="settings-editor-font-size-input"
+                      ref={editorFontSizeRef}
+                      className="settingsDropdown"
+                      dataSource={fontSizes}
+                      select={onSelectEditorFontSize}
+                    />
+                  </div>
                 </td>
               </tr>
             </tbody>
