@@ -40,7 +40,7 @@ export default function GdbMemoryWindow(): JSX.Element {
   const [datasource, setDatasource] = useState<Uint8Array>(new Uint8Array(0));
 
   useEffect(() => {
-    window.ipcToMain.dataMemory((data: GdbAny) => {
+    window.ipcToMain.debuggerData.memory((data: GdbAny) => {
       //console.log("Received memory data:", data.toString());
       setDatasource(data.data);
       setAddress(data.begin);
@@ -121,7 +121,7 @@ export default function GdbMemoryWindow(): JSX.Element {
             // console.log(`Data changed at index ${index} to value ${value}`);
             // console.log(`${parseInt(address, 16) || 0}:${value}`);
             const addr = parseInt(address, 16) + index;
-            window.ipcToMain.sendGdbCommand(
+            window.ipcToMain.commands.debugger.sendGdbCommand(
               `set {char}${addr.toString(16)} = ${value.toString(16)}`,
             );
           }}
@@ -163,7 +163,7 @@ export default function GdbMemoryWindow(): JSX.Element {
         ? startRef.current?.value
         : startInput.hexValue;
 
-    window.ipcToMain.sendGdbCommand(
+    window.ipcToMain.commands.debugger.sendGdbCommand(
       `-data-read-memory-bytes ${start?.trim()} ${lengthInput.decimalValue?.toString().trim()}`,
     );
   }

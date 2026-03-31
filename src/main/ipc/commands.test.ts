@@ -56,7 +56,7 @@ describe("handleNotifyMain", () => {
 
     handleNotifyMain(msg, context);
 
-    expect(send).toHaveBeenCalledWith(IPC_CHANNELS.mainToRenderer.notifyRender, {
+    expect(send).toHaveBeenCalledWith(IPC_CHANNELS.mainToRenderer.notifications.render, {
       command: "command-entry",
     });
   });
@@ -82,7 +82,7 @@ describe("handleNotifyMain", () => {
     expect(gdbInterface.disconnect).toHaveBeenCalledTimes(1);
     expect(gdbInterface.gdbDB.clearDatabase).toHaveBeenCalledTimes(1);
     expect(gdbInterface.gdbDB.allDataUpdateUI).toHaveBeenCalledTimes(1);
-    expect(send).toHaveBeenCalledWith(IPC_CHANNELS.mainToRenderer.notifyRender, {
+    expect(send).toHaveBeenCalledWith(IPC_CHANNELS.mainToRenderer.notifications.render, {
       command: "cancel-connection",
     });
   });

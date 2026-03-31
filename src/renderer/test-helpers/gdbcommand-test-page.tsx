@@ -88,45 +88,89 @@ export function setupGdbCommandTestApi(): void {
     });
   }
 
-  ipc.consoleMessage = (callback) => {
+  ipc.messages = {
+    console: () => () => undefined,
+    log: () => () => undefined,
+    error: () => () => undefined,
+    debug: () => () => undefined,
+  };
+  ipc.notifications = {
+    connectionStatus: () => () => undefined,
+    render: () => () => undefined,
+  };
+  ipc.debuggerData = {
+    registers: () => () => undefined,
+    stackFrames: () => () => undefined,
+    sourceFile: () => () => undefined,
+    locals: () => () => undefined,
+    threads: () => () => undefined,
+    breakpoints: () => () => undefined,
+    memory: () => () => undefined,
+    disassembly: () => () => undefined,
+    functions: () => () => undefined,
+  };
+  ipc.queries = {
+    app: {
+      getSettings: () => Promise.resolve({}),
+      getSystemFonts: () => Promise.resolve([]),
+      getVersionInfo: () => Promise.resolve(new Map()),
+    },
+    environment: {
+      getWslDistrobutions: () => Promise.resolve([]),
+    },
+    debugger: {
+      getFunctionNames: () => Promise.resolve([]),
+    },
+  };
+  ipc.commands = {
+    debugger: {
+      sendGdbCommand: () => undefined,
+    },
+    app: {
+      notifyMain: () => undefined,
+    },
+  };
+
+  ipc.messages.console = (callback) => {
     consoleHandler = callback;
     return () => {
       consoleHandler = undefined;
     };
   };
-  ipc.logMessage = (callback) => {
+  ipc.messages.log = (callback) => {
     logHandler = callback;
     return () => {
       logHandler = undefined;
     };
   };
-  ipc.errorMessage = (callback) => {
+  ipc.messages.error = (callback) => {
     errorHandler = callback;
     return () => {
       errorHandler = undefined;
     };
   };
-  ipc.debugMessage = (callback) => {
+  ipc.messages.debug = (callback) => {
     debugHandler = callback;
     return () => {
       debugHandler = undefined;
     };
   };
-  ipc.notifyRender = (callback) => {
+  ipc.notifications.render = (callback) => {
     notifyRenderHandler = callback;
     return () => {
       notifyRenderHandler = undefined;
     };
   };
-  ipc.dataRegisters = () => () => undefined;
-  ipc.stackFrames = () => () => undefined;
-  ipc.sourceFile = () => () => undefined;
-  ipc.dataLocals = () => () => undefined;
-  ipc.dataThreads = () => () => undefined;
-  ipc.dataBrkPts = () => () => undefined;
-  ipc.dataMemory = () => () => undefined;
-  ipc.dataDisasm = () => () => undefined;
-  ipc.getSettings = () => {
+  ipc.debuggerData.registers = () => () => undefined;
+  ipc.debuggerData.stackFrames = () => () => undefined;
+  ipc.debuggerData.sourceFile = () => () => undefined;
+  ipc.debuggerData.locals = () => () => undefined;
+  ipc.debuggerData.threads = () => () => undefined;
+  ipc.debuggerData.breakpoints = () => () => undefined;
+  ipc.debuggerData.memory = () => () => undefined;
+  ipc.debuggerData.disassembly = () => () => undefined;
+  ipc.debuggerData.functions = () => () => undefined;
+  ipc.queries.app.getSettings = () => {
     const settings = (window as WindowWithTestApi).__GDB_COMMAND_TEST_SETTINGS__;
     return Promise.resolve({
       command: {
@@ -134,16 +178,39 @@ export function setupGdbCommandTestApi(): void {
       },
     });
   };
-  ipc.getSystemFonts = () => Promise.resolve([]);
-  ipc.getVersionInfo = () => Promise.resolve(new Map());
-  ipc.sendGdbCommand = (command: string) => {
+  ipc.queries.app.getSystemFonts = () => Promise.resolve([]);
+  ipc.queries.app.getVersionInfo = () => Promise.resolve(new Map());
+  ipc.commands.debugger.sendGdbCommand = (command: string) => {
     sentCommands.push(command);
   };
-  ipc.notifyMain = (command) => {
+  ipc.commands.app.notifyMain = (command) => {
     if (command?.command === "save-cmd-history") {
       savedHistory = Array.isArray(command.data) ? command.data.slice() : [];
     }
   };
+
+  ipc.consoleMessage = ipc.messages.console;
+  ipc.logMessage = ipc.messages.log;
+  ipc.errorMessage = ipc.messages.error;
+  ipc.debugMessage = ipc.messages.debug;
+  ipc.connectionStatus = ipc.notifications.connectionStatus;
+  ipc.notifyRender = ipc.notifications.render;
+  ipc.dataRegisters = ipc.debuggerData.registers;
+  ipc.stackFrames = ipc.debuggerData.stackFrames;
+  ipc.sourceFile = ipc.debuggerData.sourceFile;
+  ipc.dataLocals = ipc.debuggerData.locals;
+  ipc.dataThreads = ipc.debuggerData.threads;
+  ipc.dataBrkPts = ipc.debuggerData.breakpoints;
+  ipc.dataMemory = ipc.debuggerData.memory;
+  ipc.dataDisasm = ipc.debuggerData.disassembly;
+  ipc.dataFunctions = ipc.debuggerData.functions;
+  ipc.getSettings = ipc.queries.app.getSettings;
+  ipc.getSystemFonts = ipc.queries.app.getSystemFonts;
+  ipc.getVersionInfo = ipc.queries.app.getVersionInfo;
+  ipc.getWslDistrobutions = ipc.queries.environment.getWslDistrobutions;
+  ipc.getFunctionNames = ipc.queries.debugger.getFunctionNames;
+  ipc.sendGdbCommand = ipc.commands.debugger.sendGdbCommand;
+  ipc.notifyMain = ipc.commands.app.notifyMain;
 
   (window as WindowWithTestApi).__GDB_COMMAND_TEST_API__ = {
     emitConsole: (message) => consoleHandler?.(message),

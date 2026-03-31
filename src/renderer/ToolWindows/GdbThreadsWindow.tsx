@@ -49,7 +49,7 @@ export default function GdbThreadsWindow(): JSX.Element {
   );
 
   useEffect(() => {
-    const unsubscribe = window.ipcToMain.dataThreads((data: GdbAny) => {
+    const unsubscribe = window.ipcToMain.debuggerData.threads((data: GdbAny) => {
       const threadList: GdbAny[] = [];
 
       const groups = data.grp;

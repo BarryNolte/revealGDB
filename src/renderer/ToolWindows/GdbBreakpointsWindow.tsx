@@ -42,35 +42,37 @@ export default function GdbBreakPointWindow(): JSX.Element {
    * Transforms GDB breakpoint data into grid-compatible format.
    */
   useEffect(() => {
-    const unsubscribe = window.ipcToMain.dataBrkPts((data: Map<string, gdbBreakpoint>) => {
-      const dataList: GdbAny[] = [];
-      data.forEach((bp) => {
-        dataList.push({
-          number: bp.number,
-          type: bp.type,
-          disp: bp.disp,
-          enabled: bp.enabled === "y" ? true : false,
-          addr: bp.addr,
-          func: bp.func,
-          file: bp.file.replace(/^.*[\\/]/, ""),
-          fullName: bp.fullname,
-          line: bp.line,
-          tg: bp.tg.slice(1, -1),
-          times: bp.times,
-          installed: bp.installed || "--",
-          orgloc: bp.orgloc,
+    const unsubscribe = window.ipcToMain.debuggerData.breakpoints(
+      (data: Map<string, gdbBreakpoint>) => {
+        const dataList: GdbAny[] = [];
+        data.forEach((bp) => {
+          dataList.push({
+            number: bp.number,
+            type: bp.type,
+            disp: bp.disp,
+            enabled: bp.enabled === "y" ? true : false,
+            addr: bp.addr,
+            func: bp.func,
+            file: bp.file.replace(/^.*[\\/]/, ""),
+            fullName: bp.fullname,
+            line: bp.line,
+            tg: bp.tg.slice(1, -1),
+            times: bp.times,
+            installed: bp.installed || "--",
+            orgloc: bp.orgloc,
+          });
         });
-      });
 
-      setBreakpointData(dataList);
+        setBreakpointData(dataList);
 
-      // Directly update grid's dataSource and refresh to ensure it clears properly
-      const grid = gridRef.current;
-      if (grid) {
-        grid.dataSource = dataList;
-        grid.refresh();
-      }
-    });
+        // Directly update grid's dataSource and refresh to ensure it clears properly
+        const grid = gridRef.current;
+        if (grid) {
+          grid.dataSource = dataList;
+          grid.refresh();
+        }
+      },
+    );
 
     return () => {
       unsubscribe();
@@ -126,7 +128,7 @@ export default function GdbBreakPointWindow(): JSX.Element {
           name="delete"
           onClick={(e: GdbAny) => {
             const attr = e.currentTarget.getAttribute("data-id");
-            window.ipcToMain.sendGdbCommand(`d ${attr}`);
+            window.ipcToMain.commands.debugger.sendGdbCommand(`d ${attr}`);
           }}
           data-id={props!.number}
         >
@@ -139,7 +141,7 @@ export default function GdbBreakPointWindow(): JSX.Element {
           checked={props!.enabled}
           onClick={(e: GdbAny) => {
             const attr = e.target.getAttribute("data-id");
-            window.ipcToMain.sendGdbCommand(
+            window.ipcToMain.commands.debugger.sendGdbCommand(
               e.target.checked === true ? `enable ${attr}` : `disable ${attr}`,
             );
           }}
@@ -155,7 +157,7 @@ export default function GdbBreakPointWindow(): JSX.Element {
         {
           const delArgs: DeleteEventArgs = args;
           delArgs.data?.forEach((bp: GdbAny) => {
-            window.ipcToMain.sendGdbCommand(`d ${bp.number}`);
+            window.ipcToMain.commands.debugger.sendGdbCommand(`d ${bp.number}`);
           });
         }
         break;

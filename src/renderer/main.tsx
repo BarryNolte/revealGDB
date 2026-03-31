@@ -32,11 +32,11 @@ window.revealGdbBuild = {
 };
 
 // Notify main process that renderer has started initialization
-window.ipcToMain.notifyMain({ command: "renderStart" });
+window.ipcToMain.commands.app.notifyMain({ command: "renderStart" });
 
 // Create and mount the React application
 const container = document.getElementById("root")!;
 createRoot(container).render(<App />);
 
 // Notify main process that renderer initialization is complete
-window.ipcToMain.notifyMain({ command: "renderEnd" });
+window.ipcToMain.commands.app.notifyMain({ command: "renderEnd" });

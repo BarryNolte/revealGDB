@@ -33,12 +33,12 @@ export function useGdbCommandController() {
 
   const sendCommand = useCallback(() => {
     if (inputRef.current) {
-      window.ipcToMain.sendGdbCommand(inputRef.current.value);
+      window.ipcToMain.commands.debugger.sendGdbCommand(inputRef.current.value);
       cmdHistoryRef.current.add(inputRef.current.value);
       inputRef.current.value = "";
     }
 
-    window.ipcToMain.notifyMain({
+    window.ipcToMain.commands.app.notifyMain({
       command: "save-cmd-history",
       data: cmdHistoryRef.current.commandHistory,
     });
@@ -71,14 +71,14 @@ export function useGdbCommandController() {
   }, []);
 
   useEffect(() => {
-    window.ipcToMain.getSettings().then((gdb: GdbAny) => {
+    window.ipcToMain.queries.app.getSettings().then((gdb: GdbAny) => {
       cmdHistoryRef.current.clearHistory();
       gdb.command.history.forEach((cmd: string) => {
         cmdHistoryRef.current.add(cmd);
       });
     });
 
-    const unsubscribeNotify = window.ipcToMain.notifyRender((msg: GdbAny): void => {
+    const unsubscribeNotify = window.ipcToMain.notifications.render((msg: GdbAny): void => {
       switch (msg?.command) {
         case "command-entry":
           if (inputRef.current) {
@@ -88,19 +88,19 @@ export function useGdbCommandController() {
       }
     });
 
-    const unsubscribeConsole = window.ipcToMain.consoleMessage((message: string) => {
+    const unsubscribeConsole = window.ipcToMain.messages.console((message: string) => {
       appendMessage(message, "rowConsole");
     });
 
-    const unsubscribeLog = window.ipcToMain.logMessage((message: string) => {
+    const unsubscribeLog = window.ipcToMain.messages.log((message: string) => {
       appendMessage(message, "rowLog");
     });
 
-    const unsubscribeError = window.ipcToMain.errorMessage((message: string) => {
+    const unsubscribeError = window.ipcToMain.messages.error((message: string) => {
       appendMessage(message, "rowError");
     });
 
-    const unsubscribeDebug = window.ipcToMain.debugMessage((message: string) => {
+    const unsubscribeDebug = window.ipcToMain.messages.debug((message: string) => {
       appendMessage(message, "rowDebug");
     });
 

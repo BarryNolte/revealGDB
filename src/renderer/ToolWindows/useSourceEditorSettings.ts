@@ -32,7 +32,7 @@ export function useSourceEditorSettings(): SourceEditorSettings {
   }, []);
 
   useEffect(() => {
-    window.ipcToMain.getSettings().then((gdb: GdbAny): void => {
+    window.ipcToMain.queries.app.getSettings().then((gdb: GdbAny): void => {
       if (gdb.gui.sourceViewerTheme) {
         const savedTheme = editorThemes.get(gdb.gui.sourceViewerTheme) || defaultTheme;
         setTheme(savedTheme);

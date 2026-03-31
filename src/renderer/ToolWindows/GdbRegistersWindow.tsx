@@ -75,7 +75,7 @@ export default function GdbRegistersWindow(): JSX.Element {
   );
 
   useEffect(() => {
-    const unsubscribe = window.ipcToMain.dataRegisters((data: gdbRegisters[]) => {
+    const unsubscribe = window.ipcToMain.debuggerData.registers((data: gdbRegisters[]) => {
       const dataList: GdbAny[] = [];
       data.forEach((reg) => {
         // While debuggig rust on x86, there were some entries with
@@ -130,7 +130,9 @@ export default function GdbRegistersWindow(): JSX.Element {
   }, []);
 
   const cellSaved = useCallback((args: CellSaveArgs) => {
-    window.ipcToMain.sendGdbCommand(`set $${(args.rowData as gdbRegisters)?.name} = ${args.value}`);
+    window.ipcToMain.commands.debugger.sendGdbCommand(
+      `set $${(args.rowData as gdbRegisters)?.name} = ${args.value}`,
+    );
   }, []);
 
   return (

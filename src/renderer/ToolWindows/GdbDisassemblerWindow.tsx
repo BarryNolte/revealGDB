@@ -73,11 +73,11 @@ export default function GdbDisassemblerWindow(): JSX.Element {
    * Also initializes error message visibility.
    */
   useEffect(() => {
-    window.ipcToMain.dataDisasm((data: gdbAsmRow[]) => {
+    window.ipcToMain.debuggerData.disassembly((data: gdbAsmRow[]) => {
       setDisasmData(data);
     });
 
-    window.ipcToMain.dataFunctions((data: gdbFunction[]) => {
+    window.ipcToMain.debuggerData.functions((data: gdbFunction[]) => {
       setFunctionList(data);
     });
 
@@ -93,7 +93,9 @@ export default function GdbDisassemblerWindow(): JSX.Element {
    */
   const instructionsTemplate = (props: gdbAsmRow): JSX.Element => {
     return renderInstructionParts(props.instructions, (functionAddress: string) => {
-      window.ipcToMain.sendGdbCommand(`-data-disassemble -a ${functionAddress} --opcodes bytes`);
+      window.ipcToMain.commands.debugger.sendGdbCommand(
+        `-data-disassemble -a ${functionAddress} --opcodes bytes`,
+      );
       if (functionNameRef.current) {
         functionNameRef.current.value = functionAddress;
       }
@@ -129,7 +131,7 @@ export default function GdbDisassemblerWindow(): JSX.Element {
     const func = functionNameRef?.current?.value || "";
     if (func) {
       const command = `-data-disassemble -a ${func} --opcodes bytes`;
-      window.ipcToMain.sendGdbCommand(command);
+      window.ipcToMain.commands.debugger.sendGdbCommand(command);
     }
   }
 
@@ -167,7 +169,7 @@ export default function GdbDisassemblerWindow(): JSX.Element {
         : startInput.hexValue;
     const end = startInput.decimalValue! + lengthInput.decimalValue!;
 
-    window.ipcToMain.sendGdbCommand(
+    window.ipcToMain.commands.debugger.sendGdbCommand(
       `-data-disassemble -s ${start?.trim()} -e ${end.toString(16)} --opcodes bytes`,
     );
   }

@@ -140,12 +140,12 @@ export default function App(): JSX.Element {
   const whileConnectingRef = useRef<WhileConnectingDialogHandle>(null);
 
   useEffect(() => {
-    window.ipcToMain.getVersionInfo().then((e) => {
+    window.ipcToMain.queries.app.getVersionInfo().then((e) => {
       AppMainVersionInfo = e;
     });
 
     // Listen for commands from main process to show dialogs
-    window.ipcToMain.notifyRender((msg: GdbAny) => {
+    window.ipcToMain.notifications.render((msg: GdbAny) => {
       switch (msg.command) {
         case "about-box":
           {
@@ -304,7 +304,7 @@ export default function App(): JSX.Element {
     };
 
     // Load settings first so dock initialization can avoid race conditions.
-    window.ipcToMain.getSettings().then((gdb: GdbAny): void => {
+    window.ipcToMain.queries.app.getSettings().then((gdb: GdbAny): void => {
       initializeDockManager(gdb);
     });
 
@@ -479,5 +479,5 @@ window.addEventListener("save-dock-layout", () => {
   }
 
   const layout = JSON.parse(dockManager.saveState());
-  window.ipcToMain.notifyMain({ command: "save-dock-layout", data: layout });
+  window.ipcToMain.commands.app.notifyMain({ command: "save-dock-layout", data: layout });
 });

@@ -57,7 +57,7 @@ export function useConnectionDialogController({
 
   const loadConnectionsFromSettings = useCallback(async (): Promise<void> => {
     try {
-      const settings = (await window.ipcToMain.getSettings()) as GdbAny;
+      const settings = (await window.ipcToMain.queries.app.getSettings()) as GdbAny;
       const normalizedConnections = normalizeConnections(settings?.connections);
       setDefinedConnections(normalizedConnections);
       setSelectedConnection(normalizedConnections[0] ?? null);
@@ -73,7 +73,7 @@ export function useConnectionDialogController({
       void loadConnectionsFromSettings();
     }, 0);
 
-    const unsubscribeNotify = window.ipcToMain.notifyRender((msg: GdbAny) => {
+    const unsubscribeNotify = window.ipcToMain.notifications.render((msg: GdbAny) => {
       switch (msg.command) {
         case "connection-started":
         case "connection-success":
@@ -88,39 +88,41 @@ export function useConnectionDialogController({
       }
     });
 
-    const unsubscribeConnectionStatus = window.ipcToMain.connectionStatus((status: GdbAny) => {
-      switch (status[0]) {
-        case "console-capture": {
-          const { error, line } = status[1];
-          const div = document.createElement("div");
-          div.textContent = line;
-          div.className = error ? "consoleError" : "consoleOutput";
-          outputRef.current?.appendChild(div);
-          div.scrollIntoView({ behavior: "smooth", block: "end" });
-          break;
-        }
-        case "gdb-startup": {
-          const step = status[1] as Step;
-          const stepState = status[2] as StepAndState["state"];
-
-          setConnectionState((prev) => {
-            const newState = { ...prev };
-            newState[step] = { ...newState[step], state: stepState };
-            return newState;
-          });
-
-          if (step === "target-running" && stepState === "completed") {
-            setTimeout(() => {
-              connDlgRef.current?.hide();
-            }, 500);
+    const unsubscribeConnectionStatus = window.ipcToMain.notifications.connectionStatus(
+      (status: GdbAny) => {
+        switch (status[0]) {
+          case "console-capture": {
+            const { error, line } = status[1];
+            const div = document.createElement("div");
+            div.textContent = line;
+            div.className = error ? "consoleError" : "consoleOutput";
+            outputRef.current?.appendChild(div);
+            div.scrollIntoView({ behavior: "smooth", block: "end" });
+            break;
           }
-          break;
+          case "gdb-startup": {
+            const step = status[1] as Step;
+            const stepState = status[2] as StepAndState["state"];
+
+            setConnectionState((prev) => {
+              const newState = { ...prev };
+              newState[step] = { ...newState[step], state: stepState };
+              return newState;
+            });
+
+            if (step === "target-running" && stepState === "completed") {
+              setTimeout(() => {
+                connDlgRef.current?.hide();
+              }, 500);
+            }
+            break;
+          }
+          default:
+            console.error(`Unknown status: ${status}`);
+            break;
         }
-        default:
-          console.error(`Unknown status: ${status}`);
-          break;
-      }
-    });
+      },
+    );
 
     connDlgRef.current?.show();
 
@@ -140,14 +142,14 @@ export function useConnectionDialogController({
       return;
     }
 
-    window.ipcToMain.notifyMain({
+    window.ipcToMain.commands.app.notifyMain({
       command: "connect-selected-connection",
       data: { connection: selectedConnection },
     });
   }, [selectedConnection]);
 
   const onCancelConnectionClick = useCallback((): void => {
-    window.ipcToMain.notifyMain({
+    window.ipcToMain.commands.app.notifyMain({
       command: "cancel-connection",
     });
     onDialogClose();

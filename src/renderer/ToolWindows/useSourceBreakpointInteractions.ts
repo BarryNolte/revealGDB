@@ -2,8 +2,8 @@ import ace from "ace-builds";
 import { RefObject, useCallback, useEffect, useRef } from "react";
 import AceEditor from "react-ace";
 
-import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { GdbAny } from "../../common/gdb-common";
+import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { sendTextToClipboard } from "../utilities/Clipboard";
 import { mapBreakpointsToMarkers, SourceBreakpointMarker } from "./GdbSourceWindowModel";
 
@@ -39,9 +39,13 @@ export function useSourceBreakpointInteractions(
   const toggleBreakpointAtRow = useCallback(
     (editor: ace.Ace.Editor, row: number) => {
       if (editor.getSession().getBreakpoints()[row] === undefined) {
-        window.ipcToMain.sendGdbCommand(`break ${fullFilePathRef.current}:${row + 1}`);
+        window.ipcToMain.commands.debugger.sendGdbCommand(
+          `break ${fullFilePathRef.current}:${row + 1}`,
+        );
       } else {
-        window.ipcToMain.sendGdbCommand(`clear ${fullFilePathRef.current}:${row + 1}`);
+        window.ipcToMain.commands.debugger.sendGdbCommand(
+          `clear ${fullFilePathRef.current}:${row + 1}`,
+        );
       }
     },
     [fullFilePathRef],

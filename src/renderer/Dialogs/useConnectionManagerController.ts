@@ -310,7 +310,7 @@ export function useConnectionManagerController({
 
   const loadConnectionsFromSettings = useCallback(async (): Promise<NormalizedConnection[]> => {
     try {
-      const settings = (await window.ipcToMain.getSettings()) as GdbAny;
+      const settings = (await window.ipcToMain.queries.app.getSettings()) as GdbAny;
       const settingsConnections = Array.isArray(settings?.connections)
         ? settings.connections
         : Array.isArray(settings?.gdb?.connections)
@@ -342,7 +342,7 @@ export function useConnectionManagerController({
 
   const loadWslDistrosFromSystem = useCallback(async (): Promise<void> => {
     try {
-      const distros = await window.ipcToMain.getWslDistrobutions();
+      const distros = await window.ipcToMain.queries.environment.getWslDistrobutions();
       const systemDistroNames = distros
         .map((distro) => normalizeDistroName(String(distro.name ?? "")))
         .filter((name) => name.length > 0);
@@ -381,7 +381,7 @@ export function useConnectionManagerController({
           normalizeConnectionForStorage(connection, `Connection ${index + 1}`, fallbackShellKey),
         );
 
-        await window.ipcToMain.notifyMain({
+        await window.ipcToMain.commands.app.notifyMain({
           command: "save-connections",
           data: { connections: normalizedConnectionsToSave },
         });

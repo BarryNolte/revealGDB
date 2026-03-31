@@ -65,8 +65,8 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
   useEffect(() => {
     let isMounted = true;
 
-    window.ipcToMain.getSettings().then((gdb: GdbAny): void => {
-      window.ipcToMain.getSystemFonts().then((fontList: GdbAny[]) => {
+    window.ipcToMain.queries.app.getSettings().then((gdb: GdbAny): void => {
+      window.ipcToMain.queries.app.getSystemFonts().then((fontList: GdbAny[]) => {
         if (!isMounted) return;
         if (editorFontsRef.current) {
           setFontNames(fontList);
@@ -126,7 +126,7 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
       new CustomEvent("changeEditor", { detail: { theme: e.itemData.value }, bubbles: false }),
     );
 
-    window.ipcToMain.notifyMain({
+    window.ipcToMain.commands.app.notifyMain({
       command: "save-source-viewer-theme",
       data: e.itemData.value,
     });
@@ -145,7 +145,7 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
       }),
     );
 
-    window.ipcToMain.notifyMain({
+    window.ipcToMain.commands.app.notifyMain({
       command: "save-source-viewer-font-name",
       data: newFontName,
     });
@@ -164,7 +164,7 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
       }),
     );
 
-    window.ipcToMain.notifyMain({
+    window.ipcToMain.commands.app.notifyMain({
       command: "save-source-viewer-font-size",
       data: newFontSize,
     });
@@ -182,7 +182,7 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
       }),
     );
 
-    window.ipcToMain.notifyMain({
+    window.ipcToMain.commands.app.notifyMain({
       command: "save-app-show-debug-info",
       data: e.checked,
     });
@@ -201,7 +201,7 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
       }),
     );
 
-    window.ipcToMain.notifyMain({
+    window.ipcToMain.commands.app.notifyMain({
       command: "save-app-theme",
       data: newAppTheme,
     });

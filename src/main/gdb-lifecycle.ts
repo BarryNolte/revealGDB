@@ -12,16 +12,16 @@ export function createGdbInterface(
 ): miInterface {
   const gdbInterface = new miInterface();
   gdbInterface.on("console-stream", (line: string) => {
-    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.consoleMessage, line);
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.message, line);
   });
   gdbInterface.on("log-stream", (line: string) => {
-    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.logMessage, line);
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.log, line);
   });
   gdbInterface.on("error-stream", (line: string) => {
-    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.errorMessage, line);
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.error, line);
   });
   gdbInterface.on("debug-stream", (line: string) => {
-    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.debugMessage, line);
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.debug, line);
   });
 
   let needToRunStartupCmds = true;

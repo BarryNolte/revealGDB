@@ -41,7 +41,7 @@ export default function GdbCallStackWindow(): JSX.Element {
    * Transforms GDB stack data into grid-compatible format.
    */
   useEffect(() => {
-    const unsubscribe = window.ipcToMain.stackFrames((data: gdbStackFrame[]) => {
+    const unsubscribe = window.ipcToMain.debuggerData.stackFrames((data: gdbStackFrame[]) => {
       const dataList: GdbAny[] = [];
 
       data.forEach((frame) => {
@@ -110,7 +110,7 @@ export default function GdbCallStackWindow(): JSX.Element {
    * Navigates to the corresponding source location in the source window.
    */
   const handleRecordDoubleClick = useCallback((e: RecordDoubleClickEventArgs) => {
-    window.ipcToMain.sendGdbCommand(`frame ${e.rowIndex}`);
+    window.ipcToMain.commands.debugger.sendGdbCommand(`frame ${e.rowIndex}`);
   }, []);
 
   return (

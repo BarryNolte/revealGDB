@@ -60,7 +60,7 @@ export default function RevealToolbar({
   }, []);
 
   useMemo(() => {
-    window.ipcToMain.notifyRender((msg: GdbAny) => {
+    window.ipcToMain.notifications.render((msg: GdbAny) => {
       switch (msg.command) {
         case "connection-started":
           {
@@ -97,7 +97,7 @@ export default function RevealToolbar({
 
   /** Terminates GDB connection (placeholder) */
   const onDisconnect = () => {
-    window.ipcToMain.notifyMain({
+    window.ipcToMain.commands.app.notifyMain({
       command: "cancel-connection",
     });
   };
@@ -107,7 +107,7 @@ export default function RevealToolbar({
    * Sends GDB 'continue' command to resume all threads.
    */
   const onContinue = () => {
-    window.ipcToMain.sendGdbCommand("continue");
+    window.ipcToMain.commands.debugger.sendGdbCommand("continue");
   };
 
   /**
@@ -115,7 +115,7 @@ export default function RevealToolbar({
    * Sends SIGINT signal to interrupt the running program.
    */
   const onPause = () => {
-    window.ipcToMain.sendGdbCommand("signal SIGINT");
+    window.ipcToMain.commands.debugger.sendGdbCommand("signal SIGINT");
   };
 
   /**
@@ -123,7 +123,7 @@ export default function RevealToolbar({
    * Sends GDB 'kill' command to terminate the inferior process.
    */
   const onStop = () => {
-    window.ipcToMain.sendGdbCommand("kill");
+    window.ipcToMain.commands.debugger.sendGdbCommand("kill");
   };
 
   /**
@@ -131,7 +131,7 @@ export default function RevealToolbar({
    * Executes the current source line, stepping over function calls.
    */
   const onStepOver = () => {
-    window.ipcToMain.sendGdbCommand("next");
+    window.ipcToMain.commands.debugger.sendGdbCommand("next");
   };
 
   /**
@@ -139,7 +139,7 @@ export default function RevealToolbar({
    * Enters function calls if present, otherwise behaves like step over.
    */
   const onStepIn = () => {
-    window.ipcToMain.sendGdbCommand("step");
+    window.ipcToMain.commands.debugger.sendGdbCommand("step");
   };
 
   /**
@@ -147,7 +147,7 @@ export default function RevealToolbar({
    * Continues execution until the current function returns.
    */
   const onStepOut = () => {
-    window.ipcToMain.sendGdbCommand("finish");
+    window.ipcToMain.commands.debugger.sendGdbCommand("finish");
   };
 
   // ========================================================================

@@ -4,7 +4,9 @@ import { WslUtilities } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
 
 function sendNotifyRender(context: IpcRegistrationContext, payload: NotifyRenderMessage): void {
-  context.getMainWindow().webContents.send(IPC_CHANNELS.mainToRenderer.notifyRender, payload);
+  context
+    .getMainWindow()
+    .webContents.send(IPC_CHANNELS.mainToRenderer.notifications.render, payload);
 }
 
 function doConnection(
@@ -99,7 +101,7 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       ];
 
       lines.forEach((line) =>
-        mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.debugMessage, line),
+        mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.debug, line),
       );
       break;
     }
@@ -154,13 +156,16 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
 
 export function registerIpcCommandHandlers(context: IpcRegistrationContext): void {
   context.ipcMain.on(
-    IPC_CHANNELS.rendererSend.notifyMain,
+    IPC_CHANNELS.rendererToMain.commands.app.notify,
     (_event: GdbAny, msg: NotifyMainRequest) => {
       handleNotifyMain(msg, context);
     },
   );
 
-  context.ipcMain.on(IPC_CHANNELS.rendererSend.gdbCommand, (_event: GdbAny, command: string) => {
-    onGdbCommand(command, context);
-  });
+  context.ipcMain.on(
+    IPC_CHANNELS.rendererToMain.commands.debugger.send,
+    (_event: GdbAny, command: string) => {
+      onGdbCommand(command, context);
+    },
+  );
 }

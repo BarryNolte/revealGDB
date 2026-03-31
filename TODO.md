@@ -11,19 +11,17 @@
 
 # New Features
 
+- Python Window for running python commands
 - -exec-jump for "set next statement"
 - Disassembly Window
   - Highlight registers?
   - "Show Disassembly" button working in source window
 - Click on breakpoint list and goto source
-- Python Window for running python commands
 - Values on hover in source
 - Thread markers in source (better with multiple source windows)
 - Tracepoints - How to insert more automatically
-- Set Next Statement from editor
 - Better Dock management (multiple source files in a Group)
   - Better source file management
-  - Code detection for source viewer
 
 # Project Related
 

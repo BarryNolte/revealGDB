@@ -72,7 +72,7 @@ export default function GdbLocalsWindow(): JSX.Element {
   );
 
   useEffect(() => {
-    const unsubscribe = window.ipcToMain.dataLocals((data: GdbAny) => {
+    const unsubscribe = window.ipcToMain.debuggerData.locals((data: GdbAny) => {
       setLocalData(data ? data : []);
 
       treeRef.current?.autoFitColumns(["name", "value"]);
@@ -92,7 +92,9 @@ export default function GdbLocalsWindow(): JSX.Element {
   }, []);
 
   const cellSaved = useCallback((args: CellSaveArgs) => {
-    window.ipcToMain.sendGdbCommand(`set var ${(args.rowData as GdbAny).fullpath} = ${args.value}`);
+    window.ipcToMain.commands.debugger.sendGdbCommand(
+      `set var ${(args.rowData as GdbAny).fullpath} = ${args.value}`,
+    );
   }, []);
 
   const cellEdit = useCallback((args: CellEditArgs) => {

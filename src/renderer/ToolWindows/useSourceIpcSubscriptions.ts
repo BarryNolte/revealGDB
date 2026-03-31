@@ -12,8 +12,8 @@ export function useSourceIpcSubscriptions(handlers: SourceIpcSubscriptionHandler
   const { onSourceFile, onBreakpoints } = handlers;
 
   useEffect(() => {
-    const unsubscribeSourceFile = window.ipcToMain.sourceFile(onSourceFile);
-    const unsubscribeBreakpoints = window.ipcToMain.dataBrkPts(onBreakpoints);
+    const unsubscribeSourceFile = window.ipcToMain.debuggerData.sourceFile(onSourceFile);
+    const unsubscribeBreakpoints = window.ipcToMain.debuggerData.breakpoints(onBreakpoints);
 
     return () => {
       unsubscribeSourceFile();

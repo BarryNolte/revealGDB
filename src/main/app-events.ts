@@ -11,7 +11,7 @@ export function registerAppEvents(
     if (!mainWindow || mainWindow.isDestroyed()) {
       return;
     }
-    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.notifyRender, {
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.notifications.render, {
       command: "theme-changed",
       data: nativeTheme,
     });
@@ -28,6 +28,9 @@ export function registerAppEvents(
     if (!mainWindow || mainWindow.isDestroyed()) {
       return;
     }
-    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.themeChanged, nativeTheme);
+    mainWindow.webContents.send(
+      IPC_CHANNELS.mainToRenderer.notifications.themeChanged,
+      nativeTheme,
+    );
   });
 }

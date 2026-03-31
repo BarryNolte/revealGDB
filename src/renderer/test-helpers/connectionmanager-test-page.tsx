@@ -33,31 +33,77 @@ export function setupConnectionManagerTestApi(): void {
     });
   }
 
-  ipc.consoleMessage = () => () => undefined;
-  ipc.logMessage = () => () => undefined;
-  ipc.errorMessage = () => () => undefined;
-  ipc.debugMessage = () => () => undefined;
-  ipc.notifyRender = () => () => undefined;
-  ipc.dataRegisters = () => () => undefined;
-  ipc.stackFrames = () => () => undefined;
-  ipc.sourceFile = () => () => undefined;
-  ipc.dataLocals = () => () => undefined;
-  ipc.dataThreads = () => () => undefined;
-  ipc.dataBrkPts = () => () => undefined;
-  ipc.dataMemory = () => () => undefined;
-  ipc.dataDisasm = () => () => undefined;
-  ipc.getSystemFonts = () => Promise.resolve([]);
-  ipc.getVersionInfo = () => Promise.resolve(new Map());
+  ipc.messages = {
+    console: () => () => undefined,
+    log: () => () => undefined,
+    error: () => () => undefined,
+    debug: () => () => undefined,
+  };
+  ipc.notifications = {
+    connectionStatus: () => () => undefined,
+    render: () => () => undefined,
+  };
+  ipc.debuggerData = {
+    registers: () => () => undefined,
+    stackFrames: () => () => undefined,
+    sourceFile: () => () => undefined,
+    locals: () => () => undefined,
+    threads: () => () => undefined,
+    breakpoints: () => () => undefined,
+    memory: () => () => undefined,
+    disassembly: () => () => undefined,
+    functions: () => () => undefined,
+  };
+  ipc.queries = {
+    app: {
+      getSettings: () => Promise.resolve({}),
+      getSystemFonts: () => Promise.resolve([]),
+      getVersionInfo: () => Promise.resolve(new Map()),
+    },
+    environment: {
+      getWslDistrobutions: () => Promise.resolve([]),
+    },
+    debugger: {
+      getFunctionNames: () => Promise.resolve([]),
+    },
+  };
+  ipc.commands = {
+    debugger: {
+      sendGdbCommand: () => undefined,
+    },
+    app: {
+      notifyMain: () => undefined,
+    },
+  };
+
+  ipc.consoleMessage = ipc.messages.console;
+  ipc.logMessage = ipc.messages.log;
+  ipc.errorMessage = ipc.messages.error;
+  ipc.debugMessage = ipc.messages.debug;
+  ipc.connectionStatus = ipc.notifications.connectionStatus;
+  ipc.notifyRender = ipc.notifications.render;
+  ipc.dataRegisters = ipc.debuggerData.registers;
+  ipc.stackFrames = ipc.debuggerData.stackFrames;
+  ipc.sourceFile = ipc.debuggerData.sourceFile;
+  ipc.dataLocals = ipc.debuggerData.locals;
+  ipc.dataThreads = ipc.debuggerData.threads;
+  ipc.dataBrkPts = ipc.debuggerData.breakpoints;
+  ipc.dataMemory = ipc.debuggerData.memory;
+  ipc.dataDisasm = ipc.debuggerData.disassembly;
+  ipc.dataFunctions = ipc.debuggerData.functions;
+  ipc.getSystemFonts = ipc.queries.app.getSystemFonts;
+  ipc.getVersionInfo = ipc.queries.app.getVersionInfo;
   const notifyMainCalls: Array<{ command?: string; data?: unknown }> = [];
 
-  ipc.notifyMain = (message) => {
+  ipc.commands.app.notifyMain = (message) => {
     notifyMainCalls.push({
       command: message?.command,
       data: message?.data,
     });
   };
+  ipc.notifyMain = ipc.commands.app.notifyMain;
 
-  ipc.getSettings = () => {
+  ipc.queries.app.getSettings = () => {
     const settings = (window as WindowWithConnectionManagerTest)
       .__CONNECTION_MANAGER_TEST_SETTINGS__;
     const defaultConnections: TestConnection[] = [
@@ -69,8 +115,9 @@ export function setupConnectionManagerTestApi(): void {
       connections: settings?.connections ?? defaultConnections,
     });
   };
+  ipc.getSettings = ipc.queries.app.getSettings;
 
-  ipc.getWslDistrobutions = () => {
+  ipc.queries.environment.getWslDistrobutions = () => {
     const settings = (window as WindowWithConnectionManagerTest)
       .__CONNECTION_MANAGER_TEST_SETTINGS__;
     const distros = settings?.wslDistros ?? ["Ubuntu", "Debian"];
@@ -84,6 +131,7 @@ export function setupConnectionManagerTestApi(): void {
       })),
     );
   };
+  ipc.getWslDistrobutions = ipc.queries.environment.getWslDistrobutions;
 
   (window as WindowWithConnectionManagerTest).__CONNECTION_MANAGER_TEST_API__ = {
     getNotifyMainCalls: () => notifyMainCalls.slice(),

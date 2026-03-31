@@ -9,6 +9,53 @@ import { WslDistro } from "../main/utilities/wsl-utilities";
  * Each method returns a cleanup function to remove the event listener when no longer needed.
  */
 export interface IElectronAPI {
+  messages: {
+    console: (callback: GdbAny) => () => void;
+    log: (callback: GdbAny) => () => void;
+    error: (callback: GdbAny) => () => void;
+    debug: (callback: GdbAny) => () => void;
+  };
+
+  notifications: {
+    connectionStatus: (callback: GdbAny) => () => void;
+    render: (callback: (data: NotifyRenderMessage) => void) => () => void;
+  };
+
+  debuggerData: {
+    registers: (callback: GdbAny) => () => void;
+    stackFrames: (callback: GdbAny) => () => void;
+    sourceFile: (callback: GdbAny) => () => void;
+    locals: (callback: GdbAny) => () => void;
+    threads: (callback: GdbAny) => () => void;
+    breakpoints: (callback: (data: Map<string, gdbBreakpoint>) => void) => () => void;
+    memory: (callback: GdbAny) => () => void;
+    disassembly: (callback: GdbAny) => () => void;
+    functions: (callback: GdbAny) => () => void;
+  };
+
+  queries: {
+    app: {
+      getSettings: () => Promise<GdbAny>;
+      getSystemFonts: () => Promise<string[]>;
+      getVersionInfo: () => Promise<Map<string, GdbAny>>;
+    };
+    environment: {
+      getWslDistrobutions: () => Promise<WslDistro[]>;
+    };
+    debugger: {
+      getFunctionNames: () => Promise<GdbAny>;
+    };
+  };
+
+  commands: {
+    debugger: {
+      sendGdbCommand: (command: string) => void;
+    };
+    app: {
+      notifyMain: (command: NotifyMainRequest) => void;
+    };
+  };
+
   // === Message Channels (Main -> Renderer) ===
 
   /**
@@ -124,7 +171,7 @@ export interface IElectronAPI {
    * Retrieves application settings from the main process.
    * @returns Settings object
    */
-  getSettings: () => GdbAny;
+  getSettings: () => Promise<GdbAny>;
 
   /**
    * Retrieves the list of system fonts available for the UI.
@@ -143,6 +190,12 @@ export interface IElectronAPI {
    * @returns Promise resolving to an array of WSL distribution names
    */
   getWslDistrobutions: () => Promise<WslDistro[]>;
+
+  /**
+   * Retrieves function symbol names from the main process.
+   * @returns Promise resolving to debugger function metadata
+   */
+  getFunctionNames: () => Promise<GdbAny>;
 
   /**
    * Sends a GDB MI command to the debugger.
