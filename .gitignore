@@ -7,3 +7,4 @@ dist_electron/
 .eslintcache
 out/**
 bundle-report.html
+test-results/.last-run.json

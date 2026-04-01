@@ -2,6 +2,7 @@
   "name": "revealgdb",
   "version": "0.1.0",
   "copyright": "© 2025",
+  "license": "MIT",
   "private": true,
   "description": "A GDB debugger interface",
   "categories": [

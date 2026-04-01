@@ -1,4 +1,4 @@
-import { expect, test, type Locator } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
@@ -51,16 +51,12 @@ function getMimeType(filePath: string): string {
   }
 }
 
-async function selectDropdownValue(
-  page: Parameters<typeof test.beforeEach>[0]["page"],
-  row: Locator,
-  optionText: string,
-): Promise<void> {
+async function selectDropdownValue(page: Page, row: Locator, optionText: string): Promise<void> {
   await row.getByRole("combobox").last().click();
   await page.locator("li.e-list-item", { hasText: optionText }).first().click();
 }
 
-function getSettingsDialog(page: Parameters<typeof test.beforeEach>[0]["page"]): Locator {
+function getSettingsDialog(page: Page): Locator {
   return page.getByRole("dialog", { name: /Settings/ });
 }
 
