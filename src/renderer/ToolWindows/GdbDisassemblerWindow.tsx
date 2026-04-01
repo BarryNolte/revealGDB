@@ -73,11 +73,11 @@ export default function GdbDisassemblerWindow(): JSX.Element {
    * Also initializes error message visibility.
    */
   useEffect(() => {
-    window.ipcToMain.debuggerData.disassembly((data: gdbAsmRow[]) => {
+    const unsubDisasm = window.ipcToMain.debuggerData.disassembly((data: gdbAsmRow[]) => {
       setDisasmData(data);
     });
 
-    window.ipcToMain.debuggerData.functions((data: gdbFunction[]) => {
+    const unsubFunctions = window.ipcToMain.debuggerData.functions((data: gdbFunction[]) => {
       setFunctionList(data);
     });
 
@@ -85,6 +85,11 @@ export default function GdbDisassemblerWindow(): JSX.Element {
       addressErrorRef.current.style.visibility = "hidden";
       lengthErrorRef.current.style.visibility = "hidden";
     }
+
+    return () => {
+      unsubDisasm();
+      unsubFunctions();
+    };
   }, []);
 
   /**

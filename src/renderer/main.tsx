@@ -19,7 +19,7 @@ import "./syncfusion.css";
 // Register Syncfusion component license
 // Required for Syncfusion UI components (Grid, Docking, Dialog, etc.)
 registerLicense(
-  "Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWH1cc3VdR2FeUkZwXEFWYEs=",
+  "Ngo9BigBOggjHTQxAR8/V1JHaF5cWWdCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdlWXxdcXVSQmRfVUdxX0ZWYEo=",
 );
 
 // Expose build configuration to the global scope

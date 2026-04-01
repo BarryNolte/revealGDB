@@ -1,5 +1,6 @@
 declare module "*.png";
 declare module "*.gif";
+declare module "*.css";
 
 declare const __REVEALGDB_DEBUG__: boolean;
 declare const __REVEALGDB_BUILD__: "debug" | "release";

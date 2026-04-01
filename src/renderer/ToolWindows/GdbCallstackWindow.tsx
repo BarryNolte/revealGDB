@@ -84,13 +84,14 @@ export default function GdbCallStackWindow(): JSX.Element {
     //   return;
     // }
 
-    // Only auto-fit columns when there's data to fit
-    //if (stackData.length > 0) {
-    gridRef?.current?.autoFitColumns(
-      ["active", "level", "func", "addr", "file", "fullName", "line", "from", "args", "arch"],
-      0,
-    );
-    //}
+    // Only auto-fit columns when there's data to fit.
+    // Calling autoFitColumns on an empty grid throws in Syncfusion v33+.
+    if (stackData.length > 0) {
+      gridRef?.current?.autoFitColumns(
+        ["active", "level", "func", "addr", "file", "fullName", "line", "from", "args", "arch"],
+        0,
+      );
+    }
   }, [stackData]);
 
   /**

@@ -64,12 +64,6 @@ export default function GdbSourceWindowView(props: GdbSourceWindowViewProps): JS
             style={{ width: "100%", height: "100%" }}
           />
         </div>
-        <ContextMenuComponent
-          id={`source-menu-${menuId}`}
-          target="#gdb-ace-editor"
-          items={menuCopy}
-          select={onCopySelection}
-        />
       </div>
       <div data-testid="no-source-pane" hidden={hasSource}>
         <div className="no-source">
@@ -106,6 +100,13 @@ export default function GdbSourceWindowView(props: GdbSourceWindowViewProps): JS
           </div> */}
         </div>
       </div>
+      {/* Rendered outside any hidden div so Syncfusion can always find its target element */}
+      <ContextMenuComponent
+        id={`source-menu-${menuId}`}
+        target="#gdb-ace-editor"
+        items={menuCopy}
+        select={onCopySelection}
+      />
     </div>
   );
 }

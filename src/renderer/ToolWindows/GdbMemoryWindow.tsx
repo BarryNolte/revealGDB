@@ -14,7 +14,7 @@
  * - Memory modification via GDB commands
  */
 
-import { createRef, JSX, useEffect, useState } from "react";
+import { JSX, useEffect, useRef, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
 import HexEditor from "../Components/HexEditor/HexEditor";
 import "../Components/HexEditor/HexEditor.css";
@@ -29,10 +29,10 @@ import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
  */
 export default function GdbMemoryWindow(): JSX.Element {
   // Refs for form controls
-  const startRef = createRef<HTMLInputElement>();
-  const lengthRef = createRef<HTMLInputElement>();
-  const startErrorRef = createRef<HTMLTableCellElement>();
-  const lengthErrorRef = createRef<HTMLTableCellElement>();
+  const startRef = useRef<HTMLInputElement>(null);
+  const lengthRef = useRef<HTMLInputElement>(null);
+  const startErrorRef = useRef<HTMLTableCellElement>(null);
+  const lengthErrorRef = useRef<HTMLTableCellElement>(null);
 
   // State for memory data
   const [address, setAddress] = useState<string>("");
@@ -40,7 +40,7 @@ export default function GdbMemoryWindow(): JSX.Element {
   const [datasource, setDatasource] = useState<Uint8Array>(new Uint8Array(0));
 
   useEffect(() => {
-    window.ipcToMain.debuggerData.memory((data: GdbAny) => {
+    const unsubscribe = window.ipcToMain.debuggerData.memory((data: GdbAny) => {
       //console.log("Received memory data:", data.toString());
       setDatasource(data.data);
       setAddress(data.begin);
@@ -53,7 +53,10 @@ export default function GdbMemoryWindow(): JSX.Element {
       startErrorRef.current.style.visibility = "hidden";
       lengthErrorRef.current.style.visibility = "hidden";
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return (

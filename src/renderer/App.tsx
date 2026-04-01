@@ -165,7 +165,7 @@ export default function App(): JSX.Element {
       }
     });
 
-    const initializeDockManager = (gdb: GdbAny): void => {
+    const initializeDockManager = async (gdb: GdbAny): Promise<void> => {
       // Initialize the dock manager system
       const dockManagerElement = document.getElementById("revealDockManager")!;
       dockManager = new DockManager(dockManagerElement, { dialogRootElement: dockManagerElement });
@@ -245,10 +245,19 @@ export default function App(): JSX.Element {
       });
 
       // Load saved layout or create default layout
+      let loadedFromState = false;
       if (gdb.gui.dockLayout) {
-        // Restore previously saved layout
-        dockManager.loadState(JSON.stringify(gdb.gui.dockLayout));
-      } else {
+        try {
+          // loadState is async in dock-spawn-ts; must await before resizing or
+          // all panels stay hidden (resize fires before deserialization completes).
+          await dockManager.loadState(JSON.stringify(gdb.gui.dockLayout));
+          loadedFromState = true;
+        } catch (e) {
+          // Saved layout is corrupt or incompatible — fall through to default layout.
+          console.warn("dock-spawn-ts: failed to restore saved layout, using default", e);
+        }
+      }
+      if (!loadedFromState) {
         // Create default layout for first-time use
         const documentNode = dockManager.context.model.documentManagerNode;
 
@@ -304,8 +313,8 @@ export default function App(): JSX.Element {
     };
 
     // Load settings first so dock initialization can avoid race conditions.
-    window.ipcToMain.queries.app.getSettings().then((gdb: GdbAny): void => {
-      initializeDockManager(gdb);
+    window.ipcToMain.queries.app.getSettings().then(async (gdb: GdbAny): Promise<void> => {
+      await initializeDockManager(gdb);
     });
 
     // Handle window resize events to adjust dock layout

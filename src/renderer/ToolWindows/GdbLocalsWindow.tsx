@@ -106,15 +106,15 @@ export default function GdbLocalsWindow(): JSX.Element {
   }, []);
 
   const rowDataBound = (args: RowDataBoundEventArgs) => {
-    console.log(args);
-    const arrRow = (args.data as GdbAny).value.split("\\n").length || 0;
-    (args.row as HTMLElement).style.height = `${arrRow * 16}px`;
+    const value = (args.data as GdbAny).value as string | null | undefined;
+    if (!value) return;
+    const lineCount = value.split("\\n").length;
+    (args.row as HTMLElement).style.height = `${lineCount * 16}px`;
   };
 
-  const valueAccessor = (field: string, data: GdbAny): string => {
-    //const value = data[field];
-    console.log("Value accessor called with field:", field, "data:", data);
-    return `<div class="treeGrid-multiline-cell">${data.value.replaceAll("\\n", "<br>") || ""}</div>`;
+  const valueAccessor = (_field: string, data: GdbAny): string => {
+    const value = data.value as string | null | undefined;
+    return `<div class="treeGrid-multiline-cell">${(value ?? "").replaceAll("\\n", "<br>")}</div>`;
   };
 
   const content = (

@@ -64,13 +64,6 @@ export default function GdbBreakPointWindow(): JSX.Element {
         });
 
         setBreakpointData(dataList);
-
-        // Directly update grid's dataSource and refresh to ensure it clears properly
-        const grid = gridRef.current;
-        if (grid) {
-          grid.dataSource = dataList;
-          grid.refresh();
-        }
       },
     );
 
