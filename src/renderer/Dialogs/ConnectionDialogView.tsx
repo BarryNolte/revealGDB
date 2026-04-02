@@ -85,13 +85,18 @@ export default function ConnectionDialogView(props: ConnectionDialogViewProps): 
 
   const footerTemplate = (): JSX.Element => {
     return (
-      <div>
-        <ButtonComponent onClick={onConnectClick} disabled={disconnectAvailable}>
-          Connect
+      <div className="connectionDialogFooter">
+        <ButtonComponent id="connectionsButton" type="button">
+          Connections
         </ButtonComponent>
-        <ButtonComponent onClick={onCancelConnectionClick} disabled={!disconnectAvailable}>
-          Cancel Connection
-        </ButtonComponent>
+        <div className="connectionDialogFooterActions">
+          <ButtonComponent onClick={onConnectClick} disabled={disconnectAvailable}>
+            Connect
+          </ButtonComponent>
+          <ButtonComponent onClick={onCancelConnectionClick} disabled={!disconnectAvailable}>
+            Cancel Connection
+          </ButtonComponent>
+        </div>
       </div>
     );
   };
@@ -130,9 +135,6 @@ export default function ConnectionDialogView(props: ConnectionDialogViewProps): 
                 change={(args) => onSelectedConnectionChange(args.itemData)}
               />
             </div>
-            <button id="connectionsButton" type="button">
-              Connections
-            </button>
           </div>
           <GridComponent
             ref={gridRef}

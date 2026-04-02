@@ -9,6 +9,18 @@
   margin: 5px;
 }
 
+.connectionDialogFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.connectionDialogFooterActions {
+  display: flex;
+  gap: 8px;
+}
+
 .connectionSelectRow {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
