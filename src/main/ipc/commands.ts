@@ -111,6 +111,9 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
         (msg.data as { connections?: unknown } | undefined)?.connections as never,
       );
       break;
+    case "save-last-used-connection":
+      context.appSettings.setSync("gdb.lastUsedConnection", msg.data as never);
+      break;
     case "save-app-show-debug-info":
       context.appSettings.setSync("gdb.gui.showDebugInfo", msg.data as never);
       break;

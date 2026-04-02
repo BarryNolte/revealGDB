@@ -103,6 +103,7 @@ export type NotifyMainCommand =
   | "connect-selected-connection"
   | "cancel-connection"
   | "save-connections"
+  | "save-last-used-connection"
   | "save-app-show-debug-info"
   | "save-app-theme"
   | "save-cmd-history"

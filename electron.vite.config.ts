@@ -23,6 +23,7 @@ const rendererInputs = {
   hexeditor: resolve(__dirname, "src/renderer/hexeditor-test.html"),
   gdbcommand: resolve(__dirname, "src/renderer/gdbcommand-test.html"),
   connectionmanager: resolve(__dirname, "src/renderer/connectionmanager-test.html"),
+  connectiondialog: resolve(__dirname, "src/renderer/connectiondialog-test.html"),
   settings: resolve(__dirname, "src/renderer/settings-test.html"),
 };
 

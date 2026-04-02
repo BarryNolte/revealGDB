@@ -59,8 +59,14 @@ export function useConnectionDialogController({
     try {
       const settings = (await window.ipcToMain.queries.app.getSettings()) as GdbAny;
       const normalizedConnections = normalizeConnections(settings?.connections);
+      const lastUsedConnectionName =
+        typeof settings?.lastUsedConnection === "string" ? settings.lastUsedConnection : undefined;
+      const restoredConnection = lastUsedConnectionName
+        ? (normalizedConnections.find((connection) => connection.name === lastUsedConnectionName) ??
+          null)
+        : null;
       setDefinedConnections(normalizedConnections);
-      setSelectedConnection(normalizedConnections[0] ?? null);
+      setSelectedConnection(restoredConnection);
     } catch (error) {
       console.error("Failed to load connections from settings", error);
       setDefinedConnections([]);
@@ -134,8 +140,12 @@ export function useConnectionDialogController({
   }, [connDlgRef, loadConnectionsFromSettings, outputRef]);
 
   const onDialogClose = useCallback(() => {
+    window.ipcToMain.commands.app.notifyMain({
+      command: "save-last-used-connection",
+      data: selectedConnection?.name ?? null,
+    });
     connDlgRef.current?.hide();
-  }, [connDlgRef]);
+  }, [connDlgRef, selectedConnection]);
 
   const onConnectClick = useCallback((): void => {
     if (!selectedConnection) {
@@ -193,7 +203,12 @@ export function useConnectionDialogController({
   }, [openConnectionManagerClickHandler]);
 
   const onSelectedConnectionChange = useCallback((itemData: unknown): void => {
-    setSelectedConnection((itemData as DefinedConnection | undefined) ?? null);
+    const connection = (itemData as DefinedConnection | undefined) ?? null;
+    setSelectedConnection(connection);
+    window.ipcToMain.commands.app.notifyMain({
+      command: "save-last-used-connection",
+      data: connection?.name ?? null,
+    });
   }, []);
 
   const showDialog = useCallback((): void => {

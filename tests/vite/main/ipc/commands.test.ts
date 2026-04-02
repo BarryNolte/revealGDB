@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { IPC_CHANNELS, NotifyMainRequest } from "../../../../src/common/ipc-contracts";
-import { createIpcRegistrationHarness } from "../../../../src/test-helpers/ipc-test-harness";
 import { handleNotifyMain } from "../../../../src/main/ipc/commands";
+import { createIpcRegistrationHarness } from "../../../../src/test-helpers/ipc-test-harness";
 
 describe("handleNotifyMain", () => {
   it("handles renderEnd by sending command-entry notify-render", () => {
@@ -25,6 +25,18 @@ describe("handleNotifyMain", () => {
     handleNotifyMain(msg, context);
 
     expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.applicationTheme", msg.data);
+  });
+
+  it("handles save-last-used-connection by persisting the setting", () => {
+    const { context, appSettings } = createIpcRegistrationHarness();
+    const msg: NotifyMainRequest = {
+      command: "save-last-used-connection",
+      data: "WSL Session",
+    };
+
+    handleNotifyMain(msg, context);
+
+    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.lastUsedConnection", msg.data);
   });
 
   it("handles cancel-connection by disconnecting and clearing DB", () => {
