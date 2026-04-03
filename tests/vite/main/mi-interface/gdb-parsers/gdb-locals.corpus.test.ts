@@ -3,7 +3,10 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { Local, LocalsContainer } from "../../../../../src/main/mi-interface/gdb-parsers/gdb-locals";
+import {
+  Local,
+  LocalsContainer,
+} from "../../../../../src/main/mi-interface/gdb-parsers/gdb-locals";
 
 type SerializableLocal = {
   name: string;
@@ -11,6 +14,8 @@ type SerializableLocal = {
   fullpath: string;
   sublocals: SerializableLocal[];
 };
+
+const LOCALS_CORPUS_PATH = resolve(process.cwd(), "test-files", "Locals.test.inputs.txt");
 
 function toSerializable(local: Local, seen = new WeakSet<Local>()): SerializableLocal {
   if (seen.has(local)) {
@@ -40,8 +45,7 @@ function extractLocalsPayload(line: string): string {
 }
 
 function loadCorpusCases(): Array<{ id: string; sourceLine: number; input: string }> {
-  const corpusPath = resolve(process.cwd(), "Locals.test.inputs.txt");
-  const lines = readFileSync(corpusPath, "utf8")
+  const lines = readFileSync(LOCALS_CORPUS_PATH, "utf8")
     .split(/\r?\n/)
     .filter((line) => line.trim().length > 0);
 
@@ -61,8 +65,7 @@ describe("LocalsContainer corpus coverage", () => {
   it("should keep test case count aligned with Locals.test.inputs.txt", () => {
     expect(corpusCases.length).toBeGreaterThan(0);
 
-    const corpusPath = resolve(process.cwd(), "Locals.test.inputs.txt");
-    const sourceLineCount = readFileSync(corpusPath, "utf8")
+    const sourceLineCount = readFileSync(LOCALS_CORPUS_PATH, "utf8")
       .split(/\r?\n/)
       .filter((line) => line.trim().length > 0).length;
 
