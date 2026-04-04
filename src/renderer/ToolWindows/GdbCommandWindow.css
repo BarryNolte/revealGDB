@@ -25,6 +25,9 @@
 
 .historySelect {
   width: 100%;
+  background-color: var(--input-bg);
+  color: var(--app-text-color);
+  border: 1px solid var(--input-border-color);
 }
 
 .inputContainer {
@@ -38,12 +41,14 @@
   height: 25px;
   font-size: large;
   padding: 3px;
-  border: 1px solid black;
+  border: 1px solid var(--input-border-color);
   margin-left: 1px;
   margin-right: 2px;
   margin-top: 2px;
   margin-bottom: 0px;
   border-radius: 6px;
+  background-color: var(--input-bg);
+  color: var(--app-text-color);
 }
 
 .defaultRow {
@@ -100,4 +105,10 @@
   height: 34px;
   width: 34px;
   margin-right: 5px;
+}
+
+[data-theme="dark"] .commandButtonHistory,
+[data-theme="dark"] .commandButtonSend,
+[data-theme="dark"] .commandButtonClear {
+  filter: invert(0.85);
 }

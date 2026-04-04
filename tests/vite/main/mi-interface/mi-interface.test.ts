@@ -13,6 +13,9 @@ vi.mock("../../../../src/main/utilities/ConnectionNotifier", () => ({
   ConnectionNotifier: {
     getInstance: vi.fn(() => ({
       startWatchingConsole: vi.fn(),
+      isWatchingConsole: vi.fn(() => false),
+      endWatchingConsole: vi.fn(),
+      consoleCapture: vi.fn(),
     })),
   },
 }));
@@ -35,7 +38,8 @@ vi.mock("../../../../src/main/mi-interface/gdb-connector/gdb-connector-general",
 }));
 
 vi.mock("../../../../src/main/main", async () => {
-  const { createMockBrowserWindow } = await import("../../../../src/test-helpers/ipc-test-harness.js");
+  const { createMockBrowserWindow } =
+    await import("../../../../src/test-helpers/ipc-test-harness.js");
 
   return {
     AppSettings: mockSettings,

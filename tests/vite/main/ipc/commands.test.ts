@@ -1,7 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { IPC_CHANNELS, NotifyMainRequest } from "../../../../src/common/ipc-contracts";
 import { handleNotifyMain } from "../../../../src/main/ipc/commands";
 import { createIpcRegistrationHarness } from "../../../../src/test-helpers/ipc-test-harness";
+
+vi.mock("../../../../src/main/theme-support", () => ({
+  setNativeThemeFromAppTheme: vi.fn(),
+}));
+
+import { setNativeThemeFromAppTheme } from "../../../../src/main/theme-support";
 
 describe("handleNotifyMain", () => {
   it("handles renderEnd by sending command-entry notify-render", () => {
@@ -25,6 +31,42 @@ describe("handleNotifyMain", () => {
     handleNotifyMain(msg, context);
 
     expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.applicationTheme", msg.data);
+  });
+
+  it("handles save-app-theme 'Dark' by calling setNativeThemeFromAppTheme", () => {
+    const { context } = createIpcRegistrationHarness();
+    const msg: NotifyMainRequest = {
+      command: "save-app-theme",
+      data: "Dark",
+    };
+
+    handleNotifyMain(msg, context);
+
+    expect(setNativeThemeFromAppTheme).toHaveBeenCalledWith("Dark");
+  });
+
+  it("handles save-app-theme 'Light' by calling setNativeThemeFromAppTheme", () => {
+    const { context } = createIpcRegistrationHarness();
+    const msg: NotifyMainRequest = {
+      command: "save-app-theme",
+      data: "Light",
+    };
+
+    handleNotifyMain(msg, context);
+
+    expect(setNativeThemeFromAppTheme).toHaveBeenCalledWith("Light");
+  });
+
+  it("handles save-app-theme 'Auto' by calling setNativeThemeFromAppTheme", () => {
+    const { context } = createIpcRegistrationHarness();
+    const msg: NotifyMainRequest = {
+      command: "save-app-theme",
+      data: "Auto",
+    };
+
+    handleNotifyMain(msg, context);
+
+    expect(setNativeThemeFromAppTheme).toHaveBeenCalledWith("Auto");
   });
 
   it("handles save-last-used-connection by persisting the setting", () => {

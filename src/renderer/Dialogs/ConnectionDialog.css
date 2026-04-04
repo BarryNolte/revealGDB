@@ -94,8 +94,8 @@
 }
 
 #stepsTable.e-grid .e-headercell {
-  color: #3c3c3c;
-  background-color: #a0a0a0;
+  color: var(--connection-steps-header-color);
+  background-color: var(--connection-steps-header-bg);
   height: 12px;
 }
 

@@ -1,9 +1,9 @@
 # Priority Items
 
-- Themeing
 - Cleanup menus/toolbar
 - Convience variables
 - Save column widths with layout
+- Verify Aboutbox attributions
 
 # Bugs
 

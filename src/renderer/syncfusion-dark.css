@@ -1,0 +1,12 @@
+@import "../../node_modules/@syncfusion/ej2-base/styles/material-dark.css";
+@import "../../node_modules/@syncfusion/ej2-popups/styles/material-dark.css";
+@import "../../node_modules/@syncfusion/ej2-dropdowns/styles/material-dark.css";
+@import "../../node_modules/@syncfusion/ej2-inputs/styles/material-dark.css";
+@import "../../node_modules/@syncfusion/ej2-navigations/styles/material-dark.css";
+@import "../../node_modules/@syncfusion/ej2-notifications/styles/material-dark.css";
+@import "../../node_modules/@syncfusion/ej2-react-navigations/styles/material-dark.css";
+@import "../../node_modules/@syncfusion/ej2-react-grids/styles/material-dark.css";
+@import "../../node_modules/@syncfusion/ej2-react-dropdowns/styles/material-dark.css";
+@import "../../node_modules/@syncfusion/ej2-react-buttons/styles/material-dark.css";
+@import "../../node_modules/@syncfusion/ej2-react-splitbuttons/styles/material-dark.css";
+@import "../../node_modules/@syncfusion/ej2-react-treegrid/styles/material-dark.css";

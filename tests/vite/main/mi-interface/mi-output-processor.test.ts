@@ -1,14 +1,30 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { gdbStateDatabase } from "../../../../src/main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { MiOutputProcessor } from "../../../../src/main/mi-interface/mi-output-processor";
 import { MiOutputHost } from "../../../../src/main/mi-interface/mi-output-types";
 
-const { mockWebContentsSend } = vi.hoisted(() => ({
-  mockWebContentsSend: vi.fn(),
-}));
+const { mockWebContentsSend, notifierMock, setNotifierWatching } = vi.hoisted(() => {
+  let watchingConsole = false;
+
+  return {
+    mockWebContentsSend: vi.fn(),
+    notifierMock: {
+      notifyGdbStartup: vi.fn(),
+      isWatchingConsole: vi.fn(() => watchingConsole),
+      endWatchingConsole: vi.fn(() => {
+        watchingConsole = false;
+      }),
+      consoleCapture: vi.fn(),
+    },
+    setNotifierWatching: (value: boolean) => {
+      watchingConsole = value;
+    },
+  };
+});
 
 vi.mock("../../../../src/main/main", async () => {
-  const { createMockBrowserWindow } = await import("../../../../src/test-helpers/ipc-test-harness.js");
+  const { createMockBrowserWindow } =
+    await import("../../../../src/test-helpers/ipc-test-harness.js");
 
   return {
     mainWindow: createMockBrowserWindow({
@@ -19,11 +35,22 @@ vi.mock("../../../../src/main/main", async () => {
   };
 });
 
+vi.mock("../../../../src/main/utilities/ConnectionNotifier", () => ({
+  ConnectionNotifier: {
+    getInstance: vi.fn(() => notifierMock),
+  },
+}));
+
 describe("MiOutputProcessor integration", () => {
   const createHost = (): MiOutputHost => ({
     gdbDB: new gdbStateDatabase(),
     emit: vi.fn(),
     send: vi.fn(),
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    setNotifierWatching(false);
   });
 
   it("dispatches mixed done payloads across core and strategy handlers", async () => {
@@ -58,5 +85,27 @@ describe("MiOutputProcessor integration", () => {
         line: "10",
       }),
     );
+  });
+
+  it("routes lines to consoleCapture while the notifier is watching", async () => {
+    setNotifierWatching(true);
+    const host = createHost();
+    const processor = new MiOutputProcessor(host);
+
+    await processor.handleDataChunk("waiting for target\n", () => false);
+
+    expect(notifierMock.consoleCapture).toHaveBeenCalledWith(false, "waiting for target");
+    expect(host.emit).not.toHaveBeenCalledWith("console-stream", expect.anything());
+  });
+
+  it("exits console watch mode when =thread-group-added arrives", async () => {
+    setNotifierWatching(true);
+    const host = createHost();
+    const processor = new MiOutputProcessor(host);
+
+    await processor.handleDataChunk('=thread-group-added,id="i1"\n', () => false);
+
+    expect(notifierMock.endWatchingConsole).toHaveBeenCalledTimes(1);
+    expect(notifierMock.notifyGdbStartup).toHaveBeenCalledWith("target-running", "completed");
   });
 });

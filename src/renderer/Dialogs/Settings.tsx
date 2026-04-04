@@ -25,7 +25,7 @@ interface SettingsProps {
 }
 
 /** Available application themes */
-const themes = ["Light", "Dark"];
+const themes = ["Light", "Dark", "Auto"];
 
 /** Available editor font sizes in points */
 const fontSizes: string[] = ["8", "10", "11", "12", "14", "16", "18", "20"];

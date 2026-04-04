@@ -16,7 +16,7 @@
 }
 
 .memoryTitle {
-  color: white;
+  color: var(--memory-title-color);
   font-size: small;
 }
 

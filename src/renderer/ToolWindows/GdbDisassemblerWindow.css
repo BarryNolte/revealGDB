@@ -3,38 +3,38 @@
 }
 
 .disasmAddress {
-  color: black;
+  color: var(--disasm-address-color);
   font-weight: bolder;
 }
 
 .disasmOffset {
-  color: rgb(251, 170, 184);
+  color: var(--disasm-offset-color);
 }
 
 .disasmOpcodes {
-  color: cornflowerblue;
+  color: var(--disasm-opcodes-color);
   font-weight: bolder;
 }
 
 .disasmInstruction {
   display: inline-block;
   width: 60px;
-  color: green;
+  color: var(--disasm-instruction-color);
   font-weight: bold;
 }
 
 .disasmOpAddress {
-  color: orange;
+  color: var(--disasm-op-address-color);
 }
 
 .disasmFunction {
-  color: purple;
+  color: var(--disasm-function-color);
   font-weight: bold;
   cursor: pointer;
 }
 
 .disasmText {
-  color: red;
+  color: var(--disasm-text-color);
 }
 
 .disasmControls {
@@ -51,16 +51,16 @@
 }
 
 .disasmTitle {
-  color: white;
+  color: var(--disasm-title-color);
   font-size: small;
   margin-right: 5px;
   margin-left: 5px;
 }
 
 #function-names {
-  background-color: white;
+  background-color: var(--disasm-fn-dropdown-bg);
   font-family: monospace;
-  color: black;
+  color: var(--disasm-fn-dropdown-text);
   padding-left: 5px;
   line-height: 16px;
   height: 18px;
@@ -68,7 +68,7 @@
 
 .e-ddl.e-input-group .e-input-group-icon,
 .e-ddl.e-input-group.e-control-wrapper {
-  background-color: lightgray;
+  background-color: var(--disasm-fn-dropdown-icon-bg);
   font-size: 16px;
 }
 
@@ -78,7 +78,7 @@
 }
 
 span.function-item {
-  color: black;
+  color: var(--disasm-fn-item-color);
   font-family: monospace;
   font-size: 16px;
 }

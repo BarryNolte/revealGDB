@@ -1,5 +1,6 @@
 import { GdbAny, SelectedConnection } from "../../common/gdb-common";
 import { IPC_CHANNELS, NotifyMainRequest, NotifyRenderMessage } from "../../common/ipc-contracts";
+import { setNativeThemeFromAppTheme } from "../theme-support";
 import { WslUtilities } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
 
@@ -119,6 +120,7 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       break;
     case "save-app-theme":
       context.appSettings.setSync("gdb.gui.applicationTheme", msg.data as never);
+      setNativeThemeFromAppTheme(msg.data as string);
       break;
     case "save-cmd-history":
       context.appSettings.setSync("gdb.command.history", msg.data as never);

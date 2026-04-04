@@ -17,6 +17,7 @@ import { createGdbInterface } from "./gdb-lifecycle";
 import { registerIpcHandlers } from "./ipc";
 import { GdbMenu } from "./menu";
 import { miInterface } from "./mi-interface/mi-interface";
+import { setNativeThemeFromAppTheme } from "./theme-support";
 import {
   createDebugWindow,
   createMainWindow,
@@ -79,8 +80,10 @@ app.on("ready", () => {
   configureAppSettings(AppSettings);
   logStartupDiagnostics(AppSettings);
   collectVersionInfo(gdbAppInfo);
-  //console.log("Version Info\n------------");
-  //console.log(gdbAppInfo);
+
+  // Apply saved theme to Electron chrome before creating windows to avoid flash.
+  const savedTheme = AppSettings.getSync("gdb.gui.applicationTheme") as string | undefined;
+  setNativeThemeFromAppTheme(savedTheme ?? "Auto");
 
   mainWindow = createMainWindow(resolvePreloadPath());
 

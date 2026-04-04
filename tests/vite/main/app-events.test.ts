@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { IPC_CHANNELS } from "../../../src/common/ipc-contracts";
+import { registerAppEvents } from "../../../src/main/app-events";
 import { createEventEmitterHarness } from "../../../src/test-helpers/event-emitter-test-harness";
 import { createMockBrowserWindow } from "../../../src/test-helpers/ipc-test-harness";
-import { registerAppEvents } from "../../../src/main/app-events";
 
 describe("registerAppEvents", () => {
   beforeEach(() => {
@@ -48,7 +48,10 @@ describe("registerAppEvents", () => {
 
   it("sends native theme updates to the dedicated theme channel", () => {
     const appInstance = createEventEmitterHarness();
-    const nativeTheme = createEventEmitterHarness();
+    const nativeTheme = {
+      ...createEventEmitterHarness(),
+      shouldUseDarkColors: true,
+    };
     const mainWindow = createMockBrowserWindow({
       isDestroyed: vi.fn().mockReturnValue(false),
     } as never);
@@ -59,7 +62,7 @@ describe("registerAppEvents", () => {
 
     expect(mainWindow.webContents.send).toHaveBeenCalledWith(
       IPC_CHANNELS.mainToRenderer.notifications.themeChanged,
-      nativeTheme,
+      { shouldUseDarkColors: true },
     );
   });
 });

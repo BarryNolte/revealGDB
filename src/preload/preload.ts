@@ -43,6 +43,8 @@ const ipcApi = {
       subscribe(IPC_CHANNELS.mainToRenderer.notifications.connectionStatus, callback),
     render: (callback: GdbAny) =>
       subscribe(IPC_CHANNELS.mainToRenderer.notifications.render, callback),
+    themeChanged: (callback: GdbAny) =>
+      subscribe(IPC_CHANNELS.mainToRenderer.notifications.themeChanged, callback),
   },
   debuggerData: {
     registers: (callback: GdbAny) =>

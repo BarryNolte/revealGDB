@@ -28,9 +28,8 @@ export function registerAppEvents(
     if (!mainWindow || mainWindow.isDestroyed()) {
       return;
     }
-    mainWindow.webContents.send(
-      IPC_CHANNELS.mainToRenderer.notifications.themeChanged,
-      nativeTheme,
-    );
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.notifications.themeChanged, {
+      shouldUseDarkColors: nativeTheme.shouldUseDarkColors,
+    });
   });
 }

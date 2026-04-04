@@ -3,8 +3,8 @@
 import { EventEmitter } from "events";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { SelectedConnection } from "../../../../../src/common/gdb-common";
-import type { gdbStateDatabase } from "../../../../../src/main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { OutputAvailableEventArgs } from "../../../../../src/main/mi-interface/gdb-connector/gdb-connector";
+import type { gdbStateDatabase } from "../../../../../src/main/mi-interface/gdb-state-database/gdbStateDatabase";
 
 const { spawnMock, notifierMock, resetNotifierState, setNotifierWatching, setFilePrefixMock } =
   vi.hoisted(() => {
@@ -193,7 +193,7 @@ describe("gdbConnectorIdfOnWsl", () => {
     expect(setFilePrefixMock).not.toHaveBeenCalled();
   });
 
-  it("routes console capture while the notifier is watching the startup console", () => {
+  it("always emits gdb-data and gdb-error regardless of console watch state", () => {
     setNotifierWatching(true);
     const dataListener = vi.fn();
     const errorListener = vi.fn();
@@ -210,31 +210,10 @@ describe("gdbConnectorIdfOnWsl", () => {
     childProcess.stdout.emit("data", new TextEncoder().encode("waiting for target\n"));
     childProcess.stderr.emit("data", new TextEncoder().encode("warning text\n"));
 
-    expect(notifierMock.consoleCapture).toHaveBeenNthCalledWith(1, false, "waiting for target\n");
-    expect(notifierMock.consoleCapture).toHaveBeenNthCalledWith(2, true, "warning text\n");
-    expect(dataListener).not.toHaveBeenCalled();
-    expect(errorListener).not.toHaveBeenCalled();
-  });
-
-  it("exits console watch mode when MI output arrives and resumes normal data events", () => {
-    setNotifierWatching(true);
-    const dataListener = vi.fn();
-    connector.on("gdb-data", dataListener);
-
-    connector.Start(
-      createWslConnection({
-        name: "WSL session",
-        commands: ["gdb --interpreter=mi"],
-      }),
-    );
-
-    childProcess.stdout.emit("data", new TextEncoder().encode("^running"));
-
-    expect(notifierMock.endWatchingConsole).toHaveBeenCalledTimes(1);
-    expect(notifierMock.notifyGdbStartup).toHaveBeenNthCalledWith(2, "target-running", "completed");
-    expect(notifierMock.consoleCapture).not.toHaveBeenCalled();
     expect(dataListener).toHaveBeenCalledTimes(1);
-    expect(dataListener.mock.calls[0][0].Output).toBe("^running");
+    expect(dataListener.mock.calls[0][0].Output).toBe("waiting for target\n");
+    expect(errorListener).toHaveBeenCalledTimes(1);
+    expect(errorListener.mock.calls[0][0].Output).toBe("warning text\n");
   });
 
   it("reports running state and delegates shutdown to the child process", () => {

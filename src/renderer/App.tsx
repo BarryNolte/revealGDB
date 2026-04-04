@@ -16,6 +16,7 @@ import { DockManager } from "../../node_modules/dock-spawn-ts/lib/js/DockManager
 
 import { JSX, RefObject, Suspense, lazy, useEffect, useRef } from "react";
 import { GdbAny } from "../common/gdb-common";
+import { AppTheme, applyTheme } from "./theme-manager";
 
 /* Dialogs */
 import type { AboutBoxHandle } from "./Dialogs/AboutBox";
@@ -314,7 +315,31 @@ export default function App(): JSX.Element {
 
     // Load settings first so dock initialization can avoid race conditions.
     window.ipcToMain.queries.app.getSettings().then(async (gdb: GdbAny): Promise<void> => {
+      // Apply saved theme before dock layout renders
+      const savedTheme: AppTheme = gdb.gui?.applicationTheme ?? "Auto";
+      applyTheme(savedTheme);
+
       await initializeDockManager(gdb);
+    });
+
+    // Handle live theme changes from the settings dialog
+    const handleAppChange = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.theme) {
+        applyTheme(detail.theme as AppTheme);
+      }
+    };
+    window.addEventListener("changeApplication", handleAppChange);
+
+    // Handle OS theme changes pushed from the main process (Auto mode)
+    const unsubTheme = window.ipcToMain.notifications.themeChanged?.((data: GdbAny) => {
+      // Re-apply the current user theme so Auto mode picks up the new OS state
+      window.ipcToMain.queries.app.getSettings().then((gdb: GdbAny) => {
+        const currentTheme: AppTheme = gdb.gui?.applicationTheme ?? "Auto";
+        if (currentTheme === "Auto") {
+          applyTheme("Auto", data?.shouldUseDarkColors ?? false);
+        }
+      });
     });
 
     // Handle window resize events to adjust dock layout
@@ -342,6 +367,8 @@ export default function App(): JSX.Element {
     // Cleanup function: remove event listeners on unmount
     return () => {
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("changeApplication", handleAppChange);
+      if (unsubTheme) unsubTheme();
     };
   }, []);
 

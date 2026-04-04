@@ -19,6 +19,7 @@ export interface IElectronAPI {
   notifications: {
     connectionStatus: (callback: GdbAny) => () => void;
     render: (callback: (data: NotifyRenderMessage) => void) => () => void;
+    themeChanged: (callback: (data: { shouldUseDarkColors: boolean }) => void) => () => void;
   };
 
   debuggerData: {

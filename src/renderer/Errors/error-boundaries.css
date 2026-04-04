@@ -27,9 +27,9 @@
 .toolwindow-error-boundary-retry {
   width: fit-content;
   padding: 4px 8px;
-  border: 1px solid rgba(0, 0, 0, 0.35);
-  background-color: rgba(255, 255, 255, 0.85);
-  color: #111;
+  border: 1px solid var(--error-retry-border);
+  background-color: var(--error-retry-bg);
+  color: var(--error-retry-color);
   cursor: pointer;
 }
 

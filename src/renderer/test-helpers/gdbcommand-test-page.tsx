@@ -97,6 +97,7 @@ export function setupGdbCommandTestApi(): void {
   ipc.notifications = {
     connectionStatus: () => () => undefined,
     render: () => () => undefined,
+    themeChanged: () => () => undefined,
   };
   ipc.debuggerData = {
     registers: () => () => undefined,

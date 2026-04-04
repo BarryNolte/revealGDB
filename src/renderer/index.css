@@ -2,8 +2,88 @@
 @import "../../node_modules/dock-spawn-ts/lib/css/dock-manager.css";
 @import "../../node_modules/dock-spawn-ts/lib/css/dock-manager-context-menu.css";
 
+/* ── Light theme (default) ── */
 :root {
+  --window-background: #f0f0f0;
+  --app-text-color: #1e1e1e;
+  --debug-text-color: #0000cc;
+  --debug-background-color: #e0e0ff;
+  --error-text-color: #800000;
+  --error-background-color: #ffcccc;
+  --console-text-color: #006600;
+  --console-background-color: #ffffff;
+  --log-text-color: #666666;
+  --log-background-color: #ffffc0;
+
+  --dialog-header-background: #2b579a;
+  --dialog-header-text-color: #ffffff;
+  --dialog-header-border-color: #cccccc;
+
+  --grid-header-background: #e8e8e8;
+  --grid-header-text-color: #333333;
+
+  --splitter-vertical-color: #c0c0c0;
+  --splitter-horizontal-color: #c0c0c0;
+
+  --he-text-color: #333333;
+  --he-header-background-color: #e0e0e0;
+  --he-text-background-color: #ffffff;
+  --he-data-changed-color: red;
+  --he-cursor-color: #4caf50;
+
+  --dock-tab-active-bg: rgba(220, 220, 220, 0.85);
+  --dock-tab-hover-bg: rgba(200, 200, 200, 0.85);
+  --dock-tab-list-bg: rgba(230, 230, 230, 0.874);
+  --dock-panel-active-bg: rgba(240, 240, 240, 0.85);
+  --dock-content-bg: #ffffff;
+
+  --input-border-color: #aaa;
+  --input-bg: #ffffff;
+
+  --disasm-address-color: black;
+  --disasm-offset-color: rgb(180, 100, 120);
+  --disasm-opcodes-color: cornflowerblue;
+  --disasm-instruction-color: green;
+  --disasm-op-address-color: #b87300;
+  --disasm-function-color: purple;
+  --disasm-text-color: #cc0000;
+  --disasm-title-color: #ffffff;
+  --disasm-fn-dropdown-bg: #ffffff;
+  --disasm-fn-dropdown-text: black;
+  --disasm-fn-dropdown-icon-bg: #e0e0e0;
+  --disasm-fn-item-color: black;
+
+  --source-filename-bg: #d0d0d0;
+  --source-filename-color: #1e1e1e;
+  --source-filename-border: #999;
+  --source-nosource-bg: #d0d0d0;
+  --source-nosource-color: #636363;
+  --source-nosource-border: #999;
+  --source-nosource-header-bg: #54585d;
+  --source-nosource-header-color: #ddd;
+  --source-nosource-cell-color: #1e1e1e;
+
+  --connection-steps-header-color: #3c3c3c;
+  --connection-steps-header-bg: #d0d0d0;
+  --control-border-color: #ddd;
+
+  --error-retry-border: rgba(0, 0, 0, 0.35);
+  --error-retry-bg: rgba(255, 255, 255, 0.85);
+  --error-retry-color: #111;
+
+  --memory-title-color: #1e1e1e;
+
+  --drag-drop-input-border: #c9c9c9;
+  --drag-drop-item-bg: #fcfcfc;
+  --drag-drop-item-border: #ddd;
+  --drag-drop-item-hover-bg: #e9e9e9;
+  --drag-drop-item-color: #1e1e1e;
+}
+
+/* ── Dark theme ── */
+[data-theme="dark"] {
   --window-background: #606060;
+  --app-text-color: #e0e0e0;
   --debug-text-color: lightblue;
   --debug-background-color: blue;
   --error-text-color: #f0f0f0;
@@ -15,6 +95,7 @@
 
   --dialog-header-background: blue;
   --dialog-header-text-color: lightblue;
+  --dialog-header-border-color: black;
 
   --grid-header-background: grey;
   --grid-header-text-color: #e0e0e0;
@@ -27,6 +108,54 @@
   --he-text-background-color: #606060;
   --he-data-changed-color: red;
   --he-cursor-color: yellowgreen;
+
+  --dock-tab-active-bg: rgba(8, 8, 8, 0.85);
+  --dock-tab-hover-bg: rgba(90, 90, 90, 0.85);
+  --dock-tab-list-bg: rgba(165, 165, 165, 0.874);
+  --dock-panel-active-bg: rgba(8, 8, 8, 0.85);
+  --dock-content-bg: #1e1e1e;
+
+  --input-border-color: #555;
+  --input-bg: #3c3c3c;
+
+  --disasm-address-color: #c0c0c0;
+  --disasm-offset-color: rgb(251, 170, 184);
+  --disasm-opcodes-color: cornflowerblue;
+  --disasm-instruction-color: #50c050;
+  --disasm-op-address-color: orange;
+  --disasm-function-color: #cc80ff;
+  --disasm-text-color: #ff6060;
+  --disasm-title-color: white;
+  --disasm-fn-dropdown-bg: black;
+  --disasm-fn-dropdown-text: white;
+  --disasm-fn-dropdown-icon-bg: #555;
+  --disasm-fn-item-color: white;
+
+  --source-filename-bg: #2d2d2d;
+  --source-filename-color: #e0e0e0;
+  --source-filename-border: #555;
+  --source-nosource-bg: #252526;
+  --source-nosource-color: #aaa;
+  --source-nosource-border: #555;
+  --source-nosource-header-bg: #333;
+  --source-nosource-header-color: #e0e0e0;
+  --source-nosource-cell-color: #c8c8c8;
+
+  --connection-steps-header-color: #3c3c3c;
+  --connection-steps-header-bg: #a0a0a0;
+  --control-border-color: #555;
+
+  --error-retry-border: rgba(255, 255, 255, 0.35);
+  --error-retry-bg: rgba(50, 50, 50, 0.85);
+  --error-retry-color: #e0e0e0;
+
+  --memory-title-color: white;
+
+  --drag-drop-input-border: #555;
+  --drag-drop-item-bg: #3a3a3a;
+  --drag-drop-item-border: #555;
+  --drag-drop-item-hover-bg: #4a4a4a;
+  --drag-drop-item-color: #e0e0e0;
 }
 
 html {
@@ -45,6 +174,8 @@ body {
   font-family:
     system-ui,
     Segoe UI;
+  color: var(--app-text-color);
+  background-color: var(--window-background);
 }
 
 .revealDockManager {
@@ -72,7 +203,7 @@ div > .dialogHeaderContainer > .e-dlg-header-content > .e-dlg-header {
 
 div > .dialogHeaderContainer > .e-dlg-header-content {
   padding: 0px;
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid var(--dialog-header-border-color);
   width: 100%;
 }
 
@@ -88,7 +219,7 @@ div.e-grid {
 
 .e-grid .e-headercell {
   background-color: var(--grid-header-background);
-  color: var(grid-header-text-color);
+  color: var(--grid-header-text-color);
   font-weight: bold;
 }
 
@@ -185,17 +316,28 @@ div > .splitbar-horizontal {
 }
 
 div > .dockspan-tab-handle-active {
-  background-color: rgba(8, 8, 8, 0.85);
+  background-color: var(--dock-tab-active-bg);
 }
 
 div > .dockspan-panel-active {
-  background-color: rgba(8, 8, 8, 0.85);
+  background-color: var(--dock-panel-active-bg);
 }
 
 div > .dockspan-tab-handle:hover {
-  background-color: rgba(90, 90, 90, 0.85);
+  background-color: var(--dock-tab-hover-bg);
 }
 
 div > .dockspan-tab-handle-list-container {
-  background-color: rgba(165, 165, 165, 0.874);
+  background-color: var(--dock-tab-list-bg);
+}
+
+.dockspan-tab-content,
+.dockspan-tab-content > *,
+.panel-content {
+  background-color: var(--dock-content-bg);
+}
+
+.panel-element-content-container {
+  background-color: var(--dock-content-bg);
+  z-index: 1;
 }
