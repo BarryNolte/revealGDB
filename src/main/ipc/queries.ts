@@ -4,9 +4,25 @@ import { WslUtilities, type WslDistro } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
 
 export function registerIpcQueryHandlers(context: IpcRegistrationContext): void {
-  context.ipcMain.handle(IPC_CHANNELS.rendererToMain.queries.app.settings, (): string[] => {
-    return context.appSettings.getSync("gdb") as string[];
-  });
+  context.ipcMain.handle(
+    IPC_CHANNELS.rendererToMain.queries.app.settings,
+    (): Promise<string[]> => {
+      const attempt = async (remaining: number, delayMs: number): Promise<string[]> => {
+        try {
+          return context.appSettings.getSync("gdb") as string[];
+        } catch (error) {
+          if (remaining <= 1) throw error;
+          console.error(
+            `Failed to get settings, retrying in ${delayMs}ms (${remaining - 1} attempts left):`,
+            error,
+          );
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
+          return attempt(remaining - 1, delayMs + 100);
+        }
+      };
+      return attempt(5, 100);
+    },
+  );
 
   context.ipcMain.handle(
     IPC_CHANNELS.rendererToMain.queries.app.systemFonts,

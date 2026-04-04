@@ -45,24 +45,15 @@ export class miInterface extends EventEmitter {
     });
 
     this.conn.on("gdb-data", (args: OutputAvailableEventArgs): void => {
-      if (AppSettings.getSync("gdb.gui.showDebugInfo") as boolean) {
-        this.emit(
-          "debug-stream",
-          `GDB Data (${miInterface.lnum++}): ${args.Output} ${args.Output.endsWith("\n")}`,
-        );
-      }
-      void this.outputProcessor.handleDataChunk(args.Output, (line: string) => {
-        return this.outputCapture.CaptureLine(line);
-      });
+      this.sendOutputToHandler(args);
+    });
+
+    this.conn.on("gdb-error", (args: OutputAvailableEventArgs) => {
+      this.sendOutputToHandler(args);
     });
 
     this.conn.on("gdb-input", (input: string) => {
       this.emit("gdb-input", input);
-    });
-
-    this.conn.on("gdb-error", (args: OutputAvailableEventArgs) => {
-      console.error(`GDB Error: ${args.Output}`);
-      //throw new Error(`GDB Error: ${args.Output}`);
     });
 
     this.on("gdb-idle", () => {
@@ -70,6 +61,18 @@ export class miInterface extends EventEmitter {
     });
 
     return this.conn.Start(selectedConnection);
+  }
+
+  private sendOutputToHandler(args: OutputAvailableEventArgs) {
+    if (AppSettings.getSync("gdb.gui.showDebugInfo") as boolean) {
+      this.emit(
+        "debug-stream",
+        `GDB Data (${miInterface.lnum++}): ${args.Output} ${args.Output.endsWith("\n")}`,
+      );
+    }
+    void this.outputProcessor.handleDataChunk(args.Output, (line: string) => {
+      return this.outputCapture.CaptureLine(line);
+    });
   }
 
   disconnect(): void {

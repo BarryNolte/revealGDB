@@ -1,11 +1,9 @@
 # Priority Items
 
-- Arbitrary Connections
 - Themeing
 - Cleanup menus/toolbar
 - Convience variables
 - Save column widths with layout
-- Look at GDB source code for possible data columns not seen yet and what order they could appear in.
 
 # Bugs
 
@@ -22,6 +20,7 @@
 - Tracepoints - How to insert more automatically
 - Better Dock management (multiple source files in a Group)
   - Better source file management
+- run startup commands after gdb starts up
 
 # Project Related
 

@@ -1,6 +1,3 @@
-/**
- * WSL-based connector that launches idf.py gdb in MI mode.
- */
 import { ChildProcess, spawn } from "child_process";
 import { ConnectionNotifier } from "../../utilities/ConnectionNotifier";
 import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector";
@@ -61,28 +58,11 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
 
     this.gdbExe.stdout?.on("data", (data: Uint8Array): void => {
       const text = new TextDecoder().decode(data);
-      console.log(`GDB Output: ${text}`);
-      if (ConnectionNotifier.getInstance().isWatchingConsole() && "~@&^*=+".includes(text[0])) {
-        ConnectionNotifier.getInstance().endWatchingConsole();
-        ConnectionNotifier.getInstance().notifyGdbStartup("target-running", "completed");
-      }
-
-      if (ConnectionNotifier.getInstance().isWatchingConsole()) {
-        ConnectionNotifier.getInstance().consoleCapture(false, text);
-        return;
-      }
-
       this.emit("gdb-data", new OutputAvailableEventArgs(text));
     });
 
     this.gdbExe.stderr?.on("data", (data: Uint8Array): void => {
       const text = new TextDecoder().decode(data);
-      // console.log(`GDB Error: ${text}`);
-      if (ConnectionNotifier.getInstance().isWatchingConsole()) {
-        ConnectionNotifier.getInstance().consoleCapture(true, text);
-        return;
-      }
-
       this.emit("gdb-error", new OutputAvailableEventArgs(text));
     });
 
@@ -92,11 +72,6 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
   override Send(data: string): void {
     this.gdbExe?.stdin?.cork();
     this.gdbExe?.stdin?.write(data + "\n", (_error) => {
-      // if (error) {
-      //   console.error(`>>  ${data} > Error: ${error}`);
-      // } else {
-      //   console.log(`>>  ${data}`);
-      // }
       this.emit("gdb-input", data);
     });
     this.gdbExe?.stdin?.uncork();

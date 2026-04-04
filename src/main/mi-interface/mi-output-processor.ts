@@ -1,3 +1,4 @@
+import { ConnectionNotifier } from "../utilities/ConnectionNotifier";
 import { MiExecAsyncHandler } from "./mi-exec-handler";
 import { MiNotifyAsyncHandler } from "./mi-notify-handler";
 import { MiOutputHost, gdbShowSourceInfo } from "./mi-output-types";
@@ -45,6 +46,23 @@ export class MiOutputProcessor {
         if (captureLine(line)) {
           return;
         }
+        console.log(`Raw line received: ${line}`);
+        // eslint-disable-next-line no-control-regex
+        line = line.replaceAll(/\x1B\[[0-9;?]*[ -/]*[@-~]/g, "");
+        console.log(`Processing line: ${line}`);
+        if (
+          ConnectionNotifier.getInstance().isWatchingConsole() &&
+          line.startsWith("=thread-group-added")
+        ) {
+          ConnectionNotifier.getInstance().endWatchingConsole();
+          ConnectionNotifier.getInstance().notifyGdbStartup("target-running", "completed");
+        }
+
+        if (ConnectionNotifier.getInstance().isWatchingConsole()) {
+          ConnectionNotifier.getInstance().consoleCapture(false, line);
+          return;
+        }
+
         await this.parseRawOutput(line);
       } catch (ex) {
         this.host.emit(
