@@ -67,6 +67,15 @@ export function useSourceBreakpointInteractions(
       readOnly: true,
     });
 
+    editor.commands.addCommand({
+      name: "F1_Goto_Command_Entry",
+      bindKey: { win: "F1", mac: "F1" },
+      exec: (_activeEditor: ace.Ace.Editor) => {
+        window.ipcToMain.commands.app.notifyMain({ command: "command-entry" });
+      },
+      readOnly: true,
+    });
+
     editor.setOption("showFoldWidgets", false);
 
     gutterClickListenerRef.current = (e: GdbAny) => {

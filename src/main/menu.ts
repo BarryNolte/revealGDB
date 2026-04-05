@@ -62,7 +62,6 @@ export class GdbMenu {
           { role: "cut" },
           { role: "copy" },
           { role: "paste" },
-          { role: "pasteAndMatchStyle" },
           { role: "delete" },
           { role: "selectAll" },
           { type: "separator" },
@@ -83,59 +82,6 @@ export class GdbMenu {
       {
         label: "&Debug",
         submenu: [
-          {
-            label: "Windows",
-            submenu: [
-              {
-                label: "Source",
-                type: "checkbox",
-                checked: true,
-              },
-              {
-                label: "Locals",
-                type: "checkbox",
-                checked: true,
-              },
-              {
-                label: "Watch",
-                type: "checkbox",
-                checked: true,
-              },
-              {
-                label: "Call Stack",
-                type: "checkbox",
-                checked: true,
-              },
-              {
-                label: "Breakpoints",
-                type: "checkbox",
-                checked: true,
-              },
-              {
-                label: "Threads",
-                type: "checkbox",
-                checked: true,
-              },
-              {
-                label: "Memory",
-                type: "checkbox",
-                checked: true,
-              },
-              {
-                label: "Register",
-                type: "checkbox",
-                checked: true,
-              },
-              {
-                label: "Disassembly",
-                type: "checkbox",
-                checked: true,
-              },
-            ],
-          },
-          {
-            type: "separator",
-          },
           {
             label: "Continue",
             accelerator: "F5",
@@ -164,11 +110,40 @@ export class GdbMenu {
               gdbInterface.send("finish");
             },
           },
+          { type: "separator" },
+          {
+            label: "Pause",
+            accelerator: "Ctrl+C",
+            click: () => {
+              gdbInterface.send("signal SIGINT");
+            },
+          },
+          {
+            label: "Stop Debugging",
+            accelerator: "Shift+F5",
+            click: () => gdbInterface.send("kill"),
+          },
         ],
       },
       {
         label: "Connections",
         submenu: [
+          {
+            label: "Connect",
+            click: () => {
+              mainWindow.webContents.send("notify-render", { command: "connection-dialog" });
+            },
+          },
+          {
+            label: "Disconnect",
+            click: () => {
+              gdbInterface.disconnect();
+              mainWindow.webContents.send("notify-render", { command: "cancel-connection" });
+              gdbInterface.gdbDB.clearDatabase();
+              gdbInterface.gdbDB.allDataUpdateUI();
+            },
+          },
+          { type: "separator" },
           {
             label: "Configure...",
             click: () => {

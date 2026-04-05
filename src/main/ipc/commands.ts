@@ -108,6 +108,9 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       );
       break;
     }
+    case "command-entry":
+      sendNotifyRender(context, { command: "command-entry" });
+      break;
     case "save-connections":
       context.appSettings.setSync(
         "gdb.connections",

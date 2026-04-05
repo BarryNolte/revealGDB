@@ -89,6 +89,7 @@ export type NotifyRenderCommand =
   | "connection-success"
   | "connection-failed"
   | "cancel-connection"
+  | "connection-dialog"
   | "command-entry"
   | "about-box"
   | "settings-dialog"
@@ -102,6 +103,7 @@ export type NotifyRenderMessage = {
 export type NotifyMainCommand =
   | "connect-selected-connection"
   | "cancel-connection"
+  | "command-entry"
   | "save-connections"
   | "save-last-used-connection"
   | "save-app-show-debug-info"

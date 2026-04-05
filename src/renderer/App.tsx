@@ -141,6 +141,9 @@ export default function App(): JSX.Element {
         case "about-box":
           aboutBoxRef.current?.ShowDialog();
           break;
+        case "connection-dialog":
+          whileConnectingRef.current?.ShowDialog();
+          break;
         case "connections-dialog":
           connectionsRef.current?.ShowDialog();
           break;
