@@ -111,6 +111,8 @@ export type NotifyMainCommand =
   | "save-source-viewer-font-size"
   | "save-source-viewer-font-name"
   | "save-dock-layout"
+  | "save-grid-columns"
+  | "reset-grid-columns"
   | "renderStart"
   | "renderEnd";
 

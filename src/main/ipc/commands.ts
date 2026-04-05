@@ -1,4 +1,5 @@
 import { GdbAny, SelectedConnection } from "../../common/gdb-common";
+import { GridColumnState, GridName } from "../../common/grid-column-types";
 import { IPC_CHANNELS, NotifyMainRequest, NotifyRenderMessage } from "../../common/ipc-contracts";
 import { setNativeThemeFromAppTheme } from "../theme-support";
 import { WslUtilities } from "../utilities/wsl-utilities";
@@ -145,6 +146,23 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
         fullscreen: mainWindow.fullScreen,
       };
       context.appSettings.setSync("gdb.gui.windowSize", winPos);
+      break;
+    }
+    case "save-grid-columns": {
+      const { gridName, columns } = msg.data as {
+        gridName: GridName;
+        columns: GridColumnState[];
+      };
+      context.appSettings.setSync(`gdb.gui.gridColumns.${gridName}`, columns as never);
+      break;
+    }
+    case "reset-grid-columns": {
+      const resetGridName = msg.data as GridName | undefined;
+      if (resetGridName) {
+        context.appSettings.unsetSync(`gdb.gui.gridColumns.${resetGridName}`);
+      } else {
+        context.appSettings.unsetSync("gdb.gui.gridColumns");
+      }
       break;
     }
     case "renderStart":

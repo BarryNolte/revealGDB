@@ -8,6 +8,7 @@ import {
   GridComponent,
   Inject,
   NotifyArgs,
+  Reorder,
   Resize,
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
@@ -16,6 +17,7 @@ import { GdbAny } from "../../common/gdb-common";
 import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
 import imgDelete from "../icons/icons8-delete-48.png";
+import { useGridColumnState } from "../utilities/useGridColumnState";
 import "./GdbBreakpointsWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
@@ -27,6 +29,7 @@ import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 export default function GdbBreakPointWindow(): JSX.Element {
   const gridRef = useRef<GridComponent | null>(null);
   const [breakpointData, setBreakpointData] = useState<GdbAny[]>([]);
+  useGridColumnState("breakpoints", gridRef);
 
   /** Grid selection settings: allow multiple row/cell selection */
   const selectionOptions: SelectionSettingsModel = useMemo(
@@ -71,38 +74,6 @@ export default function GdbBreakPointWindow(): JSX.Element {
       unsubscribe();
     };
   }, []);
-
-  /**
-   * Auto-fit columns after data updates.
-   * Runs after React has updated the grid with new breakpoint data.
-   */
-  useEffect(() => {
-    const grid = gridRef.current;
-    if (!grid) {
-      return;
-    }
-
-    // Only auto-fit columns when there's data to fit
-    if (breakpointData.length > 0) {
-      grid.autoFitColumns(
-        [
-          "number",
-          "addr",
-          "func",
-          "file",
-          "line",
-          "times",
-          "installed",
-          "fullName",
-          "tg",
-          "orgloc",
-          "type",
-          "disp",
-        ],
-        0,
-      );
-    }
-  }, [breakpointData]);
 
   const emptyMessageTemplate = useCallback((): GdbAny => {
     return (
@@ -171,6 +142,7 @@ export default function GdbBreakPointWindow(): JSX.Element {
           height="100%"
           rowHeight={16}
           allowResizing={true}
+          allowReordering={true}
           allowPaging={false}
           allowSorting={false}
           showColumnMenu={true}
@@ -231,7 +203,7 @@ export default function GdbBreakPointWindow(): JSX.Element {
             <ColumnDirective field="disp" headerText="Display" clipMode="EllipsisWithTooltip" />
             <ColumnDirective field="type" headerText="Type" clipMode="EllipsisWithTooltip" />
           </ColumnsDirective>
-          <Inject services={[Resize, ColumnMenu, ContextMenu]} />
+          <Inject services={[Resize, Reorder, ColumnMenu, ContextMenu]} />
         </GridComponent>
       </div>
     </ToolWindowContent>

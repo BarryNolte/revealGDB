@@ -24,6 +24,7 @@ import {
   Group,
   GroupSettingsModel,
   Inject,
+  Reorder,
   Resize,
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
@@ -35,6 +36,7 @@ import {
   gdbFunction,
 } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { doCutCopyPaste, menuCopy, menuCutCopyPaste } from "../utilities/Clipboard";
+import { useGridColumnState } from "../utilities/useGridColumnState";
 import { validateValue, ValueType } from "../utilities/valueValidation";
 import { renderGroupCaption, renderInstructionParts } from "./GdbDisassemblerLineModel";
 import "./GdbDisassemblerWindow.css";
@@ -58,6 +60,7 @@ export default function GdbDisassemblerWindow(): JSX.Element {
   // State for disassembly data and function list
   const [functionList, setFunctionList] = useState<gdbFunction[]>([]);
   const [disasmData, setDisasmData] = useState<gdbAsmRow[]>([]);
+  useGridColumnState("disassembly", gridRef);
 
   /** Grid selection settings: allow multiple row/cell selection */
   const selectionOptions: SelectionSettingsModel = useMemo(
@@ -254,6 +257,7 @@ export default function GdbDisassemblerWindow(): JSX.Element {
             rowHeight={16}
             className="full-size"
             allowResizing={true}
+            allowReordering={true}
             allowPaging={false}
             allowGrouping={true}
             showColumnMenu={true}
@@ -269,24 +273,21 @@ export default function GdbDisassemblerWindow(): JSX.Element {
                 isPrimaryKey={true}
                 enableGroupByFormat={true}
                 textAlign="Left"
-                autoFit={true}
                 clipMode="EllipsisWithTooltip"
                 template={(props: GdbAny) => (
                   <span className="disasmAddress">{props!.address}</span>
                 )}
               />
-              <ColumnDirective field="func" headerText="Function" autoFit={true} />
+              <ColumnDirective field="func" headerText="Function" />
               <ColumnDirective
                 field="offset"
                 headerText="Offset"
-                autoFit={true}
                 clipMode="EllipsisWithTooltip"
                 template={(props: GdbAny) => <span className="disasmOffset">{props!.offset}</span>}
               />
               <ColumnDirective
                 field="opcodes"
                 headerText="Opcodes"
-                autoFit={true}
                 template={(props: GdbAny) => (
                   <span className="disasmOpcodes">{props!.opcodes}</span>
                 )}
@@ -299,7 +300,7 @@ export default function GdbDisassemblerWindow(): JSX.Element {
                 template={instructionsTemplate}
               />
             </ColumnsDirective>
-            <Inject services={[Resize, Group]} />
+            <Inject services={[Resize, Reorder, Group]} />
           </GridComponent>
           <ContextMenuComponent
             id={`disasm-grid-menu-${menuIdBase}`}

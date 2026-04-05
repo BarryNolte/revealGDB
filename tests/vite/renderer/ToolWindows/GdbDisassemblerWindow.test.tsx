@@ -11,6 +11,8 @@ vi.mock("@syncfusion/ej2-react-grids", () => ({
   ColumnDirective: () => null,
   Inject: () => null,
   Resize: {},
+  Reorder: {},
+  Column: class {},
   Group: {},
 }));
 
@@ -20,6 +22,15 @@ vi.mock("@syncfusion/ej2-react-dropdowns", () => ({
 
 vi.mock("@syncfusion/ej2-react-navigations", () => ({
   ContextMenuComponent: () => <div data-testid="context-menu" />,
+}));
+
+vi.mock("../../../../src/renderer/utilities/useGridColumnState", () => ({
+  useGridColumnState: () => ({
+    savedColumns: undefined,
+    loaded: true,
+    resetColumnDefaults: vi.fn(),
+  }),
+  applySavedColumnsToGrid: vi.fn(),
 }));
 
 const mockUnsubDisasm = vi.fn();

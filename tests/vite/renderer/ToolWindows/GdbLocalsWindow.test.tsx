@@ -8,6 +8,7 @@ vi.mock("@syncfusion/ej2-grids", () => ({
   ColumnMenu: {},
   Edit: {},
   Resize: {},
+  Reorder: {},
 }));
 
 vi.mock("@syncfusion/ej2-react-grids", () => ({
@@ -47,12 +48,22 @@ vi.mock("@syncfusion/ej2-react-treegrid", () => ({
   },
   Inject: () => null,
   Resize: {},
+  Reorder: {},
   ColumnMenu: {},
   Edit: {},
 }));
 
 vi.mock("@syncfusion/ej2-react-navigations", () => ({
   ContextMenuComponent: () => <div data-testid="context-menu" />,
+}));
+
+vi.mock("../../../../src/renderer/utilities/useGridColumnState", () => ({
+  useGridColumnState: () => ({
+    savedColumns: undefined,
+    loaded: true,
+    resetColumnDefaults: vi.fn(),
+  }),
+  applySavedColumnsToGrid: vi.fn(),
 }));
 
 const mockUnsubscribe = vi.fn();

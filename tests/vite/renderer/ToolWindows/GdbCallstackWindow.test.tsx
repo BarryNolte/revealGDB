@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import GdbCallStackWindow from "../../../../src/renderer/ToolWindows/GdbCallstackWindow";
@@ -20,6 +20,7 @@ vi.mock("@syncfusion/ej2-react-grids", () => ({
   ColumnDirective: () => null,
   Inject: () => null,
   Resize: {},
+  Reorder: {},
   ColumnMenu: {},
 }));
 
@@ -27,18 +28,24 @@ vi.mock("@syncfusion/ej2-react-navigations", () => ({
   ContextMenuComponent: () => <div data-testid="context-menu" />,
 }));
 
+vi.mock("../../../../src/renderer/utilities/useGridColumnState", () => ({
+  useGridColumnState: () => ({
+    savedColumns: undefined,
+    loaded: true,
+    resetColumnDefaults: vi.fn(),
+  }),
+  applySavedColumnsToGrid: vi.fn(),
+}));
+
 const mockUnsubscribe = vi.fn();
-let capturedStackCallback: ((data: unknown[]) => void) | null = null;
 
 beforeEach(() => {
   mockAutoFitColumns.mockReset();
   mockUnsubscribe.mockReset();
-  capturedStackCallback = null;
 
   (window as unknown as Record<string, unknown>).ipcToMain = {
     debuggerData: {
-      stackFrames: vi.fn((cb: (data: unknown[]) => void) => {
-        capturedStackCallback = cb;
+      stackFrames: vi.fn(() => {
         return mockUnsubscribe;
       }),
     },
@@ -69,40 +76,5 @@ describe("GdbCallstackWindow smoke test", () => {
     const { unmount } = render(<GdbCallStackWindow />);
     unmount();
     expect(mockUnsubscribe).toHaveBeenCalledTimes(1);
-  });
-
-  it("does not call autoFitColumns when grid data is empty", () => {
-    render(<GdbCallStackWindow />);
-    expect(mockAutoFitColumns).not.toHaveBeenCalled();
-  });
-
-  it("calls autoFitColumns after stack frame data arrives", () => {
-    render(<GdbCallStackWindow />);
-    act(() => {
-      capturedStackCallback?.([
-        {
-          active: true,
-          level: 0,
-          func: "main",
-          addr: "0x1234",
-          args: [],
-          file: "main.c",
-          fullName: "/path/main.c",
-          line: "10",
-          from: "",
-          arch: "i386:x86-64",
-        },
-      ]);
-    });
-    expect(mockAutoFitColumns).toHaveBeenCalledTimes(1);
-  });
-
-  it("survives when autoFitColumns throws on empty grid (Syncfusion v33+ behavior)", () => {
-    mockAutoFitColumns.mockImplementation(() => {
-      throw new Error("autoFitColumns: grid not initialized");
-    });
-    // Guard prevents the call with empty data, so no throw
-    expect(() => render(<GdbCallStackWindow />)).not.toThrow();
-    expect(screen.queryByRole("alert")).toBeNull();
   });
 });

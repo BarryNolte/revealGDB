@@ -2,6 +2,7 @@ import {
   Grid,
   ColumnMenu as GridColumnMenu,
   Edit as GridEdit,
+  Reorder as GridReorder,
   Resize as GridResize,
   RowDataBoundEventArgs,
 } from "@syncfusion/ej2-grids";
@@ -19,18 +20,20 @@ import {
   Edit,
   EditSettingsModel,
   Inject,
+  Reorder,
   Resize,
   TreeGridComponent,
 } from "@syncfusion/ej2-react-treegrid";
 import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
 import { menuCopy } from "../utilities/Clipboard";
+import { useGridColumnState } from "../utilities/useGridColumnState";
 import "./GdbLocalsWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
 // TreeGrid wraps an internal Grid instance, so inject matching Grid modules too.
-Grid.Inject(GridResize, GridColumnMenu, GridEdit);
+Grid.Inject(GridResize, GridReorder, GridColumnMenu, GridEdit);
 
 /**
  * Locals window component.
@@ -40,6 +43,7 @@ export default function GdbLocalsWindow(): JSX.Element {
   const menuId = useId();
   const treeRef = useRef<TreeGridComponent | null>(null);
   const [localData, setLocalData] = useState<GdbAny[]>([]);
+  useGridColumnState("locals", treeRef);
 
   /** Edit settings: enable cell editing in batch mode */
   const editSettings: EditSettingsModel = useMemo(
@@ -74,8 +78,6 @@ export default function GdbLocalsWindow(): JSX.Element {
   useEffect(() => {
     const unsubscribe = window.ipcToMain.debuggerData.locals((data: GdbAny) => {
       setLocalData(data ? data : []);
-
-      treeRef.current?.autoFitColumns(["name", "value"]);
     });
 
     return () => {
@@ -129,6 +131,7 @@ export default function GdbLocalsWindow(): JSX.Element {
         height="100%"
         rowHeight={16}
         allowResizing={true}
+        allowReordering={true}
         showColumnMenu={true}
         allowSelection={true}
         editSettings={editSettings}
@@ -164,7 +167,7 @@ export default function GdbLocalsWindow(): JSX.Element {
             visible={false}
           ></ColumnDirective>
         </ColumnsDirective>
-        <Inject services={[Resize, ColumnMenu, Edit]} />
+        <Inject services={[Resize, Reorder, ColumnMenu, Edit]} />
       </TreeGridComponent>
       <ContextMenuComponent
         id={`locals-menu-${menuId}`}

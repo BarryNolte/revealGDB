@@ -26,11 +26,21 @@ vi.mock("@syncfusion/ej2-react-grids", () => ({
   ColumnDirective: () => null,
   Inject: () => null,
   Resize: {},
+  Reorder: {},
   ColumnMenu: {},
   ContextMenu: {},
 }));
 
 vi.mock("../../../../src/renderer/icons/icons8-delete-48.png", () => ({ default: "delete.png" }));
+
+vi.mock("../../../../src/renderer/utilities/useGridColumnState", () => ({
+  useGridColumnState: () => ({
+    savedColumns: undefined,
+    loaded: true,
+    resetColumnDefaults: vi.fn(),
+  }),
+  applySavedColumnsToGrid: vi.fn(),
+}));
 
 const mockUnsubscribe = vi.fn();
 let capturedBreakpointCallback: ((data: Map<string, unknown>) => void) | null = null;

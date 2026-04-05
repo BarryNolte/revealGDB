@@ -9,6 +9,7 @@ import {
   IEditCell,
   Inject,
   QueryCellInfoEventArgs,
+  Reorder,
   Resize,
 } from "@syncfusion/ej2-react-grids";
 import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
@@ -17,6 +18,7 @@ import { gdbRegisters } from "../../main/mi-interface/gdb-state-database/gdbStat
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { GdbAny } from "../../common/gdb-common";
 import { menuCopy } from "../utilities/Clipboard";
+import { useGridColumnState } from "../utilities/useGridColumnState";
 import "./GdbRegistersWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
@@ -29,6 +31,7 @@ export default function GdbRegistersWindow(): JSX.Element {
   const menuId = useId();
   const gridRef = useRef<GridComponent | null>(null);
   const [registerData, setRegisterData] = useState<gdbRegisters[]>([]);
+  useGridColumnState("registers", gridRef);
 
   /** Edit settings: enable cell editing in batch mode */
   const editSettings: EditSettingsModel = useMemo(
@@ -99,22 +102,6 @@ export default function GdbRegistersWindow(): JSX.Element {
     };
   }, []);
 
-  /**
-   * Auto-fit columns after data updates.
-   * Runs after React has updated the grid with new register data.
-   */
-  useEffect(() => {
-    // const grid = gridRef.current;
-    // if (!grid) {
-    //   return;
-    // }
-
-    // Only auto-fit columns when there's data to fit
-    if (registerData.length > 0) {
-      gridRef?.current?.autoFitColumns(["name", "value"], 0);
-    }
-  }, [registerData]);
-
   const emptyMessageTemplate = useCallback((): JSX.Element => {
     return (
       <div className="emptyRecordTemplate">
@@ -148,6 +135,7 @@ export default function GdbRegistersWindow(): JSX.Element {
           className="flex-item"
           queryCellInfo={queryCellInfo}
           allowResizing={true}
+          allowReordering={true}
           allowPaging={false}
           allowSorting={false}
           showColumnMenu={true}
@@ -177,7 +165,7 @@ export default function GdbRegistersWindow(): JSX.Element {
               validationRules={validationRules}
             />
           </ColumnsDirective>
-          <Inject services={[Resize, ColumnMenu, Edit]} />
+          <Inject services={[Resize, Reorder, ColumnMenu, Edit]} />
         </GridComponent>
         <ContextMenuComponent
           id={`registers-menu-${menuId}`}
