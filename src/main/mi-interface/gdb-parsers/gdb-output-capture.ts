@@ -18,23 +18,23 @@ export class GdbOutputCapture {
 
   CaptureSymbolFiles(capArray: string[]): void {
     for (const line of capArray) {
-      const symMatch = line.match(/Symbols from \\"(?<path>[^\\"]*)/);
-      if (symMatch && symMatch.groups) {
-        this.gdbDB.addMainSymbolFile(symMatch.groups.path);
+      const symGroups = line.match(/Symbols from \\"(?<path>[^\\"]*)/)?.groups;
+      if (symGroups) {
+        this.gdbDB.addMainSymbolFile(symGroups.path);
       }
-      const inMatch =
+
+      const inGroups =
         /\\t(?<startaddr>[^\s]*) - (?<endaddr>[^\s]*) is (?<section>[^\s]*)( in (?<file>.*))?\\n"$/.exec(
           line,
-        );
+        )?.groups;
+      if (!inGroups) continue;
 
-      if (inMatch && inMatch.groups) {
-        this.gdbDB.addSection({
-          startAddr: inMatch.groups.startaddr,
-          endAddr: inMatch.groups.endaddr,
-          section: inMatch.groups.section,
-          file: inMatch.groups.file,
-        });
-      }
+      this.gdbDB.addSection({
+        startAddr: inGroups.startaddr,
+        endAddr: inGroups.endaddr,
+        section: inGroups.section,
+        file: inGroups.file,
+      });
     }
   }
 
@@ -53,7 +53,6 @@ export class GdbOutputCapture {
     const lineFuncRegex: RegExp = /"((?<lineno>[0-9]*):)?\\t(?<function>.*);/;
     const funcRegex: RegExp = /(?<func>\b([0-9a-zA-Z_]+))\(/;
 
-    // Implementation goes here
     capArray.forEach((line) => {
       if (fileTagRegex.test(line)) {
         currentState = state.file;
@@ -61,30 +60,23 @@ export class GdbOutputCapture {
       }
 
       switch (currentState) {
-        case state.file:
-          {
-            const fileMatch = fileRegex.exec(line);
-            if (fileMatch && fileMatch.groups) {
-              currentState = state.functions;
-              currentFile = fileMatch.groups.file;
-            }
-          }
+        case state.file: {
+          const fileGroups = fileRegex.exec(line)?.groups;
+          if (!fileGroups) break;
+          currentState = state.functions;
+          currentFile = fileGroups.file;
           break;
-        case state.functions:
-          {
-            const funcLineMatch = lineFuncRegex.exec(line);
-            if (funcLineMatch && funcLineMatch.groups) {
-              const funcMatch = funcRegex.exec(funcLineMatch.groups.function);
-              if (funcMatch && funcMatch.groups) {
-                this.gdbDB.addFunctionNames(
-                  currentFile,
-                  funcLineMatch.groups.lineno || "",
-                  funcMatch.groups.func,
-                );
-              }
-            }
-          }
+        }
+        case state.functions: {
+          const funcLineGroups = lineFuncRegex.exec(line)?.groups;
+          if (!funcLineGroups) break;
+
+          const funcGroups = funcRegex.exec(funcLineGroups.function)?.groups;
+          if (!funcGroups) break;
+
+          this.gdbDB.addFunctionNames(currentFile, funcLineGroups.lineno || "", funcGroups.func);
           break;
+        }
       }
     });
     mainWindow.webContents.send("data-disasm-functions", this.gdbDB.getAllFunctionNames());
@@ -117,11 +109,9 @@ export class GdbOutputCapture {
 
     switch (this.captureType) {
       case "file-info":
-        this.output.push(line);
-        break;
       case "function-names":
         this.output.push(line);
-        break;
+        return true;
       case "":
         return false;
     }

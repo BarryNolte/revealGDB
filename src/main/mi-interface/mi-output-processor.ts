@@ -50,16 +50,8 @@ export class MiOutputProcessor {
         // eslint-disable-next-line no-control-regex
         line = line.replaceAll(/\x1B\[[0-9;?]*[ -/]*[@-~]/g, "");
         console.log(`Processing line: ${line}`);
-        if (
-          ConnectionNotifier.getInstance().isWatchingConsole() &&
-          line.startsWith("=thread-group-added")
-        ) {
-          ConnectionNotifier.getInstance().endWatchingConsole();
-          ConnectionNotifier.getInstance().notifyGdbStartup("target-running", "completed");
-        }
 
-        if (ConnectionNotifier.getInstance().isWatchingConsole()) {
-          ConnectionNotifier.getInstance().consoleCapture(false, line);
+        if (this.handleConnectionNotifier(line)) {
           return;
         }
 
@@ -71,6 +63,27 @@ export class MiOutputProcessor {
         );
       }
     }, Promise.resolve());
+  }
+
+  /**
+   * Handles ConnectionNotifier console capture state.
+   * Returns true if the line was consumed by the notifier.
+   */
+  private handleConnectionNotifier(line: string): boolean {
+    const notifier = ConnectionNotifier.getInstance();
+
+    if (notifier.isWatchingConsole() && line.startsWith("=thread-group-added")) {
+      notifier.endWatchingConsole();
+      notifier.notifyGdbStartup("target-running", "completed");
+      return false;
+    }
+
+    if (notifier.isWatchingConsole()) {
+      notifier.consoleCapture(false, line);
+      return true;
+    }
+
+    return false;
   }
 
   async parseRawOutput(output: string): Promise<boolean> {

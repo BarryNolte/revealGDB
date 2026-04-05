@@ -1,5 +1,5 @@
 import { mainWindow } from "../main";
-import { gdbBreakpoint } from "./gdb-state-database/gdbStateDatabase";
+import { mapRegexGroupsToBreakpoint } from "./mappers/breakpoint-mapper";
 import { MiOutputHost, gdbShowSourceInfo } from "./mi-output-types";
 
 export class MiNotifyAsyncHandler {
@@ -41,29 +41,23 @@ export class MiNotifyAsyncHandler {
 
     switch (cmd) {
       case "thread-group-added": {
-        const idChunks = this.rgxThreadGroupId.exec(data);
-        const id = idChunks?.groups?.id;
+        const id = this.rgxThreadGroupId.exec(data)?.groups?.id;
         if (id) {
           this.host.gdbDB.addThreadGroup(id);
         }
-
         this.host.gdbDB.threadUpdateUI();
         break;
       }
       case "thread-group-started": {
-        const idChunks = this.rgxThreadGroupIdPid.exec(data);
-        const id = idChunks?.groups?.id;
+        const id = this.rgxThreadGroupIdPid.exec(data)?.groups?.id;
         if (id) {
           this.host.gdbDB.startThreadGroup(id);
         }
-
         this.host.gdbDB.threadUpdateUI();
         break;
       }
       case "thread-group-exited": {
-        const idChunks = this.rgxThreadGroupExited.exec(data);
-        const id = idChunks?.groups?.id;
-
+        const id = this.rgxThreadGroupExited.exec(data)?.groups?.id;
         if (id) {
           this.host.gdbDB.stopThreadGroup(id);
         }
@@ -75,19 +69,15 @@ export class MiNotifyAsyncHandler {
         break;
       }
       case "thread-created": {
-        const idChunks = this.rgxThreadCreated.exec(data);
-        const id = idChunks?.groups?.id;
-        const grpid = idChunks?.groups?.grpid;
-        if (id && grpid) {
-          this.host.gdbDB.createThread(id, grpid);
+        const groups = this.rgxThreadCreated.exec(data)?.groups;
+        if (groups?.id && groups?.grpid) {
+          this.host.gdbDB.createThread(groups.id, groups.grpid);
         }
-
         this.host.gdbDB.threadUpdateUI();
         break;
       }
       case "thread-exited": {
-        const idChunks = this.rgxThreadExited.exec(data);
-        const id = idChunks?.groups?.id;
+        const id = this.rgxThreadExited.exec(data)?.groups?.id;
         if (id) {
           this.host.gdbDB.deleteThread(id);
         }
@@ -95,8 +85,7 @@ export class MiNotifyAsyncHandler {
         break;
       }
       case "thread-selected": {
-        const idChunks = this.rgxThreadSelected.exec(data);
-        const level: number = parseInt(idChunks?.groups?.level || "0");
+        const level: number = parseInt(this.rgxThreadSelected.exec(data)?.groups?.level || "0");
 
         this.host.send("-data-list-register-values x");
 
@@ -113,37 +102,32 @@ export class MiNotifyAsyncHandler {
         break;
       }
       case "cmd-param-changed": {
-        const paramChunks = this.rgxParamValue.exec(data);
-        const cmdParam = paramChunks?.groups?.cmdParam;
-        const value = paramChunks?.groups?.value;
-        if (cmdParam && value) {
-          this.host.gdbDB.addParam(cmdParam, value);
+        const groups = this.rgxParamValue.exec(data)?.groups;
+        if (groups?.cmdParam && groups?.value) {
+          this.host.gdbDB.addParam(groups.cmdParam, groups.value);
         }
         break;
       }
       case "breakpoint-created": {
-        const idChunks = this.rgxBkpt.exec(data);
-        if (!idChunks || !idChunks.groups) {
-          // console.error(`Failed to parse breakpoint-created: ${data}`);
+        const groups = this.rgxBkpt.exec(data)?.groups;
+        if (!groups) {
           return false;
         }
-        this.host.gdbDB.createBreakpoint(idChunks.groups as gdbBreakpoint);
+        this.host.gdbDB.createBreakpoint(mapRegexGroupsToBreakpoint(groups));
         this.host.gdbDB.breakpointsUpdateUI();
         break;
       }
       case "breakpoint-modified": {
-        const idChunks = this.rgxBkpt.exec(data);
-        if (!idChunks || !idChunks.groups) {
-          // console.error(`Failed to parse breakpoint-modified: ${data}`);
+        const groups = this.rgxBkpt.exec(data)?.groups;
+        if (!groups) {
           return false;
         }
-        this.host.gdbDB.updateBreakpoint(idChunks.groups as gdbBreakpoint);
+        this.host.gdbDB.updateBreakpoint(mapRegexGroupsToBreakpoint(groups));
         this.host.gdbDB.breakpointsUpdateUI();
         break;
       }
       case "breakpoint-deleted": {
-        const idChunks = this.rgxBreakpointDeleted.exec(data);
-        const id = idChunks?.groups?.id;
+        const id = this.rgxBreakpointDeleted.exec(data)?.groups?.id;
         if (id) {
           this.host.gdbDB.deleteBreakpoint(id);
         }

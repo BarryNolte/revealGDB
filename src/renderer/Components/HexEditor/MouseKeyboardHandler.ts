@@ -315,25 +315,16 @@ export class MouseKeyboardHandler {
   handleMouseEvent(type: MouseEventType, id: string): void {
     switch (type) {
       case "Over":
-        // Hover: update highlighting
-        {
-          this.removeDynamicStyles();
-          this.addDynamicStyles(id);
-        }
+        this.removeDynamicStyles();
+        this.addDynamicStyles(id);
         break;
       case "Leave":
-        // Mouse left: clear highlighting
-        {
-          this.removeDynamicStyles();
-        }
+        this.removeDynamicStyles();
         break;
       case "Click":
-        // Click: enter edit mode
-        {
-          this.restoreEditableElement();
-          this.savedElementForEdit = document.getElementById(id);
-          this.setupElementForEdit(id);
-        }
+        this.restoreEditableElement();
+        this.savedElementForEdit = document.getElementById(id);
+        this.setupElementForEdit(id);
         break;
     }
   }

@@ -74,31 +74,34 @@ export function applySourceUpdate(
   prevState: SourceWindowState,
   data: gdbShowSourceInfo,
 ): SourceWindowState {
-  const nextState: SourceWindowState = {
-    ...prevState,
+  const fullpath = data.fileName || prevState.fullpath;
+  const filename = data.fileName ? getBaseFilename(data.fileName) : prevState.filename;
+  const line = data.line || prevState.line;
+  const source = data.contents ?? prevState.source;
+  const hasSource = !!data.contents;
+
+  if (hasSource) {
+    const markerData = createMarkerForLine(line);
+    return {
+      source,
+      fullpath,
+      filename,
+      line,
+      hasSource: true,
+      currentMarker: markerData.currentMarker,
+      stackMarkers: markerData.markers,
+    };
+  }
+
+  return {
+    source,
+    fullpath,
+    filename,
+    line,
+    hasSource: false,
+    currentMarker: prevState.currentMarker,
+    stackMarkers: prevState.stackMarkers,
   };
-
-  if (data.contents) {
-    nextState.source = data.contents;
-  }
-  if (data.fileName) {
-    nextState.fullpath = data.fileName;
-    nextState.filename = getBaseFilename(data.fileName);
-  }
-  if (data.line) {
-    nextState.line = data.line;
-  }
-
-  if (data.contents) {
-    const markerData = createMarkerForLine(nextState.line);
-    nextState.currentMarker = markerData.currentMarker;
-    nextState.stackMarkers = markerData.markers;
-    nextState.hasSource = true;
-  } else {
-    nextState.hasSource = false;
-  }
-
-  return nextState;
 }
 
 export function mapBreakpointsToMarkers(

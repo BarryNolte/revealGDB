@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-18T03:16:59.088Z",
+  "generatedAt": "2026-04-05T03:29:48.288Z",
   "root": "C:\\Users\\barry\\Documents\\Projects\\revealGDB",
   "excludedRules": [
     "*.test.ts|*.test.tsx",
@@ -14,47 +14,56 @@
   "buckets": [
     {
       "name": "main",
-      "fileCount": 53,
-      "averageMI": 46.4220754716981,
-      "medianMI": 47.22,
-      "countPoor": 32,
-      "countModerate": 20,
-      "countGood": 1,
+      "fileCount": 59,
+      "averageMI": 46.1728813559322,
+      "medianMI": 47.62,
+      "countPoor": 33,
+      "countModerate": 26,
+      "countGood": 0,
       "files": [
         {
+          "file": "src/main/mi-interface/mi-notify-handler.ts",
+          "sloc": 226,
+          "totalLines": 242,
+          "cyclomatic": 63,
+          "halsteadVolume": 6434.42,
+          "mi": 13.51,
+          "rating": "Poor"
+        },
+        {
           "file": "src/main/mi-interface/gdb-parsers/gdb-locals.ts",
-          "sloc": 233,
-          "totalLines": 397,
-          "cyclomatic": 37,
-          "halsteadVolume": 5031.77,
-          "mi": 17.46,
+          "sloc": 255,
+          "totalLines": 432,
+          "cyclomatic": 43,
+          "halsteadVolume": 5584.8,
+          "mi": 15.48,
           "rating": "Poor"
         },
         {
           "file": "src/main/mi-interface/gdb-state-database/gdbStateDatabase.ts",
-          "sloc": 263,
-          "totalLines": 314,
+          "sloc": 266,
+          "totalLines": 318,
           "cyclomatic": 4,
-          "halsteadVolume": 4738.48,
-          "mi": 20.94,
+          "halsteadVolume": 4847.58,
+          "mi": 20.76,
           "rating": "Poor"
         },
         {
           "file": "src/main/ipc/commands.ts",
-          "sloc": 149,
-          "totalLines": 168,
-          "cyclomatic": 22,
-          "halsteadVolume": 3565.95,
-          "mi": 24.76,
+          "sloc": 170,
+          "totalLines": 188,
+          "cyclomatic": 25,
+          "halsteadVolume": 3902.58,
+          "mi": 22.84,
           "rating": "Poor"
         },
         {
-          "file": "src/main/mi-interface/mi-notify-handler.ts",
-          "sloc": 132,
-          "totalLines": 146,
-          "cyclomatic": 29,
-          "halsteadVolume": 2940.47,
-          "mi": 25.56,
+          "file": "src/main/mi-interface/mi-output-processor.ts",
+          "sloc": 152,
+          "totalLines": 181,
+          "cyclomatic": 23,
+          "halsteadVolume": 2868.51,
+          "mi": 25.1,
           "rating": "Poor"
         },
         {
@@ -67,12 +76,12 @@
           "rating": "Poor"
         },
         {
-          "file": "src/main/mi-interface/mi-output-processor.ts",
-          "sloc": 136,
-          "totalLines": 161,
-          "cyclomatic": 20,
-          "halsteadVolume": 2355.82,
-          "mi": 27.16,
+          "file": "src/main/mi-interface/mi-result-handler.ts",
+          "sloc": 128,
+          "totalLines": 143,
+          "cyclomatic": 23,
+          "halsteadVolume": 2237.16,
+          "mi": 27.49,
           "rating": "Poor"
         },
         {
@@ -85,66 +94,39 @@
           "rating": "Poor"
         },
         {
-          "file": "src/main/mi-interface/mi-result-handler.ts",
-          "sloc": 108,
-          "totalLines": 118,
-          "cyclomatic": 18,
-          "halsteadVolume": 1885.31,
-          "mi": 30.29,
-          "rating": "Poor"
-        },
-        {
           "file": "src/main/mi-interface/mi-exec-handler.ts",
-          "sloc": 76,
-          "totalLines": 87,
-          "cyclomatic": 31,
-          "halsteadVolume": 1337.77,
-          "mi": 32.91,
-          "rating": "Poor"
-        },
-        {
-          "file": "src/main/mi-interface/mi-interface.ts",
-          "sloc": 92,
-          "totalLines": 118,
-          "cyclomatic": 4,
-          "halsteadVolume": 1741.06,
-          "mi": 33.93,
-          "rating": "Poor"
-        },
-        {
-          "file": "src/main/mi-interface/gdb-connector/gdb-connector-idf-on-wsl.ts",
-          "sloc": 79,
-          "totalLines": 106,
-          "cyclomatic": 9,
-          "halsteadVolume": 1895.75,
-          "mi": 34.44,
+          "sloc": 93,
+          "totalLines": 108,
+          "cyclomatic": 35,
+          "halsteadVolume": 1655.41,
+          "mi": 29.81,
           "rating": "Poor"
         },
         {
           "file": "src/main/main.ts",
-          "sloc": 81,
-          "totalLines": 112,
-          "cyclomatic": 9,
-          "halsteadVolume": 1511.38,
-          "mi": 34.9,
+          "sloc": 99,
+          "totalLines": 136,
+          "cyclomatic": 11,
+          "halsteadVolume": 1944.34,
+          "mi": 31.96,
           "rating": "Poor"
         },
         {
-          "file": "src/main/window-manager.ts",
-          "sloc": 78,
-          "totalLines": 94,
-          "cyclomatic": 10,
-          "halsteadVolume": 1253.36,
-          "mi": 35.69,
+          "file": "src/main/mi-interface/mi-interface.ts",
+          "sloc": 98,
+          "totalLines": 124,
+          "cyclomatic": 4,
+          "halsteadVolume": 1859.62,
+          "mi": 33.13,
           "rating": "Poor"
         },
         {
           "file": "src/main/mi-interface/gdb-state-database/types/gdbStateTypes.ts",
-          "sloc": 109,
-          "totalLines": 126,
+          "sloc": 110,
+          "totalLines": 127,
           "cyclomatic": 1,
-          "halsteadVolume": 614.83,
-          "mi": 35.89,
+          "halsteadVolume": 620.92,
+          "mi": 35.78,
           "rating": "Poor"
         },
         {
@@ -166,12 +148,21 @@
           "rating": "Poor"
         },
         {
-          "file": "src/main/mi-interface/gdb-state-database/stores/ThreadStore.ts",
-          "sloc": 65,
-          "totalLines": 74,
-          "cyclomatic": 4,
-          "halsteadVolume": 1238.67,
-          "mi": 38.26,
+          "file": "src/main/window-manager.ts",
+          "sloc": 74,
+          "totalLines": 89,
+          "cyclomatic": 9,
+          "halsteadVolume": 1194.64,
+          "mi": 36.47,
+          "rating": "Poor"
+        },
+        {
+          "file": "src/main/mi-interface/gdb-connector/gdb-connector-general.ts",
+          "sloc": 67,
+          "totalLines": 88,
+          "cyclomatic": 5,
+          "halsteadVolume": 1606.57,
+          "mi": 37.05,
           "rating": "Poor"
         },
         {
@@ -184,12 +175,39 @@
           "rating": "Poor"
         },
         {
+          "file": "src/main/ipc/queries.ts",
+          "sloc": 51,
+          "totalLines": 57,
+          "cyclomatic": 4,
+          "halsteadVolume": 1066.42,
+          "mi": 41.01,
+          "rating": "Poor"
+        },
+        {
           "file": "src/main/gdb-lifecycle.ts",
           "sloc": 46,
           "totalLines": 55,
           "cyclomatic": 2,
-          "halsteadVolume": 927.96,
-          "mi": 42.68,
+          "halsteadVolume": 966.57,
+          "mi": 42.56,
+          "rating": "Poor"
+        },
+        {
+          "file": "src/main/mi-interface/gdb-state-database/stores/ThreadStore.ts",
+          "sloc": 47,
+          "totalLines": 56,
+          "cyclomatic": 4,
+          "halsteadVolume": 751.61,
+          "mi": 42.85,
+          "rating": "Poor"
+        },
+        {
+          "file": "src/main/mi-interface/mappers/thread-mapper.ts",
+          "sloc": 47,
+          "totalLines": 58,
+          "cyclomatic": 6,
+          "halsteadVolume": 642.8,
+          "mi": 43.06,
           "rating": "Poor"
         },
         {
@@ -202,12 +220,30 @@
           "rating": "Poor"
         },
         {
+          "file": "src/main/mi-interface/gdb-state-database/gdbSourceFileCache.ts",
+          "sloc": 42,
+          "totalLines": 56,
+          "cyclomatic": 6,
+          "halsteadVolume": 686.95,
+          "mi": 43.92,
+          "rating": "Poor"
+        },
+        {
           "file": "src/main/mi-interface/mi-result-strategies/threads-result-strategy.ts",
-          "sloc": 36,
-          "totalLines": 42,
+          "sloc": 37,
+          "totalLines": 43,
           "cyclomatic": 9,
-          "halsteadVolume": 872.84,
-          "mi": 44.25,
+          "halsteadVolume": 884.56,
+          "mi": 43.95,
+          "rating": "Poor"
+        },
+        {
+          "file": "src/main/mi-interface/mi-status-handler.ts",
+          "sloc": 38,
+          "totalLines": 47,
+          "cyclomatic": 9,
+          "halsteadVolume": 713.7,
+          "mi": 44.35,
           "rating": "Poor"
         },
         {
@@ -220,12 +256,12 @@
           "rating": "Poor"
         },
         {
-          "file": "src/main/mi-interface/gdb-state-database/gdbSourceFileCache.ts",
-          "sloc": 38,
-          "totalLines": 51,
-          "cyclomatic": 6,
-          "halsteadVolume": 629.69,
-          "mi": 45.13,
+          "file": "src/main/mi-interface/mi-result-strategies/stack-result-strategy.ts",
+          "sloc": 36,
+          "totalLines": 44,
+          "cyclomatic": 3,
+          "halsteadVolume": 718.26,
+          "mi": 45.65,
           "rating": "Poor"
         },
         {
@@ -247,24 +283,6 @@
           "rating": "Poor"
         },
         {
-          "file": "src/main/ipc/queries.ts",
-          "sloc": 32,
-          "totalLines": 38,
-          "cyclomatic": 2,
-          "halsteadVolume": 677.26,
-          "mi": 47.08,
-          "rating": "Poor"
-        },
-        {
-          "file": "src/main/mi-interface/mi-result-strategies/stack-result-strategy.ts",
-          "sloc": 32,
-          "totalLines": 39,
-          "cyclomatic": 2,
-          "halsteadVolume": 646.66,
-          "mi": 47.22,
-          "rating": "Poor"
-        },
-        {
           "file": "src/main/mi-interface/gdb-state-database/notifiers/ElectronUINotifier.ts",
           "sloc": 34,
           "totalLines": 41,
@@ -274,21 +292,12 @@
           "rating": "Poor"
         },
         {
-          "file": "src/main/mi-interface/mi-result-strategies/memory-result-strategy.ts",
-          "sloc": 29,
-          "totalLines": 35,
-          "cyclomatic": 3,
-          "halsteadVolume": 618.29,
-          "mi": 48.15,
-          "rating": "Poor"
-        },
-        {
           "file": "src/main/app-events.ts",
-          "sloc": 30,
-          "totalLines": 34,
+          "sloc": 32,
+          "totalLines": 36,
           "cyclomatic": 6,
-          "halsteadVolume": 423.73,
-          "mi": 48.58,
+          "halsteadVolume": 466.76,
+          "mi": 47.67,
           "rating": "Poor"
         },
         {
@@ -319,21 +328,12 @@
           "rating": "Moderate"
         },
         {
-          "file": "src/main/mi-interface/gdb-connector/gdb-connector.ts",
-          "sloc": 32,
-          "totalLines": 43,
-          "cyclomatic": 1,
-          "halsteadVolume": 233.18,
-          "mi": 50.45,
-          "rating": "Moderate"
-        },
-        {
-          "file": "src/main/mi-interface/gdb-state-database/stores/RegisterStore.ts",
-          "sloc": 26,
-          "totalLines": 32,
-          "cyclomatic": 4,
-          "halsteadVolume": 389.72,
-          "mi": 50.46,
+          "file": "src/main/mi-interface/mappers/memory-mapper.ts",
+          "sloc": 25,
+          "totalLines": 35,
+          "cyclomatic": 6,
+          "halsteadVolume": 408.6,
+          "mi": 50.41,
           "rating": "Moderate"
         },
         {
@@ -343,6 +343,15 @@
           "cyclomatic": 1,
           "halsteadVolume": 370.93,
           "mi": 51.38,
+          "rating": "Moderate"
+        },
+        {
+          "file": "src/main/mi-interface/mappers/breakpoint-mapper.ts",
+          "sloc": 20,
+          "totalLines": 26,
+          "cyclomatic": 15,
+          "halsteadVolume": 392.43,
+          "mi": 51.44,
           "rating": "Moderate"
         },
         {
@@ -364,6 +373,24 @@
           "rating": "Moderate"
         },
         {
+          "file": "src/main/mi-interface/gdb-connector/gdb-connector.ts",
+          "sloc": 28,
+          "totalLines": 38,
+          "cyclomatic": 1,
+          "halsteadVolume": 185.75,
+          "mi": 52.41,
+          "rating": "Moderate"
+        },
+        {
+          "file": "src/main/mi-interface/gdb-state-database/stores/RegisterStore.ts",
+          "sloc": 22,
+          "totalLines": 28,
+          "cyclomatic": 2,
+          "halsteadVolume": 330.12,
+          "mi": 52.81,
+          "rating": "Moderate"
+        },
+        {
           "file": "src/main/mi-interface/gdb-state-database/stores/StackFrameStore.ts",
           "sloc": 21,
           "totalLines": 27,
@@ -382,12 +409,30 @@
           "rating": "Moderate"
         },
         {
+          "file": "src/main/mappers/window-pos-mapper.ts",
+          "sloc": 20,
+          "totalLines": 26,
+          "cyclomatic": 1,
+          "halsteadVolume": 179.85,
+          "mi": 55.7,
+          "rating": "Moderate"
+        },
+        {
           "file": "src/main/mi-interface/mi-result-strategies/asm-result-strategy.ts",
           "sloc": 18,
           "totalLines": 23,
           "cyclomatic": 1,
           "halsteadVolume": 242.76,
           "mi": 55.78,
+          "rating": "Moderate"
+        },
+        {
+          "file": "src/main/mi-interface/mi-result-strategies/memory-result-strategy.ts",
+          "sloc": 16,
+          "totalLines": 20,
+          "cyclomatic": 1,
+          "halsteadVolume": 230.62,
+          "mi": 57.05,
           "rating": "Moderate"
         },
         {
@@ -436,12 +481,30 @@
           "rating": "Moderate"
         },
         {
+          "file": "src/main/theme-support.ts",
+          "sloc": 14,
+          "totalLines": 20,
+          "cyclomatic": 3,
+          "halsteadVolume": 78.87,
+          "mi": 61.31,
+          "rating": "Moderate"
+        },
+        {
           "file": "src/main/mi-interface/gdb-state-database/stores/SourceFileStore.ts",
           "sloc": 13,
           "totalLines": 18,
           "cyclomatic": 1,
           "halsteadVolume": 100.32,
           "mi": 61.55,
+          "rating": "Moderate"
+        },
+        {
+          "file": "src/main/mi-interface/mappers/register-mapper.ts",
+          "sloc": 12,
+          "totalLines": 18,
+          "cyclomatic": 3,
+          "halsteadVolume": 96.21,
+          "mi": 62.17,
           "rating": "Moderate"
         },
         {
@@ -488,25 +551,16 @@
           "halsteadVolume": 36.54,
           "mi": 73.68,
           "rating": "Moderate"
-        },
-        {
-          "file": "src/main/ipc-registration.ts",
-          "sloc": 2,
-          "totalLines": 3,
-          "cyclomatic": 1,
-          "halsteadVolume": 6.34,
-          "mi": 87.68,
-          "rating": "Good"
         }
       ]
     },
     {
       "name": "renderer",
-      "fileCount": 43,
-      "averageMI": 34.04790697674419,
-      "medianMI": 33.67,
-      "countPoor": 39,
-      "countModerate": 4,
+      "fileCount": 50,
+      "averageMI": 35.348600000000005,
+      "medianMI": 34.065,
+      "countPoor": 44,
+      "countModerate": 6,
       "countGood": 0,
       "files": [
         {
@@ -514,17 +568,26 @@
           "sloc": 458,
           "totalLines": 541,
           "cyclomatic": 64,
-          "halsteadVolume": 10334.15,
-          "mi": 5.24,
+          "halsteadVolume": 10452.85,
+          "mi": 5.21,
+          "rating": "Poor"
+        },
+        {
+          "file": "src/renderer/App.tsx",
+          "sloc": 397,
+          "totalLines": 520,
+          "cyclomatic": 16,
+          "halsteadVolume": 8218.51,
+          "mi": 13.75,
           "rating": "Poor"
         },
         {
           "file": "src/renderer/ToolWindows/GdbDisassemblerWindow.tsx",
-          "sloc": 268,
-          "totalLines": 323,
+          "sloc": 283,
+          "totalLines": 339,
           "cyclomatic": 16,
-          "halsteadVolume": 5031.44,
-          "mi": 18.96,
+          "halsteadVolume": 5358.63,
+          "mi": 18.25,
           "rating": "Poor"
         },
         {
@@ -546,48 +609,30 @@
           "rating": "Poor"
         },
         {
+          "file": "src/renderer/Dialogs/Settings.tsx",
+          "sloc": 249,
+          "totalLines": 330,
+          "cyclomatic": 13,
+          "halsteadVolume": 4469.91,
+          "mi": 20.42,
+          "rating": "Poor"
+        },
+        {
           "file": "src/renderer/ToolWindows/useGdbCommandController.ts",
           "sloc": 193,
           "totalLines": 225,
           "cyclomatic": 30,
-          "halsteadVolume": 4310.92,
-          "mi": 20.66,
-          "rating": "Poor"
-        },
-        {
-          "file": "src/renderer/Dialogs/Settings.tsx",
-          "sloc": 234,
-          "totalLines": 315,
-          "cyclomatic": 13,
-          "halsteadVolume": 3933.89,
-          "mi": 21.4,
-          "rating": "Poor"
-        },
-        {
-          "file": "src/renderer/App.tsx",
-          "sloc": 235,
-          "totalLines": 335,
-          "cyclomatic": 6,
-          "halsteadVolume": 5104.52,
-          "mi": 21.51,
+          "halsteadVolume": 4508,
+          "mi": 20.52,
           "rating": "Poor"
         },
         {
           "file": "src/renderer/Dialogs/useConnectionDialogController.ts",
-          "sloc": 189,
-          "totalLines": 222,
-          "cyclomatic": 21,
-          "halsteadVolume": 3708.38,
-          "mi": 22.53,
-          "rating": "Poor"
-        },
-        {
-          "file": "src/renderer/ToolWindows/GdbBreakpointsWindow.tsx",
-          "sloc": 207,
-          "totalLines": 237,
-          "cyclomatic": 8,
-          "halsteadVolume": 3667.78,
-          "mi": 23.45,
+          "sloc": 206,
+          "totalLines": 239,
+          "cyclomatic": 25,
+          "halsteadVolume": 4339.9,
+          "mi": 20.69,
           "rating": "Poor"
         },
         {
@@ -595,8 +640,8 @@
           "sloc": 202,
           "totalLines": 311,
           "cyclomatic": 6,
-          "halsteadVolume": 2832.11,
-          "mi": 24.73,
+          "halsteadVolume": 3062.87,
+          "mi": 24.49,
           "rating": "Poor"
         },
         {
@@ -609,57 +654,75 @@
           "rating": "Poor"
         },
         {
-          "file": "src/renderer/ToolWindows/GdbMemoryWindow.tsx",
-          "sloc": 129,
-          "totalLines": 165,
-          "cyclomatic": 16,
-          "halsteadVolume": 2619.87,
-          "mi": 27.87,
+          "file": "src/renderer/utilities/useGridColumnState.ts",
+          "sloc": 132,
+          "totalLines": 209,
+          "cyclomatic": 24,
+          "halsteadVolume": 3451,
+          "mi": 25.74,
           "rating": "Poor"
         },
         {
-          "file": "src/renderer/ToolWindows/GdbThreadsWindow.tsx",
-          "sloc": 162,
-          "totalLines": 197,
-          "cyclomatic": 2,
-          "halsteadVolume": 2162.89,
-          "mi": 28.18,
-          "rating": "Poor"
-        },
-        {
-          "file": "src/renderer/Dialogs/ConnectionDialogView.tsx",
-          "sloc": 159,
-          "totalLines": 171,
-          "cyclomatic": 5,
-          "halsteadVolume": 1970.15,
-          "mi": 28.24,
-          "rating": "Poor"
-        },
-        {
-          "file": "src/renderer/ToolWindows/GdbCallstackWindow.tsx",
-          "sloc": 157,
-          "totalLines": 205,
-          "cyclomatic": 2,
-          "halsteadVolume": 2219.07,
-          "mi": 28.4,
-          "rating": "Poor"
-        },
-        {
-          "file": "src/renderer/ToolWindows/GdbRegistersWindow.tsx",
-          "sloc": 145,
-          "totalLines": 189,
-          "cyclomatic": 5,
-          "halsteadVolume": 2172,
-          "mi": 28.81,
+          "file": "src/renderer/ToolWindows/GdbBreakpointsWindow.tsx",
+          "sloc": 174,
+          "totalLines": 194,
+          "cyclomatic": 3,
+          "halsteadVolume": 2974.56,
+          "mi": 26.4,
           "rating": "Poor"
         },
         {
           "file": "src/renderer/ToolWindows/GdbLocalsWindow.tsx",
-          "sloc": 134,
-          "totalLines": 151,
+          "sloc": 164,
+          "totalLines": 185,
+          "cyclomatic": 7,
+          "halsteadVolume": 2613.93,
+          "mi": 26.82,
+          "rating": "Poor"
+        },
+        {
+          "file": "src/renderer/ToolWindows/GdbMemoryWindow.tsx",
+          "sloc": 136,
+          "totalLines": 174,
+          "cyclomatic": 15,
+          "halsteadVolume": 2729.75,
+          "mi": 27.38,
+          "rating": "Poor"
+        },
+        {
+          "file": "src/renderer/Dialogs/ConnectionDialogView.tsx",
+          "sloc": 161,
+          "totalLines": 173,
           "cyclomatic": 5,
-          "halsteadVolume": 1822,
-          "mi": 30.1,
+          "halsteadVolume": 2015.42,
+          "mi": 28.05,
+          "rating": "Poor"
+        },
+        {
+          "file": "src/renderer/ToolWindows/GdbRegistersWindow.tsx",
+          "sloc": 144,
+          "totalLines": 169,
+          "cyclomatic": 4,
+          "halsteadVolume": 2129.47,
+          "mi": 29.07,
+          "rating": "Poor"
+        },
+        {
+          "file": "src/renderer/mappers/grid-data-mappers.ts",
+          "sloc": 131,
+          "totalLines": 157,
+          "cyclomatic": 8,
+          "halsteadVolume": 2136.14,
+          "mi": 29.42,
+          "rating": "Poor"
+        },
+        {
+          "file": "src/renderer/ToolWindows/GdbThreadsWindow.tsx",
+          "sloc": 146,
+          "totalLines": 166,
+          "cyclomatic": 2,
+          "halsteadVolume": 1806.44,
+          "mi": 29.71,
           "rating": "Poor"
         },
         {
@@ -672,30 +735,39 @@
           "rating": "Poor"
         },
         {
+          "file": "src/renderer/ToolWindows/GdbSourceWindowModel.ts",
+          "sloc": 104,
+          "totalLines": 118,
+          "cyclomatic": 11,
+          "halsteadVolume": 1533.64,
+          "mi": 32.21,
+          "rating": "Poor"
+        },
+        {
+          "file": "src/renderer/ToolWindows/GdbCallstackWindow.tsx",
+          "sloc": 111,
+          "totalLines": 137,
+          "cyclomatic": 1,
+          "halsteadVolume": 1765.25,
+          "mi": 32.51,
+          "rating": "Poor"
+        },
+        {
+          "file": "src/renderer/ToolWindows/useSourceBreakpointInteractions.ts",
+          "sloc": 94,
+          "totalLines": 112,
+          "cyclomatic": 9,
+          "halsteadVolume": 2081.62,
+          "mi": 32.51,
+          "rating": "Poor"
+        },
+        {
           "file": "src/renderer/utilities/DockMenuConnector.ts",
           "sloc": 94,
           "totalLines": 175,
           "cyclomatic": 10,
           "halsteadVolume": 1923.33,
           "mi": 32.62,
-          "rating": "Poor"
-        },
-        {
-          "file": "src/renderer/ToolWindows/GdbSourceWindowModel.ts",
-          "sloc": 100,
-          "totalLines": 115,
-          "cyclomatic": 10,
-          "halsteadVolume": 1538.12,
-          "mi": 32.71,
-          "rating": "Poor"
-        },
-        {
-          "file": "src/renderer/ToolWindows/useSourceBreakpointInteractions.ts",
-          "sloc": 90,
-          "totalLines": 107,
-          "cyclomatic": 9,
-          "halsteadVolume": 2024.1,
-          "mi": 33.01,
           "rating": "Poor"
         },
         {
@@ -709,11 +781,11 @@
         },
         {
           "file": "src/renderer/ToolWindows/GdbSourceWindowView.tsx",
-          "sloc": 108,
-          "totalLines": 112,
+          "sloc": 109,
+          "totalLines": 113,
           "cyclomatic": 1,
           "halsteadVolume": 1207.93,
-          "mi": 33.93,
+          "mi": 33.84,
           "rating": "Poor"
         },
         {
@@ -727,11 +799,11 @@
         },
         {
           "file": "src/renderer/ToolWindows/GdbCommandWindow.tsx",
-          "sloc": 92,
-          "totalLines": 115,
+          "sloc": 96,
+          "totalLines": 119,
           "cyclomatic": 1,
-          "halsteadVolume": 1065.09,
-          "mi": 35.83,
+          "halsteadVolume": 1143.88,
+          "mi": 35.21,
           "rating": "Poor"
         },
         {
@@ -773,10 +845,10 @@
         {
           "file": "src/renderer/ToolWindows/useSourceEditorSettings.ts",
           "sloc": 55,
-          "totalLines": 64,
+          "totalLines": 65,
           "cyclomatic": 9,
-          "halsteadVolume": 1043.18,
-          "mi": 39.69,
+          "halsteadVolume": 1076.16,
+          "mi": 39.6,
           "rating": "Poor"
         },
         {
@@ -825,6 +897,24 @@
           "rating": "Poor"
         },
         {
+          "file": "src/renderer/theme-manager.ts",
+          "sloc": 42,
+          "totalLines": 98,
+          "cyclomatic": 13,
+          "halsteadVolume": 696.22,
+          "mi": 42.94,
+          "rating": "Poor"
+        },
+        {
+          "file": "src/renderer/Errors/ToolWindowErrorBoundary.tsx",
+          "sloc": 52,
+          "totalLines": 61,
+          "cyclomatic": 3,
+          "halsteadVolume": 545.94,
+          "mi": 43,
+          "rating": "Poor"
+        },
+        {
           "file": "src/renderer/utilities/CommandHistory.ts",
           "sloc": 47,
           "totalLines": 112,
@@ -834,21 +924,30 @@
           "rating": "Poor"
         },
         {
+          "file": "src/renderer/Errors/ToolWindowsHostErrorBoundary.tsx",
+          "sloc": 49,
+          "totalLines": 58,
+          "cyclomatic": 3,
+          "halsteadVolume": 477.51,
+          "mi": 43.97,
+          "rating": "Poor"
+        },
+        {
+          "file": "src/renderer/ToolWindows/GdbSourceWindow.tsx",
+          "sloc": 44,
+          "totalLines": 66,
+          "cyclomatic": 1,
+          "halsteadVolume": 440.83,
+          "mi": 45.5,
+          "rating": "Poor"
+        },
+        {
           "file": "src/renderer/utilities/valueValidation.ts",
           "sloc": 36,
           "totalLines": 87,
           "cyclomatic": 6,
           "halsteadVolume": 569.8,
           "mi": 45.95,
-          "rating": "Poor"
-        },
-        {
-          "file": "src/renderer/ToolWindows/GdbSourceWindow.tsx",
-          "sloc": 40,
-          "totalLines": 61,
-          "cyclomatic": 1,
-          "halsteadVolume": 373.29,
-          "mi": 46.91,
           "rating": "Poor"
         },
         {
@@ -881,19 +980,37 @@
         {
           "file": "src/renderer/ToolWindows/useSourceIpcSubscriptions.ts",
           "sloc": 18,
-          "totalLines": 23,
+          "totalLines": 24,
           "cyclomatic": 1,
-          "halsteadVolume": 193.26,
-          "mi": 56.48,
+          "halsteadVolume": 214.05,
+          "mi": 56.16,
           "rating": "Moderate"
         },
         {
           "file": "src/renderer/main.tsx",
-          "sloc": 15,
-          "totalLines": 42,
+          "sloc": 16,
+          "totalLines": 43,
           "cyclomatic": 1,
-          "halsteadVolume": 223.48,
-          "mi": 57.76,
+          "halsteadVolume": 274.79,
+          "mi": 56.52,
+          "rating": "Moderate"
+        },
+        {
+          "file": "src/renderer/ToolWindows/toolWindowTitles.ts",
+          "sloc": 11,
+          "totalLines": 12,
+          "cyclomatic": 1,
+          "halsteadVolume": 86.44,
+          "mi": 63.59,
+          "rating": "Moderate"
+        },
+        {
+          "file": "src/renderer/ToolWindows/ToolWindowContent.tsx",
+          "sloc": 9,
+          "totalLines": 12,
+          "cyclomatic": 1,
+          "halsteadVolume": 66.44,
+          "mi": 66.29,
           "rating": "Moderate"
         }
       ]
@@ -901,19 +1018,19 @@
     {
       "name": "preload",
       "fileCount": 1,
-      "averageMI": 30.21,
-      "medianMI": 30.21,
+      "averageMI": 31.6,
+      "medianMI": 31.6,
       "countPoor": 1,
       "countModerate": 0,
       "countGood": 0,
       "files": [
         {
           "file": "src/preload/preload.ts",
-          "sloc": 118,
-          "totalLines": 249,
+          "sloc": 101,
+          "totalLines": 120,
           "cyclomatic": 1,
-          "halsteadVolume": 3116.41,
-          "mi": 30.21,
+          "halsteadVolume": 3199.27,
+          "mi": 31.6,
           "rating": "Poor"
         }
       ]
@@ -925,28 +1042,48 @@
       "sloc": 458,
       "totalLines": 541,
       "cyclomatic": 64,
-      "halsteadVolume": 10334.15,
-      "mi": 5.24,
+      "halsteadVolume": 10452.85,
+      "mi": 5.21,
+      "rating": "Poor",
+      "bucket": "renderer"
+    },
+    {
+      "file": "src/main/mi-interface/mi-notify-handler.ts",
+      "sloc": 226,
+      "totalLines": 242,
+      "cyclomatic": 63,
+      "halsteadVolume": 6434.42,
+      "mi": 13.51,
+      "rating": "Poor",
+      "bucket": "main"
+    },
+    {
+      "file": "src/renderer/App.tsx",
+      "sloc": 397,
+      "totalLines": 520,
+      "cyclomatic": 16,
+      "halsteadVolume": 8218.51,
+      "mi": 13.75,
       "rating": "Poor",
       "bucket": "renderer"
     },
     {
       "file": "src/main/mi-interface/gdb-parsers/gdb-locals.ts",
-      "sloc": 233,
-      "totalLines": 397,
-      "cyclomatic": 37,
-      "halsteadVolume": 5031.77,
-      "mi": 17.46,
+      "sloc": 255,
+      "totalLines": 432,
+      "cyclomatic": 43,
+      "halsteadVolume": 5584.8,
+      "mi": 15.48,
       "rating": "Poor",
       "bucket": "main"
     },
     {
       "file": "src/renderer/ToolWindows/GdbDisassemblerWindow.tsx",
-      "sloc": 268,
-      "totalLines": 323,
+      "sloc": 283,
+      "totalLines": 339,
       "cyclomatic": 16,
-      "halsteadVolume": 5031.44,
-      "mi": 18.96,
+      "halsteadVolume": 5358.63,
+      "mi": 18.25,
       "rating": "Poor",
       "bucket": "renderer"
     },
@@ -971,52 +1108,32 @@
       "bucket": "renderer"
     },
     {
+      "file": "src/renderer/Dialogs/Settings.tsx",
+      "sloc": 249,
+      "totalLines": 330,
+      "cyclomatic": 13,
+      "halsteadVolume": 4469.91,
+      "mi": 20.42,
+      "rating": "Poor",
+      "bucket": "renderer"
+    },
+    {
       "file": "src/renderer/ToolWindows/useGdbCommandController.ts",
       "sloc": 193,
       "totalLines": 225,
       "cyclomatic": 30,
-      "halsteadVolume": 4310.92,
-      "mi": 20.66,
-      "rating": "Poor",
-      "bucket": "renderer"
-    },
-    {
-      "file": "src/main/mi-interface/gdb-state-database/gdbStateDatabase.ts",
-      "sloc": 263,
-      "totalLines": 314,
-      "cyclomatic": 4,
-      "halsteadVolume": 4738.48,
-      "mi": 20.94,
-      "rating": "Poor",
-      "bucket": "main"
-    },
-    {
-      "file": "src/renderer/Dialogs/Settings.tsx",
-      "sloc": 234,
-      "totalLines": 315,
-      "cyclomatic": 13,
-      "halsteadVolume": 3933.89,
-      "mi": 21.4,
-      "rating": "Poor",
-      "bucket": "renderer"
-    },
-    {
-      "file": "src/renderer/App.tsx",
-      "sloc": 235,
-      "totalLines": 335,
-      "cyclomatic": 6,
-      "halsteadVolume": 5104.52,
-      "mi": 21.51,
+      "halsteadVolume": 4508,
+      "mi": 20.52,
       "rating": "Poor",
       "bucket": "renderer"
     },
     {
       "file": "src/renderer/Dialogs/useConnectionDialogController.ts",
-      "sloc": 189,
-      "totalLines": 222,
-      "cyclomatic": 21,
-      "halsteadVolume": 3708.38,
-      "mi": 22.53,
+      "sloc": 206,
+      "totalLines": 239,
+      "cyclomatic": 25,
+      "halsteadVolume": 4339.9,
+      "mi": 20.69,
       "rating": "Poor",
       "bucket": "renderer"
     }

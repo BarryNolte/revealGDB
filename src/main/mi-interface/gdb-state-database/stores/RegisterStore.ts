@@ -1,3 +1,4 @@
+import { mapToRegisterEntry } from "../../mappers/register-mapper";
 import { gdbRegisters } from "../types/gdbStateTypes";
 
 export class RegisterStore {
@@ -13,12 +14,7 @@ export class RegisterStore {
   }
 
   addRegisterValue(index: string, regValue: string): void {
-    const reg = this.registers.get(index);
-    this.registers.set(index, {
-      name: reg ? reg.name : index,
-      value: regValue,
-      changed: regValue !== (reg ? reg.value : ""),
-    });
+    this.registers.set(index, mapToRegisterEntry(index, regValue, this.registers.get(index)));
   }
 
   get(index: string): gdbRegisters | undefined {

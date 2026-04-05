@@ -1,29 +1,11 @@
+import { mapAddThreadArgsToThread } from "../../mappers/thread-mapper";
 import { AddThreadArgs, gdbThread, gdbThreadGroup } from "../types/gdbStateTypes";
 
 export class ThreadStore {
   readonly threads: Map<string, gdbThread> = new Map<string, gdbThread>();
 
   addThread(thread: AddThreadArgs): void {
-    this.threads.set(thread.id, {
-      active: thread.active,
-      id: thread.id,
-      targetId: thread.targetId,
-      details: thread.details,
-      name: thread.name,
-      state: thread.state,
-      frame: {
-        active: false,
-        level: thread.frame.level,
-        func: thread.frame.func,
-        addr: thread.frame.addr,
-        args: thread.frame.args,
-        file: thread.frame.file,
-        fullName: thread.frame.fullName,
-        line: thread.frame.line,
-        arch: thread.frame.arch,
-        from: "",
-      },
-    });
+    this.threads.set(thread.id, mapAddThreadArgsToThread(thread));
   }
 
   deleteThread(id: string): void {

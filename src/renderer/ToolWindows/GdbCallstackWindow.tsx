@@ -13,7 +13,7 @@ import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "r
 import { gdbStackFrame } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
-import { GdbAny } from "../../common/gdb-common";
+import { CallstackGridRow, mapStackFramesToGridRows } from "../mappers/grid-data-mappers";
 import { menuCopy } from "../utilities/Clipboard";
 import { useGridColumnState } from "../utilities/useGridColumnState";
 import "./GdbCallstackWindow.css";
@@ -27,7 +27,7 @@ import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 export default function GdbCallStackWindow(): JSX.Element {
   const menuId = useId();
   const gridRef = useRef<GridComponent | null>(null);
-  const [stackData, setStackData] = useState<gdbStackFrame[]>([]);
+  const [stackData, setStackData] = useState<CallstackGridRow[]>([]);
   useGridColumnState("callstack", gridRef);
 
   /** Grid selection settings: allow multiple row/cell selection */
@@ -45,24 +45,7 @@ export default function GdbCallStackWindow(): JSX.Element {
    */
   useEffect(() => {
     const unsubscribe = window.ipcToMain.debuggerData.stackFrames((data: gdbStackFrame[]) => {
-      const dataList: GdbAny[] = [];
-
-      data.forEach((frame) => {
-        dataList.push({
-          active: frame.active ? "*" : "",
-          level: frame.level,
-          func: frame.func,
-          addr: frame.addr,
-          args: frame.args,
-          file: frame.file,
-          fullName: frame.fullName,
-          line: frame.line,
-          from: frame.from,
-          arch: frame.arch,
-        });
-      });
-
-      setStackData(dataList);
+      setStackData(mapStackFramesToGridRows(data));
     });
 
     return () => {

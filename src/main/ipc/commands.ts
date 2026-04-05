@@ -1,6 +1,7 @@
 import { GdbAny, SelectedConnection } from "../../common/gdb-common";
 import { GridColumnState, GridName } from "../../common/grid-column-types";
 import { IPC_CHANNELS, NotifyMainRequest, NotifyRenderMessage } from "../../common/ipc-contracts";
+import { mapElectronWindowToWinPos } from "../mappers/window-pos-mapper";
 import { setNativeThemeFromAppTheme } from "../theme-support";
 import { WslUtilities } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
@@ -137,15 +138,7 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       break;
     case "save-dock-layout": {
       context.appSettings.setSync("gdb.gui.dockLayout", msg.data as never);
-
-      const winPos = {
-        x: mainWindow.getPosition()[0],
-        y: mainWindow.getPosition()[1],
-        width: mainWindow.getSize()[0] - 2,
-        height: mainWindow.getSize()[1] - 2,
-        fullscreen: mainWindow.fullScreen,
-      };
-      context.appSettings.setSync("gdb.gui.windowSize", winPos);
+      context.appSettings.setSync("gdb.gui.windowSize", mapElectronWindowToWinPos(mainWindow));
       break;
     }
     case "save-grid-columns": {

@@ -17,6 +17,7 @@ import { GdbAny } from "../../common/gdb-common";
 import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
 import imgDelete from "../icons/icons8-delete-48.png";
+import { BreakpointGridRow, mapBreakpointsToGridRows } from "../mappers/grid-data-mappers";
 import { useGridColumnState } from "../utilities/useGridColumnState";
 import "./GdbBreakpointsWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
@@ -28,7 +29,7 @@ import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
  */
 export default function GdbBreakPointWindow(): JSX.Element {
   const gridRef = useRef<GridComponent | null>(null);
-  const [breakpointData, setBreakpointData] = useState<GdbAny[]>([]);
+  const [breakpointData, setBreakpointData] = useState<BreakpointGridRow[]>([]);
   useGridColumnState("breakpoints", gridRef);
 
   /** Grid selection settings: allow multiple row/cell selection */
@@ -47,26 +48,7 @@ export default function GdbBreakPointWindow(): JSX.Element {
   useEffect(() => {
     const unsubscribe = window.ipcToMain.debuggerData.breakpoints(
       (data: Map<string, gdbBreakpoint>) => {
-        const dataList: GdbAny[] = [];
-        data.forEach((bp) => {
-          dataList.push({
-            number: bp.number,
-            type: bp.type,
-            disp: bp.disp,
-            enabled: bp.enabled === "y" ? true : false,
-            addr: bp.addr,
-            func: bp.func,
-            file: bp.file.replace(/^.*[\\/]/, ""),
-            fullName: bp.fullname,
-            line: bp.line,
-            tg: bp.tg.slice(1, -1),
-            times: bp.times,
-            installed: bp.installed || "--",
-            orgloc: bp.orgloc,
-          });
-        });
-
-        setBreakpointData(dataList);
+        setBreakpointData(mapBreakpointsToGridRows(data));
       },
     );
 

@@ -91,14 +91,15 @@ export class WslUtilities {
       const charCode = buffer[i];
 
       // Filter to printable ASCII plus CR/LF for deterministic parsing.
-      if (charCode < 0x7f && charCode >= 0x20) {
+      if (charCode >= 0x20 && charCode < 0x7f) {
         asciiString += String.fromCharCode(charCode);
-      } else {
-        if (charCode === 0x0a) {
-          asciiString += "\n";
-        } else if (charCode === 0x0d) {
-          asciiString += "\r";
-        }
+        continue;
+      }
+
+      if (charCode === 0x0a) {
+        asciiString += "\n";
+      } else if (charCode === 0x0d) {
+        asciiString += "\r";
       }
     }
 

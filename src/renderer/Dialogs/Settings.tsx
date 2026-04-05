@@ -79,15 +79,12 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
       if (gdb.gui.sourceViewerTheme && editorThemeRef.current) {
         editorThemeRef.current.value = gdb.gui.sourceViewerTheme;
       }
-
       if (gdb.gui.sourceViewerFontSize && editorFontSizeRef.current) {
         editorFontSizeRef.current.value = gdb.gui.sourceViewerFontSize;
       }
-
       if (gdb.gui.showDebugInfo && appShowDebugInfoRef.current) {
         appShowDebugInfoRef.current.checked = gdb.gui.showDebugInfo;
       }
-
       if (gdb.gui.applicationTheme && appThemeRef.current) {
         appThemeRef.current.value = gdb.gui.applicationTheme;
       }

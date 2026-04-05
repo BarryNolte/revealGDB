@@ -12,10 +12,7 @@ import {
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
-import {
-  gdbThread,
-  gdbThreadGroup,
-} from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
+import { ThreadGridRow, mapThreadDataToGridRows } from "../mappers/grid-data-mappers";
 import { menuCopy } from "../utilities/Clipboard";
 import "./GdbThreadsWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
@@ -28,7 +25,7 @@ import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 export default function GdbThreadsWindow(): JSX.Element {
   const menuId = useId();
   const gridRef = useRef<GridComponent | null>(null);
-  const [threadData, setThreadData] = useState<GdbAny[]>([]);
+  const [threadData, setThreadData] = useState<ThreadGridRow[]>([]);
 
   /** Grid selection settings: allow multiple row/cell selection */
   const selectionOptions: SelectionSettingsModel = useMemo(
@@ -50,27 +47,7 @@ export default function GdbThreadsWindow(): JSX.Element {
 
   useEffect(() => {
     const unsubscribe = window.ipcToMain.debuggerData.threads((data: GdbAny) => {
-      const threadList: GdbAny[] = [];
-
-      const groups = data.grp;
-      const threads = data.th;
-
-      groups.forEach((group: gdbThreadGroup) => {
-        threads.forEach((thread: gdbThread) => {
-          threadList.push({
-            groupId: group.gid,
-            active: thread.active,
-            id: thread.id,
-            targetId: thread.targetId,
-            details: thread.details,
-            name: thread.name,
-            state: thread.state,
-            frame: `${thread.frame.func}:${thread.frame.line}`,
-          });
-        });
-      });
-
-      setThreadData(threadList);
+      setThreadData(mapThreadDataToGridRows(data.th, data.grp));
     });
 
     return () => {

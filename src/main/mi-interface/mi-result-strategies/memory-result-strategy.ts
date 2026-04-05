@@ -1,4 +1,5 @@
 import { mainWindow } from "../../main";
+import { mapRegexGroupsToMemoryData } from "../mappers/memory-mapper";
 import { MiOutputHost } from "../mi-output-types";
 import { MiDoneResultStrategy } from "./mi-result-strategy-types";
 
@@ -12,23 +13,7 @@ export class MemoryResultStrategy implements MiDoneResultStrategy {
 
   handle(_host: MiOutputHost, output: string, _resList: string): Promise<boolean> {
     const memData = this.rgxMemData.exec(output);
-    const hexData = memData?.groups?.contents || "";
-    const resultBytes = [];
-    for (let i = 0; i < hexData.length; i += 2) {
-      resultBytes.push(hexData.slice(i, i + 2));
-    }
-    const dataArray = new Uint8Array(resultBytes.length);
-    resultBytes.forEach((byte, idx) => {
-      dataArray[idx] = parseInt(byte, 16);
-    });
-
-    mainWindow.webContents.send("data-memory", {
-      begin: memData?.groups?.["begin"],
-      offset: memData?.groups?.["offset"],
-      end: memData?.groups?.["end"],
-      data: dataArray,
-    });
-
+    mainWindow.webContents.send("data-memory", mapRegexGroupsToMemoryData(memData?.groups));
     return Promise.resolve(true);
   }
 }

@@ -23,20 +23,22 @@ export function useGdbCommandController() {
     sp.appendChild(document.createTextNode(message));
     outputRef.current?.appendChild(br);
 
-    if (shouldScrollRef.current) {
-      br.scrollIntoView();
-      if (outputRef.current) {
-        outputRef.current.scrollLeft = 0;
-      }
+    if (!shouldScrollRef.current) return;
+
+    br.scrollIntoView();
+    if (outputRef.current) {
+      outputRef.current.scrollLeft = 0;
     }
   }, []);
 
   const sendCommand = useCallback(() => {
-    if (inputRef.current) {
-      window.ipcToMain.commands.debugger.sendGdbCommand(inputRef.current.value);
-      cmdHistoryRef.current.add(inputRef.current.value);
-      inputRef.current.value = "";
+    if (!inputRef.current) {
+      return;
     }
+
+    window.ipcToMain.commands.debugger.sendGdbCommand(inputRef.current.value);
+    cmdHistoryRef.current.add(inputRef.current.value);
+    inputRef.current.value = "";
 
     window.ipcToMain.commands.app.notifyMain({
       command: "save-cmd-history",
@@ -55,19 +57,19 @@ export function useGdbCommandController() {
   }, []);
 
   const showHistory = useCallback(() => {
-    if (historyRef.current) {
-      historyRef.current.options.length = 0;
+    if (!historyRef.current) return;
 
-      for (const item of cmdHistoryRef.current.commandHistory) {
-        const option = document.createElement("option");
-        option.text = item;
-        historyRef.current.add(option);
-      }
+    historyRef.current.options.length = 0;
 
-      historyRef.current.hidden = false;
-      historyRef.current.options.selectedIndex = historyRef.current.options.length - 1;
-      historyRef.current.scrollIntoView(false);
+    for (const item of cmdHistoryRef.current.commandHistory) {
+      const option = document.createElement("option");
+      option.text = item;
+      historyRef.current.add(option);
     }
+
+    historyRef.current.hidden = false;
+    historyRef.current.options.selectedIndex = historyRef.current.options.length - 1;
+    historyRef.current.scrollIntoView(false);
   }, []);
 
   useEffect(() => {
@@ -107,15 +109,13 @@ export function useGdbCommandController() {
     const historyElement = historyRef.current;
     if (historyElement) {
       historyElement.ondblclick = (_e: Event) => {
-        if (historyRef.current) {
-          historyRef.current.hidden = true;
+        if (!historyRef.current) return;
+        historyRef.current.hidden = true;
 
-          if (inputRef.current) {
-            const selIdx = historyRef.current.selectedIndex;
-            inputRef.current.value = historyRef.current.options[selIdx].value;
-            inputRef.current.focus();
-          }
-        }
+        if (!inputRef.current) return;
+        const selIdx = historyRef.current.selectedIndex;
+        inputRef.current.value = historyRef.current.options[selIdx].value;
+        inputRef.current.focus();
       };
     }
 
@@ -142,7 +142,6 @@ export function useGdbCommandController() {
         if (historyRef.current) {
           historyRef.current.hidden = true;
         }
-
         if (inputRef.current) {
           inputRef.current.value = args.currentTarget.value;
           inputRef.current.focus();

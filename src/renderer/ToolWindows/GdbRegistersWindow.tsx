@@ -16,7 +16,7 @@ import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "r
 import { gdbRegisters } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
-import { GdbAny } from "../../common/gdb-common";
+import { RegisterGridRow, mapRegistersToGridRows } from "../mappers/grid-data-mappers";
 import { menuCopy } from "../utilities/Clipboard";
 import { useGridColumnState } from "../utilities/useGridColumnState";
 import "./GdbRegistersWindow.css";
@@ -30,7 +30,7 @@ import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 export default function GdbRegistersWindow(): JSX.Element {
   const menuId = useId();
   const gridRef = useRef<GridComponent | null>(null);
-  const [registerData, setRegisterData] = useState<gdbRegisters[]>([]);
+  const [registerData, setRegisterData] = useState<RegisterGridRow[]>([]);
   useGridColumnState("registers", gridRef);
 
   /** Edit settings: enable cell editing in batch mode */
@@ -78,24 +78,11 @@ export default function GdbRegistersWindow(): JSX.Element {
   );
 
   useEffect(() => {
-    const unsubscribe = window.ipcToMain.debuggerData.registers((data: gdbRegisters[]) => {
-      const dataList: GdbAny[] = [];
-      data.forEach((reg) => {
-        // While debuggig rust on x86, there were some entries with
-        // empty names that caused issues with the grid. Filter them out.
-        if (reg.name === "") {
-          return;
-        }
-
-        dataList.push({
-          name: reg.name,
-          value: reg.value,
-          changed: reg.changed,
-        });
-      });
-
-      setRegisterData(dataList);
-    });
+    const unsubscribe = window.ipcToMain.debuggerData.registers(
+      (data: gdbRegisters[] | Map<string, gdbRegisters>) => {
+        setRegisterData(mapRegistersToGridRows(data));
+      },
+    );
 
     return () => {
       unsubscribe();
@@ -111,14 +98,14 @@ export default function GdbRegistersWindow(): JSX.Element {
   }, []);
 
   const queryCellInfo = useCallback((args: QueryCellInfoEventArgs): void => {
-    if (args.column?.field === "value" && (args.data as gdbRegisters).changed === true) {
+    if (args.column?.field === "value" && (args.data as RegisterGridRow).changed === true) {
       args.cell?.classList.add("register-changed-cell");
     }
   }, []);
 
   const cellSaved = useCallback((args: CellSaveArgs) => {
     window.ipcToMain.commands.debugger.sendGdbCommand(
-      `set $${(args.rowData as gdbRegisters)?.name} = ${args.value}`,
+      `set $${(args.rowData as RegisterGridRow)?.name} = ${args.value}`,
     );
   }, []);
 

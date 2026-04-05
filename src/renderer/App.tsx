@@ -149,19 +149,13 @@ export default function App(): JSX.Element {
     window.ipcToMain.notifications.render((msg: GdbAny) => {
       switch (msg.command) {
         case "about-box":
-          {
-            aboutBoxRef.current?.ShowDialog();
-          }
+          aboutBoxRef.current?.ShowDialog();
           break;
         case "connections-dialog":
-          {
-            connectionsRef.current?.ShowDialog();
-          }
+          connectionsRef.current?.ShowDialog();
           break;
         case "settings-dialog":
-          {
-            settingsRef.current?.ShowDialog();
-          }
+          settingsRef.current?.ShowDialog();
           break;
       }
     });

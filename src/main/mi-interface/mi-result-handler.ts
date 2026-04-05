@@ -1,5 +1,5 @@
 import { mainWindow } from "../main";
-import { gdbBreakpoint } from "./gdb-state-database/gdbStateDatabase";
+import { mapRegexGroupsToBreakpoint } from "./mappers/breakpoint-mapper";
 import { MiOutputHost } from "./mi-output-types";
 import { AsmResultStrategy } from "./mi-result-strategies/asm-result-strategy";
 import { MemoryResultStrategy } from "./mi-result-strategies/memory-result-strategy";
@@ -45,7 +45,7 @@ export class MiResultRecordHandler {
             const bps = resList.matchAll(this.rgxBps);
             this.host.gdbDB.clearBreakpoints();
             bps?.forEach((bkpt) => {
-              this.host.gdbDB.createBreakpoint(bkpt.groups as gdbBreakpoint);
+              this.host.gdbDB.createBreakpoint(mapRegexGroupsToBreakpoint(bkpt.groups));
             });
 
             mainWindow.webContents.send("data-brkpts", this.host.gdbDB.breakpoints);
@@ -117,9 +117,9 @@ export class MiResultRecordHandler {
         break;
       }
       case "error": {
-        const msg = this.rgxErrorMsg.exec(data);
-        const msgText = msg?.groups?.msg
-          .replaceAll('\\"', '"')
+        const msgText = this.rgxErrorMsg
+          .exec(data)
+          ?.groups?.msg?.replaceAll('\\"', '"')
           .replaceAll("\\t", "\t")
           .split("\\n");
         if (msgText) {

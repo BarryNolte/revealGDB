@@ -147,24 +147,12 @@ export default function GdbDisassemblerWindow(): JSX.Element {
     const startInput = validateValue(startRef.current?.value);
     const lengthInput = validateValue(lengthRef.current?.value);
 
-    if (startInput.isValid) {
-      if (addressErrorRef.current) {
-        addressErrorRef.current.style.visibility = "hidden";
-      }
-    } else {
-      if (addressErrorRef.current) {
-        addressErrorRef.current.style.visibility = "visible";
-      }
+    if (addressErrorRef.current) {
+      addressErrorRef.current.style.visibility = startInput.isValid ? "hidden" : "visible";
     }
 
-    if (lengthInput.isValid) {
-      if (lengthErrorRef.current) {
-        lengthErrorRef.current.style.visibility = "hidden";
-      }
-    } else {
-      if (lengthErrorRef.current) {
-        lengthErrorRef.current.style.visibility = "visible";
-      }
+    if (lengthErrorRef.current) {
+      lengthErrorRef.current.style.visibility = lengthInput.isValid ? "hidden" : "visible";
     }
 
     if (!startInput.isValid || !lengthInput.isValid) {
