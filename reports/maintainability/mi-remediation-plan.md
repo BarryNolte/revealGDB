@@ -1,16 +1,16 @@
 # Maintainability Remediation Plan (MI)
 
-Generated: 2026-04-05T03:29:48.290Z
+Generated: 2026-04-05T04:43:13.305Z
 
 Target set: lowest maintainability files based on current MI analysis.
 
 ## 1. src/renderer/Dialogs/useConnectionManagerController.ts
 
 - Bucket: renderer
-- Current MI: 5.21 (Poor)
-- Cyclomatic: 64
-- SLOC: 458
-- Halstead Volume: 10452.85
+- Current MI: 13.57 (Poor)
+- Cyclomatic: 34
+- SLOC: 337
+- Halstead Volume: 6550.70
 - Primary drivers: high branch density, function length, and expression volume.
 - Remediation actions:
   1. Extract decision-heavy blocks into small pure helpers (target <= 20 SLOC/helper).
@@ -20,29 +20,29 @@ Target set: lowest maintainability files based on current MI analysis.
   5. Add focused tests around extracted helpers before and after refactor.
 - MI target after remediation: >= 60
 
-## 2. src/main/mi-interface/mi-notify-handler.ts
-
-- Bucket: main
-- Current MI: 13.51 (Poor)
-- Cyclomatic: 63
-- SLOC: 226
-- Halstead Volume: 6434.42
-- Primary drivers: high branch density, function length, and expression volume.
-- Remediation actions:
-  1. Extract decision-heavy blocks into small pure helpers (target <= 20 SLOC/helper).
-  2. Replace nested conditionals with guard clauses and early returns.
-  3. Split IO/orchestration code from transformation/parsing logic.
-  4. Introduce typed data mappers to reduce ad-hoc object mutation.
-  5. Add focused tests around extracted helpers before and after refactor.
-- MI target after remediation: >= 60
-
-## 3. src/renderer/App.tsx
+## 2. src/renderer/App.tsx
 
 - Bucket: renderer
-- Current MI: 13.75 (Poor)
+- Current MI: 13.89 (Poor)
 - Cyclomatic: 16
-- SLOC: 397
+- SLOC: 391
 - Halstead Volume: 8218.51
+- Primary drivers: high branch density, function length, and expression volume.
+- Remediation actions:
+  1. Extract decision-heavy blocks into small pure helpers (target <= 20 SLOC/helper).
+  2. Replace nested conditionals with guard clauses and early returns.
+  3. Split IO/orchestration code from transformation/parsing logic.
+  4. Introduce typed data mappers to reduce ad-hoc object mutation.
+  5. Add focused tests around extracted helpers before and after refactor.
+- MI target after remediation: >= 60
+
+## 3. src/main/mi-interface/mi-notify-handler.ts
+
+- Bucket: main
+- Current MI: 14.30 (Poor)
+- Cyclomatic: 61
+- SLOC: 216
+- Halstead Volume: 6231.61
 - Primary drivers: high branch density, function length, and expression volume.
 - Remediation actions:
   1. Extract decision-heavy blocks into small pure helpers (target <= 20 SLOC/helper).
@@ -71,10 +71,10 @@ Target set: lowest maintainability files based on current MI analysis.
 ## 5. src/renderer/ToolWindows/GdbDisassemblerWindow.tsx
 
 - Bucket: renderer
-- Current MI: 18.25 (Poor)
-- Cyclomatic: 16
-- SLOC: 283
-- Halstead Volume: 5358.63
+- Current MI: 19.02 (Poor)
+- Cyclomatic: 14
+- SLOC: 271
+- Halstead Volume: 5203.53
 - Primary drivers: high branch density, function length, and expression volume.
 - Remediation actions:
   1. Extract decision-heavy blocks into small pure helpers (target <= 20 SLOC/helper).
@@ -100,23 +100,7 @@ Target set: lowest maintainability files based on current MI analysis.
   5. Add focused tests around extracted helpers before and after refactor.
 - MI target after remediation: >= 60
 
-## 7. src/renderer/Components/HexEditor/MouseKeyboardHandler.ts
-
-- Bucket: renderer
-- Current MI: 20.33 (Poor)
-- Cyclomatic: 32
-- SLOC: 195
-- Halstead Volume: 4253.47
-- Primary drivers: high branch density, function length, and expression volume.
-- Remediation actions:
-  1. Extract decision-heavy blocks into small pure helpers (target <= 20 SLOC/helper).
-  2. Replace nested conditionals with guard clauses and early returns.
-  3. Split IO/orchestration code from transformation/parsing logic.
-  4. Introduce typed data mappers to reduce ad-hoc object mutation.
-  5. Add focused tests around extracted helpers before and after refactor.
-- MI target after remediation: >= 60
-
-## 8. src/renderer/Dialogs/Settings.tsx
+## 7. src/renderer/Dialogs/Settings.tsx
 
 - Bucket: renderer
 - Current MI: 20.42 (Poor)
@@ -132,13 +116,29 @@ Target set: lowest maintainability files based on current MI analysis.
   5. Add focused tests around extracted helpers before and after refactor.
 - MI target after remediation: >= 60
 
+## 8. src/renderer/Components/HexEditor/MouseKeyboardHandler.ts
+
+- Bucket: renderer
+- Current MI: 20.63 (Poor)
+- Cyclomatic: 32
+- SLOC: 189
+- Halstead Volume: 4253.47
+- Primary drivers: high branch density, function length, and expression volume.
+- Remediation actions:
+  1. Extract decision-heavy blocks into small pure helpers (target <= 20 SLOC/helper).
+  2. Replace nested conditionals with guard clauses and early returns.
+  3. Split IO/orchestration code from transformation/parsing logic.
+  4. Introduce typed data mappers to reduce ad-hoc object mutation.
+  5. Add focused tests around extracted helpers before and after refactor.
+- MI target after remediation: >= 60
+
 ## 9. src/renderer/ToolWindows/useGdbCommandController.ts
 
 - Bucket: renderer
-- Current MI: 20.52 (Poor)
+- Current MI: 20.64 (Poor)
 - Cyclomatic: 30
-- SLOC: 193
-- Halstead Volume: 4508.00
+- SLOC: 190
+- Halstead Volume: 4550.29
 - Primary drivers: high branch density, function length, and expression volume.
 - Remediation actions:
   1. Extract decision-heavy blocks into small pure helpers (target <= 20 SLOC/helper).
