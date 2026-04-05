@@ -13,7 +13,17 @@ import { gdbShowSourceInfo, MiOutputProcessor } from "./mi-output-processor";
 
 export type { gdbShowSourceInfo };
 
-export class miInterface extends EventEmitter {
+export interface GdbCommandInterface {
+  continueExecution(): void;
+  stepOver(): void;
+  stepInto(): void;
+  stepOut(): void;
+  pauseExecution(): void;
+  stopDebugging(): void;
+  runCommand(command: string): void;
+}
+
+export class miInterface extends EventEmitter implements GdbCommandInterface {
   private static lnum: number = 0;
   private conn: GdbConnector | null = null;
   readonly gdbDB: gdbStateDatabase = new gdbStateDatabase();
@@ -92,6 +102,34 @@ export class miInterface extends EventEmitter {
       this.emit("debug-stream", data);
     }
     this.conn?.Send(data);
+  }
+
+  public continueExecution(): void {
+    this.send("continue");
+  }
+
+  public stepOver(): void {
+    this.send("next");
+  }
+
+  public stepInto(): void {
+    this.send("step");
+  }
+
+  public stepOut(): void {
+    this.send("finish");
+  }
+
+  public pauseExecution(): void {
+    this.send("signal SIGINT");
+  }
+
+  public stopDebugging(): void {
+    this.send("kill");
+  }
+
+  public runCommand(command: string): void {
+    this.send(command);
   }
 
   public parseRawOutput(output: string): Promise<boolean> {

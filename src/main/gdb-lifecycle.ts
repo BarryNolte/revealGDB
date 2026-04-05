@@ -31,22 +31,22 @@ export function createGdbInterface(
       const ros: string[] = appSettings.getSync("gdb.run.onStartup") as string[];
       console.log("** ON STARTUP COMMANDS **");
       ros?.forEach((cmd: string) => {
-        gdbInterface.send(cmd);
+        gdbInterface.runCommand(cmd);
       });
 
-      gdbInterface.send("echo <<<<file-info>>>>");
-      gdbInterface.send("info files");
-      gdbInterface.send("echo >>>>end-capture<<<<");
+      gdbInterface.runCommand("echo <<<<file-info>>>>");
+      gdbInterface.runCommand("info files");
+      gdbInterface.runCommand("echo >>>>end-capture<<<<");
 
-      gdbInterface.send("echo <<<<function-names>>>>");
-      gdbInterface.send("info functions");
-      gdbInterface.send("echo >>>>end-capture<<<<");
+      gdbInterface.runCommand("echo <<<<function-names>>>>");
+      gdbInterface.runCommand("info functions");
+      gdbInterface.runCommand("echo >>>>end-capture<<<<");
     }
 
     const ros: string[] = appSettings.getSync("gdb.run.onStopped") as string[];
     //console.log(`***********************\nRunning ${ros?.length} Stop Commands\n***********************`);
     ros?.forEach((cmd: string) => {
-      gdbInterface.send(cmd);
+      gdbInterface.runCommand(cmd);
     });
   });
 

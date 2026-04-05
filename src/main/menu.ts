@@ -86,42 +86,42 @@ export class GdbMenu {
             label: "Continue",
             accelerator: "F5",
             click: () => {
-              gdbInterface.send("continue");
+              gdbInterface.continueExecution();
             },
           },
           {
             label: "Step Over",
             accelerator: "F10",
             click: () => {
-              gdbInterface.send("next");
+              gdbInterface.stepOver();
             },
           },
           {
             label: "Step Into",
             accelerator: "F8",
             click: () => {
-              gdbInterface.send("step");
+              gdbInterface.stepInto();
             },
           },
           {
             label: "Step Out",
             accelerator: "Shift+F11",
             click: () => {
-              gdbInterface.send("finish");
+              gdbInterface.stepOut();
             },
           },
           { type: "separator" },
           {
             label: "Pause",
-            accelerator: "Ctrl+C",
+            accelerator: "F6",
             click: () => {
-              gdbInterface.send("signal SIGINT");
+              gdbInterface.pauseExecution();
             },
           },
           {
             label: "Stop Debugging",
             accelerator: "Shift+F5",
-            click: () => gdbInterface.send("kill"),
+            click: () => gdbInterface.stopDebugging(),
           },
         ],
       },

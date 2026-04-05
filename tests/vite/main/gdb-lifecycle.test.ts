@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createMockAppSettings, createMockBrowserWindow } from "../../../src/test-helpers/ipc-test-harness";
 import { createGdbInterface } from "../../../src/main/gdb-lifecycle";
+import {
+  createMockAppSettings,
+  createMockBrowserWindow,
+} from "../../../src/test-helpers/ipc-test-harness";
 
 const { sendMock } = vi.hoisted(() => ({
   sendMock: vi.fn(),
@@ -11,6 +14,7 @@ vi.mock("../../../src/main/mi-interface/mi-interface", async () => {
 
   class MockMiInterface extends EventEmitter {
     send = sendMock;
+    runCommand = sendMock;
   }
 
   return {

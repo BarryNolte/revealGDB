@@ -1,6 +1,5 @@
 # Priority Items
 
-- Cleanup menus/toolbar
 - Convience variables
 - Verify Aboutbox attributions
 

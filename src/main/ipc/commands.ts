@@ -68,7 +68,7 @@ export function onGdbCommand(command: string, context: IpcRegistrationContext): 
         break;
     }
   } else {
-    gdbInterface.send(command);
+    gdbInterface.runCommand(command);
   }
 }
 
