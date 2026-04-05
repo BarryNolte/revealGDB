@@ -1,9 +1,14 @@
 import { contextBridge, ipcRenderer } from "electron";
-import { GdbAny } from "../common/gdb-common";
 import { IPC_CHANNELS, NotifyMainRequest } from "../common/ipc-contracts";
+import type { IElectronAPI } from "./interface";
 
-function subscribe(channel: string, callback: GdbAny) {
-  const listener = (_event: Electron.IpcRendererEvent, value: GdbAny) => callback(value);
+type IpcApiCore = Pick<
+  IElectronAPI,
+  "messages" | "notifications" | "debuggerData" | "queries" | "commands"
+>;
+
+function subscribe<T>(channel: string, callback: (data: T) => void): () => void {
+  const listener = (_event: Electron.IpcRendererEvent, value: T) => callback(value);
   ipcRenderer.on(channel, listener);
   return () => {
     ipcRenderer.removeListener(channel, listener);
@@ -31,39 +36,35 @@ function send(channel: string, value: unknown) {
  * and the renderer process, preventing direct access to Node.js APIs while allowing
  * controlled communication via the exposed ipcToMain API.
  */
-const ipcApi = {
+const ipcApi: IpcApiCore = {
   messages: {
-    console: (callback: GdbAny) => subscribe(IPC_CHANNELS.mainToRenderer.console.message, callback),
-    log: (callback: GdbAny) => subscribe(IPC_CHANNELS.mainToRenderer.console.log, callback),
-    error: (callback: GdbAny) => subscribe(IPC_CHANNELS.mainToRenderer.console.error, callback),
-    debug: (callback: GdbAny) => subscribe(IPC_CHANNELS.mainToRenderer.console.debug, callback),
+    console: (callback) => subscribe<string>(IPC_CHANNELS.mainToRenderer.console.message, callback),
+    log: (callback) => subscribe<string>(IPC_CHANNELS.mainToRenderer.console.log, callback),
+    error: (callback) => subscribe<string>(IPC_CHANNELS.mainToRenderer.console.error, callback),
+    debug: (callback) => subscribe<string>(IPC_CHANNELS.mainToRenderer.console.debug, callback),
   },
   notifications: {
-    connectionStatus: (callback: GdbAny) =>
+    connectionStatus: (callback) =>
       subscribe(IPC_CHANNELS.mainToRenderer.notifications.connectionStatus, callback),
-    render: (callback: GdbAny) =>
-      subscribe(IPC_CHANNELS.mainToRenderer.notifications.render, callback),
-    themeChanged: (callback: GdbAny) =>
+    render: (callback) => subscribe(IPC_CHANNELS.mainToRenderer.notifications.render, callback),
+    themeChanged: (callback) =>
       subscribe(IPC_CHANNELS.mainToRenderer.notifications.themeChanged, callback),
   },
   debuggerData: {
-    registers: (callback: GdbAny) =>
+    registers: (callback) =>
       subscribe(IPC_CHANNELS.mainToRenderer.debuggerData.registers, callback),
-    stackFrames: (callback: GdbAny) =>
+    stackFrames: (callback) =>
       subscribe(IPC_CHANNELS.mainToRenderer.debuggerData.stackFrames, callback),
-    sourceFile: (callback: GdbAny) =>
+    sourceFile: (callback) =>
       subscribe(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, callback),
-    locals: (callback: GdbAny) =>
-      subscribe(IPC_CHANNELS.mainToRenderer.debuggerData.locals, callback),
-    threads: (callback: GdbAny) =>
-      subscribe(IPC_CHANNELS.mainToRenderer.debuggerData.threads, callback),
-    breakpoints: (callback: GdbAny) =>
+    locals: (callback) => subscribe(IPC_CHANNELS.mainToRenderer.debuggerData.locals, callback),
+    threads: (callback) => subscribe(IPC_CHANNELS.mainToRenderer.debuggerData.threads, callback),
+    breakpoints: (callback) =>
       subscribe(IPC_CHANNELS.mainToRenderer.debuggerData.breakpoints, callback),
-    memory: (callback: GdbAny) =>
-      subscribe(IPC_CHANNELS.mainToRenderer.debuggerData.memory, callback),
-    disassembly: (callback: GdbAny) =>
+    memory: (callback) => subscribe(IPC_CHANNELS.mainToRenderer.debuggerData.memory, callback),
+    disassembly: (callback) =>
       subscribe(IPC_CHANNELS.mainToRenderer.debuggerData.disassembly, callback),
-    functions: (callback: GdbAny) =>
+    functions: (callback) =>
       subscribe(IPC_CHANNELS.mainToRenderer.debuggerData.functions, callback),
   },
   queries: {

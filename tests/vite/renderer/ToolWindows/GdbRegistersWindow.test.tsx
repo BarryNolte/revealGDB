@@ -30,6 +30,13 @@ vi.mock("../../../../src/renderer/utilities/useGridColumnState", () => ({
 }));
 
 const mockUnsubscribe = vi.fn();
+type RegistersTestWindow = Window & {
+  ipcToMain: {
+    debuggerData: {
+      registers: ReturnType<typeof vi.fn>;
+    };
+  };
+};
 
 beforeEach(() => {
   (window as unknown as Record<string, unknown>).ipcToMain = {
@@ -55,7 +62,7 @@ describe("GdbRegistersWindow smoke test", () => {
 
   it("subscribes to register data on mount", () => {
     render(<GdbRegistersWindow />);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((window as any).ipcToMain.debuggerData.registers).toHaveBeenCalledTimes(1);
+    const testWindow = window as unknown as RegistersTestWindow;
+    expect(testWindow.ipcToMain.debuggerData.registers).toHaveBeenCalledTimes(1);
   });
 });

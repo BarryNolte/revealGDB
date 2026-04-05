@@ -20,6 +20,13 @@ vi.mock("@syncfusion/ej2-react-navigations", () => ({
 }));
 
 const mockUnsubscribe = vi.fn();
+type ThreadsTestWindow = Window & {
+  ipcToMain: {
+    debuggerData: {
+      threads: ReturnType<typeof vi.fn>;
+    };
+  };
+};
 
 beforeEach(() => {
   (window as unknown as Record<string, unknown>).ipcToMain = {
@@ -45,7 +52,7 @@ describe("GdbThreadsWindow smoke test", () => {
 
   it("subscribes to thread data on mount", () => {
     render(<GdbThreadsWindow />);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((window as any).ipcToMain.debuggerData.threads).toHaveBeenCalledTimes(1);
+    const testWindow = window as unknown as ThreadsTestWindow;
+    expect(testWindow.ipcToMain.debuggerData.threads).toHaveBeenCalledTimes(1);
   });
 });

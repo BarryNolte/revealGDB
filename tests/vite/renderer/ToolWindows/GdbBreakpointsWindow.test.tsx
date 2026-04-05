@@ -44,6 +44,13 @@ vi.mock("../../../../src/renderer/utilities/useGridColumnState", () => ({
 
 const mockUnsubscribe = vi.fn();
 let capturedBreakpointCallback: ((data: Map<string, unknown>) => void) | null = null;
+type BreakpointsTestWindow = Window & {
+  ipcToMain: {
+    debuggerData: {
+      breakpoints: ReturnType<typeof vi.fn>;
+    };
+  };
+};
 
 beforeEach(() => {
   mockUnsubscribe.mockReset();
@@ -76,8 +83,8 @@ describe("GdbBreakpointsWindow smoke test", () => {
 
   it("subscribes to breakpoints data on mount", () => {
     render(<GdbBreakPointWindow />);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((window as any).ipcToMain.debuggerData.breakpoints).toHaveBeenCalledTimes(1);
+    const testWindow = window as unknown as BreakpointsTestWindow;
+    expect(testWindow.ipcToMain.debuggerData.breakpoints).toHaveBeenCalledTimes(1);
   });
 
   it("unsubscribes from breakpoints on unmount", () => {

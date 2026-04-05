@@ -1,6 +1,14 @@
 declare module "*.png";
 declare module "*.gif";
 declare module "*.css";
+declare module "*.png?asset" {
+  const url: string;
+  export default url;
+}
+declare module "*.css?inline" {
+  const css: string;
+  export default css;
+}
 
 declare const __REVEALGDB_DEBUG__: boolean;
 declare const __REVEALGDB_BUILD__: "debug" | "release";

@@ -128,13 +128,14 @@ export class DockMenuConnector {
     description: string,
     iconCss?: string,
   ): void {
-    const dockPanelInfo = new Object() as DockPanelInfo;
-    dockPanelInfo.id = id;
-    dockPanelInfo.displayName = displayName;
-    dockPanelInfo.description = description;
-    dockPanelInfo.iconCss = iconCss ? iconCss : "";
-    dockPanelInfo.visible = true;
-    dockPanelInfo.dialog = undefined;
+    const dockPanelInfo: DockPanelInfo = {
+      id,
+      displayName,
+      description,
+      iconCss: iconCss ?? "",
+      visible: true,
+      dialog: undefined,
+    };
     this.panelMap.set(displayName, dockPanelInfo);
   }
 
@@ -155,7 +156,11 @@ export class DockMenuConnector {
    * @returns PanelContainer instance
    */
   public getPanelByDisplayName(dn: string): PanelContainer {
-    return this.panelMap.get(dn)!.panel!;
+    const panel = this.panelMap.get(dn)?.panel;
+    if (!panel) {
+      throw new Error(`Panel '${dn}' is not registered or not initialized`);
+    }
+    return panel;
   }
 
   /**

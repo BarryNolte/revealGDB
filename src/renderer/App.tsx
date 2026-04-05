@@ -53,7 +53,6 @@ const ConnectionDialog = lazy(() =>
     default: module.ConnectionDialog as unknown as () => JSX.Element,
   })),
 ) as GdbAny;
-
 function lazyWindow(importer: () => Promise<GdbAny>) {
   return lazy(() =>
     importer().then((module: GdbAny) => ({
@@ -100,23 +99,14 @@ function DeferredWindow({
 /* Icon Assets - Tool window icons loaded as static assets */
 // Note: The ?asset query parameter tells Vite to treat these as static assets
 // and return their URLs rather than inlining them
-// @ts-expect-error the &asset messes up the type checking
 import iconThread from "./icons/icons8-thread-48.png?asset";
-// @ts-expect-error the &asset messes up the type checking
 import iconRegister from "./icons/icons8-cpu-48.png?asset";
-// @ts-expect-error the &asset messes up the type checking
 import iconStack from "./icons/icons8-stack-48.png?asset";
-// @ts-expect-error the &asset messes up the type checking
 import iconHex from "./icons/icons8-hex-48.png?asset";
-// @ts-expect-error the &asset messes up the type checking
 import iconCmd from "./icons/icons8-command-line-48.png?asset";
-// @ts-expect-error the &asset messes up the type checking
 import iconSrc from "./icons/icons8-source-code-48.png?asset";
-// @ts-expect-error the &asset messes up the type checking
 import iconLocal from "./icons/icons8-local-48.png?asset";
-// @ts-expect-error the &asset messes up the type checking
 import iconDisa from "./icons/icons8-disassembly-48.png?asset";
-// @ts-expect-error the &asset messes up the type checking
 import iconBp from "./icons/icons8-dot-48.png?asset";
 
 /* Application Version Info */

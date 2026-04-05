@@ -1,7 +1,27 @@
 import { GdbAny } from "../common/gdb-common";
 import { NotifyMainRequest, NotifyRenderMessage } from "../common/ipc-contracts";
 import { gdbBreakpoint } from "../main/mi-interface/gdb-state-database/gdbStateDatabase";
+import { Local } from "../main/mi-interface/gdb-parsers/gdb-locals";
+import { MemoryData } from "../main/mi-interface/mappers/memory-mapper";
+import {
+  gdbAsmRow,
+  gdbFunction,
+  gdbRegisters,
+  gdbShowSourceInfo,
+  gdbStackFrame,
+  gdbThread,
+  gdbThreadGroup,
+} from "../main/mi-interface/gdb-state-database/types/gdbStateTypes";
 import { WslDistro } from "../main/utilities/wsl-utilities";
+
+type Unsubscribe = () => void;
+type ValueCallback<T> = (data: T) => void;
+type ConsoleCallback = ValueCallback<string>;
+type ThemeChangedPayload = { shouldUseDarkColors: boolean };
+type ConnectionCapturePayload = ["console-capture", { error: boolean; line: string }];
+type ConnectionStartupPayload = ["gdb-startup", string, string];
+type ConnectionStatusPayload = ConnectionCapturePayload | ConnectionStartupPayload;
+type ThreadsPayload = { th: Map<string, gdbThread>; grp: Map<string, gdbThreadGroup> };
 
 /**
  * Electron IPC API interface exposed to the renderer process.
@@ -10,28 +30,28 @@ import { WslDistro } from "../main/utilities/wsl-utilities";
  */
 export interface IElectronAPI {
   messages: {
-    console: (callback: GdbAny) => () => void;
-    log: (callback: GdbAny) => () => void;
-    error: (callback: GdbAny) => () => void;
-    debug: (callback: GdbAny) => () => void;
+    console: (callback: ConsoleCallback) => Unsubscribe;
+    log: (callback: ConsoleCallback) => Unsubscribe;
+    error: (callback: ConsoleCallback) => Unsubscribe;
+    debug: (callback: ConsoleCallback) => Unsubscribe;
   };
 
   notifications: {
-    connectionStatus: (callback: GdbAny) => () => void;
-    render: (callback: (data: NotifyRenderMessage) => void) => () => void;
-    themeChanged: (callback: (data: { shouldUseDarkColors: boolean }) => void) => () => void;
+    connectionStatus: (callback: ValueCallback<ConnectionStatusPayload>) => Unsubscribe;
+    render: (callback: ValueCallback<NotifyRenderMessage>) => Unsubscribe;
+    themeChanged: (callback: ValueCallback<ThemeChangedPayload>) => Unsubscribe;
   };
 
   debuggerData: {
-    registers: (callback: GdbAny) => () => void;
-    stackFrames: (callback: GdbAny) => () => void;
-    sourceFile: (callback: GdbAny) => () => void;
-    locals: (callback: GdbAny) => () => void;
-    threads: (callback: GdbAny) => () => void;
-    breakpoints: (callback: (data: Map<string, gdbBreakpoint>) => void) => () => void;
-    memory: (callback: GdbAny) => () => void;
-    disassembly: (callback: GdbAny) => () => void;
-    functions: (callback: GdbAny) => () => void;
+    registers: (callback: ValueCallback<Map<string, gdbRegisters>>) => Unsubscribe;
+    stackFrames: (callback: ValueCallback<gdbStackFrame[]>) => Unsubscribe;
+    sourceFile: (callback: ValueCallback<gdbShowSourceInfo>) => Unsubscribe;
+    locals: (callback: ValueCallback<Local[] | undefined>) => Unsubscribe;
+    threads: (callback: ValueCallback<ThreadsPayload>) => Unsubscribe;
+    breakpoints: (callback: ValueCallback<Map<string, gdbBreakpoint>>) => Unsubscribe;
+    memory: (callback: ValueCallback<MemoryData>) => Unsubscribe;
+    disassembly: (callback: ValueCallback<gdbAsmRow[]>) => Unsubscribe;
+    functions: (callback: ValueCallback<gdbFunction[]>) => Unsubscribe;
   };
 
   queries: {
@@ -64,42 +84,42 @@ export interface IElectronAPI {
    * @param callback - Function to handle console messages
    * @returns Cleanup function to remove the listener
    */
-  consoleMessage: (callback: GdbAny) => () => void;
+  consoleMessage: (callback: ConsoleCallback) => Unsubscribe;
 
   /**
    * Registers a callback for log messages from the main process.
    * @param callback - Function to handle log messages
    * @returns Cleanup function to remove the listener
    */
-  logMessage: (callback: GdbAny) => () => void;
+  logMessage: (callback: ConsoleCallback) => Unsubscribe;
 
   /**
    * Registers a callback for error messages from the main process.
    * @param callback - Function to handle error messages
    * @returns Cleanup function to remove the listener
    */
-  errorMessage: (callback: GdbAny) => () => void;
+  errorMessage: (callback: ConsoleCallback) => Unsubscribe;
 
   /**
    * Registers a callback for debug messages from the main process.
    * @param callback - Function to handle debug messages
    * @returns Cleanup function to remove the listener
    */
-  debugMessage: (callback: GdbAny) => () => void;
+  debugMessage: (callback: ConsoleCallback) => Unsubscribe;
 
   /**
    * Registers a callback for connection status updates during GDB connection setup.
    * @param callback - Function to handle connection status changes
    * @returns Cleanup function to remove the listener
    */
-  connectionStatus: (callback: GdbAny) => () => void;
+  connectionStatus: (callback: ValueCallback<ConnectionStatusPayload>) => Unsubscribe;
 
   /**
    * Registers a callback for general notifications from main to renderer process.
    * @param callback - Function to handle notification messages
    * @returns Cleanup function to remove the listener
    */
-  notifyRender: (callback: (data: NotifyRenderMessage) => void) => () => void;
+  notifyRender: (callback: ValueCallback<NotifyRenderMessage>) => Unsubscribe;
 
   // === GDB Data Channels (Main -> Renderer) ===
 
@@ -108,63 +128,63 @@ export interface IElectronAPI {
    * @param callback - Function to handle register data
    * @returns Cleanup function to remove the listener
    */
-  dataRegisters: (callback: GdbAny) => () => void;
+  dataRegisters: (callback: ValueCallback<Map<string, gdbRegisters>>) => Unsubscribe;
 
   /**
    * Registers a callback for call stack frame updates from GDB.
    * @param callback - Function to handle stack frame data
    * @returns Cleanup function to remove the listener
    */
-  stackFrames: (callback: GdbAny) => () => void;
+  stackFrames: (callback: ValueCallback<gdbStackFrame[]>) => Unsubscribe;
 
   /**
    * Registers a callback for source file content and location updates from GDB.
    * @param callback - Function to handle source file data
    * @returns Cleanup function to remove the listener
    */
-  sourceFile: (callback: GdbAny) => () => void;
+  sourceFile: (callback: ValueCallback<gdbShowSourceInfo>) => Unsubscribe;
 
   /**
    * Registers a callback for local variable data updates from GDB.
    * @param callback - Function to handle local variables data
    * @returns Cleanup function to remove the listener
    */
-  dataLocals: (callback: GdbAny) => () => void;
+  dataLocals: (callback: ValueCallback<Local[] | undefined>) => Unsubscribe;
 
   /**
    * Registers a callback for thread information updates from GDB.
    * @param callback - Function to handle thread data
    * @returns Cleanup function to remove the listener
    */
-  dataThreads: (callback: GdbAny) => () => void;
+  dataThreads: (callback: ValueCallback<ThreadsPayload>) => Unsubscribe;
 
   /**
    * Registers a callback for breakpoint data updates from GDB.
    * @param callback - Function to handle breakpoint map data
    * @returns Cleanup function to remove the listener
    */
-  dataBrkPts: (callback: (data: Map<string, gdbBreakpoint>) => void) => () => void;
+  dataBrkPts: (callback: ValueCallback<Map<string, gdbBreakpoint>>) => Unsubscribe;
 
   /**
    * Registers a callback for memory content updates from GDB.
    * @param callback - Function to handle memory data
    * @returns Cleanup function to remove the listener
    */
-  dataMemory: (callback: GdbAny) => () => void;
+  dataMemory: (callback: ValueCallback<MemoryData>) => Unsubscribe;
 
   /**
    * Registers a callback for disassembled code updates from GDB.
    * @param callback - Function to handle disassembly data
    * @returns Cleanup function to remove the listener
    */
-  dataDisasm: (callback: GdbAny) => () => void;
+  dataDisasm: (callback: ValueCallback<gdbAsmRow[]>) => Unsubscribe;
 
   /**
    * Registers a callback for function symbol information from GDB.
    * @param callback - Function to handle function data
    * @returns Cleanup function to remove the listener
    */
-  dataFunctions: (callback: GdbAny) => () => void;
+  dataFunctions: (callback: ValueCallback<gdbFunction[]>) => Unsubscribe;
 
   // === Commands (Renderer -> Main) ===
 

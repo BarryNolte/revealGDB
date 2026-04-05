@@ -14,8 +14,6 @@
  */
 
 // Vite ?inline import: resolved at build time, returned as a string.
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore — Vite handles the ?inline suffix; tsc does not understand it.
 import syncfusionDarkCss from "./syncfusion-dark.css?inline";
 
 export type AppTheme = "Light" | "Dark" | "Auto";

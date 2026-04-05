@@ -38,6 +38,13 @@ vi.mock("../../../../src/renderer/utilities/useGridColumnState", () => ({
 }));
 
 const mockUnsubscribe = vi.fn();
+type CallstackTestWindow = Window & {
+  ipcToMain: {
+    debuggerData: {
+      stackFrames: ReturnType<typeof vi.fn>;
+    };
+  };
+};
 
 beforeEach(() => {
   mockAutoFitColumns.mockReset();
@@ -68,8 +75,8 @@ describe("GdbCallstackWindow smoke test", () => {
 
   it("subscribes to stack frame data on mount", () => {
     render(<GdbCallStackWindow />);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((window as any).ipcToMain.debuggerData.stackFrames).toHaveBeenCalledTimes(1);
+    const testWindow = window as unknown as CallstackTestWindow;
+    expect(testWindow.ipcToMain.debuggerData.stackFrames).toHaveBeenCalledTimes(1);
   });
 
   it("unsubscribes from stack frames on unmount", () => {

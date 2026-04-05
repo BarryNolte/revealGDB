@@ -8,6 +8,13 @@ vi.mock("../../../../src/renderer/Components/HexEditor/HexEditor", () => ({
 }));
 
 const mockUnsubscribe = vi.fn();
+type MemoryTestWindow = Window & {
+  ipcToMain: {
+    debuggerData: {
+      memory: ReturnType<typeof vi.fn>;
+    };
+  };
+};
 
 beforeEach(() => {
   mockUnsubscribe.mockReset();
@@ -41,8 +48,8 @@ describe("GdbMemoryWindow smoke test", () => {
 
   it("subscribes to memory data on mount", () => {
     render(<GdbMemoryWindow />);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((window as any).ipcToMain.debuggerData.memory).toHaveBeenCalledTimes(1);
+    const testWindow = window as unknown as MemoryTestWindow;
+    expect(testWindow.ipcToMain.debuggerData.memory).toHaveBeenCalledTimes(1);
   });
 
   it("unsubscribes from memory data on unmount", () => {

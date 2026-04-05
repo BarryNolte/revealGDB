@@ -12,8 +12,15 @@ import {
   Resize,
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
-import { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { GdbAny } from "../../common/gdb-common";
+import {
+  JSX,
+  MouseEvent as ReactMouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
 import imgDelete from "../icons/icons8-delete-48.png";
@@ -57,7 +64,7 @@ export default function GdbBreakPointWindow(): JSX.Element {
     };
   }, []);
 
-  const emptyMessageTemplate = useCallback((): GdbAny => {
+  const emptyMessageTemplate = useCallback((): JSX.Element => {
     return (
       <div className="emptyRecordTemplate">
         <span>There are no breakpoints.</span>
@@ -65,18 +72,18 @@ export default function GdbBreakPointWindow(): JSX.Element {
     );
   }, []);
 
-  const checkboxTemplate = useCallback((props: GdbAny) => {
+  const checkboxTemplate = useCallback((props: BreakpointGridRow) => {
     return (
       <div className="bp-delete-container">
         <button
           type="button"
           className="bp-delete"
           name="delete"
-          onClick={(e: GdbAny) => {
+          onClick={(e: ReactMouseEvent<HTMLButtonElement>) => {
             const attr = e.currentTarget.getAttribute("data-id");
             window.ipcToMain.commands.debugger.sendGdbCommand(`d ${attr}`);
           }}
-          data-id={props!.number}
+          data-id={props?.number}
         >
           <img className="bp-delete-img" src={imgDelete} alt="Delete Breakpoint"></img>
         </button>
@@ -84,14 +91,14 @@ export default function GdbBreakPointWindow(): JSX.Element {
           type="checkbox"
           className="bp-enable"
           title="Enable"
-          checked={props!.enabled}
-          onClick={(e: GdbAny) => {
-            const attr = e.target.getAttribute("data-id");
+          checked={Boolean(props?.enabled)}
+          onClick={(e: ReactMouseEvent<HTMLInputElement>) => {
+            const attr = e.currentTarget.getAttribute("data-id");
             window.ipcToMain.commands.debugger.sendGdbCommand(
-              e.target.checked === true ? `enable ${attr}` : `disable ${attr}`,
+              e.currentTarget.checked === true ? `enable ${attr}` : `disable ${attr}`,
             );
           }}
-          data-id={props!.number}
+          data-id={props?.number}
         />
       </div>
     );
@@ -102,7 +109,8 @@ export default function GdbBreakPointWindow(): JSX.Element {
       case "delete":
         {
           const delArgs: DeleteEventArgs = args;
-          delArgs.data?.forEach((bp: GdbAny) => {
+          const rows = (delArgs.data ?? []) as BreakpointGridRow[];
+          rows.forEach((bp) => {
             window.ipcToMain.commands.debugger.sendGdbCommand(`d ${bp.number}`);
           });
         }

@@ -68,6 +68,13 @@ vi.mock("../../../../src/renderer/utilities/useGridColumnState", () => ({
 
 const mockUnsubscribe = vi.fn();
 let capturedLocalsCallback: ((data: unknown) => void) | null = null;
+type LocalsTestWindow = Window & {
+  ipcToMain: {
+    debuggerData: {
+      locals: ReturnType<typeof vi.fn>;
+    };
+  };
+};
 
 beforeEach(() => {
   mockUnsubscribe.mockReset();
@@ -101,8 +108,8 @@ describe("GdbLocalsWindow smoke test", () => {
 
   it("subscribes to locals data on mount", () => {
     render(<GdbLocalsWindow />);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((window as any).ipcToMain.debuggerData.locals).toHaveBeenCalledTimes(1);
+    const testWindow = window as unknown as LocalsTestWindow;
+    expect(testWindow.ipcToMain.debuggerData.locals).toHaveBeenCalledTimes(1);
   });
 
   it("unsubscribes from locals data on unmount", () => {

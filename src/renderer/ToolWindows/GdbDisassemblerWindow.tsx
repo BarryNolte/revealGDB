@@ -30,7 +30,6 @@ import {
 } from "@syncfusion/ej2-react-grids";
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { JSX, useEffect, useId, useMemo, useRef, useState } from "react";
-import { GdbAny } from "../../common/gdb-common";
 import {
   gdbAsmRow,
   gdbFunction,
@@ -42,6 +41,8 @@ import { renderGroupCaption, renderInstructionParts } from "./GdbDisassemblerLin
 import "./GdbDisassemblerWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
+
+type DisasmRowTemplateData = Pick<gdbAsmRow, "address" | "offset" | "opcodes">;
 
 /**
  * Disassembler window component.
@@ -262,8 +263,8 @@ export default function GdbDisassemblerWindow(): JSX.Element {
                 enableGroupByFormat={true}
                 textAlign="Left"
                 clipMode="EllipsisWithTooltip"
-                template={(props: GdbAny) => (
-                  <span className="disasmAddress">{props!.address}</span>
+                template={(props: DisasmRowTemplateData) => (
+                  <span className="disasmAddress">{props?.address}</span>
                 )}
               />
               <ColumnDirective field="func" headerText="Function" />
@@ -271,13 +272,15 @@ export default function GdbDisassemblerWindow(): JSX.Element {
                 field="offset"
                 headerText="Offset"
                 clipMode="EllipsisWithTooltip"
-                template={(props: GdbAny) => <span className="disasmOffset">{props!.offset}</span>}
+                template={(props: DisasmRowTemplateData) => (
+                  <span className="disasmOffset">{props?.offset}</span>
+                )}
               />
               <ColumnDirective
                 field="opcodes"
                 headerText="Opcodes"
-                template={(props: GdbAny) => (
-                  <span className="disasmOpcodes">{props!.opcodes}</span>
+                template={(props: DisasmRowTemplateData) => (
+                  <span className="disasmOpcodes">{props?.opcodes}</span>
                 )}
               />
               <ColumnDirective
@@ -312,13 +315,21 @@ export default function GdbDisassemblerWindow(): JSX.Element {
           id={`disasm-start-menu-${menuIdBase}`}
           target={`#asm-start`}
           items={menuCutCopyPaste}
-          select={(e) => doCutCopyPaste(e.item.text, startRef.current!)}
+          select={(e) => {
+            if (startRef.current) {
+              doCutCopyPaste(e.item.text, startRef.current);
+            }
+          }}
         />
         <ContextMenuComponent
           id={`disasm-length-menu-${menuIdBase}`}
           target={`#asm-length`}
           items={menuCutCopyPaste}
-          select={(e) => doCutCopyPaste(e.item.text, lengthRef.current!)}
+          select={(e) => {
+            if (lengthRef.current) {
+              doCutCopyPaste(e.item.text, lengthRef.current);
+            }
+          }}
         />
       </div>
     </ToolWindowContent>

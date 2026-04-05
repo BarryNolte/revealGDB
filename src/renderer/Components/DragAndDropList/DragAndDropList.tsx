@@ -114,9 +114,13 @@ export default function DragAndDropList({
       internalItemsRef.current = nextItems;
       setInternalItems(nextItems);
       setDraggedIndex(index);
-      dragEvent.dataTransfer!.effectAllowed = "move";
-      dragEvent.dataTransfer!.setData("text/html", "");
-      dragEvent.dataTransfer!.setDragImage(li, 0, 0);
+      const transfer = dragEvent.dataTransfer;
+      if (!transfer) {
+        return;
+      }
+      transfer.effectAllowed = "move";
+      transfer.setData("text/html", "");
+      transfer.setDragImage(li, 0, 0);
     };
 
     const handleNativeDragEnter = (e: Event) => {
@@ -143,7 +147,11 @@ export default function DragAndDropList({
     const handleNativeDragOver = (e: Event) => {
       const dragEvent = e as globalThis.DragEvent;
       dragEvent.preventDefault();
-      dragEvent.dataTransfer!.dropEffect = "move";
+      const transfer = dragEvent.dataTransfer;
+      if (!transfer) {
+        return;
+      }
+      transfer.dropEffect = "move";
     };
 
     const handleNativeDrop = (e: Event) => {

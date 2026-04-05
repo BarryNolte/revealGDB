@@ -35,6 +35,14 @@ vi.mock("../../../../src/renderer/utilities/useGridColumnState", () => ({
 
 const mockUnsubDisasm = vi.fn();
 const mockUnsubFunctions = vi.fn();
+type DisasmTestWindow = Window & {
+  ipcToMain: {
+    debuggerData: {
+      disassembly: ReturnType<typeof vi.fn>;
+      functions: ReturnType<typeof vi.fn>;
+    };
+  };
+};
 
 beforeEach(() => {
   mockUnsubDisasm.mockReset();
@@ -70,8 +78,7 @@ describe("GdbDisassemblerWindow smoke test", () => {
 
   it("subscribes to disassembly and function data on mount", () => {
     render(<GdbDisassemblerWindow />);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ipc = (window as any).ipcToMain;
+    const ipc = (window as unknown as DisasmTestWindow).ipcToMain;
     expect(ipc.debuggerData.disassembly).toHaveBeenCalledTimes(1);
     expect(ipc.debuggerData.functions).toHaveBeenCalledTimes(1);
   });
