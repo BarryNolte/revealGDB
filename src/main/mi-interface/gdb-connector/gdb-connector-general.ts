@@ -1,9 +1,9 @@
 import { ChildProcess, spawn } from "child_process";
-import { ConnectionNotifier } from "../../utilities/ConnectionNotifier";
-import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector";
 import { SelectedConnection } from "../../../common/gdb-common";
+import { NormalizedConnection } from "../../../renderer/Dialogs/connectionManagerModel";
+import { ConnectionNotifier } from "../../utilities/ConnectionNotifier";
 import { gdbStateDatabase } from "../gdb-state-database/gdbStateDatabase";
-import { NormalizedConnection } from "../../../renderer/Dialogs/useConnectionManagerController";
+import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector";
 
 export class gdbConnectorIdfOnWsl extends GdbConnector {
   private gdbExe: ChildProcess | null = null;

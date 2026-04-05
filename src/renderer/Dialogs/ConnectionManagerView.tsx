@@ -10,7 +10,7 @@ import type { ChangeEvent, ReactElement, RefObject } from "react";
 import DragAndDropList, {
   DragAndDropListItem,
 } from "../Components/DragAndDropList/DragAndDropList";
-import { ConnectionGridRow } from "./useConnectionManagerController";
+import { ConnectionGridRow } from "./connectionManagerModel";
 
 type ShellOptionView = {
   key: string;

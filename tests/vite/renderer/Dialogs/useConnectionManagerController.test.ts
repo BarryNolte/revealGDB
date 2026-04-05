@@ -1,14 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildConnectionFromForm,
   DEFAULT_WSL_DISTRO,
+  dragAndDropItemsToCommandStrings,
+  extractSettingsConnections,
   getShellKeyFromConnection,
+  mapConnectionToGridRow,
   mergeUniqueDistros,
   normalizeConnectionForStorage,
   normalizeDistroName,
   normalizeShellKey,
   toCommandStrings,
   toDragAndDropItems,
-} from "../../../../src/renderer/Dialogs/useConnectionManagerController";
+} from "../../../../src/renderer/Dialogs/connectionManagerModel";
 
 describe("useConnectionManagerController model helpers", () => {
   it("normalizes distro names and collapses whitespace", () => {
@@ -84,6 +88,81 @@ describe("useConnectionManagerController model helpers", () => {
       name: "No Commands",
       shell: "wsl",
       commands: ["gdb"],
+    });
+  });
+
+  // --- New tests for extracted model helpers ---
+
+  it("extracts connections from settings.connections", () => {
+    const conns = [{ name: "A" }, { name: "B" }];
+    expect(extractSettingsConnections({ connections: conns })).toBe(conns);
+  });
+
+  it("extracts connections from settings.gdb.connections", () => {
+    const conns = [{ name: "C" }];
+    expect(extractSettingsConnections({ gdb: { connections: conns } })).toBe(conns);
+  });
+
+  it("returns empty array for missing connections", () => {
+    expect(extractSettingsConnections({})).toEqual([]);
+    expect(extractSettingsConnections(null)).toEqual([]);
+    expect(extractSettingsConnections(undefined)).toEqual([]);
+  });
+
+  it("converts drag-and-drop items to command strings", () => {
+    const items = [
+      { text: "gdb", id: "1" },
+      { text: "  target remote :1234  ", id: "2" },
+      { text: "   ", id: "3" },
+    ];
+    expect(dragAndDropItemsToCommandStrings(items)).toEqual(["gdb", "target remote :1234"]);
+  });
+
+  it("builds connection from form values", () => {
+    const result = buildConnectionFromForm(
+      "  My Conn  ",
+      "wsl",
+      [
+        { text: "gdb", id: "1" },
+        { text: "target remote :1234", id: "2" },
+      ],
+      "Ubuntu",
+      "wsl",
+    );
+
+    expect(result).toEqual({
+      name: "My Conn",
+      shell: "wsl",
+      commands: ["gdb", "target remote :1234"],
+      wslDistribution: "Ubuntu",
+    });
+  });
+
+  it("builds connection with defaults for empty name", () => {
+    const result = buildConnectionFromForm(
+      "   ",
+      "bash",
+      [{ text: "gdb", id: "1" }],
+      "",
+      "bash",
+    );
+
+    expect(result.name).toBe("Unnamed Connection");
+    expect(result.shell).toBe("bash");
+  });
+
+  it("maps connection to grid row", () => {
+    const row = mapConnectionToGridRow(
+      { name: "Test", shell: "wsl", commands: ["gdb", "bt"] },
+      3,
+      "wsl",
+    );
+
+    expect(row).toEqual({
+      connectionIndex: 3,
+      name: "Test",
+      shell: "WSL",
+      commands: "gdb\nbt",
     });
   });
 });
