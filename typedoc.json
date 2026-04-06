@@ -1,0 +1,23 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/main", "src/renderer", "src/common", "src/preload"],
+  "entryPointStrategy": "expand",
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/test-helpers/**",
+    "**/*-test.tsx",
+    "**/*.d.ts",
+    "**/global.d.ts"
+  ],
+  "out": "docs/api",
+  "tsconfig": "tsconfig.json",
+  "readme": "none",
+  "name": "revealGDB API",
+  "excludePrivate": false,
+  "excludeProtected": false,
+  "excludeInternal": true,
+  "categorizeByGroup": true,
+  "sort": ["source-order"],
+  "plugin": []
+}

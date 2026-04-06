@@ -24,6 +24,26 @@ npm run dev
 npm run lint
 ```
 
+API documentation (TSDoc + TypeDoc)
+
+1. Generate API docs from source files:
+
+```powershell
+npm run docs
+```
+
+2. Open generated docs:
+
+```powershell
+start .\docs\api\index.html
+```
+
+Notes:
+
+- TypeDoc reads TSDoc comments from `src/main`, `src/renderer`, `src/common`, and `src/preload`.
+- Output is generated to `docs/api`.
+- Test harness files and declaration files are excluded via `typedoc.json`.
+
 Startup benchmark
 
 1. Set a baseline (typically on a known-good commit)
