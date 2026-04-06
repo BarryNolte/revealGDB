@@ -54,7 +54,7 @@
 .defaultRow {
   position: relative;
   line-height: normal;
-  white-space: nowrap;
+  white-space: pre;
   padding-left: 10px;
   width: 3500px;
   display: inline-block;

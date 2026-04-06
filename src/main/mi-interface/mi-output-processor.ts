@@ -26,6 +26,23 @@ export class MiOutputProcessor {
     this.statusHandler = new MiStatusAsyncHandler(host);
   }
 
+  private decodeMiEscapes(input: string): string {
+    return input.replace(/\\\\nnn|\\"|\\t|\\n/g, (match) => {
+      switch (match) {
+        case "\\\\nnn":
+          return "\\nnn";
+        case '\\"':
+          return '"';
+        case "\\t":
+          return "\t";
+        case "\\n":
+          return "\n";
+        default:
+          return match;
+      }
+    });
+  }
+
   async handleDataChunk(rawOutput: string, captureLine: (line: string) => boolean): Promise<void> {
     if (!rawOutput.endsWith("\n")) {
       this.streamSave.push(rawOutput);
@@ -46,6 +63,7 @@ export class MiOutputProcessor {
         if (captureLine(line)) {
           return;
         }
+
         console.log(`Raw line received: ${line}`);
         // eslint-disable-next-line no-control-regex
         line = line.replaceAll(/\x1B\[[0-9;?]*[ -/]*[@-~]/g, "");
@@ -139,7 +157,7 @@ export class MiOutputProcessor {
     const strLine = chunks?.groups?.line || "";
 
     if (strLine.endsWith("\\n")) {
-      const lines: string[] = strLine.replaceAll('\\"', '"').replaceAll("\\t", "\t").split("\\n");
+      const lines: string[] = this.decodeMiEscapes(strLine).split("\n");
       if (lines[lines.length - 1] === "") {
         lines.pop();
       }
@@ -157,10 +175,7 @@ export class MiOutputProcessor {
     this.savedConsoleStr += line;
 
     if (this.savedConsoleStr.endsWith("\\n")) {
-      const lines: string[] = this.savedConsoleStr
-        .replaceAll('\\"', '"')
-        .replaceAll("\\t", "\t")
-        .split("\\n");
+      const lines: string[] = this.decodeMiEscapes(this.savedConsoleStr).split("\n");
 
       if (lines[lines.length - 1] === "") {
         lines.pop();
