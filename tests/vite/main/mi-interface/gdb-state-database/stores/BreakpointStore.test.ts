@@ -1,3 +1,15 @@
+/**
+ * BreakpointStore.test module.
+ *
+ * @remarks
+ * Source module for BreakpointStore.test.
+ */
+
+/**
+ * @file BreakpointStore.test.ts
+ * @description Source module for BreakpointStore.test.
+ */
+
 import { describe, expect, it } from "vitest";
 import { BreakpointStore } from "../../../../../../src/main/mi-interface/gdb-state-database/stores/BreakpointStore";
 

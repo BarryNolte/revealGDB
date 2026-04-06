@@ -1,3 +1,9 @@
+/**
+ * Implements bootstrap for revealGDB runtime behavior.
+ *
+ * @remarks
+ * Exported symbols include `SettingsLike`, `configureAppSettings`, `logStartupDiagnostics`, `warmSystemFonts`, `maybeInstallDevTools`, `collectVersionInfo`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { screen } from "electron";
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import { fontace } from "fontace";
@@ -16,6 +22,11 @@ export type SettingsLike = {
   file: () => string;
 };
 
+/**
+ * Performs configure app settings as part of this module's public API.
+ *
+ * @param appSettings - Value for `appSettings` consumed by this operation.
+ */
 export function configureAppSettings(appSettings: SettingsLike): void {
   appSettings.configure({
     atomicSave: true,
@@ -25,6 +36,11 @@ export function configureAppSettings(appSettings: SettingsLike): void {
   });
 }
 
+/**
+ * Performs log startup diagnostics as part of this module's public API.
+ *
+ * @param appSettings - Value for `appSettings` consumed by this operation.
+ */
 export function logStartupDiagnostics(appSettings: SettingsLike): void {
   const settingsFile = appSettings.file();
   console.log(`Settings File: ${settingsFile}`);
@@ -39,6 +55,11 @@ export function logStartupDiagnostics(appSettings: SettingsLike): void {
   });
 }
 
+/**
+ * Performs warm system fonts as part of this module's public API.
+ *
+ * @param fontList - Map of keyed values consumed or updated by this operation.
+ */
 export function warmSystemFonts(fontList: Map<string, string>): void {
   getSystemFonts().then((fontArray: string[]) => {
     fontArray.forEach((fontFile) => {
@@ -54,6 +75,11 @@ export function warmSystemFonts(fontList: Map<string, string>): void {
   });
 }
 
+/**
+ * Performs maybe install dev tools as part of this module's public API.
+ *
+ * @param isDebug - Value for `isDebug` consumed by this operation.
+ */
 export function maybeInstallDevTools(isDebug: boolean): void {
   if (!isDebug) {
     return;
@@ -68,6 +94,11 @@ export function maybeInstallDevTools(isDebug: boolean): void {
     });
 }
 
+/**
+ * Performs collect version info as part of this module's public API.
+ *
+ * @param gdbAppInfo - Map of keyed values consumed or updated by this operation.
+ */
 export function collectVersionInfo(gdbAppInfo: Map<string, GdbAny>): void {
   gdbAppInfo.set("Node Version", process.version);
   gdbAppInfo.set("Architecture", os.arch());

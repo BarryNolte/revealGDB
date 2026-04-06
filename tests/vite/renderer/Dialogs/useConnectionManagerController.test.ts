@@ -1,3 +1,15 @@
+/**
+ * useConnectionManagerController.test module.
+ *
+ * @remarks
+ * Source module for useConnectionManagerController.test.
+ */
+
+/**
+ * @file useConnectionManagerController.test.ts
+ * @description Source module for useConnectionManagerController.test.
+ */
+
 import { describe, expect, it } from "vitest";
 import {
   buildConnectionFromForm,

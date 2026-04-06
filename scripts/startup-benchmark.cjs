@@ -385,3 +385,16 @@ main().catch((error) => {
   console.error(error.message);
   process.exit(1);
 });
+
+/**
+ * @file startup-benchmark.cjs
+ * @description Source module for startup-benchmark.
+ */
+
+
+/**
+ * startup-benchmark module.
+ *
+ * @remarks
+ * Source module for startup-benchmark.
+ */

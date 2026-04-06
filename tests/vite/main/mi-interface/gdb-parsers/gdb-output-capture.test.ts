@@ -1,4 +1,16 @@
 /**
+ * gdb-output-capture.test module.
+ *
+ * @remarks
+ * Source module for gdb-output-capture.test.
+ */
+
+/**
+ * @file gdb-output-capture.test.ts
+ * @description Source module for gdb-output-capture.test.
+ */
+
+/**
  * Tests for GdbOutputCapture parsing behavior.
  */
 import { describe, expect, it } from "vitest";

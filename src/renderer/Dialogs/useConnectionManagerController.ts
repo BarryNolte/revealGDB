@@ -1,10 +1,9 @@
 /**
- * React hook for Connection Manager orchestration.
+ * Implements use connection manager controller dialog state and interaction workflows in the renderer.
  *
- * All pure helpers, types, and constants live in ./connectionManagerModel.ts
- * so the hook is limited to React state, effects, refs, and IO.
+ * @remarks
+ * Exported symbols include `useConnectionManagerController`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { GridComponent } from "@syncfusion/ej2-react-grids";
 import {
   ChangeEvent,
@@ -54,6 +53,14 @@ type UseConnectionManagerControllerArgs = {
   onCloseCallbackRef: RefObject<(() => void) | null>;
 };
 
+/**
+ * Creates and returns the `useConnectionManagerController` hook API used by renderer components.
+ *
+ * @remarks
+ * Encapsulates stateful React logic and returns values/callbacks consumed by UI components. Includes explicit error-handling logic for expected failure paths. Performs asynchronous work and should be used with completion ordering in mind.
+ *
+ * @param param1 - Value for `param1` consumed by this operation.
+ */
 export function useConnectionManagerController({
   onCloseCallbackRef,
 }: UseConnectionManagerControllerArgs) {
@@ -105,6 +112,11 @@ export function useConnectionManagerController({
       return;
     }
 
+    /**
+     * Performs native shell change handler as part of this module's internal workflow.
+     *
+     * @param event - Value for `event` consumed by this operation.
+     */
     const nativeShellChangeHandler = (event: Event): void => {
       const target = event.target as HTMLSelectElement | null;
       if (!target) {
@@ -127,6 +139,11 @@ export function useConnectionManagerController({
       return;
     }
 
+    /**
+     * Performs native connection name input handler as part of this module's internal workflow.
+     *
+     * @param event - Value for `event` consumed by this operation.
+     */
     const nativeConnectionNameInputHandler = (event: Event): void => {
       const target = event.target as HTMLInputElement | null;
       if (!target) {
@@ -331,6 +348,9 @@ export function useConnectionManagerController({
       return;
     }
 
+    /**
+     * Performs native add connection click handler as part of this module's internal workflow.
+     */
     const nativeAddConnectionClickHandler = (): void => {
       void handleAddConnection();
     };

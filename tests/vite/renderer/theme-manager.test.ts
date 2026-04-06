@@ -1,3 +1,15 @@
+/**
+ * theme-manager.test module.
+ *
+ * @remarks
+ * Source module for theme-manager.test.
+ */
+
+/**
+ * @file theme-manager.test.ts
+ * @description Source module for theme-manager.test.
+ */
+
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock the ?inline CSS import before importing the module under test

@@ -1,12 +1,9 @@
 /**
- * Pure data model for the Connection Manager.
+ * Implements connection manager model dialog state and interaction workflows in the renderer.
  *
- * Contains all types, constants, and stateless helper functions that were
- * previously co-located inside useConnectionManagerController.ts.  Extracting
- * them keeps the React hook slim (orchestration only) and makes the helpers
- * independently testable.
+ * @remarks
+ * Exported symbols include `Platform`, `ShellOption`, `ConnectionGridRow`, `NormalizedConnection`, `DEFAULT_WSL_DISTRO`, `shells`, `DEFAULT_COMMANDS_LIST`, `normalizeDistroName`, and others. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { GdbAny } from "../../common/gdb-common";
 import { DragAndDropListItem } from "../Components/DragAndDropList/DragAndDropList";
 
@@ -56,10 +53,22 @@ export const DEFAULT_COMMANDS_LIST: DragAndDropListItem[] = [{ text: "gdb", id: 
 // Pure helpers — distro names
 // ---------------------------------------------------------------------------
 
+/**
+ * Normalizes distro name into a consistent representation.
+ *
+ * @param value - Value to validate, normalize, or transform before further processing.
+ * @returns The resulting string value produced by this operation.
+ */
 export function normalizeDistroName(value: string): string {
   return value.trim().replace(/\s+/g, " ");
 }
 
+/**
+ * Performs merge unique distros as part of this module's public API.
+ *
+ * @param lists - Value for `lists` consumed by this operation.
+ * @returns The resulting collection produced by this operation.
+ */
 export function mergeUniqueDistros(...lists: string[][]): string[] {
   const uniqueMap = new Map<string, string>();
 
@@ -82,6 +91,12 @@ export function mergeUniqueDistros(...lists: string[][]): string[] {
 // Pure helpers — commands
 // ---------------------------------------------------------------------------
 
+/**
+ * Performs to command strings as part of this module's public API.
+ *
+ * @param commandsValue - Debugger command text or command descriptor to execute.
+ * @returns The resulting collection produced by this operation.
+ */
 export function toCommandStrings(commandsValue: unknown): string[] {
   if (Array.isArray(commandsValue)) {
     return commandsValue.map((value) => String(value).trim()).filter((value) => value.length > 0);
@@ -93,6 +108,12 @@ export function toCommandStrings(commandsValue: unknown): string[] {
     .filter((value) => value.length > 0);
 }
 
+/**
+ * Performs to drag and drop items as part of this module's public API.
+ *
+ * @param commandsValue - Debugger command text or command descriptor to execute.
+ * @returns The resulting collection produced by this operation.
+ */
 export function toDragAndDropItems(commandsValue: unknown): DragAndDropListItem[] {
   const commandStrings = toCommandStrings(commandsValue);
 
@@ -106,7 +127,12 @@ export function toDragAndDropItems(commandsValue: unknown): DragAndDropListItem[
   }));
 }
 
-/** Convert DragAndDropListItems back into a trimmed string array. */
+/**
+ * Performs drag and drop items to command strings as part of this module's public API.
+ *
+ * @param items - Value for `items` consumed by this operation.
+ * @returns The resulting collection produced by this operation.
+ */
 export function dragAndDropItemsToCommandStrings(items: DragAndDropListItem[]): string[] {
   return items
     .map((item) => String(typeof item === "string" ? item : item.text).trim())
@@ -117,6 +143,13 @@ export function dragAndDropItemsToCommandStrings(items: DragAndDropListItem[]): 
 // Pure helpers — shell resolution
 // ---------------------------------------------------------------------------
 
+/**
+ * Normalizes shell key into a consistent representation.
+ *
+ * @param shellValue - Value for `shellValue` consumed by this operation.
+ * @param fallbackKey - Value for `fallbackKey` consumed by this operation.
+ * @returns The resulting string value produced by this operation.
+ */
 export function normalizeShellKey(shellValue: string, fallbackKey: string): string {
   const normalizedValue = shellValue.trim().toLocaleLowerCase();
   if (normalizedValue in shells) {
@@ -130,6 +163,13 @@ export function normalizeShellKey(shellValue: string, fallbackKey: string): stri
   return matchedEntry?.[0] ?? fallbackKey;
 }
 
+/**
+ * Returns shell key from connection from current state.
+ *
+ * @param connection - Value for `connection` consumed by this operation.
+ * @param fallbackKey - Value for `fallbackKey` consumed by this operation.
+ * @returns The resulting string value produced by this operation.
+ */
 export function getShellKeyFromConnection(connection: GdbAny, fallbackKey: string): string {
   const shellValue = String(connection.shell ?? connection.connectionType ?? "").toLowerCase();
   if (shellValue in shells) {
@@ -143,7 +183,12 @@ export function getShellKeyFromConnection(connection: GdbAny, fallbackKey: strin
   return matchedEntry?.[0] ?? fallbackKey;
 }
 
-/** Resolve the human-readable shell label from a shell key. */
+/**
+ * Returns shell label from current state.
+ *
+ * @param shellKey - Value for `shellKey` consumed by this operation.
+ * @returns The resulting string value produced by this operation.
+ */
 export function getShellLabel(shellKey: string): string {
   return shells[shellKey]?.type ?? shellKey;
 }
@@ -152,6 +197,14 @@ export function getShellLabel(shellKey: string): string {
 // Pure helpers — connection normalization
 // ---------------------------------------------------------------------------
 
+/**
+ * Normalizes connection for storage into a consistent representation.
+ *
+ * @param connection - Value for `connection` consumed by this operation.
+ * @param fallbackName - Value for `fallbackName` consumed by this operation.
+ * @param fallbackShellKey - Value for `fallbackShellKey` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export function normalizeConnectionForStorage(
   connection: GdbAny,
   fallbackName: string,
@@ -179,7 +232,14 @@ export function normalizeConnectionForStorage(
   return normalized;
 }
 
-/** Map a NormalizedConnection to the grid-row shape the UI needs. */
+/**
+ * Maps source input into connection to grid row output.
+ *
+ * @param connection - Value for `connection` consumed by this operation.
+ * @param index - Zero-based index used to address a specific item.
+ * @param fallbackShellKey - Value for `fallbackShellKey` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export function mapConnectionToGridRow(
   connection: GdbAny,
   index: number,
@@ -201,7 +261,12 @@ export function mapConnectionToGridRow(
 // Pure helpers — settings extraction
 // ---------------------------------------------------------------------------
 
-/** Pull the raw connections array out of a settings object (various legacy shapes). */
+/**
+ * Extracts settings connections from the provided input.
+ *
+ * @param settings - Value for `settings` consumed by this operation.
+ * @returns The resulting collection produced by this operation.
+ */
 export function extractSettingsConnections(settings: GdbAny): GdbAny[] {
   if (Array.isArray(settings?.connections)) return settings.connections;
   if (Array.isArray(settings?.gdb?.connections)) return settings.gdb.connections;
@@ -209,8 +274,14 @@ export function extractSettingsConnections(settings: GdbAny): GdbAny[] {
 }
 
 /**
- * Build a NormalizedConnection from the current form values.
- * This is a pure mapper — no side-effects.
+ * Performs build connection from form as part of this module's public API.
+ *
+ * @param name - Value for `name` consumed by this operation.
+ * @param shellKey - Value for `shellKey` consumed by this operation.
+ * @param commands - Debugger command text or command descriptor to execute.
+ * @param wslDistribution - Value for `wslDistribution` consumed by this operation.
+ * @param fallbackShellKey - Value for `fallbackShellKey` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 export function buildConnectionFromForm(
   name: string,

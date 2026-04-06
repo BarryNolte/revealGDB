@@ -1,20 +1,9 @@
 /**
- * GDB Command Window test page.
+ * Provides gdbcommand test page helpers that power renderer integration harness pages.
  *
- * Provides a standalone test environment for the GdbCommandWindow component
- * by mocking the IPC interface. This allows testing command input, history
- * navigation, and output display without a running GDB backend.
- *
- * Test API exposed via window.__GDB_COMMAND_TEST_API__:
- * - emitConsole/Log/Error/Debug: Simulate GDB output messages
- * - emitNotifyRender: Simulate main process notifications
- * - getSentCommands: Retrieve commands sent to GDB
- * - getSavedHistory: Retrieve persisted command history
- * - reset: Clear test state
- *
- * Used by Playwright tests to verify command window functionality.
+ * @remarks
+ * Exported symbols include `setupGdbCommandTestApi`, `GdbCommandTestPage`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import type { JSX } from "react";
 import { NotifyRenderMessage } from "../../common/ipc-contracts";
 import GdbCommandWindow from "../ToolWindows/GdbCommandWindow";
@@ -55,9 +44,7 @@ type WindowWithTestApi = Window & {
 };
 
 /**
- * Sets up a mock IPC interface for testing the GDB command window.
- * Creates window.__GDB_COMMAND_TEST_API__ with methods to control and inspect
- * the component during tests.
+ * Performs setup gdb command test api as part of this module's public API.
  */
 export function setupGdbCommandTestApi(): void {
   // Skip setup if ipcToMain already exists and is from the real app
@@ -228,6 +215,11 @@ export function setupGdbCommandTestApi(): void {
   };
 }
 
+/**
+ * Performs gdb command test page as part of this module's public API.
+ *
+ * @returns The computed result produced by this operation.
+ */
 export function GdbCommandTestPage(): JSX.Element {
   return (
     <div className="gdb-command-test-container">

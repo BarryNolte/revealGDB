@@ -1,3 +1,15 @@
+/**
+ * mi-status-handler.test module.
+ *
+ * @remarks
+ * Source module for mi-status-handler.test.
+ */
+
+/**
+ * @file mi-status-handler.test.ts
+ * @description Source module for mi-status-handler.test.
+ */
+
 import { describe, expect, it, vi } from "vitest";
 import { MiStatusAsyncHandler } from "../../../../src/main/mi-interface/mi-status-handler";
 import { MiOutputHost } from "../../../../src/main/mi-interface/mi-output-types";

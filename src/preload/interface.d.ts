@@ -1,3 +1,9 @@
+/**
+ * Defines interface d preload bridge contracts exposed to the renderer process.
+ *
+ * @remarks
+ * Exported symbols include `IElectronAPI`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { GdbAny } from "../common/gdb-common";
 import { NotifyMainRequest, NotifyRenderMessage } from "../common/ipc-contracts";
 import { gdbBreakpoint } from "../main/mi-interface/gdb-state-database/gdbStateDatabase";

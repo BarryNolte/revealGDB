@@ -1,3 +1,9 @@
+/**
+ * Implements gdb breakpoints window behavior for debugger tool-window rendering and interactions.
+ *
+ * @remarks
+ * Exported symbols include `GdbBreakPointWindow`. It coordinates live debugger data with user interactions in docked tool-window views.
+ */
 import {
   ColumnDirective,
   ColumnMenu,
@@ -31,8 +37,12 @@ import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
 /**
- * Breakpoints window component.
- * Renders a Syncfusion grid with breakpoint data from GDB.
+ * Performs gdb break point window as part of this module's public API.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @returns The computed result produced by this operation.
  */
 export default function GdbBreakPointWindow(): JSX.Element {
   const gridRef = useRef<GridComponent | null>(null);

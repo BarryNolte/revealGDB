@@ -1,9 +1,9 @@
 /**
- * @file MouseKeyboardHandler.ts
- * @description Centralized event handler for mouse and keyboard interactions in the hex editor.
- * Manages cell selection, editing state, and cross-view synchronization for data changes.
+ * Provides mouse keyboard handler behavior for hex editor rendering, navigation, and input handling.
+ *
+ * @remarks
+ * Exported symbols include `MouseEventType`, `MouseCallback`, `MouseKeyboardHandler`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { convertCharValue } from "./common";
 import { ArrayChangeCallback } from "./HexEditor";
 import {
@@ -109,14 +109,12 @@ export class MouseKeyboardHandler {
   }
 
   /**
-   * Handles keyboard events while a cell is in edit mode.
-   * Supports:
-   * - Arrow keys for navigation
-   * - Character input for editing (validated by view config)
-   * - Tab/Enter to move to next cell
-   * - Escape to cancel and revert changes
-   * @private
-   * @param {KeyboardEvent} e - Keyboard event
+   * Performs on key down as part of this module's public API.
+   *
+   * @remarks
+   * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+   *
+   * @param e - Value for `e` consumed by this operation.
    */
   private onKeyDown(e: KeyboardEvent) {
     if (!this.savedElementForEdit) return;
@@ -166,11 +164,13 @@ export class MouseKeyboardHandler {
   }
 
   /**
-   * Moves edit control to a new cell.
-   * Saves current edit, then activates a new cell for editing.
-   * @private
-   * @param {ViewInfo} vt - View type configuration
-   * @param {number} newIndex - Index of the cell to move to
+   * Performs move edit control as part of this module's public API.
+   *
+   * @remarks
+   * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+   *
+   * @param vt - Value for `vt` consumed by this operation.
+   * @param newIndex - Zero-based index used to address a specific item.
    */
   private moveEditControl(vt: ViewInfo, newIndex: number) {
     this.restoreEditableElement();
@@ -182,9 +182,12 @@ export class MouseKeyboardHandler {
   }
 
   /**
-   * Prepares a cell for editing (sets focus, saves state, attaches handlers).
-   * @private
-   * @param {string} id - Element ID of the cell to edit
+   * Performs setup element for edit as part of this module's public API.
+   *
+   * @remarks
+   * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+   *
+   * @param id - Unique identifier used to look up the target entity.
    */
   private setupElementForEdit(id: string) {
     if (!this.savedElementForEdit) return;
@@ -211,9 +214,10 @@ export class MouseKeyboardHandler {
   }
 
   /**
-   * Saves and validates current edit, then updates cross-view synchronization.
-   * Normalizes input, converts to byte value, and updates other view cells.
-   * @private
+   * Performs restore editable element as part of this module's public API.
+   *
+   * @remarks
+   * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
    */
   private restoreEditableElement() {
     if (this.savedElementForEdit) {
@@ -262,10 +266,12 @@ export class MouseKeyboardHandler {
   }
 
   /**
-   * Adds row/column highlighting styles dynamically.
-   * Highlights the row of the hovered cell and its column (except for offset view).
-   * @private
-   * @param {string} id - Element ID that triggered the hover
+   * Performs add dynamic styles as part of this module's public API.
+   *
+   * @remarks
+   * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+   *
+   * @param id - Unique identifier used to look up the target entity.
    */
   private addDynamicStyles(id: string) {
     const parsedIndex = parseIndexFromId(id);
@@ -288,8 +294,10 @@ export class MouseKeyboardHandler {
   }
 
   /**
-   * Removes previously added dynamic highlight styles.
-   * @private
+   * Removes dynamic styles from managed state.
+   *
+   * @remarks
+   * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
    */
   private removeDynamicStyles(): void {
     if (this.dynamicRowStyleIdx !== undefined) {
@@ -303,14 +311,13 @@ export class MouseKeyboardHandler {
   }
 
   /**
-   * PUBLIC API - Event Routing
-   */
-
-  /**
-   * Main entry point for all mouse and keyboard events from view components.
-   * Routes events to appropriate handlers based on event type.
-   * @param {MouseEventType} type - Event type: "Over", "Leave", or "Click"
-   * @param {string} id - Element ID that triggered the event
+   * Performs handle mouse event as part of this module's public API.
+   *
+   * @remarks
+   * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+   *
+   * @param type - Discriminator that identifies the message, record, or operation type.
+   * @param id - Unique identifier used to look up the target entity.
    */
   handleMouseEvent(type: MouseEventType, id: string): void {
     switch (type) {

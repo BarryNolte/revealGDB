@@ -1,3 +1,9 @@
+/**
+ * Implements window manager for revealGDB runtime behavior.
+ *
+ * @remarks
+ * Exported symbols include `createMainWindow`, `createDebugWindow`, `loadMainWindow`, `restoreWindowBounds`, `wireWindowCloseHandlers`, `resolvePreloadPath`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { BrowserWindow } from "electron";
 import path, { join } from "path";
 
@@ -5,6 +11,12 @@ type WindowSizeSettings = {
   getSync: (key: string) => unknown;
 };
 
+/**
+ * Creates main window for downstream use.
+ *
+ * @param preloadPath - Filesystem or source path used to locate the target resource.
+ * @returns The computed result produced by this operation.
+ */
 export function createMainWindow(preloadPath: string): BrowserWindow {
   return new BrowserWindow({
     webPreferences: {
@@ -14,6 +26,12 @@ export function createMainWindow(preloadPath: string): BrowserWindow {
   });
 }
 
+/**
+ * Creates debug window for downstream use.
+ *
+ * @param mainWindow - Value for `mainWindow` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export function createDebugWindow(mainWindow: BrowserWindow): BrowserWindow {
   const debugWindow = new BrowserWindow({
     x: 0,
@@ -31,6 +49,11 @@ export function createDebugWindow(mainWindow: BrowserWindow): BrowserWindow {
   return debugWindow;
 }
 
+/**
+ * Performs load main window as part of this module's public API.
+ *
+ * @param mainWindow - Value for `mainWindow` consumed by this operation.
+ */
 export function loadMainWindow(mainWindow: BrowserWindow): void {
   let devUrl = process.env.ELECTRON_RENDERER_URL;
   if (devUrl) {
@@ -44,6 +67,12 @@ export function loadMainWindow(mainWindow: BrowserWindow): void {
   mainWindow.loadFile(devUrl);
 }
 
+/**
+ * Performs restore window bounds as part of this module's public API.
+ *
+ * @param mainWindow - Value for `mainWindow` consumed by this operation.
+ * @param appSettings - Value for `appSettings` consumed by this operation.
+ */
 export function restoreWindowBounds(
   mainWindow: BrowserWindow,
   appSettings: WindowSizeSettings,
@@ -64,6 +93,12 @@ export function restoreWindowBounds(
   mainWindow.fullScreen = appSettings.getSync("gdb.gui.windowSize.fullscreen") as boolean;
 }
 
+/**
+ * Performs wire window close handlers as part of this module's public API.
+ *
+ * @param mainWindow - Value for `mainWindow` consumed by this operation.
+ * @param debugWindow - Value for `debugWindow` consumed by this operation.
+ */
 export function wireWindowCloseHandlers(
   mainWindow: BrowserWindow,
   debugWindow: BrowserWindow | undefined,
@@ -83,6 +118,11 @@ export function wireWindowCloseHandlers(
   }
 }
 
+/**
+ * Performs resolve preload path as part of this module's public API.
+ *
+ * @returns The resulting string value produced by this operation.
+ */
 export function resolvePreloadPath(): string {
   return path.resolve("./out/preload/preload.js");
 }

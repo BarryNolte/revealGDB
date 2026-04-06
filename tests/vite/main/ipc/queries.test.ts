@@ -1,3 +1,15 @@
+/**
+ * queries.test module.
+ *
+ * @remarks
+ * Source module for queries.test.
+ */
+
+/**
+ * @file queries.test.ts
+ * @description Source module for queries.test.
+ */
+
 import { describe, expect, it, vi } from "vitest";
 import { IPC_CHANNELS } from "../../../../src/common/ipc-contracts";
 import { createIpcRegistrationHarness } from "../../../helpers/ipc-test-harness";

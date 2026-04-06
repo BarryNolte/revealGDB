@@ -1,3 +1,9 @@
+/**
+ * Implements gdb locals window behavior for debugger tool-window rendering and interactions.
+ *
+ * @remarks
+ * Exported symbols include `GdbLocalsWindow`. It coordinates live debugger data with user interactions in docked tool-window views.
+ */
 import {
   Grid,
   ColumnMenu as GridColumnMenu,
@@ -36,8 +42,12 @@ import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 Grid.Inject(GridResize, GridReorder, GridColumnMenu, GridEdit);
 
 /**
- * Locals window component.
- * Renders a Syncfusion tree grid with hierarchical local variable data from GDB.
+ * Performs gdb locals window as part of this module's public API.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @returns The computed result produced by this operation.
  */
 export default function GdbLocalsWindow(): JSX.Element {
   const menuId = useId();
@@ -107,6 +117,14 @@ export default function GdbLocalsWindow(): JSX.Element {
     }
   }, []);
 
+  /**
+   * Performs row data bound as part of this module's internal workflow.
+   *
+   * @remarks
+   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+   *
+   * @param args - Configuration values that control how this operation executes.
+   */
   const rowDataBound = (args: RowDataBoundEventArgs) => {
     const value = (args.data as GdbAny).value as string | null | undefined;
     if (!value) return;
@@ -114,6 +132,16 @@ export default function GdbLocalsWindow(): JSX.Element {
     (args.row as HTMLElement).style.height = `${lineCount * 16}px`;
   };
 
+  /**
+   * Performs value accessor as part of this module's internal workflow.
+   *
+   * @remarks
+   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+   *
+   * @param _field - Value for `_field` consumed by this operation.
+   * @param data - Structured payload consumed by this operation.
+   * @returns The resulting string value produced by this operation.
+   */
   const valueAccessor = (_field: string, data: GdbAny): string => {
     const value = data.value as string | null | undefined;
     return `<div class="treeGrid-multiline-cell">${(value ?? "").replaceAll("\\n", "<br>")}</div>`;

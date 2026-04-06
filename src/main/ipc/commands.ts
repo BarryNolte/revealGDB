@@ -1,3 +1,9 @@
+/**
+ * Defines commands IPC handlers that bridge renderer requests to main-process behavior.
+ *
+ * @remarks
+ * Exported symbols include `onGdbCommand`, `handleNotifyMain`, `registerIpcCommandHandlers`. It is responsible for channel registration, payload marshalling, and returning data to renderer callers.
+ */
 import { GdbAny, SelectedConnection } from "../../common/gdb-common";
 import { GridColumnState, GridName } from "../../common/grid-column-types";
 import { IPC_CHANNELS, NotifyMainRequest, NotifyRenderMessage } from "../../common/ipc-contracts";
@@ -6,12 +12,30 @@ import { setNativeThemeFromAppTheme } from "../theme-support";
 import { WslUtilities } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
 
+/**
+ * Performs send notify render as part of this module's internal workflow.
+ *
+ * @remarks
+ * Participates in main-process IPC wiring between renderer requests and backend services.
+ *
+ * @param context - Dependency container used to register handlers and access shared services.
+ * @param payload - Value for `payload` consumed by this operation.
+ */
 function sendNotifyRender(context: IpcRegistrationContext, payload: NotifyRenderMessage): void {
   context
     .getMainWindow()
     .webContents.send(IPC_CHANNELS.mainToRenderer.notifications.render, payload);
 }
 
+/**
+ * Performs do connection as part of this module's internal workflow.
+ *
+ * @remarks
+ * Participates in main-process IPC wiring between renderer requests and backend services.
+ *
+ * @param selectedConnection - Value for `selectedConnection` consumed by this operation.
+ * @param context - Dependency container used to register handlers and access shared services.
+ */
 function doConnection(
   selectedConnection: SelectedConnection,
   context: IpcRegistrationContext,
@@ -29,6 +53,15 @@ function doConnection(
   });
 }
 
+/**
+ * Performs on gdb command as part of this module's public API.
+ *
+ * @remarks
+ * Participates in main-process IPC wiring between renderer requests and backend services.
+ *
+ * @param command - Debugger command text or command descriptor to execute.
+ * @param context - Dependency container used to register handlers and access shared services.
+ */
 export function onGdbCommand(command: string, context: IpcRegistrationContext): void {
   const mainWindow = context.getMainWindow();
   const gdbInterface = context.getGdbInterface();
@@ -72,6 +105,15 @@ export function onGdbCommand(command: string, context: IpcRegistrationContext): 
   }
 }
 
+/**
+ * Performs handle notify main as part of this module's public API.
+ *
+ * @remarks
+ * Participates in main-process IPC wiring between renderer requests and backend services.
+ *
+ * @param msg - Message payload received from debugger output or renderer events.
+ * @param context - Dependency container used to register handlers and access shared services.
+ */
 export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
   const mainWindow = context.getMainWindow();
   const gdbInterface = context.getGdbInterface();
@@ -173,6 +215,14 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
   }
 }
 
+/**
+ * Registers ipc command handlers for the active runtime context.
+ *
+ * @remarks
+ * Participates in main-process IPC wiring between renderer requests and backend services.
+ *
+ * @param context - Dependency container used to register handlers and access shared services.
+ */
 export function registerIpcCommandHandlers(context: IpcRegistrationContext): void {
   context.ipcMain.on(
     IPC_CHANNELS.rendererToMain.commands.app.notify,

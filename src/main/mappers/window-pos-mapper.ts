@@ -1,3 +1,9 @@
+/**
+ * Implements window pos mapper for revealGDB runtime behavior.
+ *
+ * @remarks
+ * Exported symbols include `WinPos`, `mapElectronWindowToWinPos`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 export type WinPos = {
   x: number;
   y: number;
@@ -7,8 +13,10 @@ export type WinPos = {
 };
 
 /**
- * Extracts window position and size from an Electron BrowserWindow,
- * applying the 2px inset used when saving dock layout.
+ * Maps source input into electron window to win pos output.
+ *
+ * @param mainWindow - Value for `mainWindow` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 export function mapElectronWindowToWinPos(mainWindow: {
   getPosition(): number[];

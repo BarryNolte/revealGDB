@@ -1,4 +1,16 @@
 /**
+ * disasmParser.test module.
+ *
+ * @remarks
+ * Source module for disasmParser.test.
+ */
+
+/**
+ * @file disasmParser.test.ts
+ * @description Source module for disasmParser.test.
+ */
+
+/**
  * Tests for disassembly token parsing.
  */
 import { describe, expect, it } from "vitest";

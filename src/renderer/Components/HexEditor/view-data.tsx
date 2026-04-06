@@ -1,9 +1,9 @@
 /**
- * @file view-data.tsx
- * @description Hex data view component displaying binary data as hexadecimal bytes.
- * Shows 16 bytes per row with row/column highlighting on hover.
+ * Provides view data behavior for hex editor rendering, navigation, and input handling.
+ *
+ * @remarks
+ * Exported symbols include `HexDataView`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import type { JSX, MouseEvent } from "react";
 import type { MouseCallback } from "./MouseKeyboardHandler";
 
@@ -19,8 +19,12 @@ interface HexDataViewProps {
 const idPrefix = "dIdx-";
 
 /**
- * DataHeader - Renders the hex data column headers (0-F).
- * @returns {JSX.Element[]} Array containing header row
+ * Performs data header as part of this module's internal workflow.
+ *
+ * @remarks
+ * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+ *
+ * @returns The resulting collection produced by this operation.
  */
 function DataHeader(): JSX.Element[] {
   const textHeader: JSX.Element[] = [];
@@ -39,11 +43,13 @@ function DataHeader(): JSX.Element[] {
 }
 
 /**
- * DataValues - Renders the hex data cells (16 bytes per row).
- * Each cell displays a byte as a 2-digit hex value with uppercase formatting.
- * @param {Object} props - Component props
- * @param {Uint8Array} props.datasource - Binary data to display
- * @returns {JSX.Element[]} Array of table rows containing hex data
+ * Performs data values as part of this module's internal workflow.
+ *
+ * @remarks
+ * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+ *
+ * @param param1 - Value for `param1` consumed by this operation.
+ * @returns The resulting collection produced by this operation.
  */
 function DataValues({ datasource }: { datasource: Uint8Array }): JSX.Element[] {
   const valueRows: JSX.Element[] = [];
@@ -74,17 +80,13 @@ function DataValues({ datasource }: { datasource: Uint8Array }): JSX.Element[] {
 }
 
 /**
- * HexDataView - Main hex data view component.
- * Renders a table displaying binary data as hexadecimal bytes with synchronized row/column highlighting.
+ * Performs hex data view as part of this module's public API.
  *
- * Features:
- * - 16 bytes per row
- * - Row and column highlighting on hover
- * - Click to enter edit mode
- * - Keyboard navigation (arrow keys, tab, enter, escape)
+ * @remarks
+ * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
  *
- * @param {HexDataViewProps} props - Component props
- * @returns {JSX.Element} A table element with header and data rows
+ * @param param1 - Value for `param1` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 export default function HexDataView({ datasource, mouseCallback }: HexDataViewProps): JSX.Element {
   return (

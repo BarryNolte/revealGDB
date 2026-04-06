@@ -344,3 +344,17 @@ function main() {
 }
 
 main();
+
+
+/**
+ * @file maintainability-metrics.cjs
+ * @description Source module for maintainability-metrics.
+ */
+
+
+/**
+ * maintainability-metrics module.
+ *
+ * @remarks
+ * Source module for maintainability-metrics.
+ */

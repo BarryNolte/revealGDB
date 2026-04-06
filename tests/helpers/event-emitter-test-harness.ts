@@ -1,3 +1,15 @@
+/**
+ * event-emitter-test-harness module.
+ *
+ * @remarks
+ * Source module for event-emitter-test-harness.
+ */
+
+/**
+ * @file event-emitter-test-harness.ts
+ * @description Source module for event-emitter-test-harness.
+ */
+
 import { vi } from "vitest";
 
 export type EventHandler = () => void;

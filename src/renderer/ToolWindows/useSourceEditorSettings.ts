@@ -1,3 +1,9 @@
+/**
+ * Implements use source editor settings behavior for debugger tool-window rendering and interactions.
+ *
+ * @remarks
+ * Exported symbols include `SourceEditorSettings`, `useSourceEditorSettings`. It coordinates live debugger data with user interactions in docked tool-window views.
+ */
 import { useCallback, useEffect, useState } from "react";
 
 import { GdbAny } from "../../common/gdb-common";
@@ -10,6 +16,14 @@ export type SourceEditorSettings = {
   fontName: string;
 };
 
+/**
+ * Creates and returns the `useSourceEditorSettings` hook API used by renderer components.
+ *
+ * @remarks
+ * Encapsulates stateful React logic and returns values/callbacks consumed by UI components. Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @returns The computed result produced by this operation.
+ */
 export function useSourceEditorSettings(): SourceEditorSettings {
   const [theme, setTheme] = useState(defaultTheme);
   const [fontSize, setFontSize] = useState(14);

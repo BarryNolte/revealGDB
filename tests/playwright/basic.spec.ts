@@ -1,3 +1,15 @@
+/**
+ * basic.spec module.
+ *
+ * @remarks
+ * Source module for basic.spec.
+ */
+
+/**
+ * @file basic.spec.ts
+ * @description Source module for basic.spec.
+ */
+
 import { expect, test } from "@playwright/test";
 import fs from "node:fs";
 import http from "node:http";

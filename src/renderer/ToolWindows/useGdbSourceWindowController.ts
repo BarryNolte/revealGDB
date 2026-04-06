@@ -1,3 +1,9 @@
+/**
+ * Implements use gdb source window controller behavior for debugger tool-window rendering and interactions.
+ *
+ * @remarks
+ * Exported symbols include `GdbSourceWindowController`, `useGdbSourceWindowController`. It coordinates live debugger data with user interactions in docked tool-window views.
+ */
 import ace from "ace-builds";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import AceEditor from "react-ace";
@@ -29,6 +35,14 @@ export type GdbSourceWindowController = {
   onCopySelection: () => void;
 };
 
+/**
+ * Creates and returns the `useGdbSourceWindowController` hook API used by renderer components.
+ *
+ * @remarks
+ * Encapsulates stateful React logic and returns values/callbacks consumed by UI components. Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @returns The computed result produced by this operation.
+ */
 export function useGdbSourceWindowController(): GdbSourceWindowController {
   const [sourceState, setSourceState] = useState(createInitialSourceWindowState);
   const [mode, setMode] = useState(defaultMode);

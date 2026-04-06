@@ -1,4 +1,16 @@
 /**
+ * electron.vite.config module.
+ *
+ * @remarks
+ * Source module for electron.vite.config.
+ */
+
+/**
+ * @file electron.vite.config.ts
+ * @description Source module for electron.vite.config.
+ */
+
+/**
  * @type {import('electron-vite').UserConfig}
  */
 

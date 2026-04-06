@@ -1,19 +1,9 @@
 /**
- * GDB Memory window component.
+ * Implements gdb memory window behavior for debugger tool-window rendering and interactions.
  *
- * Provides a hex editor interface for viewing and editing process memory:
- * - Enter start address (hex, decimal, or register like $pc)
- * - Specify length to read
- * - View memory in hex, offset, and ASCII/text columns
- * - Edit memory values directly
- *
- * Features:
- * - Flexible address format support (0x1234, 1234, $sp)
- * - Input validation for addresses and lengths
- * - Integrated HexEditor component with synchronized views
- * - Memory modification via GDB commands
+ * @remarks
+ * Exported symbols include `GdbMemoryWindow`. It coordinates live debugger data with user interactions in docked tool-window views.
  */
-
 import { JSX, useEffect, useRef, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
 import HexEditor from "../Components/HexEditor/HexEditor";
@@ -24,8 +14,12 @@ import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
 /**
- * Memory window component.
- * Provides address input controls and hex editor for memory inspection.
+ * Performs gdb memory window as part of this module's public API.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @returns The computed result produced by this operation.
  */
 export default function GdbMemoryWindow(): JSX.Element {
   // Refs for form controls
@@ -133,6 +127,12 @@ export default function GdbMemoryWindow(): JSX.Element {
     </ToolWindowContent>
   );
 
+  /**
+   * Performs validate memory params as part of this module's public API.
+   *
+   * @remarks
+   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+   */
   function validateMemoryParams() {
     const startInput = validateValue(startRef.current?.value);
     const lengthInput = validateValue(lengthRef.current?.value);

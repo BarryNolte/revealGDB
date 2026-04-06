@@ -1,8 +1,9 @@
 /**
- * Types for persisting SyncFusion grid column state (width, visibility, order).
+ * Implements grid column types for revealGDB runtime behavior.
+ *
+ * @remarks
+ * Exported symbols include `GridColumnState`, `GridName`, `GridColumnsSettings`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
-/** Persisted state for a single grid column. */
 export type GridColumnState = {
   field: string;
   width: number | string;

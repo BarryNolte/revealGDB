@@ -1,3 +1,15 @@
+/**
+ * window-manager.test module.
+ *
+ * @remarks
+ * Source module for window-manager.test.
+ */
+
+/**
+ * @file window-manager.test.ts
+ * @description Source module for window-manager.test.
+ */
+
 import { BrowserWindow } from "electron";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEventEmitterHarness } from "../../helpers/event-emitter-test-harness";

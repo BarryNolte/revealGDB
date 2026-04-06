@@ -1,4 +1,16 @@
 /**
+ * gdbStateDatabase.test module.
+ *
+ * @remarks
+ * Source module for gdbStateDatabase.test.
+ */
+
+/**
+ * @file gdbStateDatabase.test.ts
+ * @description Source module for gdbStateDatabase.test.
+ */
+
+/**
  * Tests for gdbStateDatabase behavior and edge cases.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

@@ -1,8 +1,21 @@
+/**
+ * Implements register mapper logic for processing GDB/MI output and debugger state transitions.
+ *
+ * @remarks
+ * Exported symbols include `mapToRegisterEntry`. It sits on the debugger data path that translates MI records into typed stores and notifications.
+ */
 import { gdbRegisters } from "../gdb-state-database/types/gdbStateTypes";
 
 /**
- * Creates a new gdbRegisters entry when a register value update arrives.
- * Computes the `changed` flag by comparing new and previous values.
+ * Maps source input into to register entry output.
+ *
+ * @remarks
+ * Participates in the MI processing pipeline that updates debugger state and notifications.
+ *
+ * @param index - Zero-based index used to address a specific item.
+ * @param regValue - Value for `regValue` consumed by this operation.
+ * @param existing - Value for `existing` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 export function mapToRegisterEntry(
   index: string,

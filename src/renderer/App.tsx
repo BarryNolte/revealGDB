@@ -1,17 +1,9 @@
 /**
- * Main application component for RevealGDB.
+ * Implements app for revealGDB runtime behavior.
  *
- * This component orchestrates the entire UI, including:
- * - Docking window system for debugger panels
- * - Application toolbar with window management
- * - Dialog windows (About, Settings, Connections)
- * - All GDB tool windows (Source, Locals, Registers, Memory, etc.)
- *
- * The app uses dock-spawn-ts for a flexible docking layout that can be
- * customized and persisted. The layout state is saved to settings and
- * restored on application restart.
+ * @remarks
+ * Exported symbols include `dockMenuConnector`, `AppMainVersionInfo`, `App`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { DockManager } from "../../node_modules/dock-spawn-ts/lib/js/DockManager.js";
 
 import { JSX, RefObject, Suspense, lazy, useEffect, useRef } from "react";
@@ -53,6 +45,14 @@ const ConnectionDialog = lazy(() =>
     default: module.ConnectionDialog as unknown as () => JSX.Element,
   })),
 ) as GdbAny;
+/**
+ * Performs lazy window as part of this module's internal workflow.
+ *
+ * @remarks
+ * Performs asynchronous work and should be used with completion ordering in mind.
+ *
+ * @param importer - Callback invoked when the associated event occurs.
+ */
 function lazyWindow(importer: () => Promise<GdbAny>) {
   return lazy(() =>
     importer().then((module: GdbAny) => ({
@@ -82,6 +82,12 @@ let dockManager: DockManager;
  */
 export let dockMenuConnector: DockMenuConnector | null = null;
 
+/**
+ * Performs deferred window as part of this module's internal workflow.
+ *
+ * @param param1 - Value for `param1` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 function DeferredWindow({
   title,
   children,
@@ -117,11 +123,12 @@ import iconBp from "./icons/icons8-dot-48.png?asset";
 export let AppMainVersionInfo: Map<string, GdbAny>;
 
 /**
- * Main application component.
+ * Performs app as part of this module's public API.
  *
- * Initializes the docking layout, registers all tool windows, and sets up
- * event handlers for layout changes and window management. Also handles
- * dialog display requests from the main process.
+ * @remarks
+ * Includes explicit error-handling logic for expected failure paths. Performs asynchronous work and should be used with completion ordering in mind.
+ *
+ * @returns The computed result produced by this operation.
  */
 export default function App(): JSX.Element {
   // Refs for imperative access to child components
@@ -153,6 +160,15 @@ export default function App(): JSX.Element {
       }
     });
 
+    /**
+     * Performs initialize dock manager as part of this module's internal workflow.
+     *
+     * @remarks
+     * Includes explicit error-handling logic for expected failure paths. Performs asynchronous work and should be used with completion ordering in mind.
+     *
+     * @param gdb - Value for `gdb` consumed by this operation.
+     * @returns A promise that resolves with the computed result after asynchronous processing completes.
+     */
     const initializeDockManager = async (gdb: GdbAny): Promise<void> => {
       // Initialize the dock manager system
       const dockManagerElement = document.getElementById("revealDockManager")!;
@@ -310,6 +326,11 @@ export default function App(): JSX.Element {
     });
 
     // Handle live theme changes from the settings dialog
+    /**
+     * Performs handle app change as part of this module's internal workflow.
+     *
+     * @param e - Value for `e` consumed by this operation.
+     */
     const handleAppChange = (e: Event) => {
       const detail = (e as CustomEvent).detail;
       if (detail?.theme) {
@@ -330,6 +351,9 @@ export default function App(): JSX.Element {
     });
 
     // Handle window resize events to adjust dock layout
+    /**
+     * Performs handle resize as part of this module's internal workflow.
+     */
     const handleResize = () => {
       if (!dockMenuConnector) {
         return;

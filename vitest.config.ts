@@ -1,3 +1,15 @@
+/**
+ * vitest.config module.
+ *
+ * @remarks
+ * Source module for vitest.config.
+ */
+
+/**
+ * @file vitest.config.ts
+ * @description Source module for vitest.config.
+ */
+
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 

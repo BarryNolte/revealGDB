@@ -1,3 +1,15 @@
+/**
+ * vite.config module.
+ *
+ * @remarks
+ * Source module for vite.config.
+ */
+
+/**
+ * @file vite.config.ts
+ * @description Source module for vite.config.
+ */
+
 import { resolve } from "path";
 import { defineConfig } from "vite";
 // @ts-export-error

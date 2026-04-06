@@ -1,3 +1,15 @@
+/**
+ * LocalsStore.test module.
+ *
+ * @remarks
+ * Source module for LocalsStore.test.
+ */
+
+/**
+ * @file LocalsStore.test.ts
+ * @description Source module for LocalsStore.test.
+ */
+
 import { describe, expect, it } from "vitest";
 import { LocalsStore } from "../../../../../../src/main/mi-interface/gdb-state-database/stores/LocalsStore";
 

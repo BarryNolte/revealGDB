@@ -1,3 +1,9 @@
+/**
+ * Implements use source breakpoint interactions behavior for debugger tool-window rendering and interactions.
+ *
+ * @remarks
+ * Exported symbols include `SourceBreakpointInteractions`, `useSourceBreakpointInteractions`. It coordinates live debugger data with user interactions in docked tool-window views.
+ */
 import ace from "ace-builds";
 import { RefObject, useCallback, useEffect, useRef } from "react";
 import AceEditor from "react-ace";
@@ -14,6 +20,16 @@ export type SourceBreakpointInteractions = {
   onCopySelection: () => void;
 };
 
+/**
+ * Creates and returns the `useSourceBreakpointInteractions` hook API used by renderer components.
+ *
+ * @remarks
+ * Encapsulates stateful React logic and returns values/callbacks consumed by UI components. Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @param editorRef - Value for `editorRef` consumed by this operation.
+ * @param fullFilePathRef - Filesystem or source path used to locate the target resource.
+ * @returns The computed result produced by this operation.
+ */
 export function useSourceBreakpointInteractions(
   editorRef: RefObject<AceEditor | null>,
   fullFilePathRef: RefObject<string>,

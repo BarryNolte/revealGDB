@@ -1,17 +1,9 @@
 /**
- * Drag-and-drop reorderable list component.
+ * Defines the drag and drop list renderer component and supporting presentation logic.
  *
- * Provides a simple list editor with:
- * - Drag-and-drop reordering
- * - Item deletion
- * - Item insertion from a text input
- * - Keyboard support for adding items (Enter)
- *
- * This component keeps an internal working copy during interaction so drag
- * updates remain responsive, while still supporting controlled updates from
- * parent props via `items` and `onReorder`.
+ * @remarks
+ * Exported symbols include `DragAndDropListItem`, `DragAndDropListProps`, `DragAndDropList`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { JSX, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./DragAndDropList.css";
 
@@ -28,8 +20,12 @@ export type DragAndDropListProps = {
 };
 
 /**
- * Returns a new array where one item has been moved from `fromIndex` to
- * `toIndex`.
+ * Performs move item as part of this module's internal workflow.
+ *
+ * @param items - Value for `items` consumed by this operation.
+ * @param fromIndex - Zero-based index used to address a specific item.
+ * @param toIndex - Zero-based index used to address a specific item.
+ * @returns The resulting collection produced by this operation.
  */
 function moveItem(
   items: DragAndDropListItem[],
@@ -46,6 +42,12 @@ function moveItem(
   return next;
 }
 
+/**
+ * Performs drag and drop list as part of this module's public API.
+ *
+ * @param param1 - Value for `param1` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export default function DragAndDropList({
   id,
   items,
@@ -101,6 +103,11 @@ export default function DragAndDropList({
     const listElement = listRef.current;
     if (!listElement) return;
 
+    /**
+     * Performs handle native drag start as part of this module's internal workflow.
+     *
+     * @param e - Value for `e` consumed by this operation.
+     */
     const handleNativeDragStart = (e: Event) => {
       const dragEvent = e as globalThis.DragEvent;
       const target = dragEvent.target as HTMLElement;
@@ -123,6 +130,11 @@ export default function DragAndDropList({
       transfer.setDragImage(li, 0, 0);
     };
 
+    /**
+     * Performs handle native drag enter as part of this module's internal workflow.
+     *
+     * @param e - Value for `e` consumed by this operation.
+     */
     const handleNativeDragEnter = (e: Event) => {
       const dragEvent = e as globalThis.DragEvent;
       dragEvent.preventDefault();
@@ -144,6 +156,11 @@ export default function DragAndDropList({
       setDraggedIndex(index);
     };
 
+    /**
+     * Performs handle native drag over as part of this module's internal workflow.
+     *
+     * @param e - Value for `e` consumed by this operation.
+     */
     const handleNativeDragOver = (e: Event) => {
       const dragEvent = e as globalThis.DragEvent;
       dragEvent.preventDefault();
@@ -154,6 +171,11 @@ export default function DragAndDropList({
       transfer.dropEffect = "move";
     };
 
+    /**
+     * Performs handle native drop as part of this module's internal workflow.
+     *
+     * @param e - Value for `e` consumed by this operation.
+     */
     const handleNativeDrop = (e: Event) => {
       const dragEvent = e as globalThis.DragEvent;
       dragEvent.preventDefault();
@@ -163,12 +185,22 @@ export default function DragAndDropList({
       onReorder?.(internalItemsRef.current);
     };
 
+    /**
+     * Performs handle native drag end as part of this module's internal workflow.
+     *
+     * @param _e - Value for `_e` consumed by this operation.
+     */
     const handleNativeDragEnd = (_e: Event) => {
       //console.log(`[DragEnd] Clearing drag state, current draggedIndex:`, draggedIndexRef.current);
       setDraggedIndex(null);
       onReorder?.(internalItemsRef.current);
     };
 
+    /**
+     * Performs handle native delete click as part of this module's internal workflow.
+     *
+     * @param e - Value for `e` consumed by this operation.
+     */
     const handleNativeDeleteClick = (e: Event) => {
       const target = e.target as HTMLElement | null;
       const button = target?.closest(".drag-drop-list-item-delete");
@@ -243,6 +275,11 @@ export default function DragAndDropList({
     }
 
     // Bind native handlers to keep behavior consistent in embedded contexts.
+    /**
+     * Performs handle native key down as part of this module's internal workflow.
+     *
+     * @param event - Value for `event` consumed by this operation.
+     */
     const handleNativeKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter") {
         event.preventDefault();
@@ -250,6 +287,11 @@ export default function DragAndDropList({
       }
     };
 
+    /**
+     * Performs handle native click as part of this module's internal workflow.
+     *
+     * @param event - Value for `event` consumed by this operation.
+     */
     const handleNativeClick = (event: Event) => {
       event.preventDefault();
       handleAddItem();

@@ -1,3 +1,15 @@
+/**
+ * app-events.test module.
+ *
+ * @remarks
+ * Source module for app-events.test.
+ */
+
+/**
+ * @file app-events.test.ts
+ * @description Source module for app-events.test.
+ */
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { IPC_CHANNELS } from "../../../src/common/ipc-contracts";
 import { registerAppEvents } from "../../../src/main/app-events";

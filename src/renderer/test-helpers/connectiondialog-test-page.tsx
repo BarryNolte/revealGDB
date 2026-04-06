@@ -1,3 +1,9 @@
+/**
+ * Provides connectiondialog test page helpers that power renderer integration harness pages.
+ *
+ * @remarks
+ * Exported symbols include `setupConnectionDialogTestApi`, `ConnectionDialogTestPage`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import type { JSX } from "react";
 import { useEffect, useRef } from "react";
 import { ConnectionDialog, type WhileConnectingDialogHandle } from "../Dialogs/ConnectionDialog";
@@ -40,9 +46,22 @@ const defaultSettings: ConnectionDialogSettings = {
   ],
 };
 
+/**
+ * Performs show dialog impl as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 let showDialogImpl: () => void = () => undefined;
+/**
+ * Performs hide dialog impl as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 let hideDialogImpl: () => void = () => undefined;
 
+/**
+ * Performs setup connection dialog test api as part of this module's public API.
+ */
 export function setupConnectionDialogTestApi(): void {
   const ipc = window.ipcToMain ?? ({} as Window["ipcToMain"]);
   if (!window.ipcToMain) {
@@ -192,6 +211,11 @@ export function setupConnectionDialogTestApi(): void {
   };
 }
 
+/**
+ * Performs connection dialog test page as part of this module's public API.
+ *
+ * @returns The computed result produced by this operation.
+ */
 export function ConnectionDialogTestPage(): JSX.Element {
   const dialogRef = useRef<WhileConnectingDialogHandle>(null);
 

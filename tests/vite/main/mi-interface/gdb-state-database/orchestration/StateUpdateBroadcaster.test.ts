@@ -1,3 +1,15 @@
+/**
+ * StateUpdateBroadcaster.test module.
+ *
+ * @remarks
+ * Source module for StateUpdateBroadcaster.test.
+ */
+
+/**
+ * @file StateUpdateBroadcaster.test.ts
+ * @description Source module for StateUpdateBroadcaster.test.
+ */
+
 import { describe, expect, it, vi } from "vitest";
 import type { UINotifier } from "../../../../../../src/main/mi-interface/gdb-state-database/notifiers/UINotifier";
 import { BreakpointStore } from "../../../../../../src/main/mi-interface/gdb-state-database/stores/BreakpointStore";

@@ -232,3 +232,17 @@ describe("gdbConnectorIdfOnWsl", () => {
     expect(connector.IsRunning()).toBe(false);
   });
 });
+
+
+/**
+ * @file gdb-connector-general.test.ts
+ * @description Source module for gdb-connector-general.test.
+ */
+
+
+/**
+ * gdb-connector-general.test module.
+ *
+ * @remarks
+ * Source module for gdb-connector-general.test.
+ */

@@ -1,11 +1,9 @@
 /**
- * React hook for persisting and restoring SyncFusion grid column state
- * (width, visibility, order) across sessions via the settings file.
+ * Provides use grid column state renderer utilities for formatting, state shaping, and shared view logic.
  *
- * Uses imperative addEventListener on the grid instance (not JSX props)
- * to reliably capture resizeStop and actionComplete events.
+ * @remarks
+ * Exported symbols include `UseGridColumnStateResult`, `applySavedColumnsToGrid`, `useGridColumnState`, `resetAllGridColumnDefaults`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { GridColumnState, GridColumnsSettings, GridName } from "../../common/grid-column-types";
 import { Column } from "@syncfusion/ej2-grids";
@@ -23,10 +21,10 @@ export type UseGridColumnStateResult = {
 };
 
 /**
- * Normalize a SyncFusion column width for consistent storage.
- * - Strips trailing "px" suffix (SyncFusion adds it after resize via formatUnit)
- * - Preserves percentage strings like "20%"
- * - Returns a number when possible, otherwise the original string
+ * Normalizes width into a consistent representation.
+ *
+ * @param width - Value for `width` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 function normalizeWidth(width: string | number | undefined): number | string {
   if (width === undefined || width === null) return "auto";
@@ -42,8 +40,10 @@ function normalizeWidth(width: string | number | undefined): number | string {
 }
 
 /**
- * Extracts persistable state from SyncFusion column objects.
- * Uses array position as the column index (grid.columns is always in display order).
+ * Extracts column state from the provided input.
+ *
+ * @param columns - Value for `columns` consumed by this operation.
+ * @returns The resulting collection produced by this operation.
  */
 function extractColumnState(columns: Column[]): GridColumnState[] {
   return columns
@@ -57,9 +57,10 @@ function extractColumnState(columns: Column[]): GridColumnState[] {
 }
 
 /**
- * Apply saved column state (width, visibility, order) to a mounted grid.
- * Gracefully handles schema changes — ignores saved columns that no longer
- * exist and uses defaults for new columns not found in saved state.
+ * Performs apply saved columns to grid as part of this module's public API.
+ *
+ * @param grid - Unique identifier used to look up the target entity.
+ * @param savedColumns - Value for `savedColumns` consumed by this operation.
  */
 export function applySavedColumnsToGrid(
   grid: GridComponent | TreeGridComponent,
@@ -95,7 +96,10 @@ export function applySavedColumnsToGrid(
 }
 
 /**
- * Save column state to settings via IPC.
+ * Performs save columns to settings as part of this module's internal workflow.
+ *
+ * @param gridName - Value for `gridName` consumed by this operation.
+ * @param columns - Value for `columns` consumed by this operation.
  */
 function saveColumnsToSettings(gridName: GridName, columns: Column[]): void {
   const state = extractColumnState(columns);
@@ -106,15 +110,14 @@ function saveColumnsToSettings(gridName: GridName, columns: Column[]): void {
 }
 
 /**
- * Hook to save/restore SyncFusion grid column widths, visibility, and order.
+ * Creates and returns the `useGridColumnState` hook API used by renderer components.
  *
- * Attaches event listeners imperatively (via grid.addEventListener) instead of
- * React props to ensure reliable event capture regardless of SyncFusion's
- * internal React mixin lifecycle.
+ * @remarks
+ * Encapsulates stateful React logic and returns values/callbacks consumed by UI components.
  *
- * @param gridName - Unique identifier for this grid in settings
- * @param gridRef - Ref to the GridComponent or TreeGridComponent
- * @returns Object with saved column state and reset function
+ * @param gridName - Value for `gridName` consumed by this operation.
+ * @param gridRef - Value for `gridRef` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 export function useGridColumnState(
   gridName: GridName,
@@ -157,16 +160,29 @@ export function useGridColumnState(
     const grid = gridRef.current;
     if (!grid) return;
 
+    /**
+     * Performs handle resize stop as part of this module's internal workflow.
+     */
     const handleResizeStop = () => {
       saveColumnsToSettings(gridNameRef.current, grid.columns as Column[]);
     };
 
+    /**
+     * Performs handle action complete as part of this module's internal workflow.
+     *
+     * @param args - Configuration values that control how this operation executes.
+     */
     const handleActionComplete = (args: GdbAny) => {
       if (args.requestType === "columnstate" || args.requestType === "reorder") {
         saveColumnsToSettings(gridNameRef.current, grid.columns as Column[]);
       }
     };
 
+    /**
+     * Performs handle column menu click as part of this module's internal workflow.
+     *
+     * @param args - Configuration values that control how this operation executes.
+     */
     const handleColumnMenuClick = (args: GdbAny) => {
       const itemId: string = args?.item?.id ?? "";
       if (itemId.includes("AutoFit")) {
@@ -197,8 +213,7 @@ export function useGridColumnState(
 }
 
 /**
- * Reset all grid column settings to defaults.
- * Clears the entire gridColumns section from settings.
+ * Performs reset all grid column defaults as part of this module's public API.
  */
 export function resetAllGridColumnDefaults(): void {
   window.ipcToMain.notifyMain({

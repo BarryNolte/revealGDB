@@ -1,3 +1,15 @@
+/**
+ * mi-notify-handler.test module.
+ *
+ * @remarks
+ * Source module for mi-notify-handler.test.
+ */
+
+/**
+ * @file mi-notify-handler.test.ts
+ * @description Source module for mi-notify-handler.test.
+ */
+
 import { describe, expect, it, vi } from "vitest";
 import { gdbStateDatabase } from "../../../../src/main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { MiNotifyAsyncHandler } from "../../../../src/main/mi-interface/mi-notify-handler";

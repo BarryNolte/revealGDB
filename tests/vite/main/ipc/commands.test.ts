@@ -1,3 +1,15 @@
+/**
+ * commands.test module.
+ *
+ * @remarks
+ * Source module for commands.test.
+ */
+
+/**
+ * @file commands.test.ts
+ * @description Source module for commands.test.
+ */
+
 import { describe, expect, it, vi } from "vitest";
 import { IPC_CHANNELS, NotifyMainRequest } from "../../../../src/common/ipc-contracts";
 import { handleNotifyMain } from "../../../../src/main/ipc/commands";

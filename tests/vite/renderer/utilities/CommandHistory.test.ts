@@ -1,3 +1,15 @@
+/**
+ * CommandHistory.test module.
+ *
+ * @remarks
+ * Source module for CommandHistory.test.
+ */
+
+/**
+ * @file CommandHistory.test.ts
+ * @description Source module for CommandHistory.test.
+ */
+
 import { beforeEach, describe, expect, it } from "vitest";
 import { CommandHistory } from "../../../../src/renderer/utilities/CommandHistory";
 

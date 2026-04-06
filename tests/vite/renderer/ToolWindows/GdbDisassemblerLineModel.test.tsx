@@ -1,3 +1,15 @@
+/**
+ * GdbDisassemblerLineModel.test module.
+ *
+ * @remarks
+ * Source module for GdbDisassemblerLineModel.test.
+ */
+
+/**
+ * @file GdbDisassemblerLineModel.test.tsx
+ * @description Source module for GdbDisassemblerLineModel.test.
+ */
+
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { DisasmToken } from "../../../../src/main/mi-interface/gdb-state-database/gdbStateDatabase";

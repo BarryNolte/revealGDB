@@ -1,11 +1,8 @@
 /**
- * @file common.ts
- * @description Shared enumerations and utility functions for the HexEditor application.
- * Provides data type definitions and character conversion utilities used across views.
- */
-
-/**
- * Enum defining pointer size constants used for memory offset calculations.
+ * Provides common behavior for hex editor rendering, navigation, and input handling.
+ *
+ * @remarks
+ * Exported symbols include `PointerSize`, `DataViewEnum`, `TextViewEnum`, `convertCharValue`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 export const enum PointerSize {
   bit16 = 4,
@@ -44,10 +41,14 @@ export const enum TextViewEnum {
 }
 
 /**
- * Converts a byte value to its character representation.
- * @param byte - The byte value (0-255) to convert
- * @param isUnicode - If true, uses full Unicode; if false, uses ASCII with fallback to '.'
- * @returns The character representation of the byte, or '.' if unprintable
+ * Performs convert char value as part of this module's public API.
+ *
+ * @remarks
+ * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+ *
+ * @param byte - Value for `byte` consumed by this operation.
+ * @param isUnicode - Value for `isUnicode` consumed by this operation.
+ * @returns The resulting string value produced by this operation.
  */
 export function convertCharValue(byte: number, isUnicode: boolean): string {
   return isUnicode

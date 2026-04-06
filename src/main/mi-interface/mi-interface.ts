@@ -1,5 +1,8 @@
 /**
- * GDB MI interface: parse MI output and push structured updates to the UI.
+ * Implements mi interface logic for processing GDB/MI output and debugger state transitions.
+ *
+ * @remarks
+ * Exported symbols include `GdbCommandInterface`, `miInterface`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { EventEmitter } from "events";
 import { SelectedConnection } from "../../common/gdb-common";
@@ -46,6 +49,15 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
     });
   }
 
+  /**
+   * Performs connect as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param selectedConnection - Value for `selectedConnection` consumed by this operation.
+   * @returns True when the operation succeeds; otherwise false.
+   */
   connect(selectedConnection: SelectedConnection): boolean {
     ConnectionNotifier.getInstance().startWatchingConsole();
     this.conn = new gdbConnectorIdfOnWsl(this.gdbDB);
@@ -73,6 +85,14 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
     return this.conn.Start(selectedConnection);
   }
 
+  /**
+   * Performs send output to handler as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param args - Configuration values that control how this operation executes.
+   */
   private sendOutputToHandler(args: OutputAvailableEventArgs) {
     if (AppSettings.getSync("gdb.gui.showDebugInfo") as boolean) {
       this.emit(
@@ -85,6 +105,12 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
     });
   }
 
+  /**
+   * Performs disconnect as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   */
   disconnect(): void {
     console.log("Disconnecting from GDB");
 
@@ -97,6 +123,14 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
     }
   }
 
+  /**
+   * Performs send as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param data - Structured payload consumed by this operation.
+   */
   send(data: string): void {
     if (AppSettings.getSync("gdb.gui.showDebugInfo") as boolean) {
       this.emit("debug-stream", data);
@@ -104,57 +138,164 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
     this.conn?.Send(data);
   }
 
+  /**
+   * Performs continue execution as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   */
   public continueExecution(): void {
     this.send("continue");
   }
 
+  /**
+   * Performs step over as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   */
   public stepOver(): void {
     this.send("next");
   }
 
+  /**
+   * Performs step into as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   */
   public stepInto(): void {
     this.send("step");
   }
 
+  /**
+   * Performs step out as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   */
   public stepOut(): void {
     this.send("finish");
   }
 
+  /**
+   * Performs pause execution as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   */
   public pauseExecution(): void {
     this.send("signal SIGINT");
   }
 
+  /**
+   * Stops debugging for the current workflow.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   */
   public stopDebugging(): void {
     this.send("kill");
   }
 
+  /**
+   * Performs run command as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param command - Debugger command text or command descriptor to execute.
+   */
   public runCommand(command: string): void {
     this.send(command);
   }
 
+  /**
+   * Parses input into raw output data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications. Performs asynchronous work and should be used with completion ordering in mind.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns A promise that resolves with the computed result after asynchronous processing completes.
+   */
   public parseRawOutput(output: string): Promise<boolean> {
     return this.outputProcessor.parseRawOutput(output);
   }
 
+  /**
+   * Parses input into notify async record data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications. Performs asynchronous work and should be used with completion ordering in mind.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns A promise that resolves with the computed result after asynchronous processing completes.
+   */
   public parseNotifyAsyncRecord(output: string): Promise<boolean> {
     return this.outputProcessor.parseNotifyAsyncRecord(output);
   }
 
+  /**
+   * Parses input into result record data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications. Performs asynchronous work and should be used with completion ordering in mind.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns A promise that resolves with the computed result after asynchronous processing completes.
+   */
   public parseResultRecord(output: string): Promise<boolean> {
     return this.outputProcessor.parseResultRecord(output);
   }
+  /**
+   * Parses input into exec async record data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns True when the operation succeeds; otherwise false.
+   */
   public parseExecAsyncRecord(output: string): boolean {
     return this.outputProcessor.parseExecAsyncRecord(output);
   }
 
+  /**
+   * Parses input into target stream data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns True when the operation succeeds; otherwise false.
+   */
   public parseTargetStream(output: string): boolean {
     return this.outputProcessor.parseTargetStream(output);
   }
 
+  /**
+   * Parses input into log stream data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns True when the operation succeeds; otherwise false.
+   */
   public parseLogStream(output: string): boolean {
     return this.outputProcessor.parseLogStream(output);
   }
 
+  /**
+   * Parses input into console stream data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns True when the operation succeeds; otherwise false.
+   */
   public parseConsoleStream(output: string): boolean {
     return this.outputProcessor.parseConsoleStream(output);
   }

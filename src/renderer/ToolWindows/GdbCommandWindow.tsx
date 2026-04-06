@@ -1,18 +1,9 @@
 /**
- * GDB Command window component.
+ * Implements gdb command window behavior for debugger tool-window rendering and interactions.
  *
- * Provides an interactive command-line interface for sending GDB MI commands.
- * Features include:
- * - Command input with history navigation (Up/Down arrows)
- * - Command history dropdown (Ctrl+H)
- * - Color-coded output (console, log, error, debug)
- * - Auto-scroll to latest output
- * - Context menu for copy/paste operations
- *
- * The window maintains a command history (up to 100 commands) that persists
- * across sessions via the main process settings.
+ * @remarks
+ * Exported symbols include `GdbCommandWindow`. It coordinates live debugger data with user interactions in docked tool-window views.
  */
-
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { JSX, useId } from "react";
 import { doCutCopyPaste, menuCopy, menuCutCopyPaste } from "../utilities/Clipboard";
@@ -22,8 +13,12 @@ import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 import { useGdbCommandController } from "./useGdbCommandController";
 
 /**
- * GDB command window component.
- * Provides interactive command input and color-coded output display.
+ * Performs gdb command window as part of this module's public API.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @returns The computed result produced by this operation.
  */
 export default function GdbCommandWindow(): JSX.Element {
   const idBase = useId();

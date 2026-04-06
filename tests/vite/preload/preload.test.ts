@@ -1,3 +1,15 @@
+/**
+ * preload.test module.
+ *
+ * @remarks
+ * Source module for preload.test.
+ */
+
+/**
+ * @file preload.test.ts
+ * @description Source module for preload.test.
+ */
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { IPC_CHANNELS } from "../../../src/common/ipc-contracts";
 import { createPreloadElectronHarness, loadPreloadApi } from "../../helpers/preload-test-harness";

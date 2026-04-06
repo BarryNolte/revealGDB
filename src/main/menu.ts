@@ -1,10 +1,19 @@
 /**
- * Application menu wiring for GDB actions and app commands.
+ * Implements menu for revealGDB runtime behavior.
+ *
+ * @remarks
+ * Exported symbols include `GdbMenu`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { app, Menu, shell } from "electron";
 import { gdbInterface, isDebug, isMac, mainWindow } from "./main";
 
 export class GdbMenu {
+  /**
+   * Performs install menu as part of this module's public API.
+   *
+   * @remarks
+   * Performs asynchronous work and should be used with completion ordering in mind.
+   */
   public static installMenu() {
     const template: object[] = [
       ...(isMac

@@ -1,17 +1,9 @@
 /**
- * Hex Editor test page.
+ * Provides hexeditor test page helpers that power renderer integration harness pages.
  *
- * Provides a standalone test environment for the HexEditor component.
- * Displays the hex editor with test data that can be provided via
- * window.__HEXEDITOR_TEST_DATA__ or uses fallback sample data.
- *
- * Used by Playwright tests to verify hex editor functionality including:
- * - Cell navigation and editing
- * - Data/text view synchronization
- * - Keyboard input handling
- * - Visual rendering
+ * @remarks
+ * Exported symbols include `HexEditorTestPage`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import type { JSX } from "react";
 import { useMemo } from "react";
 import HexEditor from "../Components/HexEditor/HexEditor";
@@ -29,8 +21,9 @@ const FALLBACK_DATA = new Uint8Array([
 ]);
 
 /**
- * HexEditor test page component.
- * Renders the hex editor with test data from window or fallback.
+ * Performs hex editor test page as part of this module's public API.
+ *
+ * @returns The computed result produced by this operation.
  */
 export function HexEditorTestPage(): JSX.Element {
   /** Memoized data source: uses test data if available, otherwise fallback */

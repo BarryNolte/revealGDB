@@ -1,9 +1,9 @@
 /**
- * @file HexEditor.tsx
- * @description Main hex editor component that coordinates three synchronized view panels.
- * Manages the centralized event handler and layout for offset, hex data, and text views.
+ * Provides hex editor behavior for hex editor rendering, navigation, and input handling.
+ *
+ * @remarks
+ * Exported symbols include `ArrayChangeCallback`, `HexEditor`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { createRef, JSX, useEffect } from "react";
 import "./HexEditor.css";
 import { MouseKeyboardHandler } from "./MouseKeyboardHandler";
@@ -25,22 +25,13 @@ interface HexEditorProps {
 }
 
 /**
- * HexEditor - Main component that renders three synchronized hex editor views.
+ * Performs hex editor as part of this module's public API.
  *
- * Architecture:
- * - Creates a single MouseKeyboardHandler instance shared by all views
- * - Renders three synchronized column views in a flex container:
- *   1. HexOffsetView: Memory addresses (sticky left)
- *   2. HexDataView: Hexadecimal byte values
- *   3. HexTextView: ASCII/Unicode character representation
+ * @remarks
+ * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
  *
- * Event Flow:
- * - Mouse events from any view propagate to the centralized MouseKeyboardHandler
- * - Handler validates input, manages UI state, and invokes dataChangeCallback on edits
- * - All views re-render from the same data source (Uint8Array) on each update
- *
- * @param {HexEditorProps} props - Component props
- * @returns {JSX.Element} Flex container with three synchronized view columns
+ * @param param1 - Value for `param1` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 export default function HexEditor({
   offset,

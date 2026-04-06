@@ -1,3 +1,9 @@
+/**
+ * Implements gdb connector general logic for processing GDB/MI output and debugger state transitions.
+ *
+ * @remarks
+ * Exported symbols include `gdbConnectorIdfOnWsl`. It sits on the debugger data path that translates MI records into typed stores and notifications.
+ */
 import { ChildProcess, spawn } from "child_process";
 import { SelectedConnection } from "../../../common/gdb-common";
 import { NormalizedConnection } from "../../../renderer/Dialogs/connectionManagerModel";
@@ -14,6 +20,15 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
     this.gdbDB = db;
   }
 
+  /**
+   * Starts the operation for the current workflow.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param selectedConnection - Value for `selectedConnection` consumed by this operation.
+   * @returns True when the operation succeeds; otherwise false.
+   */
   override Start(selectedConnection: SelectedConnection): boolean {
     // Bootstrap the shell and then launch gdb in MI mode.
     const cmds = [];
@@ -69,6 +84,14 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
     return true;
   }
 
+  /**
+   * Performs send as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param data - Structured payload consumed by this operation.
+   */
   override Send(data: string): void {
     this.gdbExe?.stdin?.cork();
     this.gdbExe?.stdin?.write(data + "\n", (_error) => {
@@ -77,10 +100,26 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
     this.gdbExe?.stdin?.uncork();
   }
 
+  /**
+   * Performs end as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @returns True when the operation succeeds; otherwise false.
+   */
   override End(): boolean {
     return this.gdbExe?.kill() ?? false;
   }
 
+  /**
+   * Performs is running as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @returns True when the operation succeeds; otherwise false.
+   */
   override IsRunning(): boolean {
     return this.gdbExe?.exitCode === null;
   }

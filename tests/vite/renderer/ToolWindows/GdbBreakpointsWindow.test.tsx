@@ -130,3 +130,17 @@ describe("GdbBreakpointsWindow smoke test", () => {
     expect(mockRefresh).not.toHaveBeenCalled();
   });
 });
+
+
+/**
+ * @file GdbBreakpointsWindow.test.tsx
+ * @description Source module for GdbBreakpointsWindow.test.
+ */
+
+
+/**
+ * GdbBreakpointsWindow.test module.
+ *
+ * @remarks
+ * Source module for GdbBreakpointsWindow.test.
+ */

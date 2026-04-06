@@ -1,3 +1,9 @@
+/**
+ * Implements grid data mappers for revealGDB runtime behavior.
+ *
+ * @remarks
+ * Exported symbols include `CallstackGridRow`, `mapStackFrameToGridRow`, `mapStackFramesToGridRows`, `ThreadGridRow`, `mapThreadToGridRow`, `mapThreadDataToGridRows`, `RegisterGridRow`, `mapRegisterToGridRow`, and others. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import {
   gdbBreakpoint,
   gdbRegisters,
@@ -21,6 +27,12 @@ export type CallstackGridRow = {
   arch: string;
 };
 
+/**
+ * Maps source input into stack frame to grid row output.
+ *
+ * @param frame - Value for `frame` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export function mapStackFrameToGridRow(frame: gdbStackFrame): CallstackGridRow {
   return {
     active: frame.active ? "*" : "",
@@ -36,6 +48,12 @@ export function mapStackFrameToGridRow(frame: gdbStackFrame): CallstackGridRow {
   };
 }
 
+/**
+ * Maps source input into stack frames to grid rows output.
+ *
+ * @param frames - Value for `frames` consumed by this operation.
+ * @returns The resulting collection produced by this operation.
+ */
 export function mapStackFramesToGridRows(frames: gdbStackFrame[]): CallstackGridRow[] {
   return frames.map(mapStackFrameToGridRow);
 }
@@ -53,6 +71,13 @@ export type ThreadGridRow = {
   frame: string;
 };
 
+/**
+ * Maps source input into thread to grid row output.
+ *
+ * @param thread - Value for `thread` consumed by this operation.
+ * @param groupId - Unique identifier used to look up the target entity.
+ * @returns The computed result produced by this operation.
+ */
 export function mapThreadToGridRow(thread: gdbThread, groupId: string): ThreadGridRow {
   return {
     groupId,
@@ -66,6 +91,13 @@ export function mapThreadToGridRow(thread: gdbThread, groupId: string): ThreadGr
   };
 }
 
+/**
+ * Maps source input into thread data to grid rows output.
+ *
+ * @param threads - Map of keyed values consumed or updated by this operation.
+ * @param groups - Map of keyed values consumed or updated by this operation.
+ * @returns The resulting collection produced by this operation.
+ */
 export function mapThreadDataToGridRows(
   threads: Map<string, gdbThread> | gdbThread[],
   groups: Map<string, gdbThreadGroup> | gdbThreadGroup[],
@@ -90,6 +122,12 @@ export type RegisterGridRow = {
   changed: boolean;
 };
 
+/**
+ * Maps source input into register to grid row output.
+ *
+ * @param reg - Value for `reg` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export function mapRegisterToGridRow(reg: gdbRegisters): RegisterGridRow {
   return {
     name: reg.name,
@@ -99,8 +137,10 @@ export function mapRegisterToGridRow(reg: gdbRegisters): RegisterGridRow {
 }
 
 /**
- * Maps register data to grid rows, filtering out entries with empty names.
- * Accepts either an array or a Map (as sent over IPC).
+ * Maps source input into registers to grid rows output.
+ *
+ * @param registers - Map of keyed values consumed or updated by this operation.
+ * @returns The resulting collection produced by this operation.
  */
 export function mapRegistersToGridRows(
   registers: gdbRegisters[] | Map<string, gdbRegisters>,
@@ -127,6 +167,12 @@ export type BreakpointGridRow = {
   orgloc: string;
 };
 
+/**
+ * Maps source input into breakpoint to grid row output.
+ *
+ * @param bp - Value for `bp` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export function mapBreakpointToGridRow(bp: gdbBreakpoint): BreakpointGridRow {
   return {
     number: bp.number,
@@ -145,6 +191,12 @@ export function mapBreakpointToGridRow(bp: gdbBreakpoint): BreakpointGridRow {
   };
 }
 
+/**
+ * Maps source input into breakpoints to grid rows output.
+ *
+ * @param breakpoints - Map of keyed values consumed or updated by this operation.
+ * @returns The resulting collection produced by this operation.
+ */
 export function mapBreakpointsToGridRows(
   breakpoints: Map<string, gdbBreakpoint>,
 ): BreakpointGridRow[] {

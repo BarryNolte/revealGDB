@@ -66,3 +66,17 @@ describe("GdbRegistersWindow smoke test", () => {
     expect(testWindow.ipcToMain.debuggerData.registers).toHaveBeenCalledTimes(1);
   });
 });
+
+
+/**
+ * @file GdbRegistersWindow.test.tsx
+ * @description Source module for GdbRegistersWindow.test.
+ */
+
+
+/**
+ * GdbRegistersWindow.test module.
+ *
+ * @remarks
+ * Source module for GdbRegistersWindow.test.
+ */

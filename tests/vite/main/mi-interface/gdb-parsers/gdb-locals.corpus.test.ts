@@ -81,3 +81,17 @@ describe("LocalsContainer corpus coverage", () => {
     });
   }
 });
+
+
+/**
+ * @file gdb-locals.corpus.test.ts
+ * @description Source module for gdb-locals.corpus.test.
+ */
+
+
+/**
+ * gdb-locals.corpus.test module.
+ *
+ * @remarks
+ * Source module for gdb-locals.corpus.test.
+ */

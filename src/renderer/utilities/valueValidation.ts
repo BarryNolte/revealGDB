@@ -1,17 +1,8 @@
 /**
- * Value validation utilities for memory addresses and GDB expressions.
+ * Provides value validation renderer utilities for formatting, state shaping, and shared view logic.
  *
- * Provides validation for multiple input formats used in GDB:
- * - Dollar-prefixed register names: $pc, $sp, $eax, etc.
- * - Hexadecimal addresses: 0x1234, ABCD
- * - Decimal numbers
- *
- * Used by memory window, breakpoint window, and other components that
- * accept address or register inputs.
- */
-
-/**
- * Enum for the type of validated value
+ * @remarks
+ * Exported symbols include `ValueType`, `ValidationResult`, `validateValue`, `isValidValue`, `getValueType`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 export enum ValueType {
   DollarPrefix = "DollarPrefix",
@@ -30,16 +21,10 @@ export interface ValidationResult {
 }
 
 /**
- * Validates a string against multiple criteria:
- * - Dollar-prefixed alphanumeric: $aaaaaaaaaaa (up to 32 chars)
- * - Hexadecimal number (with or without 0x prefix)
- * - Base 10 number
+ * Performs validate value as part of this module's public API.
  *
- * Note: If a string is valid in both hex and base 10, it's treated as hexadecimal.
- * Note: Undefined input returns invalid.
- *
- * @param input - The string to validate (or undefined)
- * @returns A ValidationResult object with isValid, valueType, hexValue, and decimalValue
+ * @param input - Value for `input` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 export function validateValue(input: string | undefined): ValidationResult {
   // Return invalid for undefined input
@@ -70,7 +55,10 @@ export function validateValue(input: string | undefined): ValidationResult {
 }
 
 /**
- * Convenience function to check if a value is valid
+ * Performs is valid value as part of this module's public API.
+ *
+ * @param input - Value for `input` consumed by this operation.
+ * @returns True when the operation succeeds; otherwise false.
  */
 export function isValidValue(input: string | undefined): boolean {
   const result = validateValue(input);
@@ -78,7 +66,10 @@ export function isValidValue(input: string | undefined): boolean {
 }
 
 /**
- * Convenience function to get only the value type
+ * Returns value type from current state.
+ *
+ * @param input - Value for `input` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 export function getValueType(input: string | undefined): ValueType | null {
   const result = validateValue(input);

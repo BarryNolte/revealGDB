@@ -1,3 +1,15 @@
+/**
+ * mi-exec-handler.test module.
+ *
+ * @remarks
+ * Source module for mi-exec-handler.test.
+ */
+
+/**
+ * @file mi-exec-handler.test.ts
+ * @description Source module for mi-exec-handler.test.
+ */
+
 import { describe, expect, it, vi } from "vitest";
 import { gdbStateDatabase } from "../../../../src/main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { MiExecAsyncHandler } from "../../../../src/main/mi-interface/mi-exec-handler";

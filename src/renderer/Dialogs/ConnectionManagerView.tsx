@@ -1,3 +1,9 @@
+/**
+ * Implements connection manager view dialog state and interaction workflows in the renderer.
+ *
+ * @remarks
+ * Exported symbols include `ConnectionManagerView`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import {
   ColumnDirective,
   ColumnsDirective,
@@ -43,10 +49,21 @@ type ConnectionManagerViewProps = {
   dialogOpenFunc: () => void;
 };
 
+/**
+ * Performs header as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 function header(): ReactElement {
   return <div className="dialogHeader">Connections</div>;
 }
 
+/**
+ * Performs connection manager view as part of this module's public API.
+ *
+ * @param props - Value for `props` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export default function ConnectionManagerView(props: ConnectionManagerViewProps): ReactElement {
   const {
     hideDialog,
@@ -74,6 +91,11 @@ export default function ConnectionManagerView(props: ConnectionManagerViewProps)
     dialogOpenFunc,
   } = props;
 
+  /**
+   * Performs footer as part of this module's internal workflow.
+   *
+   * @returns The computed result produced by this operation.
+   */
   const footer = (): ReactElement => {
     return (
       <div>

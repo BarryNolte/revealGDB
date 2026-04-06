@@ -1,3 +1,9 @@
+/**
+ * Implements stack parsing helpers logic for processing GDB/MI output and debugger state transitions.
+ *
+ * @remarks
+ * Exported symbols include `ParsedStackFrameData`, `parseStackFrameFromGroups`. It sits on the debugger data path that translates MI records into typed stores and notifications.
+ */
 export type ParsedStackFrameData = {
   level: string;
   addr: string;
@@ -10,6 +16,16 @@ export type ParsedStackFrameData = {
   arch: string;
 };
 
+/**
+ * Parses input into stack frame from groups data.
+ *
+ * @remarks
+ * Participates in the MI processing pipeline that updates debugger state and notifications.
+ *
+ * @param groups - Value for `groups` consumed by this operation.
+ * @param defaultArgs - Value for `defaultArgs` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export function parseStackFrameFromGroups(
   groups: RegExpExecArray["groups"],
   defaultArgs = "",

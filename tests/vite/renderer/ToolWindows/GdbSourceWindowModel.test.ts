@@ -1,3 +1,15 @@
+/**
+ * GdbSourceWindowModel.test module.
+ *
+ * @remarks
+ * Source module for GdbSourceWindowModel.test.
+ */
+
+/**
+ * @file GdbSourceWindowModel.test.ts
+ * @description Source module for GdbSourceWindowModel.test.
+ */
+
 import { describe, expect, it } from "vitest";
 
 import {

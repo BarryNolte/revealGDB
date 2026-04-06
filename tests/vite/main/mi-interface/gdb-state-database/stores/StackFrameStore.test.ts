@@ -1,3 +1,15 @@
+/**
+ * StackFrameStore.test module.
+ *
+ * @remarks
+ * Source module for StackFrameStore.test.
+ */
+
+/**
+ * @file StackFrameStore.test.ts
+ * @description Source module for StackFrameStore.test.
+ */
+
 import { describe, expect, it } from "vitest";
 import { StackFrameStore } from "../../../../../../src/main/mi-interface/gdb-state-database/stores/StackFrameStore";
 

@@ -1,3 +1,9 @@
+/**
+ * Implements gdb source window model behavior for debugger tool-window rendering and interactions.
+ *
+ * @remarks
+ * Exported symbols include `SourceWindowState`, `SourceBreakpointMarker`, `createInitialSourceWindowState`, `getBaseFilename`, `getEditorModeForFile`, `createMarkerForLine`, `applySourceUpdate`, `mapBreakpointsToMarkers`. It coordinates live debugger data with user interactions in docked tool-window views.
+ */
 import { IMarker } from "react-ace";
 
 import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
@@ -19,6 +25,14 @@ export type SourceBreakpointMarker = {
   file: string;
 };
 
+/**
+ * Creates initial source window state for downstream use.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @returns The computed result produced by this operation.
+ */
 export function createInitialSourceWindowState(): SourceWindowState {
   return {
     source: "",
@@ -31,10 +45,30 @@ export function createInitialSourceWindowState(): SourceWindowState {
   };
 }
 
+/**
+ * Returns base filename from current state.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @param filePath - Filesystem or source path used to locate the target resource.
+ * @returns The resulting string value produced by this operation.
+ */
 export function getBaseFilename(filePath: string): string {
   return filePath.replace(/^.*[\\/]/, "");
 }
 
+/**
+ * Returns editor mode for file from current state.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @param fileName - Filesystem or source path used to locate the target resource.
+ * @param modes - Map of keyed values consumed or updated by this operation.
+ * @param fallbackMode - Value for `fallbackMode` consumed by this operation.
+ * @returns The resulting string value produced by this operation.
+ */
 export function getEditorModeForFile(
   fileName: string,
   modes: Map<string, string>,
@@ -49,6 +83,15 @@ export function getEditorModeForFile(
   return modes.get(fileExt) || fallbackMode;
 }
 
+/**
+ * Creates marker for line for downstream use.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @param line - Line value used for source navigation or rendering.
+ * @returns The resulting collection produced by this operation.
+ */
 export function createMarkerForLine(line: string): { currentMarker: number; markers: IMarker[] } {
   const currentMarker = Number.parseInt(line, 10) - 1;
   if (!Number.isFinite(currentMarker) || currentMarker < 0) {
@@ -70,6 +113,16 @@ export function createMarkerForLine(line: string): { currentMarker: number; mark
   };
 }
 
+/**
+ * Performs apply source update as part of this module's public API.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @param prevState - Current state object read or updated by this operation.
+ * @param data - Structured payload consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export function applySourceUpdate(
   prevState: SourceWindowState,
   data: gdbShowSourceInfo,
@@ -104,6 +157,15 @@ export function applySourceUpdate(
   };
 }
 
+/**
+ * Maps source input into breakpoints to markers output.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @param breakpoints - Map of keyed values consumed or updated by this operation.
+ * @returns The resulting collection produced by this operation.
+ */
 export function mapBreakpointsToMarkers(
   breakpoints: Map<string, gdbBreakpoint> | undefined,
 ): SourceBreakpointMarker[] {

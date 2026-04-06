@@ -1,9 +1,9 @@
 /**
- * @file view-text.tsx
- * @description ASCII/Unicode text view component displaying binary data as characters.
- * Shows interpretable characters (or dots for non-printable bytes).
+ * Provides view text behavior for hex editor rendering, navigation, and input handling.
+ *
+ * @remarks
+ * Exported symbols include `HexTextView`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { type JSX, type MouseEvent } from "react";
 import { convertCharValue } from "./common";
 import type { MouseCallback } from "./MouseKeyboardHandler";
@@ -20,8 +20,12 @@ interface HexTextViewProps {
 const idPrefix = "tIdx-";
 
 /**
- * TextHeader - Renders the text view column headers (0-F).
- * @returns {JSX.Element[]} Array containing header row
+ * Performs text header as part of this module's internal workflow.
+ *
+ * @remarks
+ * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+ *
+ * @returns The resulting collection produced by this operation.
  */
 function TextHeader(): JSX.Element[] {
   const textHeader: JSX.Element[] = [];
@@ -40,14 +44,13 @@ function TextHeader(): JSX.Element[] {
 }
 
 /**
- * TextValues - Renders the text representation cells (16 bytes per row).
- * Each cell displays a character representation of a byte:
- * - ASCII mode: printable ASCII (0x20-0x7F) displayed as character, others as '.'
- * - Unicode mode: raw character from charCode
+ * Performs text values as part of this module's internal workflow.
  *
- * @param {Object} props - Component props
- * @param {Uint8Array} props.datasource - Binary data to display
- * @returns {JSX.Element[]} Array of table rows containing text data
+ * @remarks
+ * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+ *
+ * @param param1 - Value for `param1` consumed by this operation.
+ * @returns The resulting collection produced by this operation.
  */
 function TextValues({ datasource }: { datasource: Uint8Array }): JSX.Element[] {
   const valueRows: JSX.Element[] = [];
@@ -79,18 +82,13 @@ function TextValues({ datasource }: { datasource: Uint8Array }): JSX.Element[] {
 }
 
 /**
- * HexTextView - Main text view component.
- * Renders a table displaying binary data as ASCII/Unicode characters with synchronized row/column highlighting.
+ * Performs hex text view as part of this module's public API.
  *
- * Features:
- * - 16 bytes per row
- * - ASCII mode: printable chars (0x20-0x7F) shown, others as '.'
- * - Row and column highlighting on hover
- * - Click to enter edit mode (type character to replace)
- * - Keyboard navigation (arrow keys, tab, enter, escape)
+ * @remarks
+ * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
  *
- * @param {HexTextViewProps} props - Component props
- * @returns {JSX.Element} A table element with header and data rows
+ * @param param1 - Value for `param1` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 export default function HexTextView({ datasource, mouseCallback }: HexTextViewProps): JSX.Element {
   return (

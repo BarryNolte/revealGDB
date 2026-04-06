@@ -1,21 +1,9 @@
 /**
- * GDB Disassembler window component.
+ * Implements gdb disassembler window behavior for debugger tool-window rendering and interactions.
  *
- * Displays disassembled machine code with:
- * - Memory addresses and instruction offsets
- * - Hex opcodes
- * - Disassembled assembly instructions with syntax highlighting
- * - Function boundaries and names
- * - Current PC (program counter) indicator
- *
- * Features:
- * - Function selector dropdown for quick navigation
- * - Address range input for custom disassembly
- * - Grouped by function
- * - Color-coded instruction tokens (mnemonics, registers, addresses)
- * - Context menu for copy operations
+ * @remarks
+ * Exported symbols include `GdbDisassemblerWindow`. It coordinates live debugger data with user interactions in docked tool-window views.
  */
-
 import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns";
 import {
   ColumnDirective,
@@ -45,8 +33,12 @@ import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 type DisasmRowTemplateData = Pick<gdbAsmRow, "address" | "offset" | "opcodes">;
 
 /**
- * Disassembler window component.
- * Provides address/function selection controls and disassembly grid.
+ * Performs gdb disassembler window as part of this module's public API.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @returns The computed result produced by this operation.
  */
 export default function GdbDisassemblerWindow(): JSX.Element {
   // Refs for grid and form controls
@@ -97,8 +89,13 @@ export default function GdbDisassemblerWindow(): JSX.Element {
   }, []);
 
   /**
-   * Template function for rendering disassembled instructions.
-   * Applies syntax highlighting based on token type (instruction, address, register, etc.).
+   * Performs instructions template as part of this module's internal workflow.
+   *
+   * @remarks
+   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+   *
+   * @param props - Value for `props` consumed by this operation.
+   * @returns The computed result produced by this operation.
    */
   const instructionsTemplate = (props: gdbAsmRow): JSX.Element => {
     return renderInstructionParts(props.instructions, (functionAddress: string) => {
@@ -111,6 +108,14 @@ export default function GdbDisassemblerWindow(): JSX.Element {
     });
   };
 
+  /**
+   * Performs empty message template as part of this module's public API.
+   *
+   * @remarks
+   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+   *
+   * @returns The computed result produced by this operation.
+   */
   function emptyMessageTemplate(): JSX.Element {
     return (
       <div className="emptyRecordTemplate">
@@ -128,14 +133,35 @@ export default function GdbDisassemblerWindow(): JSX.Element {
     captionTemplate: renderGroupCaption,
   };
 
+  /**
+   * Performs item template as part of this module's internal workflow.
+   *
+   * @remarks
+   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+   *
+   * @param item - Item being processed by this operation.
+   * @returns The computed result produced by this operation.
+   */
   const itemTemplate = (item: gdbFunction): JSX.Element => {
     return <span className="function-item">{item.function}</span>;
   };
 
+  /**
+   * Performs do copy as part of this module's internal workflow.
+   *
+   * @remarks
+   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+   */
   const doCopy = (): void => {
     gridRef.current?.copy();
   };
 
+  /**
+   * Performs disasm function as part of this module's public API.
+   *
+   * @remarks
+   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+   */
   function disasmFunction() {
     const func = functionNameRef?.current?.value || "";
     if (func) {
@@ -144,6 +170,12 @@ export default function GdbDisassemblerWindow(): JSX.Element {
     }
   }
 
+  /**
+   * Performs validate disasm params as part of this module's public API.
+   *
+   * @remarks
+   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+   */
   function validateDisasmParams() {
     const startInput = validateValue(startRef.current?.value);
     const lengthInput = validateValue(lengthRef.current?.value);

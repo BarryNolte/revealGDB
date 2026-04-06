@@ -1,3 +1,9 @@
+/**
+ * Implements memory mapper logic for processing GDB/MI output and debugger state transitions.
+ *
+ * @remarks
+ * Exported symbols include `MemoryData`, `mapRegexGroupsToMemoryData`. It sits on the debugger data path that translates MI records into typed stores and notifications.
+ */
 export type MemoryData = {
   begin: string;
   offset: string;
@@ -6,7 +12,13 @@ export type MemoryData = {
 };
 
 /**
- * Parses a hex-encoded content string into a Uint8Array.
+ * Parses input into hex contents data.
+ *
+ * @remarks
+ * Participates in the MI processing pipeline that updates debugger state and notifications.
+ *
+ * @param hexData - Value for `hexData` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 function parseHexContents(hexData: string): Uint8Array {
   const resultBytes: string[] = [];
@@ -21,8 +33,13 @@ function parseHexContents(hexData: string): Uint8Array {
 }
 
 /**
- * Maps regex named-capture groups from a GDB memory response
- * into a typed MemoryData object.
+ * Maps source input into regex groups to memory data output.
+ *
+ * @remarks
+ * Participates in the MI processing pipeline that updates debugger state and notifications.
+ *
+ * @param groups - Value for `groups` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 export function mapRegexGroupsToMemoryData(groups: Record<string, string> | undefined): MemoryData {
   return {

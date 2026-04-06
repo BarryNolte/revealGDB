@@ -1,3 +1,9 @@
+/**
+ * Implements ipc contracts for revealGDB runtime behavior.
+ *
+ * @remarks
+ * Exported symbols include `IPC_CHANNELS`, `NotifyRenderCommand`, `NotifyRenderMessage`, `NotifyMainCommand`, `NotifyMainRequest`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 const MAIN_TO_RENDERER_CHANNEL_GROUPS = {
   console: {
     message: "console-message",

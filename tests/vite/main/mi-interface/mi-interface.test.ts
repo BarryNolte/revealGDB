@@ -1,4 +1,16 @@
 /**
+ * mi-interface.test module.
+ *
+ * @remarks
+ * Source module for mi-interface.test.
+ */
+
+/**
+ * @file mi-interface.test.ts
+ * @description Source module for mi-interface.test.
+ */
+
+/**
  * Unit tests for miInterface class
  * Tests GDB MI output parsing and event emission
  */

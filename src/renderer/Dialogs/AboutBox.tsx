@@ -1,14 +1,9 @@
 /**
- * About box dialog for RevealGDB.
+ * Implements about box dialog state and interaction workflows in the renderer.
  *
- * Displays application information including:
- * - Application name, version, and description
- * - Copyright and company information
- * - Runtime environment details (Node, Electron, V8, OS)
- *
- * Version information is fetched from the main process on dialog show.
+ * @remarks
+ * Exported symbols include `AboutBoxHandle`, `AboutBox`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
 import { forwardRef, JSX, useImperativeHandle, useState } from "react";
@@ -59,6 +54,12 @@ export const AboutBox = forwardRef<AboutBoxHandle, AboutProps>((_props, ref): JS
      * Fetches runtime details from the main process.
      */
     ShowDialog: () => {
+      /**
+       * Returns info value from current state.
+       *
+       * @param key - Value for `key` consumed by this operation.
+       * @returns The resulting string value produced by this operation.
+       */
       const getInfoValue = (key: string): string => {
         return (AppMainVersionInfo?.get(key) ?? "") as string;
       };
@@ -75,17 +76,27 @@ export const AboutBox = forwardRef<AboutBoxHandle, AboutProps>((_props, ref): JS
     },
   }));
 
-  /** Closes the about dialog */
+  /**
+   * Performs dialog close func as part of this module's internal workflow.
+   */
   const dialogCloseFunc = () => {
     setHideDialog(false);
   };
 
-  /** Custom header component */
+  /**
+   * Performs header as part of this module's internal workflow.
+   *
+   * @returns The computed result produced by this operation.
+   */
   const header = (): JSX.Element => {
     return <div className="dialogHeader">About</div>;
   };
 
-  /** Custom footer with OK button */
+  /**
+   * Performs footer as part of this module's internal workflow.
+   *
+   * @returns The computed result produced by this operation.
+   */
   const footer = (): JSX.Element => {
     return (
       <div>

@@ -1,21 +1,16 @@
 /**
- * Clipboard utilities for text operations.
+ * Provides clipboard renderer utilities for formatting, state shaping, and shared view logic.
  *
- * Provides helper functions for cut, copy, and paste operations using the
- * Clipboard API. Used by various components to handle text selection and
- * transfer operations in input fields and text areas.
- */
-
-/**
- * Predefined context menu items for clipboard operations.
+ * @remarks
+ * Exported symbols include `menuCopy`, `menuCutCopyPaste`, `sendTextToClipboard`, `doCutCopyPaste`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 export const menuCopy = [{ text: "Copy" }];
 export const menuCutCopyPaste = [{ text: "Cut" }, { text: "Copy" }, { text: "Paste" }];
 
 /**
- * Writes text to the system clipboard.
+ * Performs send text to clipboard as part of this module's public API.
  *
- * @param text - The text string to copy to clipboard
+ * @param text - Value for `text` consumed by this operation.
  */
 export function sendTextToClipboard(text: string): void {
   navigator.clipboard.writeText(text).catch((err) => {
@@ -24,13 +19,10 @@ export function sendTextToClipboard(text: string): void {
 }
 
 /**
- * Handles cut, copy, and paste operations on an input element.
+ * Performs do cut copy paste as part of this module's public API.
  *
- * This function implements clipboard operations while properly managing
- * text selection and cursor position in the input element.
- *
- * @param command - The operation to perform: "Cut", "Copy", or "Paste"
- * @param element - The HTML input element to operate on
+ * @param command - Debugger command text or command descriptor to execute.
+ * @param element - Value for `element` consumed by this operation.
  */
 export function doCutCopyPaste(command: string, element: HTMLInputElement): void {
   const selection = window.getSelection();

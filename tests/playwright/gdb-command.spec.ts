@@ -1,3 +1,15 @@
+/**
+ * gdb-command.spec module.
+ *
+ * @remarks
+ * Source module for gdb-command.spec.
+ */
+
+/**
+ * @file gdb-command.spec.ts
+ * @description Source module for gdb-command.spec.
+ */
+
 import { expect, test } from "@playwright/test";
 import fs from "node:fs";
 import http from "node:http";

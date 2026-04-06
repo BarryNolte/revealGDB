@@ -1,3 +1,9 @@
+/**
+ * Implements tool windows host error boundary for revealGDB runtime behavior.
+ *
+ * @remarks
+ * Exported symbols include `ToolWindowsHostErrorBoundary`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { Component, ErrorInfo, ReactNode } from "react";
 import "./error-boundaries.css";
 
@@ -19,6 +25,12 @@ export class ToolWindowsHostErrorBoundary extends Component<
     errorMessage: "",
   };
 
+  /**
+   * Returns derived state from error from current state.
+   *
+   * @param error - Value for `error` consumed by this operation.
+   * @returns The computed result produced by this operation.
+   */
   static getDerivedStateFromError(error: Error): ToolWindowsHostErrorBoundaryState {
     return {
       hasError: true,
@@ -26,6 +38,12 @@ export class ToolWindowsHostErrorBoundary extends Component<
     };
   }
 
+  /**
+   * Performs component did catch as part of this module's public API.
+   *
+   * @param error - Value for `error` consumed by this operation.
+   * @param errorInfo - Value for `errorInfo` consumed by this operation.
+   */
   override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     console.error("[ToolWindowsHostErrorBoundary] Tool window host failed", error, errorInfo);
   }
@@ -34,6 +52,11 @@ export class ToolWindowsHostErrorBoundary extends Component<
     this.setState({ hasError: false, errorMessage: "" });
   };
 
+  /**
+   * Renders the operation for display.
+   *
+   * @returns The computed result produced by this operation.
+   */
   override render(): ReactNode {
     if (this.state.hasError) {
       const message = this.state.errorMessage || "Unknown render failure.";

@@ -1,9 +1,9 @@
 /**
- * Connection manager dialog for RevealGDB.
+ * Implements connection manager dialog state and interaction workflows in the renderer.
  *
- * Container component that wires imperative API + controller state into the view.
+ * @remarks
+ * Exported symbols include `ConnectionManagerHandle`, `ConnectionManager`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import "./ConnectionManager.css";
 import ConnectionManagerView from "./ConnectionManagerView";
@@ -29,6 +29,11 @@ export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionM
     });
 
     useImperativeHandle(ref, () => ({
+      /**
+       * Performs show dialog as part of this module's public API.
+       *
+       * @param onClose - Callback invoked when the associated event occurs.
+       */
       ShowDialog(onClose?: () => void) {
         controller.showDialog(onClose);
       },

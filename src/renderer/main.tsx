@@ -1,15 +1,9 @@
 /**
- * Main entry point for the RevealGDB renderer process.
+ * Implements main for revealGDB runtime behavior.
  *
- * This file initializes the React application, registers required licenses,
- * and sets up the build configuration. It creates the root React component
- * and mounts it to the DOM.
- *
- * The renderer process runs in a Chromium-based browser context and is isolated
- * from Node.js APIs for security. Communication with the main process occurs
- * via the IPC bridge exposed through window.ipcToMain.
+ * @remarks
+ * This file primarily contains internal declarations and implementation details. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { registerLicense } from "@syncfusion/ej2-base";
 import { createRoot } from "react-dom/client";
 import App from "./App";

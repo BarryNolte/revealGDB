@@ -1,19 +1,9 @@
 /**
- * GDB Source window component.
+ * Implements gdb source window behavior for debugger tool-window rendering and interactions.
  *
- * Displays source code files with syntax highlighting using Ace Editor.
- * Features include:
- * - Syntax highlighting for multiple languages (C/C++, Python, Rust, etc.)
- * - Configurable editor themes (50+ themes available)
- * - Current execution line highlighting
- * - Breakpoint markers in the gutter
- * - Line numbers and code folding
- * - Context menu for copy operations
- *
- * The editor responds to source file updates from GDB and highlights the
- * current execution position. Breakpoints are visually marked in the gutter.
+ * @remarks
+ * Exported symbols include `GdbSourceWindow`. It coordinates live debugger data with user interactions in docked tool-window views.
  */
-
 import "ace-builds/css/ace.css";
 import { JSX, useId } from "react";
 import { IMarker } from "react-ace";
@@ -27,6 +17,14 @@ import "./GdbSourceWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
+/**
+ * Performs gdb source window as part of this module's public API.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @returns The computed result produced by this operation.
+ */
 export default function GdbSourceWindow(): JSX.Element {
   const menuId = useId();
   const {

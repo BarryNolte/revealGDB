@@ -1,3 +1,15 @@
+/**
+ * ElectronUINotifier.test module.
+ *
+ * @remarks
+ * Source module for ElectronUINotifier.test.
+ */
+
+/**
+ * @file ElectronUINotifier.test.ts
+ * @description Source module for ElectronUINotifier.test.
+ */
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ElectronUINotifier } from "../../../../../../src/main/mi-interface/gdb-state-database/notifiers/ElectronUINotifier";
 

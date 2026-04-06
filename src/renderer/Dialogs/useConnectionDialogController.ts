@@ -1,3 +1,9 @@
+/**
+ * Implements use connection dialog controller dialog state and interaction workflows in the renderer.
+ *
+ * @remarks
+ * Exported symbols include `DefinedConnection`, `useConnectionDialogController`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
 import { RefObject, useCallback, useEffect, useMemo, useState } from "react";
 import { GdbAny, Step, StepAndState } from "../../common/gdb-common";
@@ -9,6 +15,11 @@ const states: Record<Step, StepAndState> = {
   "target-running": { step: 2, name: "Target Running", state: "pending" },
 };
 
+/**
+ * Creates pending states for downstream use.
+ *
+ * @returns The computed result produced by this operation.
+ */
 const createPendingStates = (): Record<Step, StepAndState> => ({
   "starting-shell": { ...states["starting-shell"] },
   "running-commands": { ...states["running-commands"] },
@@ -25,6 +36,12 @@ type UseConnectionDialogControllerArgs = {
   outputRef: RefObject<HTMLDivElement | null>;
 };
 
+/**
+ * Normalizes connections into a consistent representation.
+ *
+ * @param settingsConnections - Value for `settingsConnections` consumed by this operation.
+ * @returns The resulting collection produced by this operation.
+ */
 function normalizeConnections(settingsConnections: unknown): DefinedConnection[] {
   if (!Array.isArray(settingsConnections)) {
     return [];
@@ -38,6 +55,14 @@ function normalizeConnections(settingsConnections: unknown): DefinedConnection[]
     }));
 }
 
+/**
+ * Creates and returns the `useConnectionDialogController` hook API used by renderer components.
+ *
+ * @remarks
+ * Encapsulates stateful React logic and returns values/callbacks consumed by UI components. Includes explicit error-handling logic for expected failure paths. Performs asynchronous work and should be used with completion ordering in mind.
+ *
+ * @param param1 - Value for `param1` consumed by this operation.
+ */
 export function useConnectionDialogController({
   connectionsRef,
   connDlgRef,
@@ -182,6 +207,11 @@ export function useConnectionDialogController({
   }, [connDlgRef, connectionsRef, loadConnectionsFromSettings]);
 
   useEffect(() => {
+    /**
+     * Performs on document click capture as part of this module's internal workflow.
+     *
+     * @param event - Value for `event` consumed by this operation.
+     */
     const onDocumentClickCapture = (event: MouseEvent): void => {
       const eventTarget = event.target;
       if (!(eventTarget instanceof Element)) {

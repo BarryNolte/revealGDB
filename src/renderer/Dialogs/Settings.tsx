@@ -1,15 +1,9 @@
 /**
- * Settings dialog for RevealGDB.
+ * Implements settings dialog state and interaction workflows in the renderer.
  *
- * Allows users to configure:
- * - Source editor theme and fonts (Monaco editor settings)
- * - Application theme (Light/Dark)
- * - Debug information display options
- *
- * Settings are persisted to the main process and applied immediately
- * via custom events that update relevant components.
+ * @remarks
+ * Exported symbols include `SettingsHandle`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { ButtonComponent, CheckBoxComponent } from "@syncfusion/ej2-react-buttons";
 import { DropDownListComponent } from "@syncfusion/ej2-react-dropdowns";
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
@@ -95,17 +89,27 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
     };
   }, []);
 
-  /** Closes the settings dialog */
+  /**
+   * Performs dialog close func as part of this module's internal workflow.
+   */
   const dialogCloseFunc = () => {
     setHideDialog(false);
   };
 
-  /** Custom header component */
+  /**
+   * Performs header as part of this module's internal workflow.
+   *
+   * @returns The computed result produced by this operation.
+   */
   const header = (): JSX.Element => {
     return <div className="dialogHeader">Settings</div>;
   };
 
-  /** Custom footer with OK button */
+  /**
+   * Performs footer as part of this module's internal workflow.
+   *
+   * @returns The computed result produced by this operation.
+   */
   const footer = (): JSX.Element => {
     return (
       <div>
@@ -115,8 +119,9 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
   };
 
   /**
-   * Handles editor theme selection change.
-   * Updates the source window editor theme and persists to settings.
+   * Performs on select editor theme as part of this module's internal workflow.
+   *
+   * @param e - Value for `e` consumed by this operation.
    */
   const onSelectEditorTheme = (e: GdbAny) => {
     window.dispatchEvent(
@@ -130,8 +135,9 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
   };
 
   /**
-   * Handles editor font selection change.
-   * Updates the source window editor font and persists to settings.
+   * Performs on select editor font as part of this module's internal workflow.
+   *
+   * @param e - Value for `e` consumed by this operation.
    */
   const onSelectEditorFont = (e: GdbAny) => {
     const newFontName = e.itemData.value;
@@ -149,8 +155,9 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
   };
 
   /**
-   * Handles editor font size selection change.
-   * Updates the source window editor font size and persists to settings.
+   * Performs on select editor font size as part of this module's internal workflow.
+   *
+   * @param e - Value for `e` consumed by this operation.
    */
   const onSelectEditorFontSize = (e: GdbAny) => {
     const newFontSize = e.itemData.value;
@@ -168,8 +175,9 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
   };
 
   /**
-   * Handles debug info display toggle.
-   * Shows/hides debug information in various UI components.
+   * Performs on change show debug info as part of this module's internal workflow.
+   *
+   * @param e - Value for `e` consumed by this operation.
    */
   const onChangeShowDebugInfo = (e: GdbAny) => {
     window.dispatchEvent(
@@ -186,8 +194,9 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
   };
 
   /**
-   * Handles application theme selection change.
-   * Switches between Light and Dark themes for the entire application.
+   * Performs on select app theme as part of this module's internal workflow.
+   *
+   * @param e - Value for `e` consumed by this operation.
    */
   const onSelectAppTheme = (e: GdbAny) => {
     const newAppTheme = e.itemData.value;

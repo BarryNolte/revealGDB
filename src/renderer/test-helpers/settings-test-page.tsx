@@ -1,3 +1,9 @@
+/**
+ * Provides settings test page helpers that power renderer integration harness pages.
+ *
+ * @remarks
+ * Exported symbols include `setupSettingsTestApi`, `SettingsTestPage`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import type { JSX } from "react";
 import { useEffect, useRef } from "react";
 import Settings, { type SettingsHandle } from "../Dialogs/Settings";
@@ -47,6 +53,9 @@ const defaultSettings: SettingsPayload = {
 
 const defaultFonts = ["Consolas", "Fira Code", "Cascadia Code"];
 
+/**
+ * Performs setup settings test api as part of this module's public API.
+ */
 export function setupSettingsTestApi(): void {
   const ipc = window.ipcToMain ?? ({} as Window["ipcToMain"]);
   if (!window.ipcToMain) {
@@ -61,10 +70,20 @@ export function setupSettingsTestApi(): void {
   const editorEvents: Array<Record<string, unknown>> = [];
   const applicationEvents: Array<Record<string, unknown>> = [];
 
+  /**
+   * Performs handle change editor as part of this module's internal workflow.
+   *
+   * @param event - Value for `event` consumed by this operation.
+   */
   const handleChangeEditor = (event: Event) => {
     editorEvents.push({ ...(((event as CustomEvent).detail as Record<string, unknown>) ?? {}) });
   };
 
+  /**
+   * Performs handle change application as part of this module's internal workflow.
+   *
+   * @param event - Value for `event` consumed by this operation.
+   */
   const handleChangeApplication = (event: Event) => {
     applicationEvents.push({
       ...(((event as CustomEvent).detail as Record<string, unknown>) ?? {}),
@@ -169,6 +188,11 @@ export function setupSettingsTestApi(): void {
   };
 }
 
+/**
+ * Performs settings test page as part of this module's public API.
+ *
+ * @returns The computed result produced by this operation.
+ */
 export function SettingsTestPage(): JSX.Element {
   const settingsRef = useRef<SettingsHandle>(null);
 

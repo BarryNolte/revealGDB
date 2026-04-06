@@ -58,3 +58,17 @@ describe("GdbMemoryWindow smoke test", () => {
     expect(mockUnsubscribe).toHaveBeenCalledTimes(1);
   });
 });
+
+
+/**
+ * @file GdbMemoryWindow.test.tsx
+ * @description Source module for GdbMemoryWindow.test.
+ */
+
+
+/**
+ * GdbMemoryWindow.test module.
+ *
+ * @remarks
+ * Source module for GdbMemoryWindow.test.
+ */

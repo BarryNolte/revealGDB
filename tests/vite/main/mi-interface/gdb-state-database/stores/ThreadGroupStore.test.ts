@@ -1,3 +1,15 @@
+/**
+ * ThreadGroupStore.test module.
+ *
+ * @remarks
+ * Source module for ThreadGroupStore.test.
+ */
+
+/**
+ * @file ThreadGroupStore.test.ts
+ * @description Source module for ThreadGroupStore.test.
+ */
+
 import { describe, expect, it } from "vitest";
 import { ThreadGroupStore } from "../../../../../../src/main/mi-interface/gdb-state-database/stores/ThreadGroupStore";
 

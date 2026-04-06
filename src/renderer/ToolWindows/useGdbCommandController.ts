@@ -1,7 +1,19 @@
+/**
+ * Implements use gdb command controller behavior for debugger tool-window rendering and interactions.
+ *
+ * @remarks
+ * Exported symbols include `useGdbCommandController`. It coordinates live debugger data with user interactions in docked tool-window views.
+ */
 import { KeyboardEvent, useCallback, useEffect, useRef } from "react";
 import { GdbAny } from "../../common/gdb-common";
 import { CommandHistory } from "../utilities/CommandHistory";
 
+/**
+ * Creates and returns the `useGdbCommandController` hook API used by renderer components.
+ *
+ * @remarks
+ * Encapsulates stateful React logic and returns values/callbacks consumed by UI components. Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ */
 export function useGdbCommandController() {
   const cmdHistoryRef = useRef<CommandHistory>(new CommandHistory());
   const outputRef = useRef<HTMLDivElement | null>(null);

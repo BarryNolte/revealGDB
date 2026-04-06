@@ -1,3 +1,9 @@
+/**
+ * Implements state lifecycle coordinator logic for processing GDB/MI output and debugger state transitions.
+ *
+ * @remarks
+ * Exported symbols include `StateLifecycleCoordinator`. It sits on the debugger data path that translates MI records into typed stores and notifications.
+ */
 import { UINotifier } from "../notifiers/UINotifier";
 import { BreakpointStore } from "../stores/BreakpointStore";
 import { FeatureStore } from "../stores/FeatureStore";
@@ -28,6 +34,12 @@ export class StateLifecycleCoordinator {
     private readonly functionStore: FunctionStore,
   ) {}
 
+  /**
+   * Clears source files from managed state.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   */
   clearSourceFiles(): void {
     const showSourceInfo: gdbShowSourceInfo = {
       fileName: " ",
@@ -38,6 +50,12 @@ export class StateLifecycleCoordinator {
     this.notifier.sendSourceFile(showSourceInfo);
   }
 
+  /**
+   * Clears database from managed state.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   */
   clearDatabase(): void {
     this.threadGroupStore.clear();
     this.threadStore.clearThreadList();
@@ -53,6 +71,12 @@ export class StateLifecycleCoordinator {
     this.clearSourceFiles();
   }
 
+  /**
+   * Performs dump as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   */
   dump(): void {
     console.log("GDB State Database");
     console.log("==================");

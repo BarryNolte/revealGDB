@@ -1,3 +1,15 @@
+/**
+ * preload-test-harness module.
+ *
+ * @remarks
+ * Source module for preload-test-harness.
+ */
+
+/**
+ * @file preload-test-harness.ts
+ * @description Source module for preload-test-harness.
+ */
+
 import { vi } from "vitest";
 
 export function createPreloadElectronHarness() {

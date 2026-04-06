@@ -1,19 +1,9 @@
 /**
- * Theme manager for RevealGDB.
+ * Implements theme manager for revealGDB runtime behavior.
  *
- * Centralises all theme-switching logic:
- *  - Sets the `data-theme` attribute on the document root
- *  - Injects / removes SyncFusion Material-Dark CSS via a `<style>` element
- *  - Queries the OS colour-scheme preference via matchMedia
- *
- * The light SyncFusion CSS is bundled normally by Vite (imported in main.tsx).
- * The dark SyncFusion CSS is imported with `?inline` so Vite resolves all
- * @import statements at build time and gives us the processed CSS as a string.
- * We inject it into a `<style>` tag when dark mode is active and remove it
- * when switching back to light.
+ * @remarks
+ * Exported symbols include `AppTheme`, `shouldUseDark`, `applyTheme`, `setSyncfusionDark`, `getSystemDarkMode`, `toNativeThemeSource`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
-// Vite ?inline import: resolved at build time, returned as a string.
 import syncfusionDarkCss from "./syncfusion-dark.css?inline";
 
 export type AppTheme = "Light" | "Dark" | "Auto";
@@ -21,7 +11,11 @@ export type AppTheme = "Light" | "Dark" | "Auto";
 const SYNCFUSION_DARK_STYLE_ID = "syncfusion-dark-style";
 
 /**
- * Resolve whether dark mode should be active.
+ * Performs should use dark as part of this module's public API.
+ *
+ * @param theme - Value for `theme` consumed by this operation.
+ * @param systemDark - Value for `systemDark` consumed by this operation.
+ * @returns True when the operation succeeds; otherwise false.
  */
 export function shouldUseDark(theme: AppTheme, systemDark?: boolean): boolean {
   if (theme === "Dark") return true;
@@ -31,11 +25,10 @@ export function shouldUseDark(theme: AppTheme, systemDark?: boolean): boolean {
 }
 
 /**
- * Apply the given application theme immediately.
+ * Performs apply theme as part of this module's public API.
  *
- * @param theme  - The user-selected theme ("Light" | "Dark" | "Auto").
- * @param systemDark - Optional override for the current OS dark-mode state.
- *                     When omitted the value is read via `matchMedia`.
+ * @param theme - Value for `theme` consumed by this operation.
+ * @param systemDark - Value for `systemDark` consumed by this operation.
  */
 export function applyTheme(theme: AppTheme, systemDark?: boolean): void {
   const dark = shouldUseDark(theme, systemDark);
@@ -52,12 +45,9 @@ export function applyTheme(theme: AppTheme, systemDark?: boolean): void {
 }
 
 /**
- * Add or remove the SyncFusion Material-Dark `<style>` element.
+ * Sets syncfusion dark on current state.
  *
- * When dark is true, the element is added (if not already present).
- * When dark is false, the element is removed (if present).
- * The dark styles cascade over the always-loaded light styles because
- * they use identical selectors and appear later in the document.
+ * @param dark - Value for `dark` consumed by this operation.
  */
 export function setSyncfusionDark(dark: boolean): void {
   const existing = document.getElementById(SYNCFUSION_DARK_STYLE_ID);
@@ -73,7 +63,9 @@ export function setSyncfusionDark(dark: boolean): void {
 }
 
 /**
- * Read the current OS colour-scheme preference.
+ * Returns system dark mode from current state.
+ *
+ * @returns True when the operation succeeds; otherwise false.
  */
 export function getSystemDarkMode(): boolean {
   if (typeof window === "undefined" || !window.matchMedia) return false;
@@ -81,7 +73,10 @@ export function getSystemDarkMode(): boolean {
 }
 
 /**
- * Map a user-facing theme string to the Electron `nativeTheme.themeSource` value.
+ * Performs to native theme source as part of this module's public API.
+ *
+ * @param theme - Value for `theme` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 export function toNativeThemeSource(theme: AppTheme): "light" | "dark" | "system" {
   switch (theme) {

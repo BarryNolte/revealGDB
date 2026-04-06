@@ -1,3 +1,15 @@
+/**
+ * ipc-test-harness module.
+ *
+ * @remarks
+ * Source module for ipc-test-harness.
+ */
+
+/**
+ * @file ipc-test-harness.ts
+ * @description Source module for ipc-test-harness.
+ */
+
 import { vi } from "vitest";
 import type { GdbAny } from "../../src/common/gdb-common";
 import type { IpcRegistrationContext } from "../../src/main/ipc/types";

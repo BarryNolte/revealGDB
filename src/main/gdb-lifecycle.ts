@@ -1,3 +1,9 @@
+/**
+ * Implements gdb lifecycle for revealGDB runtime behavior.
+ *
+ * @remarks
+ * Exported symbols include `createGdbInterface`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { BrowserWindow } from "electron";
 import { IPC_CHANNELS } from "../common/ipc-contracts";
 import { miInterface } from "./mi-interface/mi-interface";
@@ -6,6 +12,13 @@ type SettingsLike = {
   getSync: (key: string) => unknown;
 };
 
+/**
+ * Creates gdb interface for downstream use.
+ *
+ * @param mainWindow - Value for `mainWindow` consumed by this operation.
+ * @param appSettings - Value for `appSettings` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export function createGdbInterface(
   mainWindow: BrowserWindow,
   appSettings: SettingsLike,

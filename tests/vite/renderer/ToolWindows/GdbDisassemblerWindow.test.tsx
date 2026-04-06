@@ -90,3 +90,17 @@ describe("GdbDisassemblerWindow smoke test", () => {
     expect(mockUnsubFunctions).toHaveBeenCalledTimes(1);
   });
 });
+
+
+/**
+ * @file GdbDisassemblerWindow.test.tsx
+ * @description Source module for GdbDisassemblerWindow.test.
+ */
+
+
+/**
+ * GdbDisassemblerWindow.test module.
+ *
+ * @remarks
+ * Source module for GdbDisassemblerWindow.test.
+ */

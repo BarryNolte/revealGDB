@@ -1,4 +1,16 @@
 /**
+ * gdb-locals.test module.
+ *
+ * @remarks
+ * Source module for gdb-locals.test.
+ */
+
+/**
+ * @file gdb-locals.test.ts
+ * @description Source module for gdb-locals.test.
+ */
+
+/**
  * Tests for Local and LocalsContainer parsing behavior.
  */
 import { describe, expect, it } from "vitest";

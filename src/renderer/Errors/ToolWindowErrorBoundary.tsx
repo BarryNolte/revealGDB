@@ -1,3 +1,9 @@
+/**
+ * Implements tool window error boundary for revealGDB runtime behavior.
+ *
+ * @remarks
+ * Exported symbols include `ToolWindowErrorBoundary`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { Component, ErrorInfo, ReactNode } from "react";
 import "./error-boundaries.css";
 
@@ -20,6 +26,12 @@ export class ToolWindowErrorBoundary extends Component<
     errorMessage: "",
   };
 
+  /**
+   * Returns derived state from error from current state.
+   *
+   * @param error - Value for `error` consumed by this operation.
+   * @returns The computed result produced by this operation.
+   */
   static getDerivedStateFromError(error: Error): ToolWindowErrorBoundaryState {
     return {
       hasError: true,
@@ -27,6 +39,12 @@ export class ToolWindowErrorBoundary extends Component<
     };
   }
 
+  /**
+   * Performs component did catch as part of this module's public API.
+   *
+   * @param error - Value for `error` consumed by this operation.
+   * @param errorInfo - Value for `errorInfo` consumed by this operation.
+   */
   override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     console.error(`[ToolWindowErrorBoundary] ${this.props.title} failed`, error, errorInfo);
   }
@@ -35,6 +53,11 @@ export class ToolWindowErrorBoundary extends Component<
     this.setState({ hasError: false, errorMessage: "" });
   };
 
+  /**
+   * Renders the operation for display.
+   *
+   * @returns The computed result produced by this operation.
+   */
   override render(): ReactNode {
     if (this.state.hasError) {
       const message = this.state.errorMessage || "Unknown render failure.";

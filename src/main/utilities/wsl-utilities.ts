@@ -1,14 +1,9 @@
 /**
- * @file WSL-Utilities
- * @description Provides helper utilities for Windows Subsystem for Linux (WSL) integration.
- * This module contains functionality for discovering and listing WSL distributions and
- * serial ports available within WSL environments. Used for configuring GDB connections
- * to targets running in WSL instances.
+ * Provides wsl utilities utilities used by main-process platform and integration workflows.
  *
- * @author revealGDB
- * @version 1.0.0
+ * @remarks
+ * Exported symbols include `WslDistro`, `WslUtilities`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { Buffer } from "node:buffer";
 import { execSync } from "node:child_process";
 
@@ -21,10 +16,9 @@ export type WslDistro = {
 
 export class WslUtilities {
   /**
-   * Retrieves a list of available WSL distributions installed on the system.
-   * Executes 'wsl.exe -l -v' command and parses the output to extract distribution names.
+   * Returns wsl distrobutions from current state.
    *
-   * @returns {WslDistro[]} Array of WSL distribution objects containing name, version, state, and default status.
+   * @returns The resulting collection produced by this operation.
    */
   static getWslDistrobutions(): WslDistro[] {
     const wslDistroRegex =
@@ -53,10 +47,9 @@ export class WslUtilities {
   }
 
   /**
-   * Discovers and returns a list of serial ports available within the WSL environment.
-   * Executes a command within the default WSL distribution to list TTY devices and their drivers.
+   * Returns wsl serial ports from current state.
    *
-   * @returns {string[]} Array of available serial port names (e.g., 'ttyS0', 'ttyUSB0')
+   * @returns The resulting collection produced by this operation.
    */
   static getWslSerialPorts(): string[] {
     const buf = execSync('wsl -e sh -c "ls -l /sys/class/tty/*/device/driver"', {
@@ -77,12 +70,10 @@ export class WslUtilities {
   }
 
   /**
-   * Converts a Buffer containing raw bytes into an ASCII string representation.
-   * Filters characters to include only printable ASCII (0x20-0x7E) and control characters CR/LF.
-   * This ensures deterministic parsing of command output.
+   * Performs buffer to ascii string as part of this module's public API.
    *
-   * @param {Buffer} buffer - The buffer to convert
-   * @returns {string} ASCII-filtered string representation of the buffer
+   * @param buffer - Value for `buffer` consumed by this operation.
+   * @returns The resulting string value produced by this operation.
    */
   private static bufferToAsciiString(buffer: Buffer): string {
     let asciiString = "";

@@ -1,3 +1,9 @@
+/**
+ * Implements mi notify handler logic for processing GDB/MI output and debugger state transitions.
+ *
+ * @remarks
+ * Exported symbols include `MiNotifyAsyncHandler`. It sits on the debugger data path that translates MI records into typed stores and notifications.
+ */
 import { mainWindow } from "../main";
 import { mapRegexGroupsToBreakpoint } from "./mappers/breakpoint-mapper";
 import { MiOutputHost, gdbShowSourceInfo } from "./mi-output-types";
@@ -33,6 +39,15 @@ export class MiNotifyAsyncHandler {
 
   constructor(private readonly host: MiOutputHost) {}
 
+  /**
+   * Parses input into notify async record data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications. Performs asynchronous work and should be used with completion ordering in mind.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns A promise that resolves with the computed result after asynchronous processing completes.
+   */
   async parseNotifyAsyncRecord(output: string): Promise<boolean> {
     const chunks = this.rgxNotify.exec(output);
 

@@ -1,3 +1,15 @@
+/**
+ * HexEditorKeymap.test module.
+ *
+ * @remarks
+ * Source module for HexEditorKeymap.test.
+ */
+
+/**
+ * @file HexEditorKeymap.test.ts
+ * @description Source module for HexEditorKeymap.test.
+ */
+
 import { describe, expect, it } from "vitest";
 import { resolveKeyAction } from "../../../../../src/renderer/Components/HexEditor/HexEditorKeymap";
 

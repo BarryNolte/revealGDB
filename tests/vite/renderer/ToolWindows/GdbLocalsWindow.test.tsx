@@ -181,3 +181,17 @@ describe("GdbLocalsWindow smoke test", () => {
     expect(result).toBe('<div class="treeGrid-multiline-cell">line1<br>line2</div>');
   });
 });
+
+
+/**
+ * @file GdbLocalsWindow.test.tsx
+ * @description Source module for GdbLocalsWindow.test.
+ */
+
+
+/**
+ * GdbLocalsWindow.test module.
+ *
+ * @remarks
+ * Source module for GdbLocalsWindow.test.
+ */

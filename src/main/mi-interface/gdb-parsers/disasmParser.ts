@@ -1,10 +1,22 @@
 /**
- * Tokenizes gdb disassembly lines for renderer highlighting.
+ * Implements disasm parser logic for processing GDB/MI output and debugger state transitions.
+ *
+ * @remarks
+ * Exported symbols include `parseDisasmTokens`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { DisasmToken } from "../gdb-state-database/gdbStateDatabase";
 
 const tokenRegex = /[^\s]+\\t|<[^>]+>|0x[0-9A-Fa-f]+|\(|\)|\S+/g;
 
+/**
+ * Parses input into disasm tokens data.
+ *
+ * @remarks
+ * Participates in the MI processing pipeline that updates debugger state and notifications.
+ *
+ * @param input - Value for `input` consumed by this operation.
+ * @returns The resulting collection produced by this operation.
+ */
 export function parseDisasmTokens(input: string): DisasmToken[] {
   if (!input) {
     return [];

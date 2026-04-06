@@ -1,3 +1,15 @@
+/**
+ * mi-interface-commands.test module.
+ *
+ * @remarks
+ * Source module for mi-interface-commands.test.
+ */
+
+/**
+ * @file mi-interface-commands.test.ts
+ * @description Source module for mi-interface-commands.test.
+ */
+
 import { describe, expect, it, vi } from "vitest";
 import { miInterface } from "../../../../src/main/mi-interface/mi-interface";
 

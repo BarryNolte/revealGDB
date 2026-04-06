@@ -1,3 +1,9 @@
+/**
+ * Implements connection dialog view dialog state and interaction workflows in the renderer.
+ *
+ * @remarks
+ * Exported symbols include `ConnectionDialogView`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns";
 import { ColumnDirective, ColumnsDirective, GridComponent } from "@syncfusion/ej2-react-grids";
@@ -28,10 +34,22 @@ type ConnectionDialogViewProps = {
   onSelectedConnectionChange: (itemData: unknown) => void;
 };
 
+/**
+ * Performs column header template as part of this module's internal workflow.
+ *
+ * @param header - Value for `header` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 function columnHeaderTemplate(header: GdbAny): JSX.Element {
   return <div className="column-header-template">{header.headerText}</div>;
 }
 
+/**
+ * Performs state cell template as part of this module's internal workflow.
+ *
+ * @param props - Value for `props` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 function stateCellTemplate(props: GdbAny): JSX.Element {
   const state = props.state as StepAndState["state"];
   let src = "";
@@ -60,6 +78,11 @@ function stateCellTemplate(props: GdbAny): JSX.Element {
   );
 }
 
+/**
+ * Performs header template as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 function headerTemplate(): JSX.Element {
   return (
     <div className="dialogHeader" id="connectingDialogHeader">
@@ -68,6 +91,12 @@ function headerTemplate(): JSX.Element {
   );
 }
 
+/**
+ * Performs connection dialog view as part of this module's public API.
+ *
+ * @param props - Value for `props` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export default function ConnectionDialogView(props: ConnectionDialogViewProps): JSX.Element {
   const {
     connDlgRef,
@@ -83,6 +112,11 @@ export default function ConnectionDialogView(props: ConnectionDialogViewProps): 
     onSelectedConnectionChange,
   } = props;
 
+  /**
+   * Performs footer template as part of this module's internal workflow.
+   *
+   * @returns The computed result produced by this operation.
+   */
   const footerTemplate = (): JSX.Element => {
     return (
       <div className="connectionDialogFooter">

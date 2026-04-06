@@ -1,3 +1,15 @@
+/**
+ * settings.spec module.
+ *
+ * @remarks
+ * Source module for settings.spec.
+ */
+
+/**
+ * @file settings.spec.ts
+ * @description Source module for settings.spec.
+ */
+
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import fs from "node:fs";
 import http from "node:http";

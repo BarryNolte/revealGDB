@@ -1,3 +1,15 @@
+/**
+ * gdb-lifecycle.test module.
+ *
+ * @remarks
+ * Source module for gdb-lifecycle.test.
+ */
+
+/**
+ * @file gdb-lifecycle.test.ts
+ * @description Source module for gdb-lifecycle.test.
+ */
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createGdbInterface } from "../../../src/main/gdb-lifecycle";
 import {

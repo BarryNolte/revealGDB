@@ -1,3 +1,9 @@
+/**
+ * Provides view offset behavior for hex editor rendering, navigation, and input handling.
+ *
+ * @remarks
+ * Exported symbols include `HexOffsetView`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import type { JSX, MouseEvent } from "react";
 import type { MouseCallback } from "./MouseKeyboardHandler";
 
@@ -7,6 +13,14 @@ interface HexOffsetViewProps {
   mouseCallback: MouseCallback;
 }
 
+/**
+ * Performs offset header as part of this module's internal workflow.
+ *
+ * @remarks
+ * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+ *
+ * @returns The computed result produced by this operation.
+ */
 function OffsetHeader(): JSX.Element {
   return (
     <tr key="offset-header">
@@ -15,6 +29,15 @@ function OffsetHeader(): JSX.Element {
   );
 }
 
+/**
+ * Performs offset values as part of this module's internal workflow.
+ *
+ * @remarks
+ * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+ *
+ * @param param1 - Value for `param1` consumed by this operation.
+ * @returns The resulting collection produced by this operation.
+ */
 function OffsetValues({
   offset,
   datasource,
@@ -38,6 +61,15 @@ function OffsetValues({
   return offsetRows;
 }
 
+/**
+ * Performs hex offset view as part of this module's public API.
+ *
+ * @remarks
+ * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+ *
+ * @param param1 - Value for `param1` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export default function HexOffsetView({
   offset,
   datasource,

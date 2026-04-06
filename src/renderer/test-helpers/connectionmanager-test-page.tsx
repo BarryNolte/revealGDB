@@ -1,3 +1,9 @@
+/**
+ * Provides connectionmanager test page helpers that power renderer integration harness pages.
+ *
+ * @remarks
+ * Exported symbols include `setupConnectionManagerTestApi`, `ConnectionManagerTestPage`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import type { JSX } from "react";
 import { useEffect, useRef } from "react";
 import { ConnectionManager, type ConnectionManagerHandle } from "../Dialogs/ConnectionManager";
@@ -23,6 +29,9 @@ type WindowWithConnectionManagerTest = Window & {
   };
 };
 
+/**
+ * Performs setup connection manager test api as part of this module's public API.
+ */
 export function setupConnectionManagerTestApi(): void {
   const ipc = window.ipcToMain ?? ({} as Window["ipcToMain"]);
   if (!window.ipcToMain) {
@@ -142,6 +151,11 @@ export function setupConnectionManagerTestApi(): void {
   };
 }
 
+/**
+ * Performs connection manager test page as part of this module's public API.
+ *
+ * @returns The computed result produced by this operation.
+ */
 export function ConnectionManagerTestPage(): JSX.Element {
   const connectionManagerRef = useRef<ConnectionManagerHandle>(null);
 

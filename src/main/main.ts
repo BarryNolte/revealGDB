@@ -1,5 +1,8 @@
 /**
- * Main process entry point: window lifecycle, IPC, and GDB wiring.
+ * Implements main for revealGDB runtime behavior.
+ *
+ * @remarks
+ * Exported symbols include `isMac`, `isWin`, `isLinux`, `isDebug`, `AppSettings`, `mainWindow`, `gdbInterface`, `gdbAppInfo`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { app, BrowserWindow, ipcMain, nativeTheme } from "electron";
 import settings from "electron-settings";
@@ -48,6 +51,11 @@ export const AppSettings = settings;
 const fontList: Map<string, string> = new Map<string, string>();
 const startupEpochMs = Date.now();
 
+/**
+ * Performs log startup milestone as part of this module's internal workflow.
+ *
+ * @param label - Value for `label` consumed by this operation.
+ */
 function logStartupMilestone(label: string): void {
   const elapsedMs = Date.now() - startupEpochMs;
   console.log(`[startup] ${label}: ${elapsedMs}ms`);
@@ -60,6 +68,12 @@ export let gdbInterface: miInterface;
 
 export const gdbAppInfo: Map<string, GdbAny> = new Map<string, GdbAny>();
 
+/**
+ * Performs is selected connection as part of this module's internal workflow.
+ *
+ * @param value - Value to validate, normalize, or transform before further processing.
+ * @returns The computed result produced by this operation.
+ */
 function isSelectedConnection(value: unknown): value is SelectedConnection {
   if (!value || typeof value !== "object") {
     return false;

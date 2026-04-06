@@ -1,3 +1,15 @@
+/**
+ * theme-support.test module.
+ *
+ * @remarks
+ * Source module for theme-support.test.
+ */
+
+/**
+ * @file theme-support.test.ts
+ * @description Source module for theme-support.test.
+ */
+
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("electron", async () => {

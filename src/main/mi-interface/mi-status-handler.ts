@@ -1,3 +1,9 @@
+/**
+ * Implements mi status handler logic for processing GDB/MI output and debugger state transitions.
+ *
+ * @remarks
+ * Exported symbols include `MiStatusAsyncHandler`. It sits on the debugger data path that translates MI records into typed stores and notifications.
+ */
 import { MiOutputHost } from "./mi-output-types";
 
 export class MiStatusAsyncHandler {
@@ -10,6 +16,15 @@ export class MiStatusAsyncHandler {
 
   constructor(private readonly host: MiOutputHost) {}
 
+  /**
+   * Parses input into status async record data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns True when the operation succeeds; otherwise false.
+   */
   parseStatusAsyncRecord(output: string): boolean {
     const chunks = this.rgxStatusAsyncRecord.exec(output);
 

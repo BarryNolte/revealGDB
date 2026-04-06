@@ -1,3 +1,9 @@
+/**
+ * Implements mi exec handler logic for processing GDB/MI output and debugger state transitions.
+ *
+ * @remarks
+ * Exported symbols include `MiExecAsyncHandler`. It sits on the debugger data path that translates MI records into typed stores and notifications.
+ */
 import { mainWindow } from "../main";
 import { MiOutputHost } from "./mi-output-types";
 
@@ -14,6 +20,15 @@ export class MiExecAsyncHandler {
 
   constructor(private readonly host: MiOutputHost) {}
 
+  /**
+   * Parses input into exec async record data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns True when the operation succeeds; otherwise false.
+   */
   parseExecAsyncRecord(output: string): boolean {
     const chunks = this.rgxExecAsyncRecord.exec(output);
 

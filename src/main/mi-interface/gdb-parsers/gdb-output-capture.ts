@@ -1,5 +1,8 @@
 /**
- * Captures multi-line gdb outputs and extracts symbol/function metadata.
+ * Implements gdb output capture logic for processing GDB/MI output and debugger state transitions.
+ *
+ * @remarks
+ * Exported symbols include `CaptureType`, `GdbOutputCapture`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { mainWindow } from "../../main";
 import { gdbStateDatabase } from "../gdb-state-database/gdbStateDatabase";
@@ -16,6 +19,14 @@ export class GdbOutputCapture {
     this.gdbDB = db;
   }
 
+  /**
+   * Performs capture symbol files as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param capArray - Value for `capArray` consumed by this operation.
+   */
   CaptureSymbolFiles(capArray: string[]): void {
     for (const line of capArray) {
       const symGroups = line.match(/Symbols from \\"(?<path>[^\\"]*)/)?.groups;
@@ -38,6 +49,14 @@ export class GdbOutputCapture {
     }
   }
 
+  /**
+   * Performs capture function names as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param capArray - Value for `capArray` consumed by this operation.
+   */
   CaptureFunctionNames(capArray: string[]): void {
     enum state {
       begin,
@@ -82,6 +101,15 @@ export class GdbOutputCapture {
     mainWindow.webContents.send("data-disasm-functions", this.gdbDB.getAllFunctionNames());
   }
 
+  /**
+   * Performs capture line as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param line - Line value used for source navigation or rendering.
+   * @returns True when the operation succeeds; otherwise false.
+   */
   CaptureLine(line: string): boolean {
     if (line.includes("<<<<file-info>>>>")) {
       this.captureType = "file-info";

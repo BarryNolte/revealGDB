@@ -1,16 +1,9 @@
 /**
- * Connection progress dialog for RevealGDB.
+ * Implements connection dialog dialog state and interaction workflows in the renderer.
  *
- * Displays and controls an active connection attempt:
- * - Selects a saved connection profile
- * - Starts/cancels connection from the renderer
- * - Shows startup step status with icons
- * - Streams console output while connecting
- *
- * The dialog coordinates with the Connection Manager modal so users can edit
- * profiles without losing the current connection flow context.
+ * @remarks
+ * Exported symbols include `WhileConnectingDialogHandle`, `ConnectionDialog`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { GridComponent } from "@syncfusion/ej2-react-grids";
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
 import { forwardRef, RefObject, useImperativeHandle, useRef } from "react";

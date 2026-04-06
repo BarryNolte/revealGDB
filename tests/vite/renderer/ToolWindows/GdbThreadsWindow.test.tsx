@@ -56,3 +56,17 @@ describe("GdbThreadsWindow smoke test", () => {
     expect(testWindow.ipcToMain.debuggerData.threads).toHaveBeenCalledTimes(1);
   });
 });
+
+
+/**
+ * @file GdbThreadsWindow.test.tsx
+ * @description Source module for GdbThreadsWindow.test.
+ */
+
+
+/**
+ * GdbThreadsWindow.test module.
+ *
+ * @remarks
+ * Source module for GdbThreadsWindow.test.
+ */

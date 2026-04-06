@@ -1,12 +1,36 @@
+/**
+ * Defines queries IPC handlers that bridge renderer requests to main-process behavior.
+ *
+ * @remarks
+ * Exported symbols include `registerIpcQueryHandlers`. It is responsible for channel registration, payload marshalling, and returning data to renderer callers.
+ */
 import { IPC_CHANNELS } from "../../common/ipc-contracts";
 import { gdbFunction } from "../mi-interface/gdb-state-database/gdbStateDatabase";
 import { WslUtilities, type WslDistro } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
 
+/**
+ * Registers ipc query handlers for the active runtime context.
+ *
+ * @remarks
+ * Participates in main-process IPC wiring between renderer requests and backend services. Includes explicit error-handling logic for expected failure paths. Performs asynchronous work and should be used with completion ordering in mind.
+ *
+ * @param context - Dependency container used to register handlers and access shared services.
+ */
 export function registerIpcQueryHandlers(context: IpcRegistrationContext): void {
   context.ipcMain.handle(
     IPC_CHANNELS.rendererToMain.queries.app.settings,
     (): Promise<string[]> => {
+      /**
+       * Performs attempt as part of this module's internal workflow.
+       *
+       * @remarks
+       * Participates in main-process IPC wiring between renderer requests and backend services. Includes explicit error-handling logic for expected failure paths. Performs asynchronous work and should be used with completion ordering in mind.
+       *
+       * @param remaining - Number of retry attempts remaining before the operation fails.
+       * @param delayMs - Delay, in milliseconds, to wait before retrying the operation.
+       * @returns A promise that resolves with the computed result after asynchronous processing completes.
+       */
       const attempt = async (remaining: number, delayMs: number): Promise<string[]> => {
         try {
           return context.appSettings.getSync("gdb") as string[];

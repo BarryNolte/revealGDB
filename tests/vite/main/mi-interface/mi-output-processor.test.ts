@@ -1,3 +1,15 @@
+/**
+ * mi-output-processor.test module.
+ *
+ * @remarks
+ * Source module for mi-output-processor.test.
+ */
+
+/**
+ * @file mi-output-processor.test.ts
+ * @description Source module for mi-output-processor.test.
+ */
+
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { gdbStateDatabase } from "../../../../src/main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { MiOutputProcessor } from "../../../../src/main/mi-interface/mi-output-processor";

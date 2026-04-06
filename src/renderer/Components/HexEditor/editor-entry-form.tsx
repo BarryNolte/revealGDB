@@ -1,3 +1,9 @@
+/**
+ * Provides editor entry form behavior for hex editor rendering, navigation, and input handling.
+ *
+ * @remarks
+ * This file primarily contains internal declarations and implementation details. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { useRef } from "react";
 import { DataViewEnum, TextViewEnum } from "./common";
 import "./editor-entry-form.css";
@@ -8,10 +14,24 @@ interface EditorEntryProps {
   textCallback: (text: TextViewEnum) => void;
 }
 
+/**
+ * Performs editor entry as part of this module's internal workflow.
+ *
+ * @remarks
+ * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+ *
+ * @param param1 - Value for `param1` consumed by this operation.
+ */
 const EditorEntry = ({ datalength, dataCallback, textCallback }: EditorEntryProps) => {
   const radixRef = useRef<HTMLSelectElement>(null);
   const textRef = useRef<HTMLSelectElement>(null);
 
+  /**
+   * Sets radix on current state.
+   *
+   * @remarks
+   * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+   */
   const setRadix = (): void => {
     if (dataCallback) {
       const selectedRadix: DataViewEnum =
@@ -20,6 +40,12 @@ const EditorEntry = ({ datalength, dataCallback, textCallback }: EditorEntryProp
     }
   };
 
+  /**
+   * Sets text on current state.
+   *
+   * @remarks
+   * Contributes to hex editor navigation, rendering synchronization, or edit workflows.
+   */
   const setText = (): void => {
     if (textCallback) {
       const text: TextViewEnum = parseInt(textRef.current?.value || "") || TextViewEnum.ascii;

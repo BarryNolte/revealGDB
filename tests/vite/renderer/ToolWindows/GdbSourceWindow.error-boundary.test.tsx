@@ -48,3 +48,17 @@ describe("GdbSourceWindow error boundary", () => {
     expect(screen.getByRole("button", { name: "Retry" })).toBeTruthy();
   });
 });
+
+
+/**
+ * @file GdbSourceWindow.error-boundary.test.tsx
+ * @description Source module for GdbSourceWindow.error-boundary.test.
+ */
+
+
+/**
+ * GdbSourceWindow.error-boundary.test module.
+ *
+ * @remarks
+ * Source module for GdbSourceWindow.error-boundary.test.
+ */

@@ -1,3 +1,15 @@
+/**
+ * RegisterStore.test module.
+ *
+ * @remarks
+ * Source module for RegisterStore.test.
+ */
+
+/**
+ * @file RegisterStore.test.ts
+ * @description Source module for RegisterStore.test.
+ */
+
 import { describe, expect, it } from "vitest";
 import { RegisterStore } from "../../../../../../src/main/mi-interface/gdb-state-database/stores/RegisterStore";
 

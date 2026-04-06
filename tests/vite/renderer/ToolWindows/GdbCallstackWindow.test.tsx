@@ -85,3 +85,17 @@ describe("GdbCallstackWindow smoke test", () => {
     expect(mockUnsubscribe).toHaveBeenCalledTimes(1);
   });
 });
+
+
+/**
+ * @file GdbCallstackWindow.test.tsx
+ * @description Source module for GdbCallstackWindow.test.
+ */
+
+
+/**
+ * GdbCallstackWindow.test module.
+ *
+ * @remarks
+ * Source module for GdbCallstackWindow.test.
+ */

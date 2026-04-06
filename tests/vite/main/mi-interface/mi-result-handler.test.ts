@@ -1,3 +1,15 @@
+/**
+ * mi-result-handler.test module.
+ *
+ * @remarks
+ * Source module for mi-result-handler.test.
+ */
+
+/**
+ * @file mi-result-handler.test.ts
+ * @description Source module for mi-result-handler.test.
+ */
+
 import { describe, expect, it, vi } from "vitest";
 import { gdbStateDatabase } from "../../../../src/main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { MiOutputHost } from "../../../../src/main/mi-interface/mi-output-types";

@@ -1,17 +1,9 @@
 /**
- * Application toolbar component for RevealGDB.
+ * Defines the toolbar renderer component and supporting presentation logic.
  *
- * Provides the main toolbar with:
- * - GDB connection/disconnection controls
- * - Debug execution controls (Continue, Pause, Stop)
- * - Step controls (Step In, Over, Out)
- * - Settings and connection management buttons
- * - Window visibility toggle dropdown
- *
- * The toolbar integrates with the dock manager to show/hide debugger windows
- * and communicates with the main process to send GDB commands.
+ * @remarks
+ * Exported symbols include `RevealToolbar`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { ItemDirective, ItemsDirective, ToolbarComponent } from "@syncfusion/ej2-react-navigations";
 import { ItemModel, SplitButtonComponent } from "@syncfusion/ej2-react-splitbuttons";
 import { JSX, RefObject, useCallback, useEffect, useMemo, useState } from "react";
@@ -34,8 +26,10 @@ type RevealToolbarProps = {
 };
 
 /**
- * Main toolbar component.
- * Function-based component that manages toolbar state and handles user interactions.
+ * Performs reveal toolbar as part of this module's public API.
+ *
+ * @param param1 - Value for `param1` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 export default function RevealToolbar({
   connectionsRef,
@@ -90,12 +84,16 @@ export default function RevealToolbar({
   // GDB Control Commands
   // ========================================================================
 
-  /** Initiates GDB connection and shows connection progress dialog */
+  /**
+   * Performs on connect as part of this module's internal workflow.
+   */
   const onConnect = () => {
     whileConnectingRef?.current?.ShowDialog();
   };
 
-  /** Terminates GDB connection (placeholder) */
+  /**
+   * Performs on disconnect as part of this module's internal workflow.
+   */
   const onDisconnect = () => {
     window.ipcToMain.commands.app.notifyMain({
       command: "cancel-connection",
@@ -103,48 +101,42 @@ export default function RevealToolbar({
   };
 
   /**
-   * Resumes program execution.
-   * Sends GDB 'continue' command to resume all threads.
+   * Performs on continue as part of this module's internal workflow.
    */
   const onContinue = () => {
     window.ipcToMain.commands.debugger.sendGdbCommand("continue");
   };
 
   /**
-   * Pauses program execution.
-   * Sends SIGINT signal to interrupt the running program.
+   * Performs on pause as part of this module's internal workflow.
    */
   const onPause = () => {
     window.ipcToMain.commands.debugger.sendGdbCommand("signal SIGINT");
   };
 
   /**
-   * Stops program execution.
-   * Sends GDB 'kill' command to terminate the inferior process.
+   * Performs on stop as part of this module's internal workflow.
    */
   const onStop = () => {
     window.ipcToMain.commands.debugger.sendGdbCommand("kill");
   };
 
   /**
-   * Steps over the current line.
-   * Executes the current source line, stepping over function calls.
+   * Performs on step over as part of this module's internal workflow.
    */
   const onStepOver = () => {
     window.ipcToMain.commands.debugger.sendGdbCommand("next");
   };
 
   /**
-   * Steps into the current line.
-   * Enters function calls if present, otherwise behaves like step over.
+   * Performs on step in as part of this module's internal workflow.
    */
   const onStepIn = () => {
     window.ipcToMain.commands.debugger.sendGdbCommand("step");
   };
 
   /**
-   * Steps out of the current function.
-   * Continues execution until the current function returns.
+   * Performs on step out as part of this module's internal workflow.
    */
   const onStepOut = () => {
     window.ipcToMain.commands.debugger.sendGdbCommand("finish");
@@ -155,16 +147,14 @@ export default function RevealToolbar({
   // ========================================================================
 
   /**
-   * Opens the connection manager dialog.
-   * Allows user to configure and manage GDB connections.
+   * Performs on connection manager as part of this module's internal workflow.
    */
   const onConnectionManager = () => {
     connectionsRef?.current?.ShowDialog();
   };
 
   /**
-   * Opens the settings dialog.
-   * Allows user to configure application settings and preferences.
+   * Performs on settings as part of this module's internal workflow.
    */
   const onSettings = () => {
     settingsRef?.current?.ShowDialog();
@@ -188,6 +178,9 @@ export default function RevealToolbar({
    * Called on layout changes and when windows are toggled.
    */
   useEffect(() => {
+    /**
+     * Performs handle update window list as part of this module's internal workflow.
+     */
     const handleUpdateWindowList = () => {
       fillWindowList();
     };
@@ -199,8 +192,9 @@ export default function RevealToolbar({
   }, [fillWindowList]);
 
   /**
-   * Handles window selection from the dropdown menu.
-   * Toggles the visibility of the selected panel.
+   * Performs on select window as part of this module's internal workflow.
+   *
+   * @param args - Configuration values that control how this operation executes.
    */
   const onSelectWindow = (args: GdbAny) => {
     // Dispatch custom event to toggle window visibility
@@ -208,8 +202,7 @@ export default function RevealToolbar({
   };
 
   /**
-   * Refreshes panel state when window dropdown is opened.
-   * Ensures the menu reflects current dock layout state.
+   * Performs on open window as part of this module's internal workflow.
    */
   const onOpenWindow = () => {
     dockMenuConnector?.reconsilePanels();

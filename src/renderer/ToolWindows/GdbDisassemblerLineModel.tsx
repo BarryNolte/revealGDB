@@ -1,3 +1,9 @@
+/**
+ * Implements gdb disassembler line model behavior for debugger tool-window rendering and interactions.
+ *
+ * @remarks
+ * Exported symbols include `toInstructionParts`, `extractFunctionName`, `renderInstructionParts`, `renderGroupCaption`. It coordinates live debugger data with user interactions in docked tool-window views.
+ */
 import { JSX } from "react";
 import { DisasmToken } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
@@ -15,6 +21,15 @@ type GroupCaptionProps = {
   count?: string;
 };
 
+/**
+ * Performs to instruction part as part of this module's internal workflow.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @param token - Value for `token` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 function toInstructionPart(token: DisasmToken): DisasmInstructionPart {
   switch (token.type) {
     case "instruction":
@@ -53,14 +68,42 @@ function toInstructionPart(token: DisasmToken): DisasmInstructionPart {
   }
 }
 
+/**
+ * Performs to instruction parts as part of this module's public API.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @param tokens - Value for `tokens` consumed by this operation.
+ * @returns The resulting collection produced by this operation.
+ */
 export function toInstructionParts(tokens: DisasmToken[]): DisasmInstructionPart[] {
   return tokens.map((token) => toInstructionPart(token));
 }
 
+/**
+ * Extracts function name from the provided input.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @param groupKey - Value for `groupKey` consumed by this operation.
+ * @returns The resulting string value produced by this operation.
+ */
 export function extractFunctionName(groupKey?: string): string {
   return groupKey?.replace(/.*-/, "") || "Unknown Function";
 }
 
+/**
+ * Renders instruction parts for display.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @param tokens - Value for `tokens` consumed by this operation.
+ * @param onFunctionClick - Callback invoked when the associated event occurs.
+ * @returns The computed result produced by this operation.
+ */
 export function renderInstructionParts(
   tokens: DisasmToken[],
   onFunctionClick: (functionAddress: string) => void,
@@ -90,6 +133,15 @@ export function renderInstructionParts(
   return <div>{parts}</div>;
 }
 
+/**
+ * Renders group caption for display.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @param props - Value for `props` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export function renderGroupCaption(props: GroupCaptionProps): JSX.Element {
   const functionName = extractFunctionName(props.groupKey);
 

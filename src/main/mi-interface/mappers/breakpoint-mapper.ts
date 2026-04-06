@@ -1,8 +1,19 @@
+/**
+ * Implements breakpoint mapper logic for processing GDB/MI output and debugger state transitions.
+ *
+ * @remarks
+ * Exported symbols include `mapRegexGroupsToBreakpoint`. It sits on the debugger data path that translates MI records into typed stores and notifications.
+ */
 import { gdbBreakpoint } from "../gdb-state-database/types/gdbStateTypes";
 
 /**
- * Safely maps regex named-capture groups to a typed gdbBreakpoint,
- * replacing unsafe `as gdbBreakpoint` casts.
+ * Maps source input into regex groups to breakpoint output.
+ *
+ * @remarks
+ * Participates in the MI processing pipeline that updates debugger state and notifications.
+ *
+ * @param groups - Value for `groups` consumed by this operation.
+ * @returns The computed result produced by this operation.
  */
 export function mapRegexGroupsToBreakpoint(
   groups: Record<string, string> | undefined,

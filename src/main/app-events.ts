@@ -1,6 +1,19 @@
+/**
+ * Implements app events for revealGDB runtime behavior.
+ *
+ * @remarks
+ * Exported symbols include `registerAppEvents`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { App, BrowserWindow, NativeTheme } from "electron";
 import { IPC_CHANNELS } from "../common/ipc-contracts";
 
+/**
+ * Registers app events for the active runtime context.
+ *
+ * @param appInstance - Value for `appInstance` consumed by this operation.
+ * @param nativeTheme - Value for `nativeTheme` consumed by this operation.
+ * @param getMainWindow - Callback invoked when the associated event occurs.
+ */
 export function registerAppEvents(
   appInstance: App,
   nativeTheme: NativeTheme,

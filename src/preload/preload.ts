@@ -1,3 +1,9 @@
+/**
+ * Defines preload preload bridge contracts exposed to the renderer process.
+ *
+ * @remarks
+ * This file primarily contains internal declarations and implementation details. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { contextBridge, ipcRenderer } from "electron";
 import { IPC_CHANNELS, NotifyMainRequest } from "../common/ipc-contracts";
 import type { IElectronAPI } from "./interface";
@@ -7,7 +13,21 @@ type IpcApiCore = Pick<
   "messages" | "notifications" | "debuggerData" | "queries" | "commands"
 >;
 
+/**
+ * Performs subscribe as part of this module's internal workflow.
+ *
+ * @template T - Generic type parameter used by this API.
+ * @param channel - Value for `channel` consumed by this operation.
+ * @param callback - Callback invoked when the associated event occurs.
+ * @returns The computed result produced by this operation.
+ */
 function subscribe<T>(channel: string, callback: (data: T) => void): () => void {
+  /**
+   * Performs listener as part of this module's internal workflow.
+   *
+   * @param _event - Value for `_event` consumed by this operation.
+   * @param value - Value to validate, normalize, or transform before further processing.
+   */
   const listener = (_event: Electron.IpcRendererEvent, value: T) => callback(value);
   ipcRenderer.on(channel, listener);
   return () => {
@@ -15,10 +35,21 @@ function subscribe<T>(channel: string, callback: (data: T) => void): () => void 
   };
 }
 
+/**
+ * Performs invoke as part of this module's internal workflow.
+ *
+ * @param channel - Value for `channel` consumed by this operation.
+ */
 function invoke(channel: string) {
   return ipcRenderer.invoke(channel);
 }
 
+/**
+ * Performs send as part of this module's internal workflow.
+ *
+ * @param channel - Value for `channel` consumed by this operation.
+ * @param value - Value to validate, normalize, or transform before further processing.
+ */
 function send(channel: string, value: unknown) {
   ipcRenderer.send(channel, value);
 }

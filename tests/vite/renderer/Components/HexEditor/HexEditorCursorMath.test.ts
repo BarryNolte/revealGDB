@@ -1,3 +1,15 @@
+/**
+ * HexEditorCursorMath.test module.
+ *
+ * @remarks
+ * Source module for HexEditorCursorMath.test.
+ */
+
+/**
+ * @file HexEditorCursorMath.test.ts
+ * @description Source module for HexEditorCursorMath.test.
+ */
+
 import { describe, expect, it } from "vitest";
 import {
   clampIndex,

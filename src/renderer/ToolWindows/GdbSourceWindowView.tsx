@@ -1,3 +1,9 @@
+/**
+ * Implements gdb source window view behavior for debugger tool-window rendering and interactions.
+ *
+ * @remarks
+ * Exported symbols include `GdbSourceWindowView`. It coordinates live debugger data with user interactions in docked tool-window views.
+ */
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import ace from "ace-builds";
 import { JSX, RefObject } from "react";
@@ -22,6 +28,15 @@ type GdbSourceWindowViewProps = {
   onCopySelection: () => void;
 };
 
+/**
+ * Performs gdb source window view as part of this module's public API.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @param props - Value for `props` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
 export default function GdbSourceWindowView(props: GdbSourceWindowViewProps): JSX.Element {
   const {
     menuId,

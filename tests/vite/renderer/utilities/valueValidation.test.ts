@@ -1,3 +1,15 @@
+/**
+ * valueValidation.test module.
+ *
+ * @remarks
+ * Source module for valueValidation.test.
+ */
+
+/**
+ * @file valueValidation.test.ts
+ * @description Source module for valueValidation.test.
+ */
+
 import { describe, expect, it } from "vitest";
 import { getValueType, isValidValue, validateValue, ValueType } from "../../../../src/renderer/utilities/valueValidation";
 

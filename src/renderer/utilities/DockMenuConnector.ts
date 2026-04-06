@@ -1,14 +1,9 @@
 /**
- * Dock-spawn-ts integration layer for RevealGDB.
+ * Provides dock menu connector renderer utilities for formatting, state shaping, and shared view logic.
  *
- * This class bridges the dock-spawn-ts docking library with the application's
- * window management system. It manages:
- * - Panel registration and creation
- * - Window visibility toggling
- * - Integration with the toolbar window list
- * - Dialog-based hiding of panels
+ * @remarks
+ * Exported symbols include `DockMenuConnector`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 import { Dialog } from "dock-spawn-ts";
 import { DockManager } from "../../../node_modules/dock-spawn-ts/lib/js/DockManager.js";
 import { PanelContainer } from "../../../node_modules/dock-spawn-ts/lib/js/PanelContainer.js";
@@ -78,8 +73,7 @@ export class DockMenuConnector {
   }
 
   /**
-   * Creates panel containers for all registered panels.
-   * Should be called after all panels are registered.
+   * Creates all windows for downstream use.
    */
   public createAllWindows(): void {
     this.panelMap.forEach((di) => {
@@ -93,8 +87,7 @@ export class DockMenuConnector {
   }
 
   /**
-   * Synchronizes panel references after layout changes.
-   * Updates the panel map with current panel instances from the dock manager.
+   * Performs reconsile panels as part of this module's public API.
    */
   public reconsilePanels(): void {
     this.dockManager.getPanels().forEach((p) => {
@@ -106,21 +99,21 @@ export class DockMenuConnector {
   }
 
   /**
-   * Gets a list of all registered panels.
+   * Returns panel list from current state.
    *
-   * @returns Array of DockPanelInfo objects
+   * @returns The resulting collection produced by this operation.
    */
   public getPanelList(): DockPanelInfo[] {
     return Array.from(this.panelMap.values());
   }
 
   /**
-   * Registers a new panel with the dock system.
+   * Registers panel for the active runtime context.
    *
-   * @param id - HTML element ID of the panel
-   * @param displayName - Name shown in toolbar and menus
-   * @param description - Longer description for tooltips
-   * @param iconCss - Optional CSS class for panel icon
+   * @param id - Unique identifier used to look up the target entity.
+   * @param displayName - Value for `displayName` consumed by this operation.
+   * @param description - Value for `description` consumed by this operation.
+   * @param iconCss - Value for `iconCss` consumed by this operation.
    */
   public registerPanel(
     id: string,
@@ -140,20 +133,20 @@ export class DockMenuConnector {
   }
 
   /**
-   * Retrieves panel info by display name.
+   * Returns dock panel info by display name from current state.
    *
-   * @param dn - The display name of the panel
-   * @returns DockPanelInfo or undefined if not found
+   * @param dn - Value for `dn` consumed by this operation.
+   * @returns The computed result produced by this operation.
    */
   public getDockPanelInfoByDisplayName(dn: string): DockPanelInfo | undefined {
     return this.panelMap.get(dn);
   }
 
   /**
-   * Retrieves panel container by display name.
+   * Returns panel by display name from current state.
    *
-   * @param dn - The display name of the panel
-   * @returns PanelContainer instance
+   * @param dn - Value for `dn` consumed by this operation.
+   * @returns The computed result produced by this operation.
    */
   public getPanelByDisplayName(dn: string): PanelContainer {
     const panel = this.panelMap.get(dn)?.panel;
@@ -164,10 +157,10 @@ export class DockMenuConnector {
   }
 
   /**
-   * Checks if a panel is currently visible.
+   * Performs is visible as part of this module's public API.
    *
-   * @param displayName - The display name of the panel
-   * @returns true if visible, false if hidden as dialog
+   * @param displayName - Value for `displayName` consumed by this operation.
+   * @returns True when the operation succeeds; otherwise false.
    */
   public isVisible(displayName: string): boolean {
     const di = this.panelMap.get(displayName);

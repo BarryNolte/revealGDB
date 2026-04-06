@@ -1,3 +1,9 @@
+/**
+ * Implements index d for revealGDB runtime behavior.
+ *
+ * @remarks
+ * This file primarily contains internal declarations and implementation details. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 declare module "*.png";
 declare module "*.gif";
 declare module "*.css";

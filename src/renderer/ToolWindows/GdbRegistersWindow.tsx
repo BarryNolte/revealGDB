@@ -1,3 +1,9 @@
+/**
+ * Implements gdb registers window behavior for debugger tool-window rendering and interactions.
+ *
+ * @remarks
+ * Exported symbols include `GdbRegistersWindow`. It coordinates live debugger data with user interactions in docked tool-window views.
+ */
 import {
   CellSaveArgs,
   ColumnDirective,
@@ -24,8 +30,12 @@ import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
 /**
- * Registers window component.
- * Renders a Syncfusion grid with CPU register data from GDB.
+ * Performs gdb registers window as part of this module's public API.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @returns The computed result produced by this operation.
  */
 export default function GdbRegistersWindow(): JSX.Element {
   const menuId = useId();

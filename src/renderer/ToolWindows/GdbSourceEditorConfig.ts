@@ -1,3 +1,9 @@
+/**
+ * Implements gdb source editor config behavior for debugger tool-window rendering and interactions.
+ *
+ * @remarks
+ * Exported symbols include `defaultTheme`, `editorThemes`, `defaultMode`, `editorModes`, `configureAceBasePath`. It coordinates live debugger data with user interactions in docked tool-window views.
+ */
 import ace from "ace-builds";
 import "ace-builds/src-noconflict/mode-assembly_arm32";
 import "ace-builds/src-noconflict/mode-assembly_x86";
@@ -128,6 +134,12 @@ export const editorModes: Map<string, string> = new Map<string, string>([
   ["s", "assembly_arm32"],
 ]);
 
+/**
+ * Performs configure ace base path as part of this module's public API.
+ *
+ * @remarks
+ * Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ */
 export function configureAceBasePath(): void {
   ace.config.setModuleUrl("../../node_modules", "ace-builds");
 }

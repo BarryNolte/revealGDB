@@ -1,14 +1,9 @@
 /**
- * Command history manager for the GDB command window.
+ * Provides command history renderer utilities for formatting, state shaping, and shared view logic.
  *
- * Manages a list of previously executed commands with navigation support
- * using arrow keys (up/down). Implements features like:
- * - Automatic deduplication (moves duplicates to end)
- * - Maximum history size limit (100 commands)
- * - Navigation with getPrevious/getNext
- * - Empty command filtering
+ * @remarks
+ * Exported symbols include `CommandHistory`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-
 export class CommandHistory {
   /** Array storing command history */
   private history: string[] = [];
@@ -19,15 +14,16 @@ export class CommandHistory {
   constructor() {}
 
   /**
-   * Gets the complete command history array.
-   * @returns Array of command strings
+   * Performs getcommand history as part of this module's public API.
+   *
+   * @returns The resulting collection produced by this operation.
    */
   public get commandHistory(): string[] {
     return this.history;
   }
 
   /**
-   * Completely disposes of the history and resets state.
+   * Performs dispose as part of this module's public API.
    */
   dispose(): void {
     this.history = [];
@@ -35,7 +31,7 @@ export class CommandHistory {
   }
 
   /**
-   * Clears all commands from history.
+   * Clears history from managed state.
    */
   public clearHistory(): void {
     this.history = [];
@@ -43,22 +39,16 @@ export class CommandHistory {
   }
 
   /**
-   * Resets navigation index to the end of history.
-   * Call this after adding a new command or when user starts typing.
+   * Performs reset as part of this module's public API.
    */
   public reset(): void {
     this.historyIndex = this.history.length;
   }
 
   /**
-   * Adds a command to the history.
+   * Performs add as part of this module's public API.
    *
-   * - Ignores empty/whitespace-only commands
-   * - Removes existing duplicate and adds to end (moves to most recent)
-   * - Limits history to 100 commands (removes oldest)
-   * - Resets navigation index to end
-   *
-   * @param command - The command string to add
+   * @param command - Debugger command text or command descriptor to execute.
    */
   public add(command: string): void {
     // Filter out empty strings
@@ -84,9 +74,9 @@ export class CommandHistory {
   }
 
   /**
-   * Navigates to the previous command in history.
+   * Returns previous from current state.
    *
-   * @returns The previous command, or undefined if at the beginning
+   * @returns The computed result produced by this operation.
    */
   public getPrevious(): string | undefined {
     if (this.historyIndex > 0) {
@@ -97,9 +87,9 @@ export class CommandHistory {
   }
 
   /**
-   * Navigates to the next command in history.
+   * Returns next from current state.
    *
-   * @returns The next command, or undefined if at the end
+   * @returns The computed result produced by this operation.
    */
   public getNext(): string | undefined {
     if (this.historyIndex < this.history.length - 1) {

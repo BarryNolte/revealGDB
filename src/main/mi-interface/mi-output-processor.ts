@@ -1,3 +1,9 @@
+/**
+ * Implements mi output processor logic for processing GDB/MI output and debugger state transitions.
+ *
+ * @remarks
+ * Exported symbols include `MiOutputProcessor`. It sits on the debugger data path that translates MI records into typed stores and notifications.
+ */
 import { ConnectionNotifier } from "../utilities/ConnectionNotifier";
 import { MiExecAsyncHandler } from "./mi-exec-handler";
 import { MiNotifyAsyncHandler } from "./mi-notify-handler";
@@ -26,6 +32,15 @@ export class MiOutputProcessor {
     this.statusHandler = new MiStatusAsyncHandler(host);
   }
 
+  /**
+   * Performs decode mi escapes as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param input - Value for `input` consumed by this operation.
+   * @returns The resulting string value produced by this operation.
+   */
   private decodeMiEscapes(input: string): string {
     return input.replace(/\\\\nnn|\\"|\\t|\\n/g, (match) => {
       switch (match) {
@@ -43,6 +58,16 @@ export class MiOutputProcessor {
     });
   }
 
+  /**
+   * Performs handle data chunk as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications. Includes explicit error-handling logic for expected failure paths. Performs asynchronous work and should be used with completion ordering in mind.
+   *
+   * @param rawOutput - Value for `rawOutput` consumed by this operation.
+   * @param captureLine - Line value used for source navigation or rendering.
+   * @returns A promise that resolves with the computed result after asynchronous processing completes.
+   */
   async handleDataChunk(rawOutput: string, captureLine: (line: string) => boolean): Promise<void> {
     if (!rawOutput.endsWith("\n")) {
       this.streamSave.push(rawOutput);
@@ -84,8 +109,13 @@ export class MiOutputProcessor {
   }
 
   /**
-   * Handles ConnectionNotifier console capture state.
-   * Returns true if the line was consumed by the notifier.
+   * Performs handle connection notifier as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param line - Line value used for source navigation or rendering.
+   * @returns True when the operation succeeds; otherwise false.
    */
   private handleConnectionNotifier(line: string): boolean {
     const notifier = ConnectionNotifier.getInstance();
@@ -104,6 +134,15 @@ export class MiOutputProcessor {
     return false;
   }
 
+  /**
+   * Parses input into raw output data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications. Performs asynchronous work and should be used with completion ordering in mind.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns A promise that resolves with the computed result after asynchronous processing completes.
+   */
   async parseRawOutput(output: string): Promise<boolean> {
     if (output.length === 0) {
       return true;
@@ -147,11 +186,29 @@ export class MiOutputProcessor {
     return true;
   }
 
+  /**
+   * Parses input into target stream data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns True when the operation succeeds; otherwise false.
+   */
   parseTargetStream(output: string): boolean {
     this.host.emit("log-error", `Target Stream: ${output}`);
     return true;
   }
 
+  /**
+   * Parses input into log stream data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns True when the operation succeeds; otherwise false.
+   */
   parseLogStream(output: string): boolean {
     const chunks = this.rgxLogStream.exec(output);
     const strLine = chunks?.groups?.line || "";
@@ -169,6 +226,15 @@ export class MiOutputProcessor {
     return true;
   }
 
+  /**
+   * Parses input into console stream data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns True when the operation succeeds; otherwise false.
+   */
   parseConsoleStream(output: string): boolean {
     const chunks = this.rgxConsoleStream.exec(output);
     const line = chunks?.groups?.line || "";
@@ -190,18 +256,54 @@ export class MiOutputProcessor {
     return true;
   }
 
+  /**
+   * Parses input into status async record data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns True when the operation succeeds; otherwise false.
+   */
   private parseStatusAsyncRecord(output: string): boolean {
     return this.statusHandler.parseStatusAsyncRecord(output);
   }
 
+  /**
+   * Parses input into notify async record data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications. Performs asynchronous work and should be used with completion ordering in mind.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns A promise that resolves with the computed result after asynchronous processing completes.
+   */
   parseNotifyAsyncRecord(output: string): Promise<boolean> {
     return this.notifyHandler.parseNotifyAsyncRecord(output);
   }
 
+  /**
+   * Parses input into result record data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications. Performs asynchronous work and should be used with completion ordering in mind.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns A promise that resolves with the computed result after asynchronous processing completes.
+   */
   parseResultRecord(output: string): Promise<boolean> {
     return this.resultHandler.parseResultRecord(output);
   }
 
+  /**
+   * Parses input into exec async record data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param output - Value for `output` consumed by this operation.
+   * @returns True when the operation succeeds; otherwise false.
+   */
   parseExecAsyncRecord(output: string): boolean {
     return this.execHandler.parseExecAsyncRecord(output);
   }

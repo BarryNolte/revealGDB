@@ -1,3 +1,15 @@
+/**
+ * connection-manager.spec module.
+ *
+ * @remarks
+ * Source module for connection-manager.spec.
+ */
+
+/**
+ * @file connection-manager.spec.ts
+ * @description Source module for connection-manager.spec.
+ */
+
 import { expect, test, type Locator } from "@playwright/test";
 import fs from "node:fs";
 import http from "node:http";

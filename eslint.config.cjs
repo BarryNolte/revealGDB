@@ -1,3 +1,15 @@
+/**
+ * eslint.config module.
+ *
+ * @remarks
+ * Source module for eslint.config.
+ */
+
+/**
+ * @file eslint.config.cjs
+ * @description Source module for eslint.config.
+ */
+
 const js = require("@eslint/js");
 const tseslintPlugin = require("@typescript-eslint/eslint-plugin");
 const tseslintParser = require("@typescript-eslint/parser");

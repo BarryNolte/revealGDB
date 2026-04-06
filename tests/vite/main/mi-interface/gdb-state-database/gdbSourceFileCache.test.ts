@@ -310,3 +310,17 @@ describe("gdbSourceFileCache class", () => {
     });
   });
 });
+
+
+/**
+ * @file gdbSourceFileCache.test.ts
+ * @description Source module for gdbSourceFileCache.test.
+ */
+
+
+/**
+ * gdbSourceFileCache.test module.
+ *
+ * @remarks
+ * Source module for gdbSourceFileCache.test.
+ */

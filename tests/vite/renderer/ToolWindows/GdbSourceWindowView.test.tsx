@@ -49,3 +49,17 @@ describe("GdbSourceWindowView", () => {
     expect(screen.getByText("10")).toBeTruthy();
   });
 });
+
+
+/**
+ * @file GdbSourceWindowView.test.tsx
+ * @description Source module for GdbSourceWindowView.test.
+ */
+
+
+/**
+ * GdbSourceWindowView.test module.
+ *
+ * @remarks
+ * Source module for GdbSourceWindowView.test.
+ */

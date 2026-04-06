@@ -1,23 +1,8 @@
 /**
- * Parses gdb MI locals output into a structured tree of values.
- */
-/**
- * Sample input string representing a complex nested data structure
- * Format: series of name-value pairs containing various data types and nested structures
- */
-// const input =
-//   '{name="mbs",value="{pd = 0x800e30c0 <error: Cannot access memory at address 0x800e30c0>, ms = {a = 0x3, b = 0x58, {c = "\\240", <incomplete sequence \\373>, d = 0x3ffb3da0}, e = 0x80, embed_t = {i = 0xc, o = 0x10, x = 0x3ffb3da03f401ed8}, h = 0x80, {f = 0xc, g = 0x80085d14}}, arr = {0x0, 0x0, 0x3ffb3da0, 0x3ffb3d80, 0xc, 0x1}, bf1 = {x = 0x4, y = 0x1, z = 0x0}, bf2 = {x = 0x0, y = 0x38, z = 0xfffffecf}}"},{name="chip_info",value="{model = 0, features = 0x66c, revision = 0x1e58, cores = 0x40}"},{name="flash_size",value="0x3ffb3dc0"},{name="major_rev",value="<optimized out>"},{name="minor_rev",value="<optimized out>"}';
-
-/**
- * Represents all possible values that a Local variable can hold
- * - string: Simple value
- * - undefined: Uninitialized value
- */
-//type LocalValue = string;
-
-/**
- * Represents a local variable with a name and value
- * Can contain nested structures through the subLocals property
+ * Implements gdb locals logic for processing GDB/MI output and debugger state transitions.
+ *
+ * @remarks
+ * Exported symbols include `Local`, `LocalsContainer`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 export class Local {
   name: string;
@@ -39,10 +24,12 @@ export class Local {
   }
 
   /**
-   * Adds a child Local object to this Local's subLocals array
-   * Updates the child's fullpath to include this local's path
-   * Anonymous markers are not included in the fullpath
-   * @param local The Local object to add as a child
+   * Performs add local as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param local - Value for `local` consumed by this operation.
    */
   addLocal(local: Local): void {
     if (local === this) {
@@ -142,11 +129,14 @@ export class LocalsContainer {
   }
 
   /**
-   * Parses a complex value containing nested structures
-   * Uses character-by-character parsing with token type masks
-   * @param name The name of the root local variable
-   * @param value The complex value string to parse
-   * @returns A Local object containing the parsed nested structure
+   * Parses input into complex value data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param name - Value for `name` consumed by this operation.
+   * @param value - Value to validate, normalize, or transform before further processing.
+   * @returns The computed result produced by this operation.
    */
   private parseComplexValue(name: string, value: string): Local {
     const chunks = this.createComplexChunks(value);
@@ -165,6 +155,15 @@ export class LocalsContainer {
     return this.parseComplexChunks(name, chunks);
   }
 
+  /**
+   * Creates complex chunks for downstream use.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param value - Value to validate, normalize, or transform before further processing.
+   * @returns The resulting collection produced by this operation.
+   */
   private createComplexChunks(value: string): TokenChunk[] {
     // Stage 1: classify each character into token stream masks.
     this.initMasks(value);
@@ -194,11 +193,29 @@ export class LocalsContainer {
     return chunks;
   }
 
+  /**
+   * Parses input into complex chunks data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param name - Value for `name` consumed by this operation.
+   * @param chunks - Value for `chunks` consumed by this operation.
+   * @returns The computed result produced by this operation.
+   */
   private parseComplexChunks(name: string, chunks: TokenChunk[]): Local {
     const rootLocal = new Local(name, "");
     let curLocal: Local = rootLocal;
     const localStack: Local[] = [];
 
+    /**
+     * Performs top of stack as part of this module's internal workflow.
+     *
+     * @remarks
+     * Participates in the MI processing pipeline that updates debugger state and notifications.
+     *
+     * @returns The computed result produced by this operation.
+     */
     const topOfStack = (): Local | undefined => {
       if (localStack.length === 0) {
         return undefined;
@@ -206,6 +223,12 @@ export class LocalsContainer {
       return localStack[localStack.length - 1];
     };
 
+    /**
+     * Performs collapse top of stack as part of this module's internal workflow.
+     *
+     * @remarks
+     * Participates in the MI processing pipeline that updates debugger state and notifications.
+     */
     const collapseTopOfStack = (): void => {
       if (localStack.length < 2) {
         return;
@@ -277,10 +300,14 @@ export class LocalsContainer {
   }
 
   /**
-   * Parses a simple group value containing key-value pairs
-   * @param name The name of the parent local variable
-   * @param value The string containing simple key-value pairs
-   * @returns A Local object containing the parsed key-value pairs
+   * Parses input into simple value data.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param name - Value for `name` consumed by this operation.
+   * @param value - Value to validate, normalize, or transform before further processing.
+   * @returns The computed result produced by this operation.
    */
   private parseSimpleValue(name: string, value: string): Local {
     const varsRegx = /[{, ](?<name>[a-zA-Z_][a-zA-Z0-9_]*) = (?<value>[^,]*)[,}]/gm;
@@ -307,9 +334,12 @@ export class LocalsContainer {
   }
 
   /**
-   * Initializes the nameValMask array for tracking token types
-   * Sets all positions to streamType.value initially
-   * @param value The input string to create mask for
+   * Performs init masks as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param value - Value to validate, normalize, or transform before further processing.
    */
   private initMasks(value: string) {
     // Initialize the nameValMask array with the length of the input value
@@ -322,8 +352,12 @@ export class LocalsContainer {
   }
 
   /**
-   * Updates the nameValMask array to mark positions of braces
-   * @param chunk The input string to process
+   * Creates bracket mask for downstream use.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param chunk - Value for `chunk` consumed by this operation.
    */
   private createBracketMask(chunk: string): void {
     for (let i = 0; i < chunk.length; i++) {
@@ -339,8 +373,12 @@ export class LocalsContainer {
   }
 
   /**
-   * Updates the nameValMask array to mark positions of equals signs
-   * @param chunk The input string to process
+   * Creates equals mask for downstream use.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param chunk - Value for `chunk` consumed by this operation.
    */
   private createEqualsMask(chunk: string): void {
     const varsRegx = /(?<ign> = )/gm;
@@ -358,8 +396,12 @@ export class LocalsContainer {
   }
 
   /**
-   * Updates the nameValMask array to mark positions of variable names
-   * @param chunk The input string to process
+   * Creates name val mask for downstream use.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param chunk - Value for `chunk` consumed by this operation.
    */
   private createNameValMask(chunk: string): void {
     const varsRegx = /(?<name>[a-zA-Z_][a-zA-Z0-9_]*)(?<ign> = )/gm;
@@ -377,9 +419,13 @@ export class LocalsContainer {
   }
 
   /**
-   * Determines the structural complexity of a value string
-   * @param value The input string to analyze
-   * @returns The appropriate valueType based on nesting depth
+   * Returns value type from current state.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param value - Value to validate, normalize, or transform before further processing.
+   * @returns The computed result produced by this operation.
    */
   private getValueType(value: string): valueType {
     let bracketCount = 0;
@@ -401,9 +447,13 @@ export class LocalsContainer {
   }
 
   /**
-   * Removes the trailing quote and any excess characters from a value string
-   * @param value The raw value string to clean
-   * @returns The cleaned value string
+   * Performs clean value as part of this module's public API.
+   *
+   * @remarks
+   * Participates in the MI processing pipeline that updates debugger state and notifications.
+   *
+   * @param value - Value to validate, normalize, or transform before further processing.
+   * @returns The resulting string value produced by this operation.
    */
   private cleanValue(value: string): string {
     const li = value.lastIndexOf('"') ?? -1;

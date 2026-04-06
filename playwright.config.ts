@@ -1,3 +1,15 @@
+/**
+ * playwright.config module.
+ *
+ * @remarks
+ * Source module for playwright.config.
+ */
+
+/**
+ * @file playwright.config.ts
+ * @description Source module for playwright.config.
+ */
+
 import { defineConfig } from "@playwright/test";
 
 export default defineConfig({

@@ -440,3 +440,17 @@ test("newly added item can be dragged and properly exits drag mode", () => {
   labels = getOptionLabels();
   expect(labels).toEqual(["One", "Two", "Three"]);
 });
+
+
+/**
+ * @file DragAndDropList.test.tsx
+ * @description Source module for DragAndDropList.test.
+ */
+
+
+/**
+ * DragAndDropList.test module.
+ *
+ * @remarks
+ * Source module for DragAndDropList.test.
+ */
