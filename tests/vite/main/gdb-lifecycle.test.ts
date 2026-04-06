@@ -3,7 +3,7 @@ import { createGdbInterface } from "../../../src/main/gdb-lifecycle";
 import {
   createMockAppSettings,
   createMockBrowserWindow,
-} from "../../../src/test-helpers/ipc-test-harness";
+} from "../../helpers/ipc-test-harness";
 
 const { sendMock } = vi.hoisted(() => ({
   sendMock: vi.fn(),

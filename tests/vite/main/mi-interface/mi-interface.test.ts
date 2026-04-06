@@ -39,7 +39,7 @@ vi.mock("../../../../src/main/mi-interface/gdb-connector/gdb-connector-general",
 
 vi.mock("../../../../src/main/main", async () => {
   const { createMockBrowserWindow } =
-    await import("../../../../src/test-helpers/ipc-test-harness.js");
+    await import("../../../helpers/ipc-test-harness.js");
 
   return {
     AppSettings: mockSettings,

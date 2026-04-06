@@ -2,15 +2,15 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import GdbSourceWindow from "./GdbSourceWindow";
+import GdbSourceWindow from "../../../../src/renderer/ToolWindows/GdbSourceWindow";
 
-vi.mock("./GdbSourceWindowView", () => ({
+vi.mock("../../../../src/renderer/ToolWindows/GdbSourceWindowView", () => ({
   default: () => {
     throw new Error("source view exploded");
   },
 }));
 
-vi.mock("./useGdbSourceWindowController", () => ({
+vi.mock("../../../../src/renderer/ToolWindows/useGdbSourceWindowController", () => ({
   useGdbSourceWindowController: () => ({
     sourceState: {
       source: "int main(){}",

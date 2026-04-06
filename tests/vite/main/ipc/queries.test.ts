@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { IPC_CHANNELS } from "../../../../src/common/ipc-contracts";
-import { createIpcRegistrationHarness } from "../../../../src/test-helpers/ipc-test-harness";
+import { createIpcRegistrationHarness } from "../../../helpers/ipc-test-harness";
 import { registerIpcQueryHandlers } from "../../../../src/main/ipc/queries";
 
 describe("registerIpcQueryHandlers", () => {

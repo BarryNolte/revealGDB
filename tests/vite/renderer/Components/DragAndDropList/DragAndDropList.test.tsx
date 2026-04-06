@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
-import DragAndDropList from "./DragAndDropList";
+import DragAndDropList from "../../../../../src/renderer/Components/DragAndDropList/DragAndDropList";
 function createDataTransfer(): DataTransfer {
   const data: Record<string, string> = {};
   return {

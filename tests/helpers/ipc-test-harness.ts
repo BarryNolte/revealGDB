@@ -1,6 +1,6 @@
 import { vi } from "vitest";
-import type { GdbAny } from "../common/gdb-common";
-import type { IpcRegistrationContext } from "../main/ipc/types";
+import type { GdbAny } from "../../src/common/gdb-common";
+import type { IpcRegistrationContext } from "../../src/main/ipc/types";
 
 export type BrowserWindowMock = {
   fullScreen: boolean;

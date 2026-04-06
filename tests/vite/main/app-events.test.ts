@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { IPC_CHANNELS } from "../../../src/common/ipc-contracts";
 import { registerAppEvents } from "../../../src/main/app-events";
-import { createEventEmitterHarness } from "../../../src/test-helpers/event-emitter-test-harness";
-import { createMockBrowserWindow } from "../../../src/test-helpers/ipc-test-harness";
+import { createEventEmitterHarness } from "../../helpers/event-emitter-test-harness";
+import { createMockBrowserWindow } from "../../helpers/ipc-test-harness";
 
 describe("registerAppEvents", () => {
   beforeEach(() => {

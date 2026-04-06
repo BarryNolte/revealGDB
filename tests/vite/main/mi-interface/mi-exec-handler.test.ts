@@ -8,7 +8,7 @@ const { mockWebContentsSend } = vi.hoisted(() => ({
 }));
 
 vi.mock("../../../../src/main/main", async () => {
-  const { createMockBrowserWindow } = await import("../../../../src/test-helpers/ipc-test-harness.js");
+  const { createMockBrowserWindow } = await import("../../../helpers/ipc-test-harness.js");
 
   return {
     mainWindow: createMockBrowserWindow({

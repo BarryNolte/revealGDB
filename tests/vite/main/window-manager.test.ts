@@ -1,7 +1,7 @@
 import { BrowserWindow } from "electron";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createEventEmitterHarness } from "../../../src/test-helpers/event-emitter-test-harness";
-import { createMockAppSettings, createMockBrowserWindow } from "../../../src/test-helpers/ipc-test-harness";
+import { createEventEmitterHarness } from "../../helpers/event-emitter-test-harness";
+import { createMockAppSettings, createMockBrowserWindow } from "../../helpers/ipc-test-harness";
 import {
   createDebugWindow,
   createMainWindow,

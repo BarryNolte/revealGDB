@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { IPC_CHANNELS } from "../../../src/common/ipc-contracts";
-import { createPreloadElectronHarness, loadPreloadApi } from "../../../src/test-helpers/preload-test-harness";
+import { createPreloadElectronHarness, loadPreloadApi } from "../../helpers/preload-test-harness";
 
 const electronHarness = createPreloadElectronHarness();
 

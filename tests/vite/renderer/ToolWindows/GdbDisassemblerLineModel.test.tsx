@@ -1,12 +1,12 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { DisasmToken } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
+import { DisasmToken } from "../../../../src/main/mi-interface/gdb-state-database/gdbStateDatabase";
 import {
   extractFunctionName,
   renderGroupCaption,
   renderInstructionParts,
   toInstructionParts,
-} from "./GdbDisassemblerLineModel";
+} from "../../../../src/renderer/ToolWindows/GdbDisassemblerLineModel";
 
 describe("GdbDisassemblerLineModel", () => {
   it("maps instruction tokens to render parts", () => {
@@ -44,7 +44,7 @@ describe("GdbDisassemblerLineModel", () => {
   it("renders group caption with line count", () => {
     render(renderGroupCaption({ groupKey: "func-main", count: "7" }));
 
-    expect(screen.getByText(/main:/)).toBeTruthy();
+    expect(screen.getByText(/main :/)).toBeTruthy();
     expect(screen.getByText("(7 lines)")).toBeTruthy();
   });
 

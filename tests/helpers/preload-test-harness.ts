@@ -41,7 +41,7 @@ export async function loadPreloadApi(harness: ReturnType<typeof createPreloadEle
   harness.reset();
   vi.doMock("electron", () => harness.moduleFactory());
 
-  await import("../preload/preload.js");
+  await import("../../src/preload/preload.js");
 
   return harness.exposeInMainWorld.mock.calls[0]?.[1];
 }

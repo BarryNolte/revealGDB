@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { IPC_CHANNELS, NotifyMainRequest } from "../../../../src/common/ipc-contracts";
 import { handleNotifyMain } from "../../../../src/main/ipc/commands";
-import { createIpcRegistrationHarness } from "../../../../src/test-helpers/ipc-test-harness";
+import { createIpcRegistrationHarness } from "../../../helpers/ipc-test-harness";
 
 vi.mock("../../../../src/main/theme-support", () => ({
   setNativeThemeFromAppTheme: vi.fn(),

@@ -2,7 +2,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import GdbSourceWindowView from "./GdbSourceWindowView";
+import GdbSourceWindowView from "../../../../src/renderer/ToolWindows/GdbSourceWindowView";
 
 vi.mock("@syncfusion/ej2-react-navigations", () => ({
   ContextMenuComponent: () => <div data-testid="context-menu" />,
