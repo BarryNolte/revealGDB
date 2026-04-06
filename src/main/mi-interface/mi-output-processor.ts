@@ -89,10 +89,10 @@ export class MiOutputProcessor {
           return;
         }
 
-        console.log(`Raw line received: ${line}`);
+        // console.log(`Raw line received: ${line}`);
         // eslint-disable-next-line no-control-regex
         line = line.replaceAll(/\x1B\[[0-9;?]*[ -/]*[@-~]/g, "");
-        console.log(`Processing line: ${line}`);
+        // console.log(`Processing line: ${line}`);
 
         if (this.handleConnectionNotifier(line)) {
           return;

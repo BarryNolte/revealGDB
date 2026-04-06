@@ -36,10 +36,10 @@ export function registerIpcQueryHandlers(context: IpcRegistrationContext): void 
           return context.appSettings.getSync("gdb") as string[];
         } catch (error) {
           if (remaining <= 1) throw error;
-          console.error(
-            `Failed to get settings, retrying in ${delayMs}ms (${remaining - 1} attempts left):`,
-            error,
-          );
+          // console.error(
+          //   `Failed to get settings, retrying in ${delayMs}ms (${remaining - 1} attempts left):`,
+          //   error,
+          // );
           await new Promise((resolve) => setTimeout(resolve, delayMs));
           return attempt(remaining - 1, delayMs + 100);
         }

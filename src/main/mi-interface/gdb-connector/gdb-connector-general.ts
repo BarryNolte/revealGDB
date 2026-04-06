@@ -58,7 +58,7 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
       shell: false,
       windowsHide: true,
     });
-    console.log(`Spawned ${selectedConnection.shell} process with PID: ${this.gdbExe.pid}`);
+    // console.log(`Spawned ${selectedConnection.shell} process with PID: ${this.gdbExe.pid}`);
 
     //TODO: handle errors when starting the process (e.g. wsl not installed, command fails, etc.)
 
@@ -67,7 +67,6 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
     });
 
     this.gdbExe.on("close", (code, signal) => {
-      console.log(`Child process exited with code ${code} and signal ${signal}`);
       this.emit("gdb-end", code, signal);
     });
 

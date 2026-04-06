@@ -42,7 +42,7 @@ export function createGdbInterface(
     if (needToRunStartupCmds) {
       needToRunStartupCmds = false;
       const ros: string[] = appSettings.getSync("gdb.run.onStartup") as string[];
-      console.log("** ON STARTUP COMMANDS **");
+      // console.log("** ON STARTUP COMMANDS **");
       ros?.forEach((cmd: string) => {
         gdbInterface.runCommand(cmd);
       });

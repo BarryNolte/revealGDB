@@ -42,7 +42,7 @@ function doConnection(
 ): void {
   const gdbInterface = context.getGdbInterface();
 
-  console.log(`Connecting using profile: ${selectedConnection.name} (${selectedConnection.shell})`);
+  // console.log(`Connecting using profile: ${selectedConnection.name} (${selectedConnection.shell})`);
 
   sendNotifyRender(context, { command: "connection-started" });
 

@@ -57,12 +57,12 @@ export function createDebugWindow(mainWindow: BrowserWindow): BrowserWindow {
 export function loadMainWindow(mainWindow: BrowserWindow): void {
   let devUrl = process.env.ELECTRON_RENDERER_URL;
   if (devUrl) {
-    console.log("Loading URL:", devUrl);
+    // console.log("Loading URL:", devUrl);
     mainWindow.loadURL(devUrl);
     return;
   }
 
-  console.log("Loading file:", join(__dirname, "..", "..", "out", "renderer", "index.html"));
+  // console.log("Loading file:", join(__dirname, "..", "..", "out", "renderer", "index.html"));
   devUrl = join(__dirname, "..", "..", "out", "renderer", "index.html");
   mainWindow.loadFile(devUrl);
 }

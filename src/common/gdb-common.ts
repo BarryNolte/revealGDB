@@ -21,7 +21,7 @@ export type SelectedConnection = {
  */
 export function wait(ms: number): void {
   // Busy-wait helper to simulate timing delays during debugging.
-  console.log("Start waiting for " + ms + " milliseconds...");
+  // console.log("Start waiting for " + ms + " milliseconds...");
   let x,
     y = 0;
   const start = Date.now();
@@ -30,7 +30,7 @@ export function wait(ms: number): void {
     x = y++;
     y = x++;
   }
-  console.log("Waited for " + ms + " milliseconds.");
+  // console.log("Waited for " + ms + " milliseconds.");
 }
 
 // High-level phases in a gdb connection lifecycle.

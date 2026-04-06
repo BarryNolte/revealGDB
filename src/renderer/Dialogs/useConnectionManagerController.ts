@@ -229,8 +229,8 @@ export function useConnectionManagerController({
       setConnections(toGridRows(normalized));
       applyConnectionToForm(normalized[0] ?? null);
       return normalized;
-    } catch (error) {
-      console.error("Failed to load connections from settings", error);
+    } catch {
+      // console.error("Failed to load connections from settings", error);
       setLoadedConnections([]);
       setConnections([]);
       applyConnectionToForm(null);
@@ -255,8 +255,8 @@ export function useConnectionManagerController({
       setSelectedWslDistro((current) =>
         distroNames.includes(current) ? current : (distroNames[0] ?? DEFAULT_WSL_DISTRO),
       );
-    } catch (error) {
-      console.error("Failed to load WSL distributions", error);
+    } catch {
+      // console.error("Failed to load WSL distributions", error);
       setWslDistros([DEFAULT_WSL_DISTRO]);
       setSelectedWslDistro((current) => current || DEFAULT_WSL_DISTRO);
     }
@@ -283,8 +283,8 @@ export function useConnectionManagerController({
           command: "save-connections",
           data: { connections: normalizedConnectionsToSave },
         });
-      } catch (error) {
-        console.error("Failed to save connections to settings", error);
+      } catch {
+        // console.error("Failed to save connections to settings", error);
       }
     },
     [fallbackShellKey],
@@ -324,8 +324,8 @@ export function useConnectionManagerController({
       setSelectedShellKey(fallbackShellKey);
       setSelectedWslDistro(wslDistros[0] ?? DEFAULT_WSL_DISTRO);
       setCommandsList(DEFAULT_COMMANDS_LIST);
-    } catch (error) {
-      console.error("Failed to add connection", error);
+    } catch {
+      // console.error("Failed to add connection", error);
     } finally {
       setIsAddingConnection(false);
     }

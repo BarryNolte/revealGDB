@@ -92,8 +92,7 @@ export function useConnectionDialogController({
         : null;
       setDefinedConnections(normalizedConnections);
       setSelectedConnection(restoredConnection);
-    } catch (error) {
-      console.error("Failed to load connections from settings", error);
+    } catch {
       setDefinedConnections([]);
       setSelectedConnection(null);
     }
@@ -149,7 +148,7 @@ export function useConnectionDialogController({
             break;
           }
           default:
-            console.error(`Unknown status: ${status}`);
+            //console.error(`Unknown status: ${status}`);
             break;
         }
       },

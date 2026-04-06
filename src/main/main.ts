@@ -6,7 +6,7 @@
  */
 import { app, BrowserWindow, ipcMain, nativeTheme } from "electron";
 import settings from "electron-settings";
-import path from "path";
+// import path from "path";
 import { GdbAny, SelectedConnection } from "../common/gdb-common";
 import { registerAppEvents } from "./app-events";
 import {
@@ -30,7 +30,7 @@ import {
   wireWindowCloseHandlers,
 } from "./window-manager";
 
-console.log(`PRELOAD: ${path.resolve("./out/preload/preload.js")}`);
+// console.log(`PRELOAD: ${path.resolve("./out/preload/preload.js")}`);
 
 export const isMac = process.platform === "darwin";
 export const isWin = process.platform === "win32";
@@ -45,7 +45,7 @@ globalThis.revealGdbBuild = {
   // eslint-disable-next-line no-undef
   mode: __REVEALGDB_BUILD__,
 };
-console.log(`Build Info: ${JSON.stringify(globalThis.revealGdbBuild, null, 2)}`);
+// console.log(`Build Info: ${JSON.stringify(globalThis.revealGdbBuild, null, 2)}`);
 
 export const AppSettings = settings;
 const fontList: Map<string, string> = new Map<string, string>();

@@ -63,7 +63,7 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
     this.conn = new gdbConnectorIdfOnWsl(this.gdbDB);
 
     this.conn.on("gdb-exit", () => {
-      console.log("GDB exited");
+      // console.log("GDB exited");
     });
 
     this.conn.on("gdb-data", (args: OutputAvailableEventArgs): void => {
@@ -79,7 +79,7 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
     });
 
     this.on("gdb-idle", () => {
-      console.log("GDB is idle");
+      // console.log("GDB is idle");
     });
 
     return this.conn.Start(selectedConnection);
@@ -112,7 +112,7 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
    * Participates in the MI processing pipeline that updates debugger state and notifications.
    */
   disconnect(): void {
-    console.log("Disconnecting from GDB");
+    // console.log("Disconnecting from GDB");
 
     ConnectionNotifier.getInstance().endWatchingConsole();
 

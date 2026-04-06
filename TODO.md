@@ -11,10 +11,11 @@
 
 # Bugs
 
+ - Locals Editing
+ - Dock "Open in other Window"
+
 # Project Related
 
-- Full file header pass
-- Code commenting
 - github workflow working
   - Real Debug/Release builds
   - Product Icon

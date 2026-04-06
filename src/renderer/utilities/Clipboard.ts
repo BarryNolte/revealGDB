@@ -13,8 +13,8 @@ export const menuCutCopyPaste = [{ text: "Cut" }, { text: "Copy" }, { text: "Pas
  * @param text - Value for `text` consumed by this operation.
  */
 export function sendTextToClipboard(text: string): void {
-  navigator.clipboard.writeText(text).catch((err) => {
-    console.error("Failed to copy text: ", err);
+  navigator.clipboard.writeText(text).catch(() => {
+    // console.error("Failed to copy text: ", err);
   });
 }
 
@@ -57,8 +57,8 @@ export function doCutCopyPaste(command: string, element: HTMLInputElement): void
             element.setSelectionRange(newPos, newPos);
             element.focus();
           })
-          .catch((err) => {
-            console.error("Failed to read text from clipboard: ", err);
+          .catch(() => {
+            // console.error("Failed to read text from clipboard: ", err);
           });
       }
       break;
