@@ -16,6 +16,7 @@ import type { IpcRegistrationContext } from "../../src/main/ipc/types";
 
 export type BrowserWindowMock = {
   fullScreen: boolean;
+  getBounds: () => { x: number; y: number; width: number; height: number };
   getPosition: () => [number, number];
   getSize: () => [number, number];
   setPosition: (x: number, y: number) => void;
@@ -40,11 +41,13 @@ type IpcHarnessOptions = {
   appSettings?: {
     getSync?: (key: string) => unknown;
     setSync?: (key: string, value: unknown) => void;
+    unsetSync?: (key: string) => void;
   };
   gdbInterface?: {
     connect?: ReturnType<typeof vi.fn>;
     disconnect?: ReturnType<typeof vi.fn>;
     send?: ReturnType<typeof vi.fn>;
+    runCommand?: ReturnType<typeof vi.fn>;
     gdbDB?: Record<string, ReturnType<typeof vi.fn>>;
   };
   ipcMain?: {
@@ -60,11 +63,13 @@ export function createMockAppSettings(
   overrides: {
     getSync?: (key: string) => unknown;
     setSync?: (key: string, value: unknown) => void;
+    unsetSync?: (key: string) => void;
   } = {},
 ) {
   return {
     getSync: vi.fn<(key: string) => unknown>(),
     setSync: vi.fn<(key: string, value: unknown) => void>(),
+    unsetSync: vi.fn<(key: string) => void>(),
     ...overrides,
   };
 }
@@ -89,6 +94,9 @@ export function createMockBrowserWindow(
 
   return {
     fullScreen: false,
+    getBounds: vi
+      .fn<() => { x: number; y: number; width: number; height: number }>()
+      .mockReturnValue({ x: 100, y: 200, width: 800, height: 600 }),
     getPosition: vi.fn<() => [number, number]>().mockReturnValue([100, 200]),
     getSize: vi.fn<() => [number, number]>().mockReturnValue([800, 600]),
     setPosition: vi.fn<(x: number, y: number) => void>(),
@@ -111,6 +119,7 @@ export function createIpcRegistrationHarness(options: IpcHarnessOptions = {}) {
     connect: vi.fn().mockReturnValue(true),
     disconnect: vi.fn(),
     send: vi.fn(),
+    runCommand: vi.fn(),
     gdbDB: {
       clearDatabase: vi.fn(),
       allDataUpdateUI: vi.fn(),

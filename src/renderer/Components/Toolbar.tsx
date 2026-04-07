@@ -12,7 +12,7 @@ import type { ConnectionManagerHandle } from "../Dialogs/ConnectionManager";
 import type { SettingsHandle } from "../Dialogs/Settings";
 
 import { GdbAny } from "../../common/gdb-common";
-import { dockMenuConnector } from "../App";
+import { dockMenuConnector } from "../utilities/dock-menu-state";
 import "./ToolBar.css";
 
 /** Props for RevealToolbar component */
@@ -209,10 +209,11 @@ export default function RevealToolbar({
   };
 
   return (
-    <div className="flex-container-row">
+    <div className="flex-container-row" data-testid="toolbar-root">
       <ToolbarComponent id="toolbar" className="flex-item-grow">
         <ItemsDirective>
           <ItemDirective
+            id="toolbar-connect"
             click={onConnect}
             prefixIcon="tb-icon tb-connected"
             tooltipText="Connect"
@@ -220,6 +221,7 @@ export default function RevealToolbar({
             disabled={disconnectAvailable}
           />
           <ItemDirective
+            id="toolbar-disconnect"
             click={onDisconnect}
             prefixIcon="tb-icon tb-disconnected"
             tooltipText="Disconnect"
@@ -228,6 +230,7 @@ export default function RevealToolbar({
           />
           <ItemDirective type="Separator" />
           <ItemDirective
+            id="toolbar-continue"
             click={onContinue}
             prefixIcon="tb-icon tb-go"
             tooltipText="Continue"
@@ -235,6 +238,7 @@ export default function RevealToolbar({
             disabled={!disconnectAvailable}
           />
           <ItemDirective
+            id="toolbar-pause"
             click={onPause}
             prefixIcon="tb-icon tb-pause"
             tooltipText="Pause"
@@ -242,6 +246,7 @@ export default function RevealToolbar({
             disabled={!disconnectAvailable}
           />
           <ItemDirective
+            id="toolbar-stop"
             click={onStop}
             prefixIcon="tb-icon tb-stop"
             tooltipText="Stop"
@@ -250,6 +255,7 @@ export default function RevealToolbar({
           />
           <ItemDirective type="Separator" />
           <ItemDirective
+            id="toolbar-step-over"
             click={onStepOver}
             prefixIcon="tb-icon tb-step-over"
             tooltipText="Step Over"
@@ -257,6 +263,7 @@ export default function RevealToolbar({
             disabled={!disconnectAvailable}
           />
           <ItemDirective
+            id="toolbar-step-in"
             click={onStepIn}
             prefixIcon="tb-icon tb-step-in"
             tooltipText="Step In"
@@ -264,6 +271,7 @@ export default function RevealToolbar({
             disabled={!disconnectAvailable}
           />
           <ItemDirective
+            id="toolbar-step-out"
             click={onStepOut}
             prefixIcon="tb-icon tb-step-out"
             tooltipText="Step Out"
@@ -272,12 +280,14 @@ export default function RevealToolbar({
           />
           <ItemDirective type="Separator" />
           <ItemDirective
+            id="toolbar-connections"
             click={onConnectionManager}
             prefixIcon="tb-icon tb-connect"
             tooltipText="Connection Manager"
             text="Connections"
           />
           <ItemDirective
+            id="toolbar-settings"
             click={onSettings}
             prefixIcon="tb-icon tb-settings"
             tooltipText="Settings"
@@ -292,6 +302,7 @@ export default function RevealToolbar({
         </ItemsDirective>
       </ToolbarComponent>
       <SplitButtonComponent
+        id="toolbar-window-menu"
         className="flex-item-grow"
         items={items}
         content="Windows"

@@ -14,6 +14,7 @@ import { expect, test, type Locator } from "@playwright/test";
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
+import { writePageCoverage } from "../helpers/playwright-coverage";
 
 declare global {
   interface Window {
@@ -82,6 +83,10 @@ function getMimeType(filePath: string): string {
 
 let server: http.Server | undefined;
 let baseUrl = "";
+
+test.afterEach(async ({ page }, testInfo) => {
+  await writePageCoverage(page, testInfo);
+});
 
 test.beforeAll(async () => {
   if (!fs.existsSync(OUTPUT_DIR)) {

@@ -2,7 +2,7 @@
  * Implements app for revealGDB runtime behavior.
  *
  * @remarks
- * Exported symbols include `dockMenuConnector`, `AppMainVersionInfo`, `App`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ * Exported symbols include `AppMainVersionInfo`, `App`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { DockManager } from "../../node_modules/dock-spawn-ts/lib/js/DockManager.js";
 
@@ -24,6 +24,7 @@ import GdbCommandWindow from "./ToolWindows/GdbCommandWindow";
 import GdbSourceWindow from "./ToolWindows/GdbSourceWindow";
 import { TOOL_WINDOW_TITLES } from "./ToolWindows/toolWindowTitles";
 import { DockMenuConnector } from "./utilities/DockMenuConnector.js";
+import { dockMenuConnector, setDockMenuConnector } from "./utilities/dock-menu-state";
 
 const AboutBox = lazy(() =>
   import("./Dialogs/AboutBox.js").then((module) => ({
@@ -75,12 +76,6 @@ const GdbThreadsWindow = lazyWindow(() => import("./ToolWindows/GdbThreadsWindow
  * Handles window layout, docking, undocking, and resizing operations.
  */
 let dockManager: DockManager;
-
-/**
- * Connector between the dock manager and the application menu system.
- * Manages panel registration and visibility toggling.
- */
-export let dockMenuConnector: DockMenuConnector | null = null;
 
 /**
  * Performs deferred window as part of this module's internal workflow.
@@ -176,7 +171,7 @@ export default function App(): JSX.Element {
       dockManager.initialize();
 
       // Create connector to manage panel registration and menu integration
-      dockMenuConnector = new DockMenuConnector(dockManager);
+      setDockMenuConnector(new DockMenuConnector(dockManager));
 
       // Register all tool windows with the dock system
       // Parameters: elementId, displayName, title, iconClass

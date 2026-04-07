@@ -1,5 +1,6 @@
 # Priority Items
 
+- Put run commands in code, not settings for startup without settings.json
 - Convience variables
 - Verify Aboutbox attributions
 

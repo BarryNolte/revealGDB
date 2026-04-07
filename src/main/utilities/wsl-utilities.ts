@@ -22,13 +22,15 @@ export class WslUtilities {
    */
   static getWslDistrobutions(): WslDistro[] {
     const wslDistroRegex =
-      /(?<default>[*\s]*)(?<distro>[0-9a-zA-Z-.]*)\s*(?<status>[\S]*)\s*(?<version>[\S]*)/;
+      /^(?<default>\*)?\s*(?<distro>[0-9a-zA-Z-.]+)\s+(?<status>\S+)\s+(?<version>\S+)$/;
 
     const buf = execSync("wsl.exe -l -v", { encoding: "buffer" });
     const stdoutString = WslUtilities.bufferToAsciiString(buf);
-    const distros = stdoutString.split("\r\n");
+    const distros = stdoutString
+      .split("\r\n")
+      .map((line) => line.trimEnd())
+      .filter((line) => line.length > 0);
     distros.shift();
-    distros.pop();
 
     const wslDistros: WslDistro[] = [];
     for (const distro of distros) {
@@ -38,7 +40,7 @@ export class WslUtilities {
           name: match.groups.distro,
           version: match.groups.version,
           state: match.groups.status,
-          default: match.groups.default === "*",
+          default: Boolean(match.groups.default),
         });
       }
     }

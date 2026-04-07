@@ -105,12 +105,28 @@ The persisted settings shape can be inspected in `settings.json.sample.json`. Cu
 
 Use the following commands when validating changes:
 
-| Command                     | Purpose                                                                                 |
-| --------------------------- | --------------------------------------------------------------------------------------- |
-| `npm run test`              | Run Vitest, then build the renderer and execute the Playwright suite.                   |
-| `npm run test:playwright`   | Build the renderer and run all Playwright tests.                                        |
-| `npm run docs`              | Generate TypeDoc output in `docs/api`.                                                  |
-| `npm run benchmark:startup` | Run the startup benchmark and compare against the current baseline or previous results. |
+| Command                     | Purpose                                                                                                     |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `npm run test`              | Run Vitest, then build the renderer and execute the Playwright suite.                                       |
+| `npm run test:coverage`     | Run merged informational coverage: Vitest for app code plus Playwright browser coverage for renderer pages. |
+| `npm run test:playwright`   | Build the renderer and run all Playwright tests.                                                            |
+| `npm run docs`              | Generate TypeDoc output in `docs/api`.                                                                      |
+| `npm run benchmark:startup` | Run the startup benchmark and compare against the current baseline or previous results.                     |
+
+### Coverage Workflow
+
+Run the full local coverage pipeline with:
+
+```powershell
+npm run test:coverage
+```
+
+This pipeline is informational only. It merges:
+
+- Vitest coverage for application code under `src/main`, `src/preload`, and `src/renderer`.
+- Playwright browser coverage for the existing renderer page specs built from `out/renderer`.
+
+It excludes test files, test helpers, generated output, docs, reports, scripts, and the renderer harness entry pages. Final merged reports are written to `coverage`.
 
 Open generated API docs after `npm run docs`:
 
