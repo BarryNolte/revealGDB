@@ -21,7 +21,7 @@ type SettingsLike = {
  */
 export function createGdbInterface(
   mainWindow: BrowserWindow,
-  appSettings: SettingsLike,
+  _appSettings: SettingsLike,
 ): miInterface {
   const gdbInterface = new miInterface();
   gdbInterface.on("console-stream", (line: string) => {
@@ -41,9 +41,8 @@ export function createGdbInterface(
   gdbInterface.on("gdb-stopped", () => {
     if (needToRunStartupCmds) {
       needToRunStartupCmds = false;
-      const ros: string[] = appSettings.getSync("gdb.run.onStartup") as string[];
-      // console.log("** ON STARTUP COMMANDS **");
-      ros?.forEach((cmd: string) => {
+
+      gdbInterface.onStartup.forEach((cmd: string) => {
         gdbInterface.runCommand(cmd);
       });
 
@@ -56,9 +55,7 @@ export function createGdbInterface(
       gdbInterface.runCommand("echo >>>>end-capture<<<<");
     }
 
-    const ros: string[] = appSettings.getSync("gdb.run.onStopped") as string[];
-    //console.log(`***********************\nRunning ${ros?.length} Stop Commands\n***********************`);
-    ros?.forEach((cmd: string) => {
+    gdbInterface.onStopped.forEach((cmd: string) => {
       gdbInterface.runCommand(cmd);
     });
   });

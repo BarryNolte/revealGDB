@@ -17,6 +17,14 @@ import {
   createMockBrowserWindow,
 } from "../../helpers/ipc-test-harness";
 
+const defaultStartupCommands = ["-list-features", "-data-list-register-names"];
+const defaultStoppedCommands = [
+  "-data-list-register-values x",
+  "-stack-list-frames",
+  "-stack-list-locals 1",
+  "-thread-info",
+];
+
 const { sendMock } = vi.hoisted(() => ({
   sendMock: vi.fn(),
 }));
@@ -25,6 +33,8 @@ vi.mock("../../../src/main/mi-interface/mi-interface", async () => {
   const { EventEmitter } = await import("events");
 
   class MockMiInterface extends EventEmitter {
+    onStartup = [...defaultStartupCommands];
+    onStopped = [...defaultStoppedCommands];
     send = sendMock;
     runCommand = sendMock;
   }
@@ -39,20 +49,10 @@ describe("createGdbInterface", () => {
     sendMock.mockClear();
   });
 
-  it("runs startup commands once and stopped commands on each stop", () => {
+  it("runs built-in startup commands once and built-in stopped commands on each stop", () => {
     const mainWindow = createMockBrowserWindow();
 
-    const appSettings = createMockAppSettings({
-      getSync: vi.fn((key: string) => {
-        if (key === "gdb.run.onStartup") {
-          return ["startup-one", "startup-two"];
-        }
-        if (key === "gdb.run.onStopped") {
-          return ["stopped-one"];
-        }
-        return [];
-      }),
-    });
+    const appSettings = createMockAppSettings();
 
     const gdb = createGdbInterface(mainWindow as never, appSettings);
 
@@ -61,10 +61,16 @@ describe("createGdbInterface", () => {
 
     const calls = sendMock.mock.calls.map((args) => args[0]);
 
-    expect(calls.filter((c) => c === "startup-one")).toHaveLength(1);
-    expect(calls.filter((c) => c === "startup-two")).toHaveLength(1);
-    expect(calls.filter((c) => c === "stopped-one")).toHaveLength(2);
+    for (const command of defaultStartupCommands) {
+      expect(calls.filter((call) => call === command)).toHaveLength(1);
+    }
+
+    for (const command of defaultStoppedCommands) {
+      expect(calls.filter((call) => call === command)).toHaveLength(2);
+    }
+
     expect(calls.filter((c) => c === "echo <<<<file-info>>>>")).toHaveLength(1);
     expect(calls.filter((c) => c === "echo <<<<function-names>>>>")).toHaveLength(1);
+    expect(appSettings.getSync).not.toHaveBeenCalled();
   });
 });

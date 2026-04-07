@@ -42,6 +42,14 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
     },
   });
 
+  public onStartup: string[] = ["-list-features", "-data-list-register-names"];
+  public onStopped: string[] = [
+    "-data-list-register-values x",
+    "-stack-list-frames",
+    "-stack-list-locals 1",
+    "-thread-info",
+  ];
+
   constructor() {
     super();
     this.gdbDB.on("error-stream", (line: string) => {
