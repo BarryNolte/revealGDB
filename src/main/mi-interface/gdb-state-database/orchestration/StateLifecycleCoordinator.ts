@@ -4,6 +4,7 @@
  * @remarks
  * Exported symbols include `StateLifecycleCoordinator`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
+import { debugLogLines } from "../../../utilities/logger";
 import { UINotifier } from "../notifiers/UINotifier";
 import { BreakpointStore } from "../stores/BreakpointStore";
 import { FeatureStore } from "../stores/FeatureStore";
@@ -78,27 +79,31 @@ export class StateLifecycleCoordinator {
    * Participates in the MI processing pipeline that updates debugger state and notifications.
    */
   dump(): void {
-    console.log("GDB State Database");
-    console.log("==================");
-    console.log("Features:");
-    console.log(this.featureStore.features);
-    console.log("Thread Groups:");
-    console.log(this.threadGroupStore.threadGroups);
-    console.log("Threads:");
-    console.log(this.threadStore.threads);
-    console.log("Stack Frames:");
-    console.log(this.stackFrameStore.stackFrames);
-    console.log("Registers:");
-    console.log(this.registerStore.registers);
-    console.log("Parameters:");
-    console.log(this.paramStore.params);
-    console.log("Breakpoints:");
-    console.log(this.breakpointStore.breakpoints);
-    console.log("Source Files:");
-    console.log(this.sourceFileStore.gdbSrcFileCache.dump());
-    console.log("Symbol Files:");
-    console.log(this.symbolStore.symbolFiles);
-    console.log("Function Names:");
-    console.log(this.functionStore.functionNames);
+    debugLogLines([
+      "GDB State Database",
+      "==================",
+      "Features:",
+      this.featureStore.features,
+      "Thread Groups:",
+      this.threadGroupStore.threadGroups,
+      "Threads:",
+      this.threadStore.threads,
+      "Stack Frames:",
+      this.stackFrameStore.stackFrames,
+      "Registers:",
+      this.registerStore.registers,
+      "Parameters:",
+      this.paramStore.params,
+      "Breakpoints:",
+      this.breakpointStore.breakpoints,
+      "Source Files:",
+    ]);
+    this.sourceFileStore.gdbSrcFileCache.dump();
+    debugLogLines([
+      "Symbol Files:",
+      this.symbolStore.symbolFiles,
+      "Function Names:",
+      this.functionStore.functionNames,
+    ]);
   }
 }

@@ -5,6 +5,7 @@
  * Exported symbols include `MiResultRecordHandler`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { mainWindow } from "../main";
+import { debugLog } from "../utilities/logger";
 import { mapRegexGroupsToBreakpoint } from "./mappers/breakpoint-mapper";
 import { MiOutputHost } from "./mi-output-types";
 import { AsmResultStrategy } from "./mi-result-strategies/asm-result-strategy";
@@ -106,7 +107,7 @@ export class MiResultRecordHandler {
             break;
           }
           case "": {
-            console.error("ResultRecord (empty): ARE WE DONE??");
+            debugLog("ResultRecord (empty): ARE WE DONE??");
             break;
           }
           default: {

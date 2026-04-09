@@ -219,7 +219,6 @@ describe("handleNotifyMain", () => {
 
   it("handles command-entry and renderStart without throwing", () => {
     const { context, send } = createIpcRegistrationHarness();
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
     handleNotifyMain({ command: "command-entry" }, context);
     handleNotifyMain({ command: "renderStart" }, context);
@@ -227,9 +226,6 @@ describe("handleNotifyMain", () => {
     expect(send).toHaveBeenCalledWith(IPC_CHANNELS.mainToRenderer.notifications.render, {
       command: "command-entry",
     });
-    expect(logSpy).toHaveBeenCalledWith("[startup] renderer-start");
-
-    logSpy.mockRestore();
   });
 });
 

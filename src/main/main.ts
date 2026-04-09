@@ -21,6 +21,7 @@ import { registerIpcHandlers } from "./ipc";
 import { GdbMenu } from "./menu";
 import { miInterface } from "./mi-interface/mi-interface";
 import { setNativeThemeFromAppTheme } from "./theme-support";
+import { debugLog } from "./utilities/logger";
 import {
   createDebugWindow,
   createMainWindow,
@@ -36,13 +37,10 @@ export const isMac = process.platform === "darwin";
 export const isWin = process.platform === "win32";
 export const isLinux = !isMac && !isWin;
 
-// eslint-disable-next-line no-undef
 export const isDebug = __REVEALGDB_DEBUG__;
 
 globalThis.revealGdbBuild = {
-  // eslint-disable-next-line no-undef
   debug: __REVEALGDB_DEBUG__,
-  // eslint-disable-next-line no-undef
   mode: __REVEALGDB_BUILD__,
 };
 // console.log(`Build Info: ${JSON.stringify(globalThis.revealGdbBuild, null, 2)}`);
@@ -58,7 +56,7 @@ const startupEpochMs = Date.now();
  */
 function logStartupMilestone(label: string): void {
   const elapsedMs = Date.now() - startupEpochMs;
-  console.log(`[startup] ${label}: ${elapsedMs}ms`);
+  debugLog(`[startup] ${label}: ${elapsedMs}ms`);
 }
 
 export let mainWindow: BrowserWindow;

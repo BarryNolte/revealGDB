@@ -9,6 +9,7 @@ import { GridColumnState, GridName } from "../../common/grid-column-types";
 import { IPC_CHANNELS, NotifyMainRequest, NotifyRenderMessage } from "../../common/ipc-contracts";
 import { mapElectronWindowToWinPos } from "../mappers/window-pos-mapper";
 import { setNativeThemeFromAppTheme } from "../theme-support";
+import { debugLog, debugLogLines } from "../utilities/logger";
 import { WslUtilities } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
 
@@ -79,25 +80,31 @@ export function onGdbCommand(command: string, context: IpcRegistrationContext): 
         break;
       case "wsl": {
         const distros = WslUtilities.getWslDistrobutions();
-        console.log("*********************************************************");
-        console.log("WSL Distros");
-        console.log("*********************************************************");
-        console.log(distros);
-        console.log("*********************************************************");
+        debugLogLines([
+          "*********************************************************",
+          "WSL Distros",
+          "*********************************************************",
+          distros,
+          "*********************************************************",
+        ]);
 
         const sports = WslUtilities.getWslSerialPorts();
-        console.log("*********************************************************");
-        console.log("WSL Serial Ports");
-        console.log("*********************************************************");
-        console.log(sports);
-        console.log("*********************************************************");
+        debugLogLines([
+          "*********************************************************",
+          "WSL Serial Ports",
+          "*********************************************************",
+          sports,
+          "*********************************************************",
+        ]);
         break;
       }
       case "screen":
-        console.log("*********************************************************");
-        console.log("Main Window Bounds: " + JSON.stringify(mainWindow.getBounds()));
-        console.log("Full Screen       : " + JSON.stringify(mainWindow.fullScreen));
-        console.log("*********************************************************");
+        debugLogLines([
+          "*********************************************************",
+          "Main Window Bounds: " + JSON.stringify(mainWindow.getBounds()),
+          "Full Screen       : " + JSON.stringify(mainWindow.fullScreen),
+          "*********************************************************",
+        ]);
         break;
     }
   } else {
@@ -122,7 +129,7 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
     case "connect-selected-connection": {
       const selectedConnection: unknown = (msg?.data as { connection?: unknown } | undefined)
         ?.connection;
-      console.log("Received selected connection from renderer", selectedConnection);
+      debugLog("Received selected connection from renderer", selectedConnection);
       if (context.isSelectedConnection(selectedConnection)) {
         doConnection(selectedConnection, context);
       } else {
@@ -204,12 +211,12 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       break;
     }
     case "renderStart":
-      console.log("[startup] renderer-start");
-      console.log("Notifying GDB Interface that rendering is starting.");
+      debugLog("[startup] renderer-start");
+      debugLog("Notifying GDB Interface that rendering is starting.");
       break;
     case "renderEnd":
-      console.log("[startup] renderer-end");
-      console.log("Notifying GDB Interface that rendering is complete.");
+      debugLog("[startup] renderer-end");
+      debugLog("Notifying GDB Interface that rendering is complete.");
       sendNotifyRender(context, { command: "command-entry" });
       break;
   }

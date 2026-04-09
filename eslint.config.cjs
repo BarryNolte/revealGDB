@@ -18,6 +18,11 @@ const reactHooks = require("eslint-plugin-react-hooks");
 const prettier = require("eslint-plugin-prettier");
 const globals = require("globals");
 
+const revealGdbBuildGlobals = {
+  __REVEALGDB_DEBUG__: "readonly",
+  __REVEALGDB_BUILD__: "readonly",
+};
+
 module.exports = [
   {
     ignores: ["node_modules/", "dist/", "build/"],
@@ -33,7 +38,10 @@ module.exports = [
           jsx: true,
         },
       },
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        ...revealGdbBuildGlobals,
+      },
     },
     settings: {
       react: {
@@ -74,7 +82,10 @@ module.exports = [
         ecmaVersion: 2021,
         sourceType: "module",
       },
-      globals: globals.node,
+      globals: {
+        ...globals.node,
+        ...revealGdbBuildGlobals,
+      },
     },
     plugins: {
       "@typescript-eslint": tseslintPlugin,
@@ -105,7 +116,10 @@ module.exports = [
         ecmaVersion: 2021,
         sourceType: "module",
       },
-      globals: globals.node,
+      globals: {
+        ...globals.node,
+        ...revealGdbBuildGlobals,
+      },
     },
     plugins: {
       "@typescript-eslint": tseslintPlugin,

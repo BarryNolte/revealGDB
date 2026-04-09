@@ -11,6 +11,7 @@ import getSystemFonts from "get-system-fonts";
 import fs from "node:fs/promises";
 import os from "node:os";
 import { GdbAny } from "../common/gdb-common";
+import { debugLog } from "./utilities/logger";
 
 export type SettingsLike = {
   configure: (opts: {
@@ -43,11 +44,11 @@ export function configureAppSettings(appSettings: SettingsLike): void {
  */
 export function logStartupDiagnostics(appSettings: SettingsLike): void {
   const settingsFile = appSettings.file();
-  console.log(`Settings File: ${settingsFile}`);
+  debugLog(`Settings File: ${settingsFile}`);
 
   const displays = screen.getAllDisplays();
   displays.forEach((display: GdbAny) => {
-    console.log(
+    debugLog(
       `Display: (${Math.floor(
         display.scaleFactor * display.bounds.width,
       )} x ${Math.floor(display.scaleFactor * display.bounds.height)})`,
@@ -87,7 +88,7 @@ export function maybeInstallDevTools(isDebug: boolean): void {
 
   installExtension(REACT_DEVELOPER_TOOLS)
     .then((name) => {
-      console.log(`Installed DevTools extension: ${name}`);
+      debugLog(`Installed DevTools extension: ${name}`);
     })
     .catch((err) => {
       console.warn("Failed to install React DevTools extension:", err);
