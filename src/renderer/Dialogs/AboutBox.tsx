@@ -83,6 +83,13 @@ export const AboutBox = forwardRef<AboutBoxHandle, AboutProps>((_props, ref): JS
     setHideDialog(false);
   };
 
+  const openIcons8Link = () => {
+    window.ipcToMain.commands.app.notifyMain({
+      command: "open-external",
+      data: "https://icons8.com/",
+    });
+  };
+
   /**
    * Performs header as part of this module's internal workflow.
    *
@@ -130,16 +137,65 @@ export const AboutBox = forwardRef<AboutBoxHandle, AboutProps>((_props, ref): JS
             </div>
             <div className="aboutBoxImportant">{packageInfo.description}</div>
             <hr />
-            <div className="aboutBoxDetails">Node Version: {info.nodeVersion}</div>
-            <div className="aboutBoxDetails">Electron Version: {info.electronVersion}</div>
-            <div className="aboutBoxDetails">v8 Version: {info.v8Version}</div>
-            <div className="aboutBoxDetails">Architecture: {info.architecture}</div>
-            <div className="aboutBoxDetails">Plateform: {info.platform}</div>
-            <div className="aboutBoxDetails">OS Version: {info.osVersion}</div>
+            <table>
+              <tr>
+                <td>
+                  <div className="aboutBoxDetails">Node Version:</div>
+                </td>
+                <td>
+                  <div>{info.nodeVersion}</div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div className="aboutBoxDetails">Electron Version:</div>
+                </td>
+                <td>
+                  <div>{info.electronVersion}</div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div className="aboutBoxDetails">v8 Version:</div>
+                </td>
+                <td>
+                  <div>{info.v8Version}</div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div className="aboutBoxDetails">Architecture:</div>
+                </td>
+                <td>
+                  <div>{info.architecture}</div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div className="aboutBoxDetails">Platform:</div>
+                </td>
+                <td>
+                  <div>{info.platform}</div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div className="aboutBoxDetails">OS Version:</div>
+                </td>
+                <td>
+                  <div>{info.osVersion}</div>
+                </td>
+              </tr>
+            </table>
             <hr />
             <div className="aboutBoxGeneral">What a place to be...</div>
             <br />
-            <div className="aboutBoxGeneral">Icons by Icons8</div>
+            <div className="aboutBoxGeneral">
+              Icons by{" "}
+              <button className="aboutBoxLink" type="button" onClick={openIcons8Link}>
+                Icons8
+              </button>
+            </div>
           </div>
         </div>
       </DialogComponent>

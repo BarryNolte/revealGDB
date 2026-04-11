@@ -4,6 +4,7 @@
  * @remarks
  * Exported symbols include `onGdbCommand`, `handleNotifyMain`, `registerIpcCommandHandlers`. It is responsible for channel registration, payload marshalling, and returning data to renderer callers.
  */
+import { shell } from "electron";
 import { GdbAny, SelectedConnection } from "../../common/gdb-common";
 import { GridColumnState, GridName } from "../../common/grid-column-types";
 import { IPC_CHANNELS, NotifyMainRequest, NotifyRenderMessage } from "../../common/ipc-contracts";
@@ -26,6 +27,19 @@ function sendNotifyRender(context: IpcRegistrationContext, payload: NotifyRender
   context
     .getMainWindow()
     .webContents.send(IPC_CHANNELS.mainToRenderer.notifications.render, payload);
+}
+
+function isSafeExternalUrl(value: unknown): value is string {
+  if (typeof value !== "string" || value.length === 0) {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -210,6 +224,13 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       }
       break;
     }
+    case "open-external":
+      if (isSafeExternalUrl(msg.data)) {
+        void shell.openExternal(msg.data);
+      } else {
+        console.error("Invalid external URL payload", msg.data);
+      }
+      break;
     case "renderStart":
       debugLog("[startup] renderer-start");
       debugLog("Notifying GDB Interface that rendering is starting.");

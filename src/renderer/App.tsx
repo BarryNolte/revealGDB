@@ -173,6 +173,11 @@ export default function App(): JSX.Element {
       // Create connector to manage panel registration and menu integration
       setDockMenuConnector(new DockMenuConnector(dockManager));
 
+      if (!dockMenuConnector) {
+        console.error("Failed to initialize DockMenuConnector");
+        return;
+      }
+
       // Register all tool windows with the dock system
       // Parameters: elementId, displayName, title, iconClass
       dockMenuConnector.registerPanel(

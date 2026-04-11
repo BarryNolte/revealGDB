@@ -1,7 +1,7 @@
 # Priority Items
 
+- "Learn More" menu item - Goto Github
 - Convience variables
-- Verify Aboutbox attributions
 
 # Documentation
 

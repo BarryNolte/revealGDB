@@ -121,6 +121,7 @@ export type NotifyMainCommand =
   | "save-dock-layout"
   | "save-grid-columns"
   | "reset-grid-columns"
+  | "open-external"
   | "renderStart"
   | "renderEnd";
 
