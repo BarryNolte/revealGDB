@@ -167,7 +167,9 @@ export default function App(): JSX.Element {
     const initializeDockManager = async (gdb: GdbAny): Promise<void> => {
       // Initialize the dock manager system
       const dockManagerElement = document.getElementById("revealDockManager")!;
-      dockManager = new DockManager(dockManagerElement, { dialogRootElement: dockManagerElement });
+      dockManager = new DockManager(dockManagerElement);
+      dockManager.config.dialogRootElement = dockManagerElement;
+      dockManager.config.enableBrowserWindows = false;
       dockManager.initialize();
 
       // Create connector to manage panel registration and menu integration

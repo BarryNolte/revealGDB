@@ -74,6 +74,18 @@ export default function GdbBreakPointWindow(): JSX.Element {
     };
   }, []);
 
+  /**
+   * Force a full grid refresh when data becomes empty to work around Syncfusion's
+   * CRUD delta-update path skipping row removal when the incoming dataset is [].
+   */
+  useEffect(() => {
+    if (breakpointData.length === 0) {
+      setTimeout(() => {
+        gridRef.current?.refresh();
+      }, 100);
+    }
+  }, [breakpointData]);
+
   const emptyMessageTemplate = useCallback((): JSX.Element => {
     return (
       <div className="emptyRecordTemplate">

@@ -11,7 +11,6 @@
 
 # Bugs
 
- - Locals Editing
  - Dock "Open in other Window"
 
 # Project Related

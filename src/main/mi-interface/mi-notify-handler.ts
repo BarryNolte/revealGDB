@@ -12,7 +12,7 @@ export class MiNotifyAsyncHandler {
   private readonly rgxNotify: RegExp = /^=(?<cmd>.*?),(?<data>.*$)/;
   private readonly rgxParamValue: RegExp = /^param="(?<cmdParam>.*?)",value="(?<value>.*?)"$/;
   private readonly rgxBkpt: RegExp =
-    /^bkpt={number="(?<number>[^"]*)",type="(?<type>[^"]*)",disp="(?<disp>[^"]*)",enabled="(?<enabled>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)",file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",thread-groups=\[(?<tg>[^\]]*)\],times="(?<times>[^"]*)",(installed="(?<installed>[^"]*)",)?original-location="(?<orgloc>[^"]*)"}$/;
+    /^bkpt={number="(?<number>[^"]*)",type="(?<type>[^"]*)",disp="(?<disp>[^"]*)",enabled="(?<enabled>[^"]*)",addr="(?<addr>[^"]*)"(,func="(?<func>[^"]*)")?,file="(?<file>[^"]*)",fullname="(?<fullname>[^"]*)",line="(?<line>[^"]*)",thread-groups=\[(?<tg>[^\]]*)\],times="(?<times>[^"]*)",(installed="(?<installed>[^"]*)",)?original-location="(?<orgloc>[^"]*)"}$/;
   private readonly rgxThreadGroupId: RegExp = /id="(?<id>[^"]+)"/;
   private readonly rgxThreadGroupIdPid: RegExp = /^id="(?<id>[^"]*)",pid="(?<pid>[^"]*)"$/;
   private readonly rgxThreadGroupExited: RegExp = /^id="(?<id>[^"]*)"$/;
@@ -129,6 +129,7 @@ export class MiNotifyAsyncHandler {
           return false;
         }
         this.host.gdbDB.createBreakpoint(mapRegexGroupsToBreakpoint(groups));
+        console.log(`Breakpoint created: ${groups.number}`);
         this.host.gdbDB.breakpointsUpdateUI();
         break;
       }
@@ -137,6 +138,7 @@ export class MiNotifyAsyncHandler {
         if (!groups) {
           return false;
         }
+        console.log(`Breakpoint modified: ${groups.number}`);
         this.host.gdbDB.updateBreakpoint(mapRegexGroupsToBreakpoint(groups));
         this.host.gdbDB.breakpointsUpdateUI();
         break;
@@ -146,9 +148,16 @@ export class MiNotifyAsyncHandler {
         if (id) {
           this.host.gdbDB.deleteBreakpoint(id);
         }
+        console.log(`Breakpoint deleted: ${id}`);
         this.host.gdbDB.breakpointsUpdateUI();
         break;
       }
+      /**
+       * TODO: Implement remaining notify async record types, make "presentable"
+       * +-----------------+
+       * | Not Implemented |
+       * +-----------------+
+       */
       case "library-loaded": {
         const id = this.rgxLibraryId.exec(data)?.groups?.id || "";
         const targetName = this.rgxLibraryTargetName.exec(data)?.groups?.targetName || "";
