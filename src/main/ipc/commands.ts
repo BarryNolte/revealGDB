@@ -240,6 +240,18 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       debugLog("Notifying GDB Interface that rendering is complete.");
       sendNotifyRender(context, { command: "command-entry" });
       break;
+    case "show-source-at": {
+      const { fileName, line } = msg.data as { fileName: string; line: string };
+      void (async () => {
+        const contents = await gdbInterface.gdbDB.getSourceFileContents(fileName);
+        mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, {
+          fileName,
+          line,
+          contents,
+        });
+      })();
+      break;
+    }
   }
 }
 

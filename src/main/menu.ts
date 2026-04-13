@@ -179,7 +179,7 @@ export class GdbMenu {
         role: "help",
         submenu: [
           {
-            label: "Learn More",
+            label: "revealGDB on GitHub",
             click: async () => {
               await shell.openExternal("https://github.com/barrynolte/revealGDB");
             },

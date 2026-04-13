@@ -1,7 +1,6 @@
 # Priority Items
 
-- "Learn More" menu item - Goto Github
-- Convience variables
+- Buy me a coffee link
 
 # Documentation
 
@@ -10,8 +9,6 @@
 - How to contribute
 
 # Bugs
-
- - Dock "Open in other Window"
 
 # Project Related
 
@@ -26,11 +23,9 @@
 # New Features
 
 - Python Window for running python commands
-- -exec-jump for "set next statement"
 - Disassembly Window
   - Highlight registers?
   - "Show Disassembly" button working in source window
-- Click on breakpoint list and goto source
 - Values on hover in source
 - Thread markers in source (better with multiple source windows)
 - Tracepoints - How to insert more automatically

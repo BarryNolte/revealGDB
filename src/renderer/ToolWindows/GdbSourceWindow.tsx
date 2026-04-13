@@ -36,7 +36,7 @@ export default function GdbSourceWindow(): JSX.Element {
     fontName,
     editorRef,
     onLoad,
-    onCopySelection,
+    onMenuSelect,
   } = useGdbSourceWindowController();
 
   return (
@@ -56,7 +56,7 @@ export default function GdbSourceWindow(): JSX.Element {
         fontName={fontName}
         stackMarkers={sourceState.stackMarkers as IMarker[]}
         onLoad={onLoad}
-        onCopySelection={onCopySelection}
+        onMenuSelect={onMenuSelect}
       />
     </ToolWindowContent>
   );

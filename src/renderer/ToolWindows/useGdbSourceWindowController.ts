@@ -4,6 +4,7 @@
  * @remarks
  * Exported symbols include `GdbSourceWindowController`, `useGdbSourceWindowController`. It coordinates live debugger data with user interactions in docked tool-window views.
  */
+import { MenuEventArgs } from "@syncfusion/ej2-navigations";
 import ace from "ace-builds";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import AceEditor from "react-ace";
@@ -32,7 +33,7 @@ export type GdbSourceWindowController = {
   fontName: string;
   editorRef: RefObject<AceEditor | null>;
   onLoad: (editor: ace.Ace.Editor) => void;
-  onCopySelection: () => void;
+  onMenuSelect: (e: MenuEventArgs) => void;
 };
 
 /**
@@ -50,7 +51,7 @@ export function useGdbSourceWindowController(): GdbSourceWindowController {
 
   const fullFilePathRef = useRef("");
   const editorRef = useRef<AceEditor | null>(null);
-  const { setBreakpoints, updateBreakpointMarkers, onLoad, onCopySelection } =
+  const { setBreakpoints, updateBreakpointMarkers, onLoad, onMenuSelect } =
     useSourceBreakpointInteractions(editorRef, fullFilePathRef);
 
   const displayData = useCallback((data: gdbShowSourceInfo) => {
@@ -84,7 +85,9 @@ export function useGdbSourceWindowController(): GdbSourceWindowController {
 
   useEffect(() => {
     if (sourceState.currentMarker !== -1) {
-      editorRef.current?.editor.scrollToLine(sourceState.currentMarker, true, true);
+      setTimeout(() => {
+        editorRef.current?.editor.scrollToLine(sourceState.currentMarker, true, true);
+      }, 150);
     }
   }, [sourceState.currentMarker]);
 
@@ -97,6 +100,6 @@ export function useGdbSourceWindowController(): GdbSourceWindowController {
     fontName,
     editorRef,
     onLoad,
-    onCopySelection,
+    onMenuSelect,
   };
 }

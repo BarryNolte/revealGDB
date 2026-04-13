@@ -109,6 +109,7 @@ export type NotifyRenderMessage = {
 export type NotifyMainCommand =
   | "connect-selected-connection"
   | "cancel-connection"
+  | "show-source-at"
   | "command-entry"
   | "save-connections"
   | "save-last-used-connection"

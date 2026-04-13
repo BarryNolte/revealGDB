@@ -6,6 +6,12 @@
  */
 export const menuCopy = [{ text: "Copy" }];
 export const menuCutCopyPaste = [{ text: "Cut" }, { text: "Copy" }, { text: "Paste" }];
+export const menuSourceWindow = [
+  { text: "Copy", id: "copy" },
+  { separator: true },
+  { text: "Set Breakpoint", id: "bp-set" },
+  { text: "Jump and Continue", id: "bp-jump" },
+];
 
 /**
  * Performs send text to clipboard as part of this module's public API.

@@ -4,11 +4,12 @@
  * @remarks
  * Exported symbols include `GdbSourceWindowView`. It coordinates live debugger data with user interactions in docked tool-window views.
  */
+import { MenuEventArgs } from "@syncfusion/ej2-navigations";
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import ace from "ace-builds";
 import { JSX, RefObject } from "react";
 import AceEditor, { IMarker } from "react-ace";
-import { menuCopy } from "../utilities/Clipboard";
+import { menuSourceWindow } from "../utilities/Clipboard";
 
 type GdbSourceWindowViewProps = {
   menuId: string;
@@ -25,7 +26,7 @@ type GdbSourceWindowViewProps = {
   fontName: string;
   stackMarkers: IMarker[];
   onLoad: (editor: ace.Ace.Editor) => void;
-  onCopySelection: () => void;
+  onMenuSelect: (e: MenuEventArgs) => void;
 };
 
 /**
@@ -53,7 +54,7 @@ export default function GdbSourceWindowView(props: GdbSourceWindowViewProps): JS
     fontName,
     stackMarkers,
     onLoad,
-    onCopySelection,
+    onMenuSelect,
   } = props;
 
   return (
@@ -119,8 +120,8 @@ export default function GdbSourceWindowView(props: GdbSourceWindowViewProps): JS
       <ContextMenuComponent
         id={`source-menu-${menuId}`}
         target="#gdb-ace-editor"
-        items={menuCopy}
-        select={onCopySelection}
+        items={menuSourceWindow}
+        select={onMenuSelect}
       />
     </div>
   );

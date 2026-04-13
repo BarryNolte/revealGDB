@@ -8,6 +8,7 @@ import ace from "ace-builds";
 import { RefObject, useCallback, useEffect, useRef } from "react";
 import AceEditor from "react-ace";
 
+import { MenuEventArgs } from "@syncfusion/ej2-navigations";
 import { GdbAny } from "../../common/gdb-common";
 import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { sendTextToClipboard } from "../utilities/Clipboard";
@@ -17,7 +18,7 @@ export type SourceBreakpointInteractions = {
   setBreakpoints: (data: Map<string, gdbBreakpoint>) => void;
   updateBreakpointMarkers: () => void;
   onLoad: (editor: ace.Ace.Editor) => void;
-  onCopySelection: () => void;
+  onMenuSelect: (e: MenuEventArgs) => void;
 };
 
 /**
@@ -122,15 +123,37 @@ export function useSourceBreakpointInteractions(
     editor.clearSelection();
   }, []);
 
-  const onCopySelection = useCallback(() => {
-    const text = editorRef.current?.editor.getSelectedText();
-    sendTextToClipboard(text ?? "");
-  }, [editorRef]);
+  const onMenuSelect = useCallback(
+    (e: MenuEventArgs) => {
+      switch (e.item.id) {
+        case "copy": {
+          const text = editorRef.current?.editor.getSelectedText();
+          sendTextToClipboard(text ?? "");
+          break;
+        }
+        case "bp-set": {
+          const row = editorRef.current?.editor.getCursorPosition().row ?? 0;
+          window.ipcToMain.commands.debugger.sendGdbCommand(
+            `break ${fullFilePathRef.current}:${row + 1}`,
+          );
+          break;
+        }
+        case "bp-jump": {
+          const row = editorRef.current?.editor.getCursorPosition().row ?? 0;
+          window.ipcToMain.commands.debugger.sendGdbCommand(
+            `jump ${fullFilePathRef.current}:${row + 1}`,
+          );
+          break;
+        }
+      }
+    },
+    [editorRef, fullFilePathRef],
+  );
 
   return {
     setBreakpoints,
     updateBreakpointMarkers,
     onLoad,
-    onCopySelection,
+    onMenuSelect,
   };
 }

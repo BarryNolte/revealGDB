@@ -14,6 +14,7 @@ import {
   GridComponent,
   Inject,
   NotifyArgs,
+  RecordDoubleClickEventArgs,
   Reorder,
   Resize,
   SelectionSettingsModel,
@@ -82,7 +83,7 @@ export default function GdbBreakPointWindow(): JSX.Element {
     if (breakpointData.length === 0) {
       setTimeout(() => {
         gridRef.current?.refresh();
-      }, 100);
+      }, 250);
     }
   }, [breakpointData]);
 
@@ -143,6 +144,20 @@ export default function GdbBreakPointWindow(): JSX.Element {
   const contextMenuItems: ContextMenuItem[] = useMemo(() => ["Copy", "Delete"], []);
   const editing = useMemo(() => ({ allowDeleting: true }), []);
 
+  /**
+   * Handles double-click on stack frame row.
+   * Navigates to the corresponding source location in the source window.
+   */
+  const handleRecordDoubleClick = useCallback((e: RecordDoubleClickEventArgs) => {
+    const row = e.rowData as BreakpointGridRow;
+    if (row?.fullName && row?.line) {
+      window.ipcToMain.commands.app.notifyMain({
+        command: "show-source-at",
+        data: { fileName: row.fullName, line: row.line },
+      });
+    }
+  }, []);
+
   return (
     <ToolWindowContent title={TOOL_WINDOW_TITLES.breakpoints}>
       <div className="full-size flex-container">
@@ -165,6 +180,7 @@ export default function GdbBreakPointWindow(): JSX.Element {
           ref={gridRef}
           gridLines="Both"
           actionBegin={onAction}
+          recordDoubleClick={handleRecordDoubleClick}
         >
           <ColumnsDirective>
             <ColumnDirective
