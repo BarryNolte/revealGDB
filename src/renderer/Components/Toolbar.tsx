@@ -13,7 +13,7 @@ import type { SettingsHandle } from "../Dialogs/Settings";
 
 import { GdbAny } from "../../common/gdb-common";
 import { dockMenuConnector } from "../utilities/dock-menu-state";
-import "./ToolBar.css";
+import "./Toolbar.css";
 
 /** Props for RevealToolbar component */
 type RevealToolbarProps = {

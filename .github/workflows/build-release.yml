@@ -50,9 +50,9 @@ jobs:
           npm version patch --no-git-tag-version
           # Read the bumped 3-part semver
           BASE_VERSION=$(node -e "console.log(require('./package.json').version)")
-          # Build the 4-part version: major.minor.patch.sha
-          FULL_VERSION="${BASE_VERSION}.${SHORT_SHA}"
-          # Write the 4-part version back to package.json
+          # Build the version with pre-release SHA: major.minor.patch-sha (valid semver)
+          FULL_VERSION="${BASE_VERSION}-${SHORT_SHA}"
+          # Write the version with pre-release identifier back to package.json
           npm pkg set version="${FULL_VERSION}"
           echo "version=${FULL_VERSION}" >> $GITHUB_OUTPUT
 
