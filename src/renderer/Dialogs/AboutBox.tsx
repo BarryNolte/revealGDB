@@ -11,6 +11,8 @@ import { AppMainVersionInfo } from "../App";
 import packageInfo from "./../../../package.json";
 import "./AboutBox.css";
 
+import iconBMC from "../icons/bmc_qr.png";
+
 /** Props for about dialog (currently unused) */
 interface AboutProps {
   center?: boolean;
@@ -87,6 +89,13 @@ export const AboutBox = forwardRef<AboutBoxHandle, AboutProps>((_props, ref): JS
     window.ipcToMain.commands.app.notifyMain({
       command: "open-external",
       data: "https://icons8.com/",
+    });
+  };
+
+  const openBMCLink = () => {
+    window.ipcToMain.commands.app.notifyMain({
+      command: "open-external",
+      data: "https://buymeacoffee.com/barrynolte",
     });
   };
 
@@ -188,13 +197,21 @@ export const AboutBox = forwardRef<AboutBoxHandle, AboutProps>((_props, ref): JS
               </tr>
             </table>
             <hr />
-            <div className="aboutBoxGeneral">What a place to be...</div>
-            <br />
             <div className="aboutBoxGeneral">
               Icons by{" "}
               <button className="aboutBoxLink" type="button" onClick={openIcons8Link}>
                 Icons8
               </button>
+            </div>
+            <div className="aboutBoxGeneral">
+              <button className="aboutBox-buymeacoffee-button" type="button" onClick={openBMCLink}>
+                <img
+                  className="aboutBox-buymeacoffee-img"
+                  src={iconBMC}
+                  alt="Buy Me a Coffee"
+                ></img>{" "}
+              </button>
+              <div>Buy me a Coffee</div>
             </div>
           </div>
         </div>

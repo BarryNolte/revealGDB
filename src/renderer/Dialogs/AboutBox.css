@@ -56,3 +56,16 @@ div > .aboutBox-background-div {
   background-repeat: no-repeat;
   background-position: center;
 }
+
+.aboutBox-buymeacoffee-button {
+  border: #0842a0 solid 3px;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.aboutBox-buymeacoffee-img {
+  width: 64px;
+  height: 64px;
+  margin: 2px;
+}
