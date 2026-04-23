@@ -6,9 +6,8 @@
  */
 import { GdbAny } from "../common/gdb-common";
 import { NotifyMainRequest, NotifyRenderMessage } from "../common/ipc-contracts";
-import { gdbBreakpoint } from "../main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { Local } from "../main/mi-interface/gdb-parsers/gdb-locals";
-import { MemoryData } from "../main/mi-interface/mappers/memory-mapper";
+import { gdbBreakpoint } from "../main/mi-interface/gdb-state-database/gdbStateDatabase";
 import {
   gdbAsmRow,
   gdbFunction,
@@ -18,6 +17,7 @@ import {
   gdbThread,
   gdbThreadGroup,
 } from "../main/mi-interface/gdb-state-database/types/gdbStateTypes";
+import { MemoryData } from "../main/mi-interface/mappers/memory-mapper";
 import { WslDistro } from "../main/utilities/wsl-utilities";
 
 type Unsubscribe = () => void;
@@ -40,6 +40,7 @@ export interface IElectronAPI {
     log: (callback: ConsoleCallback) => Unsubscribe;
     error: (callback: ConsoleCallback) => Unsubscribe;
     debug: (callback: ConsoleCallback) => Unsubscribe;
+    html: (callback: ConsoleCallback) => Unsubscribe;
   };
 
   notifications: {
@@ -112,6 +113,13 @@ export interface IElectronAPI {
    * @returns Cleanup function to remove the listener
    */
   debugMessage: (callback: ConsoleCallback) => Unsubscribe;
+
+  /**
+   * Registers a callback for html content from the main process.
+   * @param callback - Function to handle html content
+   * @returns Cleanup function to remove the listener
+   */
+  htmlMessage: (callback: ConsoleCallback) => Unsubscribe;
 
   /**
    * Registers a callback for connection status updates during GDB connection setup.

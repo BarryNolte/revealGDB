@@ -25,7 +25,7 @@ describe("WslUtilities", () => {
       ),
     );
 
-    expect(WslUtilities.getWslDistrobutions()).toEqual([
+    expect(WslUtilities.getWslDistributions()).toEqual([
       { name: "Ubuntu", state: "Running", version: "2", default: true },
       { name: "Debian", state: "Stopped", version: "1", default: false },
     ]);

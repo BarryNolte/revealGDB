@@ -6,7 +6,6 @@
  */
 import EventEmitter from "events";
 import { readFile } from "fs/promises";
-import { debugLog } from "../../utilities/logger";
 
 export class gdbSourceFileCache extends EventEmitter {
   private sourceFiles: Map<string, string> = new Map<string, string>();
@@ -89,9 +88,13 @@ export class gdbSourceFileCache extends EventEmitter {
    * @remarks
    * Participates in the MI processing pipeline that updates debugger state and notifications.
    */
-  dump(): void {
+  dump(): string[] {
+    const outputLines: string[] = [];
     this.sourceFiles.keys().forEach((file) => {
-      debugLog(`${this.sourceFiles.get(file)?.length.toString().padStart(6, " ")} => ${file}`);
+      outputLines.push(
+        `${this.sourceFiles.get(file)?.length.toString().padStart(6, " ")} => ${file}`,
+      );
     });
+    return outputLines;
   }
 }

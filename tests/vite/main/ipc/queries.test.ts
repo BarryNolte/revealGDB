@@ -12,9 +12,9 @@
 
 import { describe, expect, it, vi } from "vitest";
 import { IPC_CHANNELS } from "../../../../src/common/ipc-contracts";
-import { createIpcRegistrationHarness } from "../../../helpers/ipc-test-harness";
 import { registerIpcQueryHandlers } from "../../../../src/main/ipc/queries";
 import { WslUtilities } from "../../../../src/main/utilities/wsl-utilities";
+import { createIpcRegistrationHarness } from "../../../helpers/ipc-test-harness";
 
 vi.mock("../../../../src/main/utilities/wsl-utilities", () => ({
   WslUtilities: {
@@ -113,7 +113,7 @@ describe("registerIpcQueryHandlers", () => {
 
   it("returns an empty WSL distribution list when enumeration fails", async () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
-    vi.mocked(WslUtilities.getWslDistrobutions).mockImplementationOnce(() => {
+    vi.mocked(WslUtilities.getWslDistributions).mockImplementationOnce(() => {
       throw new Error("wsl missing");
     });
     const { context, ipcMain } = createIpcRegistrationHarness();

@@ -15,6 +15,8 @@
 - How to contribute
 
 # Bugs
+- Breakpoint testing.  Right click on linenumber doesn't always work.
+- Padding in disassembly cells and header (all grid cells)
 
 # Project Related
 

@@ -702,7 +702,7 @@ export class gdbStateDatabase extends EventEmitter {
    * @remarks
    * Participates in the MI processing pipeline that updates debugger state and notifications.
    */
-  dump(): void {
-    this.lifecycle.dump();
+  dump(): string[] {
+    return this.lifecycle.dump();
   }
 }

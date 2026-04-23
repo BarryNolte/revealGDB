@@ -4,13 +4,14 @@
  * @remarks
  * Exported symbols include `onGdbCommand`, `handleNotifyMain`, `registerIpcCommandHandlers`. It is responsible for channel registration, payload marshalling, and returning data to renderer callers.
  */
-import { shell } from "electron";
+import { screen, shell } from "electron";
 import { GdbAny, SelectedConnection } from "../../common/gdb-common";
 import { GridColumnState, GridName } from "../../common/grid-column-types";
 import { IPC_CHANNELS, NotifyMainRequest, NotifyRenderMessage } from "../../common/ipc-contracts";
 import { mapElectronWindowToWinPos } from "../mappers/window-pos-mapper";
 import { setNativeThemeFromAppTheme } from "../theme-support";
-import { debugLog, debugLogLines } from "../utilities/logger";
+import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
+import { debugLog } from "../utilities/logger";
 import { WslUtilities } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
 
@@ -78,7 +79,6 @@ function doConnection(
  * @param context - Dependency container used to register handlers and access shared services.
  */
 export function onGdbCommand(command: string, context: IpcRegistrationContext): void {
-  const mainWindow = context.getMainWindow();
   const gdbInterface = context.getGdbInterface();
 
   if (command.startsWith(".")) {
@@ -86,39 +86,55 @@ export function onGdbCommand(command: string, context: IpcRegistrationContext): 
     const cmd = cmdrgx?.groups?.cmd || "";
     switch (cmd) {
       case "db":
-        gdbInterface.gdbDB.dump();
+        {
+          GeneralInfoSender.instance.addHeader("GDB State Database Dump");
+          gdbInterface.gdbDB.dump().forEach((line) => GeneralInfoSender.instance.addLine(line));
+          GeneralInfoSender.instance.sendOutput();
+        }
         break;
       case "debug":
-        // eslint-disable-next-line no-debugger
-        debugger;
+        {
+          GeneralInfoSender.instance.addHeader("Breaking into Debugger");
+          GeneralInfoSender.instance.sendOutput();
+          // eslint-disable-next-line no-debugger
+          debugger;
+        }
         break;
-      case "wsl": {
-        const distros = WslUtilities.getWslDistrobutions();
-        debugLogLines([
-          "*********************************************************",
-          "WSL Distros",
-          "*********************************************************",
-          distros,
-          "*********************************************************",
-        ]);
+      case "wsl":
+        {
+          const distros = WslUtilities.getWslDistributions();
+          GeneralInfoSender.instance.addHeader("WSL Distros");
+          distros.forEach((distro) =>
+            GeneralInfoSender.instance.addLine(`${distro.name} (${distro.state})`),
+          );
+          GeneralInfoSender.instance.sendOutput();
 
-        const sports = WslUtilities.getWslSerialPorts();
-        debugLogLines([
-          "*********************************************************",
-          "WSL Serial Ports",
-          "*********************************************************",
-          sports,
-          "*********************************************************",
-        ]);
+          const sports = WslUtilities.getWslSerialPorts();
+          GeneralInfoSender.instance.addHeader("WSL Serial Ports");
+          sports.forEach((sport) => GeneralInfoSender.instance.addLine(sport));
+          GeneralInfoSender.instance.sendOutput();
+        }
         break;
-      }
       case "screen":
-        debugLogLines([
-          "*********************************************************",
-          "Main Window Bounds: " + JSON.stringify(mainWindow.getBounds()),
-          "Full Screen       : " + JSON.stringify(mainWindow.fullScreen),
-          "*********************************************************",
-        ]);
+        {
+          const allDisplays = screen.getAllDisplays();
+          GeneralInfoSender.instance.addHeader("Main Window Screen Info");
+
+          // Open a full-size window on each screen available to the device
+          for (const display of allDisplays) {
+            GeneralInfoSender.instance.addLine(`Screen: ${display.id}`);
+            GeneralInfoSender.instance.addLine(`  Bounds: ${JSON.stringify(display.bounds)}`);
+            GeneralInfoSender.instance.addLine(`  Work Area: ${JSON.stringify(display.workArea)}`);
+            GeneralInfoSender.instance.addLine(`  Scale Factor: ${display.scaleFactor}`);
+          }
+          // JSON.stringify(mainWindow.getBounds())
+          //   .split("\n")
+          //   .forEach((line) => GeneralInfoSender.instance.addLine(line));
+          // JSON.stringify(mainWindow.fullScreen)
+          //   .split("\n")
+          //   .forEach((line) => GeneralInfoSender.instance.addLine(line));
+          GeneralInfoSender.instance.sendOutput();
+        }
         break;
     }
   } else {

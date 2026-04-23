@@ -10,6 +10,7 @@ const MAIN_TO_RENDERER_CHANNEL_GROUPS = {
     log: "log-message",
     error: "error-message",
     debug: "debug-message",
+    html: "html-message",
   },
   notifications: {
     connectionStatus: "connection-status",
@@ -62,6 +63,7 @@ export const IPC_CHANNELS = {
     logMessage: MAIN_TO_RENDERER_CHANNEL_GROUPS.console.log,
     errorMessage: MAIN_TO_RENDERER_CHANNEL_GROUPS.console.error,
     debugMessage: MAIN_TO_RENDERER_CHANNEL_GROUPS.console.debug,
+    htmlMessage: MAIN_TO_RENDERER_CHANNEL_GROUPS.console.html,
     connectionStatus: MAIN_TO_RENDERER_CHANNEL_GROUPS.notifications.connectionStatus,
     notifyRender: MAIN_TO_RENDERER_CHANNEL_GROUPS.notifications.render,
     themeChanged: MAIN_TO_RENDERER_CHANNEL_GROUPS.notifications.themeChanged,

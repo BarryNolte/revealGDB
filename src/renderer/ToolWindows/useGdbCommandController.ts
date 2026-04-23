@@ -43,6 +43,20 @@ export function useGdbCommandController() {
     }
   }, []);
 
+  const appendHtmlMessage = useCallback((html: string): void => {
+    const div = document.createElement("div");
+    div.classList.add("defaultRow");
+    div.innerHTML = html;
+    outputRef.current?.appendChild(div);
+
+    if (!shouldScrollRef.current) return;
+
+    div.scrollIntoView();
+    if (outputRef.current) {
+      outputRef.current.scrollLeft = 0;
+    }
+  }, []);
+
   const sendCommand = useCallback(() => {
     if (!inputRef.current) {
       return;
@@ -118,6 +132,10 @@ export function useGdbCommandController() {
       appendMessage(message, "rowDebug");
     });
 
+    const unsubscribeHtml = window.ipcToMain.messages.html((html: string) => {
+      appendHtmlMessage(html);
+    });
+
     const historyElement = historyRef.current;
     if (historyElement) {
       historyElement.ondblclick = (_e: Event) => {
@@ -137,11 +155,12 @@ export function useGdbCommandController() {
       unsubscribeLog();
       unsubscribeError();
       unsubscribeDebug();
+      unsubscribeHtml();
       if (historyElement) {
         historyElement.ondblclick = null;
       }
     };
-  }, [appendMessage]);
+  }, [appendMessage, appendHtmlMessage]);
 
   const onSelectKeydownHandler = useCallback((args: KeyboardEvent<HTMLSelectElement>) => {
     switch (args.key) {

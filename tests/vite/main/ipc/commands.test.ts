@@ -247,7 +247,7 @@ describe("onGdbCommand", () => {
     onGdbCommand(".screen", context);
 
     expect(gdbInterface.gdbDB.dump).toHaveBeenCalledTimes(1);
-    expect(WslUtilities.getWslDistrobutions).toHaveBeenCalledTimes(1);
+    expect(WslUtilities.getWslDistributions).toHaveBeenCalledTimes(1);
     expect(WslUtilities.getWslSerialPorts).toHaveBeenCalledTimes(1);
     expect(mainWindow.getBounds).toHaveBeenCalledTimes(1);
 

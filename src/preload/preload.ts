@@ -73,6 +73,7 @@ const ipcApi: IpcApiCore = {
     log: (callback) => subscribe<string>(IPC_CHANNELS.mainToRenderer.console.log, callback),
     error: (callback) => subscribe<string>(IPC_CHANNELS.mainToRenderer.console.error, callback),
     debug: (callback) => subscribe<string>(IPC_CHANNELS.mainToRenderer.console.debug, callback),
+    html: (callback) => subscribe<string>(IPC_CHANNELS.mainToRenderer.console.html, callback),
   },
   notifications: {
     connectionStatus: (callback) =>
@@ -130,6 +131,7 @@ contextBridge.exposeInMainWorld("ipcToMain", {
   logMessage: ipcApi.messages.log,
   errorMessage: ipcApi.messages.error,
   debugMessage: ipcApi.messages.debug,
+  htmlMessage: ipcApi.messages.html,
   connectionStatus: ipcApi.notifications.connectionStatus,
   notifyRender: ipcApi.notifications.render,
   dataRegisters: ipcApi.debuggerData.registers,

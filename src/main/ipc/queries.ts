@@ -63,7 +63,7 @@ export function registerIpcQueryHandlers(context: IpcRegistrationContext): void 
     IPC_CHANNELS.rendererToMain.queries.environment.wslDistributions,
     (): Promise<WslDistro[]> => {
       try {
-        return Promise.resolve(WslUtilities.getWslDistrobutions());
+        return Promise.resolve(WslUtilities.getWslDistributions());
       } catch (error) {
         console.error("Failed to get WSL distributions", error);
         return Promise.resolve([]);

@@ -20,7 +20,7 @@ export class WslUtilities {
    *
    * @returns The resulting collection produced by this operation.
    */
-  static getWslDistrobutions(): WslDistro[] {
+  static getWslDistributions(): WslDistro[] {
     const wslDistroRegex =
       /^(?<default>\*)?\s*(?<distro>[0-9a-zA-Z-.]+)\s+(?<status>\S+)\s+(?<version>\S+)$/;
 

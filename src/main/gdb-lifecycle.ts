@@ -7,6 +7,7 @@
 import { BrowserWindow } from "electron";
 import { IPC_CHANNELS } from "../common/ipc-contracts";
 import { miInterface } from "./mi-interface/mi-interface";
+import { GeneralInfoSender } from "./utilities/GeneralInfoSender";
 
 type SettingsLike = {
   getSync: (key: string) => unknown;
@@ -36,6 +37,10 @@ export function createGdbInterface(
   gdbInterface.on("debug-stream", (line: string) => {
     mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.debug, line);
   });
+  gdbInterface.on("html-stream", (html: string) => {
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.html, html);
+  });
+  GeneralInfoSender.instance.setRelayTarget(gdbInterface);
 
   let needToRunStartupCmds = true;
   gdbInterface.on("gdb-stopped", () => {
