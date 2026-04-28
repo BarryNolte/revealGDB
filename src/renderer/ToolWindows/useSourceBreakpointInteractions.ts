@@ -125,26 +125,47 @@ export function useSourceBreakpointInteractions(
 
   const onMenuSelect = useCallback(
     (e: MenuEventArgs) => {
+      const row = editorRef.current?.editor.getCursorPosition().row ?? 0;
+
       switch (e.item.id) {
-        case "copy": {
-          const text = editorRef.current?.editor.getSelectedText();
-          sendTextToClipboard(text ?? "");
+        case "copy":
+          {
+            const text = editorRef.current?.editor.getSelectedText();
+            sendTextToClipboard(text ?? "");
+          }
           break;
-        }
-        case "bp-set": {
-          const row = editorRef.current?.editor.getCursorPosition().row ?? 0;
-          window.ipcToMain.commands.debugger.sendGdbCommand(
-            `break ${fullFilePathRef.current}:${row + 1}`,
-          );
+        case "bp-set":
+          {
+            window.ipcToMain.commands.debugger.sendGdbCommand(
+              `break ${fullFilePathRef.current}:${row + 1}`,
+            );
+          }
           break;
-        }
-        case "bp-jump": {
-          const row = editorRef.current?.editor.getCursorPosition().row ?? 0;
-          window.ipcToMain.commands.debugger.sendGdbCommand(
-            `jump ${fullFilePathRef.current}:${row + 1}`,
-          );
+        case "bp-run-to-cursor":
+          {
+            window.ipcToMain.commands.debugger.sendGdbCommand(
+              `tbreak ${fullFilePathRef.current}:${row + 1}`,
+            );
+            window.ipcToMain.commands.debugger.sendGdbCommand("continue");
+          }
           break;
-        }
+        case "bp-jump-and-stop":
+          {
+            window.ipcToMain.commands.debugger.sendGdbCommand(
+              `tbreak ${fullFilePathRef.current}:${row + 1}`,
+            );
+            window.ipcToMain.commands.debugger.sendGdbCommand(
+              `jump ${fullFilePathRef.current}:${row + 1}`,
+            );
+          }
+          break;
+        case "bp-jump":
+          {
+            window.ipcToMain.commands.debugger.sendGdbCommand(
+              `jump ${fullFilePathRef.current}:${row + 1}`,
+            );
+          }
+          break;
       }
     },
     [editorRef, fullFilePathRef],

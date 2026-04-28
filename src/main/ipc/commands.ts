@@ -14,6 +14,7 @@ import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
 import { debugLog } from "../utilities/logger";
 import { WslUtilities } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
+import { HTMLTableGenerator } from "../../common/HtmlTableGenerator";
 
 /**
  * Performs send notify render as part of this module's internal workflow.
@@ -80,6 +81,17 @@ function doConnection(
  */
 export function onGdbCommand(command: string, context: IpcRegistrationContext): void {
   const gdbInterface = context.getGdbInterface();
+  const defaultOptions = {
+    titleHeaderBgColor: "blue",
+    titleTextColor: "yellow",
+    headerBgColor: "green",
+    headerTextColor: "yellow",
+    tdPadding: "2px",
+    tdFontWeight: "bold",
+    tdColor: "#000000",
+    tableWidth: "auto",
+    showTableHeader: false,
+  };
 
   if (command.startsWith(".")) {
     const cmdrgx = /.(?<cmd>.*)/.exec(command);
@@ -103,16 +115,31 @@ export function onGdbCommand(command: string, context: IpcRegistrationContext): 
       case "wsl":
         {
           const distros = WslUtilities.getWslDistributions();
-          GeneralInfoSender.instance.addHeader("WSL Distros");
-          distros.forEach((distro) =>
-            GeneralInfoSender.instance.addLine(`${distro.name} (${distro.state})`),
-          );
-          GeneralInfoSender.instance.sendOutput();
+          const distroData = {
+            title: "WSL Distros",
+            header: ["default", "name", "version", "state"],
+            content: distros.map((d) => ({
+              default: d.default === true ? "*" : "",
+              name: d.name,
+              version: d.version,
+              state: d.state,
+            })),
+          };
+          const distroOptions = { ...defaultOptions, showTableHeader: true };
+          const distroTable = new HTMLTableGenerator(distroData, distroOptions);
+          const distroHtml = distroTable.createTableHTML();
+          GeneralInfoSender.instance.sendHtmlBlock(distroHtml);
 
           const sports = WslUtilities.getWslSerialPorts();
-          GeneralInfoSender.instance.addHeader("WSL Serial Ports");
-          sports.forEach((sport) => GeneralInfoSender.instance.addLine(sport));
-          GeneralInfoSender.instance.sendOutput();
+          const spData = {
+            title: "WSL Serial Ports",
+            header: ["col"],
+            content: sports.map((s) => ({ col: s })),
+          };
+
+          const spTable = new HTMLTableGenerator(spData, defaultOptions);
+          const spHtml = spTable.createTableHTML();
+          GeneralInfoSender.instance.sendHtmlBlock(spHtml);
         }
         break;
       case "screen":
@@ -127,12 +154,6 @@ export function onGdbCommand(command: string, context: IpcRegistrationContext): 
             GeneralInfoSender.instance.addLine(`  Work Area: ${JSON.stringify(display.workArea)}`);
             GeneralInfoSender.instance.addLine(`  Scale Factor: ${display.scaleFactor}`);
           }
-          // JSON.stringify(mainWindow.getBounds())
-          //   .split("\n")
-          //   .forEach((line) => GeneralInfoSender.instance.addLine(line));
-          // JSON.stringify(mainWindow.fullScreen)
-          //   .split("\n")
-          //   .forEach((line) => GeneralInfoSender.instance.addLine(line));
           GeneralInfoSender.instance.sendOutput();
         }
         break;

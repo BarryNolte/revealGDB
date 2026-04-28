@@ -6,6 +6,7 @@
  */
 import { MenuEventArgs } from "@syncfusion/ej2-navigations";
 import ace from "ace-builds";
+import "ace-builds/src-noconflict/ext-searchbox";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import AceEditor from "react-ace";
 

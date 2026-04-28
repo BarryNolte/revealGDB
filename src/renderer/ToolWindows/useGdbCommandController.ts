@@ -45,7 +45,6 @@ export function useGdbCommandController() {
 
   const appendHtmlMessage = useCallback((html: string): void => {
     const div = document.createElement("div");
-    div.classList.add("defaultRow");
     div.innerHTML = html;
     outputRef.current?.appendChild(div);
 

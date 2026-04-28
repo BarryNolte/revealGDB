@@ -6,7 +6,7 @@
  */
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { JSX, useId } from "react";
-import { doCutCopyPaste, menuCopy, menuCutCopyPaste } from "../utilities/Clipboard";
+import { doCutCopyPaste, menuCopyAll, menuCutCopyPaste } from "../utilities/Clipboard";
 import "./GdbCommandWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
@@ -98,7 +98,7 @@ export default function GdbCommandWindow(): JSX.Element {
         <ContextMenuComponent
           id={outputMenuId}
           target={`#${outputId}`}
-          items={menuCopy}
+          items={menuCopyAll}
           select={(e) => doCutCopyPaste(e.item.text, inputRef.current!)}
         />
         <ContextMenuComponent

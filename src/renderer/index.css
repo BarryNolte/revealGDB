@@ -178,6 +178,13 @@ body {
   background-color: var(--window-background);
 }
 
+.e-contextmenu-wrapper .e-menu-item:not(.e-control),
+.e-contextmenu-container .e-menu-item:not(.e-control) {
+  height: 28px;
+  line-height: 28px;
+  padding: 0px 10px;
+}
+
 .revealDockManager {
   position: relative;
   width: 100%;
@@ -217,20 +224,29 @@ div.e-grid {
   font-family: monospace;
 }
 
+.e-grid .e-headertext {
+  font-size: 14px;
+  height: 22px;
+  margin-top: -5px;
+}
+
+.e-grid .e-rowcell {
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+}
+
 .e-grid .e-headercell {
   background-color: var(--grid-header-background);
   color: var(--grid-header-text-color);
   font-weight: bold;
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
 }
 
-.e-grid .e-rowcell {
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-.e-grid .e-headercell {
-  padding-left: 4px;
-  padding-right: 4px;
+.e-headercell-container {
+  padding: 0px !important;
 }
 
 .e-grid .e-sortfilterdiv {

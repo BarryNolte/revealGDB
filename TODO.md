@@ -16,7 +16,7 @@
 
 # Bugs
 - Breakpoint testing.  Right click on linenumber doesn't always work.
-- Padding in disassembly cells and header (all grid cells)
+- BP window, break up delete and enable into their own column
 
 # Project Related
 
