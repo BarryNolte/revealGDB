@@ -98,6 +98,7 @@ export function setupSettingsTestApi(): void {
     log: () => () => undefined,
     error: () => () => undefined,
     debug: () => () => undefined,
+    html: () => () => undefined,
   };
   ipc.notifications = {
     connectionStatus: () => () => undefined,
@@ -141,6 +142,7 @@ export function setupSettingsTestApi(): void {
   ipc.logMessage = ipc.messages.log;
   ipc.errorMessage = ipc.messages.error;
   ipc.debugMessage = ipc.messages.debug;
+  ipc.htmlMessage = ipc.messages.html;
   ipc.connectionStatus = ipc.notifications.connectionStatus;
   ipc.notifyRender = ipc.notifications.render;
   ipc.dataRegisters = ipc.debuggerData.registers;

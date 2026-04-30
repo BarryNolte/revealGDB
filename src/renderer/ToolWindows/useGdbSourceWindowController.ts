@@ -92,6 +92,20 @@ export function useGdbSourceWindowController(): GdbSourceWindowController {
     }
   }, [sourceState.currentMarker]);
 
+  // Workaround to prevent right-click context menu on gutter since  you can't
+  // calculate anything useful there.
+  useEffect(() => {
+    editorRef.current?.editor.container.addEventListener("contextmenu", (e: MouseEvent) => {
+      const width = editorRef.current?.editor.renderer.gutterWidth;
+      if (e.x < width!) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      return true;
+    });
+  }, []);
+
   return {
     sourceState,
     mode,

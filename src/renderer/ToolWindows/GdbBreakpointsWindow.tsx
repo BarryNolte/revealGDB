@@ -36,6 +36,7 @@ import { useGridColumnState } from "../utilities/useGridColumnState";
 import "./GdbBreakpointsWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
+import { ButtonComponent, CheckBoxComponent } from "@syncfusion/ej2-react-buttons";
 
 /**
  * Performs gdb break point window as part of this module's public API.
@@ -98,8 +99,7 @@ export default function GdbBreakPointWindow(): JSX.Element {
   const checkboxTemplate = useCallback((props: BreakpointGridRow) => {
     return (
       <div className="bp-delete-container">
-        <button
-          type="button"
+        <ButtonComponent
           className="bp-delete"
           name="delete"
           onClick={(e: ReactMouseEvent<HTMLButtonElement>) => {
@@ -109,9 +109,8 @@ export default function GdbBreakPointWindow(): JSX.Element {
           data-id={props?.number}
         >
           <img className="bp-delete-img" src={imgDelete} alt="Delete Breakpoint"></img>
-        </button>
-        <input
-          type="checkbox"
+        </ButtonComponent>
+        <CheckBoxComponent
           className="bp-enable"
           title="Enable"
           checked={Boolean(props?.enabled)}

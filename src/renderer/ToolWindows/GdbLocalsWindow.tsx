@@ -147,6 +147,11 @@ export default function GdbLocalsWindow(): JSX.Element {
   //   return `<div class="treeGrid-multiline-cell">${(value ?? "").replaceAll("\\n", "<br>")}</div>`;
   // };
 
+  const valueAccessor = (_field: string, data: GdbAny): string => {
+    const value = data.value as string | null | undefined;
+    return `<div class="treeGrid-multiline-cell">${(value ?? "").replaceAll("\\n", "<br>")}</div>`;
+  };
+
   const content = (
     <div className="full-size flex-container">
       <TreeGridComponent
@@ -185,7 +190,7 @@ export default function GdbLocalsWindow(): JSX.Element {
             clipMode="EllipsisWithTooltip"
             edit={editParams}
             disableHtmlEncode={false}
-            // valueAccessor={valueAccessor}
+            valueAccessor={valueAccessor}
           ></ColumnDirective>
           <ColumnDirective
             field="fullpath"

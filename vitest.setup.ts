@@ -17,6 +17,9 @@ vi.mock("electron", () => ({
     on: vi.fn(),
     handle: vi.fn(),
   },
+  screen: {
+    getAllDisplays: vi.fn(() => []),
+  },
 }));
 
 // Mock main.ts to provide a mainWindow object

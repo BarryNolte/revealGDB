@@ -73,12 +73,17 @@ describe("AboutBox", () => {
 
     expect(screen.getByRole("dialog")).toBeTruthy();
     expect(screen.getByText("About")).toBeTruthy();
-    expect(screen.getByText(/Version 0.1.0/)).toBeTruthy();
-    expect(screen.getByText(/Node Version: 22.0.0/)).toBeTruthy();
-    expect(screen.getByText(/Electron Version: 35.0.0/)).toBeTruthy();
-    expect(screen.getByText(/Architecture: x64/)).toBeTruthy();
-    expect(screen.getByText(/Plateform: win32/)).toBeTruthy();
-    expect(screen.getByText(/OS Version: 11/)).toBeTruthy();
+    expect(screen.getByText(/Version \S+/)).toBeTruthy();
+    expect(screen.getByText("Node Version:")).toBeTruthy();
+    expect(screen.getByText("22.0.0")).toBeTruthy();
+    expect(screen.getByText("Electron Version:")).toBeTruthy();
+    expect(screen.getByText("35.0.0")).toBeTruthy();
+    expect(screen.getByText("Architecture:")).toBeTruthy();
+    expect(screen.getByText("x64")).toBeTruthy();
+    expect(screen.getByText("Platform:")).toBeTruthy();
+    expect(screen.getByText("win32")).toBeTruthy();
+    expect(screen.getByText("OS Version:")).toBeTruthy();
+    expect(screen.getByText("11")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "OK" }));
 

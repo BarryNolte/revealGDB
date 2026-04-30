@@ -178,8 +178,6 @@ describe("gdbSourceFileCache class", () => {
 
   describe("dump method", () => {
     it("should log cache contents to console", async () => {
-      const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
       vi.mocked(fs.readFile)
         .mockResolvedValueOnce("content1")
         .mockResolvedValueOnce("longer content here");
@@ -187,38 +185,28 @@ describe("gdbSourceFileCache class", () => {
       await cache.getSourceFileContents("/file1.c");
       await cache.getSourceFileContents("/file2.c");
 
-      cache.dump();
+      const lines = cache.dump();
 
-      expect(consoleSpy).toHaveBeenCalledTimes(2);
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("/file1.c"));
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("/file2.c"));
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("8"));
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("19"));
-
-      consoleSpy.mockRestore();
+      expect(lines).toHaveLength(2);
+      expect(lines.some((l) => l.includes("/file1.c"))).toBe(true);
+      expect(lines.some((l) => l.includes("/file2.c"))).toBe(true);
+      expect(lines.some((l) => l.includes("8"))).toBe(true);
+      expect(lines.some((l) => l.includes("19"))).toBe(true);
     });
 
     it("should not log anything for empty cache", () => {
-      const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+      const lines = cache.dump();
 
-      cache.dump();
-
-      expect(consoleSpy).not.toHaveBeenCalled();
-
-      consoleSpy.mockRestore();
+      expect(lines).toHaveLength(0);
     });
 
     it("should format file sizes with padding", async () => {
-      const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
       vi.mocked(fs.readFile).mockResolvedValue("x");
       await cache.getSourceFileContents("/test.c");
 
-      cache.dump();
+      const lines = cache.dump();
 
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringMatching(/^\s+1 =>/));
-
-      consoleSpy.mockRestore();
+      expect(lines[0]).toMatch(/^\s+1 =>/);
     });
   });
 

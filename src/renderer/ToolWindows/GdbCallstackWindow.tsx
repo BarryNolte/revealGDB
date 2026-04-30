@@ -81,6 +81,8 @@ export default function GdbCallStackWindow(): JSX.Element {
    */
   const handleRecordDoubleClick = useCallback((e: RecordDoubleClickEventArgs) => {
     window.ipcToMain.commands.debugger.sendGdbCommand(`frame ${e.rowIndex}`);
+    window.ipcToMain.commands.debugger.sendGdbCommand("-data-list-register-values x");
+    window.ipcToMain.commands.debugger.sendGdbCommand("-stack-list-locals 1");
   }, []);
 
   return (

@@ -11,6 +11,7 @@ const bootstrapMocks = vi.hoisted(() => ({
   arch: vi.fn(() => "x64"),
   version: vi.fn(() => "test-os"),
   machine: vi.fn(() => "machine-id"),
+  debugLog: vi.fn(),
 }));
 
 vi.mock("electron", () => ({
@@ -36,6 +37,11 @@ vi.mock("node:fs/promises", () => ({
   default: {
     readFile: bootstrapMocks.readFile,
   },
+}));
+
+vi.mock("../../../src/main/utilities/logger", () => ({
+  debugLog: bootstrapMocks.debugLog,
+  debugLogLines: vi.fn(),
 }));
 
 vi.mock("node:os", () => ({
@@ -81,7 +87,6 @@ describe("bootstrap", () => {
       configure: vi.fn(),
       file: vi.fn(() => "C:/settings.json"),
     };
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
     bootstrapMocks.getAllDisplays.mockReturnValue([
       { scaleFactor: 1.5, bounds: { width: 100, height: 200 } },
@@ -90,9 +95,9 @@ describe("bootstrap", () => {
 
     logStartupDiagnostics(appSettings);
 
-    expect(logSpy).toHaveBeenCalledWith("Settings File: C:/settings.json");
-    expect(logSpy).toHaveBeenCalledWith("Display: (150 x 300)");
-    expect(logSpy).toHaveBeenCalledWith("Display: (300 x 400)");
+    expect(bootstrapMocks.debugLog).toHaveBeenCalledWith("Settings File: C:/settings.json");
+    expect(bootstrapMocks.debugLog).toHaveBeenCalledWith("Display: (150 x 300)");
+    expect(bootstrapMocks.debugLog).toHaveBeenCalledWith("Display: (300 x 400)");
   });
 
   it("warms system fonts and skips unreadable metadata", async () => {
@@ -117,7 +122,6 @@ describe("bootstrap", () => {
   });
 
   it("installs React DevTools only in debug mode and logs failures", async () => {
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
 
     maybeInstallDevTools(false);
@@ -126,7 +130,7 @@ describe("bootstrap", () => {
     bootstrapMocks.installExtension.mockResolvedValueOnce("React DevTools");
     maybeInstallDevTools(true);
     await vi.waitFor(() => {
-      expect(logSpy).toHaveBeenCalledWith("Installed DevTools extension: React DevTools");
+      expect(bootstrapMocks.debugLog).toHaveBeenCalledWith("Installed DevTools extension: React DevTools");
     });
 
     bootstrapMocks.installExtension.mockRejectedValueOnce(new Error("install failed"));

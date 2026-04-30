@@ -27,6 +27,8 @@ type TestApi = {
   emitError: (message: string) => void;
   /** Emit a debug message to the command output */
   emitDebug: (message: string) => void;
+  /** Emit an HTML message to the command output */
+  emitHtml: (message: string) => void;
   /** Emit a notification to the renderer */
   emitNotifyRender: (message: NotifyMessage) => void;
   /** Get list of commands sent during test */
@@ -65,6 +67,7 @@ export function setupGdbCommandTestApi(): void {
   let logHandler: ((message: string) => void) | undefined;
   let errorHandler: ((message: string) => void) | undefined;
   let debugHandler: ((message: string) => void) | undefined;
+  let htmlHandler: ((message: string) => void) | undefined;
 
   const ipc = window.ipcToMain ?? ({} as Window["ipcToMain"]);
   if (!window.ipcToMain) {
@@ -80,6 +83,7 @@ export function setupGdbCommandTestApi(): void {
     log: () => () => undefined,
     error: () => () => undefined,
     debug: () => () => undefined,
+    html: () => () => undefined,
   };
   ipc.notifications = {
     connectionStatus: () => () => undefined,
@@ -143,6 +147,12 @@ export function setupGdbCommandTestApi(): void {
       debugHandler = undefined;
     };
   };
+  ipc.messages.html = (callback) => {
+    htmlHandler = callback;
+    return () => {
+      htmlHandler = undefined;
+    };
+  };
   ipc.notifications.render = (callback) => {
     notifyRenderHandler = callback;
     return () => {
@@ -181,6 +191,7 @@ export function setupGdbCommandTestApi(): void {
   ipc.logMessage = ipc.messages.log;
   ipc.errorMessage = ipc.messages.error;
   ipc.debugMessage = ipc.messages.debug;
+  ipc.htmlMessage = ipc.messages.html;
   ipc.connectionStatus = ipc.notifications.connectionStatus;
   ipc.notifyRender = ipc.notifications.render;
   ipc.dataRegisters = ipc.debuggerData.registers;
@@ -205,6 +216,7 @@ export function setupGdbCommandTestApi(): void {
     emitLog: (message) => logHandler?.(message),
     emitError: (message) => errorHandler?.(message),
     emitDebug: (message) => debugHandler?.(message),
+    emitHtml: (message) => htmlHandler?.(message),
     emitNotifyRender: (message) => notifyRenderHandler?.(message),
     getSentCommands: () => sentCommands.slice(),
     getSavedHistory: () => savedHistory.slice(),

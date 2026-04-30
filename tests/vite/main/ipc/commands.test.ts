@@ -25,13 +25,14 @@ vi.mock("../../../../src/main/theme-support", () => ({
 
 vi.mock("../../../../src/main/utilities/wsl-utilities", () => ({
   WslUtilities: {
-    getWslDistrobutions: vi.fn(() => [{ name: "Ubuntu", state: "Running", version: "2" }]),
+    getWslDistributions: vi.fn(() => [{ name: "Ubuntu", state: "Running", version: "2" }]),
     getWslSerialPorts: vi.fn(() => ["ttyS0", "ttyUSB0"]),
   },
 }));
 
 import { setNativeThemeFromAppTheme } from "../../../../src/main/theme-support";
 import { WslUtilities } from "../../../../src/main/utilities/wsl-utilities";
+import { screen } from "electron";
 
 describe("handleNotifyMain", () => {
   it("handles renderEnd by sending command-entry notify-render", () => {
@@ -249,7 +250,7 @@ describe("onGdbCommand", () => {
     expect(gdbInterface.gdbDB.dump).toHaveBeenCalledTimes(1);
     expect(WslUtilities.getWslDistributions).toHaveBeenCalledTimes(1);
     expect(WslUtilities.getWslSerialPorts).toHaveBeenCalledTimes(1);
-    expect(mainWindow.getBounds).toHaveBeenCalledTimes(1);
+    expect(screen.getAllDisplays).toHaveBeenCalledTimes(1);
 
     logSpy.mockRestore();
   });

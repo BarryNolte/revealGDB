@@ -700,25 +700,16 @@ describe("gdbStateDatabase class", () => {
 
   describe("dump method", () => {
     it("should log all database state to console", () => {
-      const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
       db.addFeature("python");
       db.addParam("language", "c");
-      db.dump();
+      const lines = db.dump();
 
-      expect(consoleSpy).toHaveBeenCalledWith("GDB State Database");
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("Features:"));
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("Parameters:"));
-
-      consoleSpy.mockRestore();
+      expect(lines.some((l) => l.includes("Features:"))).toBe(true);
+      expect(lines.some((l) => l.includes("Parameters:"))).toBe(true);
     });
 
     it("should not throw on empty database", () => {
-      const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
       expect(() => db.dump()).not.toThrow();
-
-      consoleSpy.mockRestore();
     });
   });
 

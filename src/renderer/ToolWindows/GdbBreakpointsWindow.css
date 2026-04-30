@@ -1,12 +1,11 @@
-.bp-delete {
-  width: 24px;
-  height: 24px;
-  align-content: center;
+.bp-delete-container > .bp-delete {
+  width: 22px;
+  height: 22px;
   padding: 0px;
-  border-color: lightgray;
+  border-color: palevioletred;
   border-width: 1.5px;
   border-radius: 3px;
-  margin: 2px 0px;
+  margin: 2px 2px;
 }
 
 .bp-delete-img {
@@ -19,6 +18,5 @@
 }
 
 .bp-enable {
-  margin-top: 8px;
-  vertical-align: top;
+  margin: 2px;
 }

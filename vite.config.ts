@@ -129,6 +129,10 @@ export default defineConfig(async () => {
                 return "ace-mode-vendor";
               }
 
+              if (id.includes("/src-noconflict/ext-")) {
+                return "ace-ext-vendor";
+              }
+
               return "ace-core-vendor";
             }
 

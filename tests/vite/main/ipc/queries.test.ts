@@ -18,7 +18,7 @@ import { createIpcRegistrationHarness } from "../../../helpers/ipc-test-harness"
 
 vi.mock("../../../../src/main/utilities/wsl-utilities", () => ({
   WslUtilities: {
-    getWslDistrobutions: vi.fn(() => [
+    getWslDistributions: vi.fn(() => [
       { name: "Ubuntu", version: "2", state: "Running", default: true },
     ]),
   },

@@ -123,7 +123,7 @@ export function createIpcRegistrationHarness(options: IpcHarnessOptions = {}) {
     gdbDB: {
       clearDatabase: vi.fn(),
       allDataUpdateUI: vi.fn(),
-      dump: vi.fn(),
+      dump: vi.fn().mockReturnValue([]),
       getAllFunctionNames: vi.fn().mockReturnValue([]),
       ...options.gdbInterface?.gdbDB,
     },
