@@ -9,7 +9,10 @@ function createCoordinator() {
   const threadGroupStore = { clear: vi.fn(), threadGroups: [] };
   const threadStore = { clearThreadList: vi.fn(), threads: [] };
   const registerStore = { clear: vi.fn(), registers: [] };
-  const featureStore = { clear: vi.fn(), features: new Map([["async", { feature: "async", available: true }]]) };
+  const featureStore = {
+    clear: vi.fn(),
+    features: new Map([["async", { feature: "async", available: true }]]),
+  };
   const paramStore = { clear: vi.fn(), params: [] };
   const breakpointStore = { clear: vi.fn(), breakpoints: [] };
   const stackFrameStore = { clear: vi.fn(), stackFrames: [] };

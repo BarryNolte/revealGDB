@@ -130,7 +130,9 @@ describe("bootstrap", () => {
     bootstrapMocks.installExtension.mockResolvedValueOnce("React DevTools");
     maybeInstallDevTools(true);
     await vi.waitFor(() => {
-      expect(bootstrapMocks.debugLog).toHaveBeenCalledWith("Installed DevTools extension: React DevTools");
+      expect(bootstrapMocks.debugLog).toHaveBeenCalledWith(
+        "Installed DevTools extension: React DevTools",
+      );
     });
 
     bootstrapMocks.installExtension.mockRejectedValueOnce(new Error("install failed"));

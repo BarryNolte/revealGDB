@@ -30,9 +30,9 @@ vi.mock("../../../../src/main/utilities/wsl-utilities", () => ({
   },
 }));
 
+import { screen } from "electron";
 import { setNativeThemeFromAppTheme } from "../../../../src/main/theme-support";
 import { WslUtilities } from "../../../../src/main/utilities/wsl-utilities";
-import { screen } from "electron";
 
 describe("handleNotifyMain", () => {
   it("handles renderEnd by sending command-entry notify-render", () => {
