@@ -11,7 +11,7 @@ import { JSX, RefObject } from "react";
 import AceEditor, { IMarker } from "react-ace";
 import { menuSourceWindow } from "../utilities/Clipboard";
 
-type GdbSourceWindowViewProps = {
+export type GdbSourceWindowViewProps = {
   menuId: string;
   hasSource: boolean;
   editorRef: RefObject<AceEditor | null>;

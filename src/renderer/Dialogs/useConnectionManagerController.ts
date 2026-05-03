@@ -49,7 +49,7 @@ export {
   type ShellOption,
 } from "./connectionManagerModel";
 
-type UseConnectionManagerControllerArgs = {
+export type UseConnectionManagerControllerArgs = {
   onCloseCallbackRef: RefObject<(() => void) | null>;
 };
 

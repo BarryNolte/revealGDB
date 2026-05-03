@@ -18,7 +18,7 @@ export interface ConnectionManagerHandle {
 }
 
 // If there are no props, keep this as an empty object type.
-type ConnectionManagerProps = Record<never, never>;
+export type ConnectionManagerProps = Record<never, never>;
 
 export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionManagerProps>(
   function ConnectionManager(_props, ref) {

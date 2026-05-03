@@ -16,11 +16,11 @@ import failedIcon from "../icons/icons8-failed-48.png";
 import pendingIcon from "../icons/icons8-pending-48.png";
 import inProcessIcon from "../icons/icons8-process.gif";
 
-type ConnectionOption = {
+export type ConnectionOption = {
   name: string;
 };
 
-type ConnectionDialogViewProps = {
+export type ConnectionDialogViewProps = {
   connDlgRef: RefObject<DialogComponent | null>;
   gridRef: RefObject<GridComponent | null>;
   outputRef: RefObject<HTMLDivElement | null>;

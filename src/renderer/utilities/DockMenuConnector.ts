@@ -11,7 +11,7 @@ import { PanelContainer } from "../../../node_modules/dock-spawn-ts/lib/js/Panel
 /**
  * Metadata for a dockable panel/window.
  */
-type DockPanelInfo = {
+export type DockPanelInfo = {
   /** HTML element ID */
   id: string;
   /** Name shown in UI (toolbar, menu) */

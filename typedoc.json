@@ -7,11 +7,12 @@
     "**/*.test.tsx",
     "**/test-helpers/**",
     "**/*-test.tsx",
+    "**/*-test.ts",
     "**/*.d.ts",
     "**/global.d.ts"
   ],
   "out": "docs/api",
-  "tsconfig": "tsconfig.json",
+  "tsconfig": "tsconfig.typedoc.json",
   "readme": "none",
   "name": "revealGDB API",
   "excludePrivate": false,

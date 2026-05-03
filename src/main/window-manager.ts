@@ -7,7 +7,7 @@
 import { BrowserWindow } from "electron";
 import path, { join } from "path";
 
-type WindowSizeSettings = {
+export type WindowSizeSettings = {
   getSync: (key: string) => unknown;
 };
 

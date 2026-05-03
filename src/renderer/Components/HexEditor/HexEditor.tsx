@@ -15,7 +15,7 @@ import HexTextView from "./view-text";
 export type ArrayChangeCallback = (index: number, value: number) => void;
 
 /** Props for the HexEditor component */
-interface HexEditorProps {
+export interface HexEditorProps {
   /** Starting memory offset for display (e.g., 0x40000) */
   offset: number;
   /** Binary data source to display (Uint8Array) */

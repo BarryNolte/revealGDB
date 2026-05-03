@@ -9,7 +9,7 @@ import { convertCharValue } from "./common";
 import type { MouseCallback } from "./MouseKeyboardHandler";
 
 /** Props for the HexTextView component */
-interface HexTextViewProps {
+export interface HexTextViewProps {
   /** Binary data source to display */
   datasource: Uint8Array;
   /** Callback for mouse/keyboard events */

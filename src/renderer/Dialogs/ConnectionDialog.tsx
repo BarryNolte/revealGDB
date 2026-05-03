@@ -20,7 +20,7 @@ export type WhileConnectingDialogHandle = {
   HideDialog: () => void;
 };
 
-type ConnectionDialogProps = {
+export type ConnectionDialogProps = {
   connectionsRef?: RefObject<ConnectionManagerHandle>;
 };
 

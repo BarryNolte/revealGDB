@@ -59,7 +59,7 @@
     "test:coverage:vitest": "vitest run --coverage",
     "test:playwright:coverage": "npm run build:renderer:coverage && cross-env PLAYWRIGHT_COLLECT_COVERAGE=true playwright test",
     "test:coverage": "npm run coverage:clean && npm run test:coverage:vitest && npm run test:playwright:coverage && npm run coverage:report",
-    "test": "vitest && npm run test:playwright"
+    "test": "vitest --run && npm run test:playwright"
   },
   "build": {
     "appId": "com.example.revealgdb",

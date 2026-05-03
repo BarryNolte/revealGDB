@@ -7,7 +7,7 @@
 import type { JSX, MouseEvent } from "react";
 import type { MouseCallback } from "./MouseKeyboardHandler";
 
-interface HexOffsetViewProps {
+export interface HexOffsetViewProps {
   offset: number;
   datasource: Uint8Array;
   mouseCallback: MouseCallback;

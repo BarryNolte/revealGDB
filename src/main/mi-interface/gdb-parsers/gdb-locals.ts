@@ -55,7 +55,7 @@ export class Local {
  * Defines the different types of values that can be parsed
  * Used to determine the parsing strategy for different value structures
  */
-enum valueType {
+export enum valueType {
   plain, // value is a simple value, like a number or string
   simpleGroup, // value is a simple group of values, like {a = 0x1, b = 0x2}
   complexGroup, // value is a complex group of values, like {a = 0x1, b = {c = 0x2, d = 0x3}}
@@ -65,7 +65,7 @@ enum valueType {
  * Defines the different token types in the input stream
  * Used for parsing and creating the mask array that tracks token positions
  */
-enum streamType {
+export enum streamType {
   leftBracket = 2, // Opening brace character
   rightBracket = 4, // Closing brace character
   name = 1, // Variable name token
@@ -73,7 +73,7 @@ enum streamType {
   equals = 3, // Equals sign token
 }
 
-type TokenChunk = {
+export type TokenChunk = {
   val: string;
   type: streamType;
 };

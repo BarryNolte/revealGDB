@@ -8,7 +8,7 @@ import type { JSX, MouseEvent } from "react";
 import type { MouseCallback } from "./MouseKeyboardHandler";
 
 /** Props for the HexDataView component */
-interface HexDataViewProps {
+export interface HexDataViewProps {
   /** Binary data source to display */
   datasource: Uint8Array;
   /** Callback for mouse/keyboard events */

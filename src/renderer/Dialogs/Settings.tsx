@@ -14,7 +14,7 @@ import { editorThemes } from "../ToolWindows/GdbSourceWindow";
 import "./Settings.css";
 
 /** Props for settings dialog (currently unused) */
-interface SettingsProps {
+export interface SettingsProps {
   center?: boolean;
 }
 

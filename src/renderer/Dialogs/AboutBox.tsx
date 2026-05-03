@@ -14,7 +14,7 @@ import "./AboutBox.css";
 import iconBMC from "../icons/bmc_qr.png";
 
 /** Props for about dialog (currently unused) */
-interface AboutProps {
+export interface AboutProps {
   center?: boolean;
 }
 

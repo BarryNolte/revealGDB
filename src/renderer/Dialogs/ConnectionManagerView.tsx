@@ -18,12 +18,12 @@ import DragAndDropList, {
 } from "../Components/DragAndDropList/DragAndDropList";
 import { ConnectionGridRow } from "./connectionManagerModel";
 
-type ShellOptionView = {
+export type ShellOptionView = {
   key: string;
   label: string;
 };
 
-type ConnectionManagerViewProps = {
+export type ConnectionManagerViewProps = {
   hideDialog: boolean;
   shellOptions: ShellOptionView[];
   isWslShellSelected: boolean;

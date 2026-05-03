@@ -16,7 +16,7 @@ import { dockMenuConnector } from "../utilities/dock-menu-state";
 import "./Toolbar.css";
 
 /** Props for RevealToolbar component */
-type RevealToolbarProps = {
+export type RevealToolbarProps = {
   /** Reference to connection manager dialog for imperative access */
   connectionsRef?: RefObject<ConnectionManagerHandle> | null;
   /** Reference to while-connecting dialog for imperative access */

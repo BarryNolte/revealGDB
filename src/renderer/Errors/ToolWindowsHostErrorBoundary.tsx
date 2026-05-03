@@ -7,11 +7,11 @@
 import { Component, ErrorInfo, ReactNode } from "react";
 import "./error-boundaries.css";
 
-type ToolWindowsHostErrorBoundaryProps = {
+export type ToolWindowsHostErrorBoundaryProps = {
   children: ReactNode;
 };
 
-type ToolWindowsHostErrorBoundaryState = {
+export type ToolWindowsHostErrorBoundaryState = {
   hasError: boolean;
   errorMessage: string;
 };

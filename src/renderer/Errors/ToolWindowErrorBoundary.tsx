@@ -7,12 +7,12 @@
 import { Component, ErrorInfo, ReactNode } from "react";
 import "./error-boundaries.css";
 
-type ToolWindowErrorBoundaryProps = {
+export type ToolWindowErrorBoundaryProps = {
   title: string;
   children: ReactNode;
 };
 
-type ToolWindowErrorBoundaryState = {
+export type ToolWindowErrorBoundaryState = {
   hasError: boolean;
   errorMessage: string;
 };

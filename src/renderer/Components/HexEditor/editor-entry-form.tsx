@@ -8,7 +8,7 @@ import { useRef } from "react";
 import { DataViewEnum, TextViewEnum } from "./common";
 import "./editor-entry-form.css";
 
-interface EditorEntryProps {
+export interface EditorEntryProps {
   datalength: number;
   dataCallback: (radix: DataViewEnum) => void;
   textCallback: (text: TextViewEnum) => void;

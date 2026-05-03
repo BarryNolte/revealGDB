@@ -30,7 +30,7 @@ export type DefinedConnection = {
   name: string;
 } & GdbAny;
 
-type UseConnectionDialogControllerArgs = {
+export type UseConnectionDialogControllerArgs = {
   connectionsRef?: RefObject<ConnectionManagerHandle>;
   connDlgRef: RefObject<DialogComponent | null>;
   outputRef: RefObject<HTMLDivElement | null>;

@@ -9,7 +9,7 @@ import { IPC_CHANNELS } from "../common/ipc-contracts";
 import { miInterface } from "./mi-interface/mi-interface";
 import { GeneralInfoSender } from "./utilities/GeneralInfoSender";
 
-type SettingsLike = {
+export type SettingsLike = {
   getSync: (key: string) => unknown;
 };
 
@@ -17,7 +17,7 @@ type SettingsLike = {
  * Creates gdb interface for downstream use.
  *
  * @param mainWindow - Value for `mainWindow` consumed by this operation.
- * @param appSettings - Value for `appSettings` consumed by this operation.
+ * @param _appSettings - Value for `appSettings` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
 export function createGdbInterface(

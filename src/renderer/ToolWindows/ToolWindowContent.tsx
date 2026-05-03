@@ -7,7 +7,7 @@
 import { JSX, ReactNode } from "react";
 import { ToolWindowErrorBoundary } from "../Errors/ToolWindowErrorBoundary";
 
-type ToolWindowContentProps = {
+export type ToolWindowContentProps = {
   title: string;
   children: ReactNode;
 };

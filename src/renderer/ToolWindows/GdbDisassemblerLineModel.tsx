@@ -7,14 +7,14 @@
 import { JSX } from "react";
 import { DisasmToken } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
-type DisasmInstructionPart = {
+export type DisasmInstructionPart = {
   className: string;
   value: string;
   hasTrailingNbsp: boolean;
   functionAddress?: string;
 };
 
-type GroupCaptionProps = {
+export type GroupCaptionProps = {
   field?: string;
   groupKey?: string;
   key?: string;
