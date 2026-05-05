@@ -5,7 +5,9 @@
  * Exported symbols include `GdbMenu`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { app, Menu, shell } from "electron";
-import { gdbInterface, isDebug, isMac, mainWindow } from "./main";
+import { sendToRenderer } from "./ipc-sender";
+import { miInterface } from "./mi-interface/mi-interface";
+import { isDebug, isMac } from "./platform-info";
 
 export class GdbMenu {
   /**
@@ -14,7 +16,7 @@ export class GdbMenu {
    * @remarks
    * Performs asynchronous work and should be used with completion ordering in mind.
    */
-  public static installMenu() {
+  public static installMenu(gdbInterface: miInterface) {
     const template: object[] = [
       ...(isMac
         ? [
@@ -24,7 +26,7 @@ export class GdbMenu {
                 {
                   label: "about",
                   click: () => {
-                    mainWindow.webContents.send("notify-render", { command: "about-box" });
+                    sendToRenderer("notify-render", { command: "about-box" });
                   },
                 },
                 { type: "separator" },
@@ -50,7 +52,7 @@ export class GdbMenu {
           {
             label: "&Preferences...",
             click: () => {
-              mainWindow.webContents.send("notify-render", { command: "settings-dialog" });
+              sendToRenderer("notify-render", { command: "settings-dialog" });
             },
           },
           { type: "separator" },
@@ -83,7 +85,7 @@ export class GdbMenu {
             label: "Command Entry",
             accelerator: "F1",
             click: () => {
-              mainWindow.webContents.send("notify-render", { command: "command-entry" });
+              sendToRenderer("notify-render", { command: "command-entry" });
             },
           },
         ],
@@ -140,14 +142,14 @@ export class GdbMenu {
           {
             label: "Connect",
             click: () => {
-              mainWindow.webContents.send("notify-render", { command: "connection-dialog" });
+              sendToRenderer("notify-render", { command: "connection-dialog" });
             },
           },
           {
             label: "Disconnect",
             click: () => {
               gdbInterface.disconnect();
-              mainWindow.webContents.send("notify-render", { command: "cancel-connection" });
+              sendToRenderer("notify-render", { command: "cancel-connection" });
               gdbInterface.gdbDB.clearDatabase();
               gdbInterface.gdbDB.allDataUpdateUI();
             },
@@ -156,7 +158,7 @@ export class GdbMenu {
           {
             label: "Configure...",
             click: () => {
-              mainWindow.webContents.send("notify-render", { command: "connections-dialog" });
+              sendToRenderer("notify-render", { command: "connections-dialog" });
             },
           },
         ],
@@ -190,7 +192,7 @@ export class GdbMenu {
           {
             label: "About",
             click: () => {
-              mainWindow.webContents.send("notify-render", { command: "about-box" });
+              sendToRenderer("notify-render", { command: "about-box" });
             },
           },
         ],

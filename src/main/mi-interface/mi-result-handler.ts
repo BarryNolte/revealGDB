@@ -4,7 +4,7 @@
  * @remarks
  * Exported symbols include `MiResultRecordHandler`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
-import { mainWindow } from "../main";
+import { sendToRenderer } from "../ipc-sender";
 import { debugLog } from "../utilities/logger";
 import { mapRegexGroupsToBreakpoint } from "./mappers/breakpoint-mapper";
 import { MiOutputHost } from "./mi-output-types";
@@ -64,7 +64,7 @@ export class MiResultRecordHandler {
               this.host.gdbDB.createBreakpoint(mapRegexGroupsToBreakpoint(bkpt.groups));
             });
 
-            mainWindow.webContents.send("data-brkpts", this.host.gdbDB.breakpoints);
+            sendToRenderer("data-brkpts", this.host.gdbDB.breakpoints);
             break;
           }
           case "features": {

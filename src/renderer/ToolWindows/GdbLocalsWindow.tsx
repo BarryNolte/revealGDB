@@ -110,10 +110,12 @@ export default function GdbLocalsWindow(): JSX.Element {
   }, []);
 
   const cellEdit = useCallback((args: CellEditArgs) => {
-    if (args.type === "edit") {
-      if (args.columnName === "value" && (args.rowData as GdbAny).sublocals.length > 0) {
-        args.cancel = true;
-      }
+    if (
+      args.type === "edit" &&
+      args.columnName === "value" &&
+      (args.rowData as GdbAny).sublocals.length > 0
+    ) {
+      args.cancel = true;
     }
   }, []);
 

@@ -4,11 +4,11 @@
  * @remarks
  * Exported symbols include `AsmResultStrategy`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
-import { mainWindow } from "../../main";
+import { sendToRenderer } from "../../ipc-sender";
 import { parseDisasmTokens } from "../gdb-parsers/disasmParser";
 import { MiOutputHost } from "../mi-output-types";
-import { MiDoneResultStrategy } from "./mi-result-strategy-types";
 import { parseAsmRows } from "./asm-parsing-helpers";
+import { MiDoneResultStrategy } from "./mi-result-strategy-types";
 
 export class AsmResultStrategy implements MiDoneResultStrategy {
   private readonly rgxAsmData: RegExp = /asm_insns=\[(?<asm_list>.*)]$/;
@@ -42,7 +42,7 @@ export class AsmResultStrategy implements MiDoneResultStrategy {
   handle(_host: MiOutputHost, output: string, _resList: string): Promise<boolean> {
     const asmRowsText = parseAsmRows(output, this.rgxAsmData, this.rgxAsmRow, parseDisasmTokens);
 
-    mainWindow.webContents.send("data-disasm", asmRowsText);
+    sendToRenderer("data-disasm", asmRowsText);
     return Promise.resolve(true);
   }
 }

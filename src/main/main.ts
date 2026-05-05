@@ -5,10 +5,10 @@
  * Exported symbols include `isMac`, `isWin`, `isLinux`, `isDebug`, `AppSettings`, `mainWindow`, `gdbInterface`, `gdbAppInfo`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { app, BrowserWindow, ipcMain, nativeTheme } from "electron";
-import settings from "electron-settings";
 // import path from "path";
 import { GdbAny, SelectedConnection } from "../common/gdb-common";
 import { registerAppEvents } from "./app-events";
+import { AppSettings } from "./app-settings";
 import {
   collectVersionInfo,
   configureAppSettings,
@@ -18,8 +18,10 @@ import {
 } from "./bootstrap";
 import { createGdbInterface } from "./gdb-lifecycle";
 import { registerIpcHandlers } from "./ipc";
+import { setIpcWindow } from "./ipc-sender";
 import { GdbMenu } from "./menu";
 import { miInterface } from "./mi-interface/mi-interface";
+import { isDebug, isLinux, isMac, isWin } from "./platform-info";
 import { setNativeThemeFromAppTheme } from "./theme-support";
 import { debugLog } from "./utilities/logger";
 import {
@@ -31,21 +33,13 @@ import {
   wireWindowCloseHandlers,
 } from "./window-manager";
 
-// console.log(`PRELOAD: ${path.resolve("./out/preload/preload.js")}`);
-
-export const isMac = process.platform === "darwin";
-export const isWin = process.platform === "win32";
-export const isLinux = !isMac && !isWin;
-
-export const isDebug = __REVEALGDB_DEBUG__;
+// Re-export for backward compatibility
+export { AppSettings, isDebug, isLinux, isMac, isWin };
 
 globalThis.revealGdbBuild = {
   debug: __REVEALGDB_DEBUG__,
   mode: __REVEALGDB_BUILD__,
 };
-// console.log(`Build Info: ${JSON.stringify(globalThis.revealGdbBuild, null, 2)}`);
-
-export const AppSettings = settings;
 const fontList: Map<string, string> = new Map<string, string>();
 const startupEpochMs = Date.now();
 
@@ -99,6 +93,8 @@ app.on("ready", () => {
 
   mainWindow = createMainWindow(resolvePreloadPath());
 
+  setIpcWindow(mainWindow);
+
   if (isDebug) {
     debugWindow = createDebugWindow(mainWindow);
   }
@@ -125,13 +121,12 @@ app.on("ready", () => {
     });
   });
 
-  GdbMenu.installMenu();
-
   /**
    * UI is now up and running, now we can interact with GDB
    */
   gdbInterface = createGdbInterface(mainWindow, AppSettings);
   logStartupMilestone("gdb-interface-created");
+  GdbMenu.installMenu(gdbInterface);
   wireWindowCloseHandlers(mainWindow, isDebug ? debugWindow : undefined);
 });
 registerAppEvents(app, nativeTheme, () => mainWindow);

@@ -10,7 +10,7 @@ import {
   gdbStackFrame,
   gdbThread,
   gdbThreadGroup,
-} from "../../main/mi-interface/gdb-state-database/types/gdbStateTypes";
+} from "../../common/gdb-state-types";
 
 // ─── Callstack ──────────────────────────────────────────────
 

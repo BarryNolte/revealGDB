@@ -4,6 +4,7 @@ const buildFromTemplate = vi.fn((template) => template);
 const setApplicationMenu = vi.fn();
 const quit = vi.fn();
 const openExternal = vi.fn();
+const sendToRenderer = vi.fn();
 
 vi.mock("electron", () => ({
   app: { name: "revealGDB", quit },
@@ -31,11 +32,6 @@ function createMainMocks() {
         allDataUpdateUI: vi.fn(),
       },
     },
-    mainWindow: {
-      webContents: {
-        send: vi.fn(),
-      },
-    },
   };
 }
 
@@ -49,14 +45,16 @@ describe("GdbMenu", () => {
   it("installs the standard app menu and wires debug and connection actions", async () => {
     const mainMocks = createMainMocks();
 
-    vi.doMock("../../../src/main/main", () => ({
-      ...mainMocks,
+    vi.doMock("../../../src/main/ipc-sender", () => ({
+      sendToRenderer,
+    }));
+    vi.doMock("../../../src/main/platform-info", () => ({
       isDebug: false,
       isMac: false,
     }));
 
     const { GdbMenu } = await import("../../../src/main/menu");
-    GdbMenu.installMenu();
+    GdbMenu.installMenu(mainMocks.gdbInterface as never);
 
     const template = buildFromTemplate.mock.calls[0][0] as Array<{
       label?: string;
@@ -104,7 +102,7 @@ describe("GdbMenu", () => {
     aboutItem.click?.();
     await learnMoreItem.click?.();
 
-    expect(mainMocks.mainWindow.webContents.send).toHaveBeenCalledWith("notify-render", {
+    expect(sendToRenderer).toHaveBeenCalledWith("notify-render", {
       command: "settings-dialog",
     });
     expect(mainMocks.gdbInterface.continueExecution).toHaveBeenCalledTimes(1);
@@ -117,19 +115,19 @@ describe("GdbMenu", () => {
     expect(mainMocks.gdbInterface.disconnect).toHaveBeenCalledTimes(1);
     expect(mainMocks.gdbInterface.gdbDB.clearDatabase).toHaveBeenCalledTimes(1);
     expect(mainMocks.gdbInterface.gdbDB.allDataUpdateUI).toHaveBeenCalledTimes(1);
-    expect(mainMocks.mainWindow.webContents.send).toHaveBeenCalledWith("notify-render", {
+    expect(sendToRenderer).toHaveBeenCalledWith("notify-render", {
       command: "command-entry",
     });
-    expect(mainMocks.mainWindow.webContents.send).toHaveBeenCalledWith("notify-render", {
+    expect(sendToRenderer).toHaveBeenCalledWith("notify-render", {
       command: "connection-dialog",
     });
-    expect(mainMocks.mainWindow.webContents.send).toHaveBeenCalledWith("notify-render", {
+    expect(sendToRenderer).toHaveBeenCalledWith("notify-render", {
       command: "cancel-connection",
     });
-    expect(mainMocks.mainWindow.webContents.send).toHaveBeenCalledWith("notify-render", {
+    expect(sendToRenderer).toHaveBeenCalledWith("notify-render", {
       command: "about-box",
     });
-    expect(mainMocks.mainWindow.webContents.send).toHaveBeenCalledWith("notify-render", {
+    expect(sendToRenderer).toHaveBeenCalledWith("notify-render", {
       command: "connections-dialog",
     });
     expect(openExternal).toHaveBeenCalledWith("https://github.com/barrynolte/revealGDB");
@@ -138,14 +136,16 @@ describe("GdbMenu", () => {
   it("includes macOS and debug-only menu sections when enabled", async () => {
     const mainMocks = createMainMocks();
 
-    vi.doMock("../../../src/main/main", () => ({
-      ...mainMocks,
+    vi.doMock("../../../src/main/ipc-sender", () => ({
+      sendToRenderer,
+    }));
+    vi.doMock("../../../src/main/platform-info", () => ({
       isDebug: true,
       isMac: true,
     }));
 
     const { GdbMenu } = await import("../../../src/main/menu");
-    GdbMenu.installMenu();
+    GdbMenu.installMenu(mainMocks.gdbInterface as never);
 
     const template = buildFromTemplate.mock.calls[0][0] as Array<{
       label?: string;
@@ -161,7 +161,7 @@ describe("GdbMenu", () => {
 
     expect(appMenu.label).toBe("revealGDB");
     expect(debugMenu).toBeTruthy();
-    expect(mainMocks.mainWindow.webContents.send).toHaveBeenCalledWith("notify-render", {
+    expect(sendToRenderer).toHaveBeenCalledWith("notify-render", {
       command: "about-box",
     });
     expect(quit).toHaveBeenCalledTimes(1);

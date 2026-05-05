@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "timestamp": "2026-03-19T01:48:57.104Z",
-  "commit": "6d8ba6c0b76047849ee8d59183bd211728725389",
-  "shortCommit": "6d8ba6c0",
-  "parentCommit": "6d8ba6c0b76047849ee8d59183bd211728725389",
-  "sampleCount": 3,
+  "timestamp": "2026-05-04T00:59:56.535Z",
+  "commit": "d1866c88173bfa8411093cd370d1a9c1d9bc52b0",
+  "shortCommit": "d1866c88",
+  "parentCommit": "d1866c88173bfa8411093cd370d1a9c1d9bc52b0",
+  "sampleCount": 1,
   "timeoutMs": 30000,
   "thresholds": {
     "maxRegressionMs": 200,
@@ -12,167 +12,83 @@
   },
   "metrics": {
     "app.ready": {
-      "medianMs": 119,
-      "minMs": 114,
-      "maxMs": 144,
+      "medianMs": 51,
+      "minMs": 51,
+      "maxMs": 51,
       "samples": [
-        114,
-        119,
-        144
+        51
       ]
     },
     "main-window-created": {
-      "medianMs": 788,
-      "minMs": 773,
-      "maxMs": 867,
+      "medianMs": 451,
+      "minMs": 451,
+      "maxMs": 451,
       "samples": [
-        773,
-        788,
-        867
+        451
       ]
     },
     "main-window-load-started": {
-      "medianMs": 836,
-      "minMs": 799,
-      "maxMs": 914,
+      "medianMs": 463,
+      "minMs": 463,
+      "maxMs": 463,
       "samples": [
-        799,
-        836,
-        914
+        463
       ]
     },
     "gdb-interface-created": {
-      "medianMs": 860,
-      "minMs": 808,
-      "maxMs": 920,
+      "medianMs": 464,
+      "minMs": 464,
+      "maxMs": 464,
       "samples": [
-        808,
-        860,
-        920
+        464
       ]
     },
     "main-window-ready-to-show": {
-      "medianMs": 2132,
-      "minMs": 1860,
-      "maxMs": 6143,
+      "medianMs": 2624,
+      "minMs": 2624,
+      "maxMs": 2624,
       "samples": [
-        1860,
-        2132,
-        6143
+        2624
       ]
     },
     "main-window-shown": {
-      "medianMs": 3091,
-      "minMs": 2850,
-      "maxMs": 7035,
+      "medianMs": 2666,
+      "minMs": 2666,
+      "maxMs": 2666,
       "samples": [
-        2850,
-        3091,
-        7035
+        2666
       ]
     }
   },
   "samples": [
     {
       "milestones": {
-        "app.ready": 119,
-        "main-window-created": 788,
-        "main-window-load-started": 836,
-        "gdb-interface-created": 860,
-        "main-window-ready-to-show": 6143,
-        "main-window-shown": 7035
+        "app.ready": 51,
+        "main-window-created": 451,
+        "main-window-load-started": 463,
+        "gdb-interface-created": 464,
+        "main-window-ready-to-show": 2624,
+        "main-window-shown": 2666
       },
       "rawLines": [
-        "> revealgdb@0.1.0 start",
+        "> revealgdb@0.9.2-0dd0524 start",
         "> electron . --remote-debugging-port=9222",
-        "PRELOAD: C:\\Users\\barry\\Documents\\Projects\\revealGDB\\out\\preload\\preload.js",
-        "Build Info: {",
-        "  \"debug\": false,",
-        "  \"mode\": \"release\"",
-        "}",
-        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/62ce975b-be06-4613-98d2-0d2d5f8e097b",
-        "[startup] app.ready: 119ms",
+        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/0892e68e-c52d-4885-b0b7-b406d599911c",
+        "[startup] app.ready: 51ms",
         "Settings File: C:\\Users\\barry\\AppData\\Roaming\\revealgdb\\settings.json",
-        "Display: (2560 x 1600)",
         "Display: (3840 x 2160)",
-        "[startup] main-window-created: 788ms",
-        "Loading file: C:\\Users\\barry\\Documents\\Projects\\revealGDB\\out\\renderer\\index.html",
-        "[startup] main-window-load-started: 836ms",
-        "[startup] gdb-interface-created: 860ms",
+        "Display: (2560 x 1600)",
+        "[startup] main-window-created: 451ms",
+        "[startup] main-window-load-started: 463ms",
+        "[startup] gdb-interface-created: 464ms",
+        "[50528:0503/175953.842:ERROR:CONSOLE:1] \"Request Autofill.enable failed. {\"code\":-32601,\"message\":\"'Autofill.enable' wasn't found\"}\", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)",
+        "[50528:0503/175953.842:ERROR:CONSOLE:1] \"Request Autofill.setAddresses failed. {\"code\":-32601,\"message\":\"'Autofill.setAddresses' wasn't found\"}\", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)",
         "[startup] renderer-start",
         "Notifying GDB Interface that rendering is starting.",
         "[startup] renderer-end",
         "Notifying GDB Interface that rendering is complete.",
-        "[startup] main-window-ready-to-show: 6143ms",
-        "[startup] main-window-shown: 7035ms"
-      ]
-    },
-    {
-      "milestones": {
-        "app.ready": 144,
-        "main-window-created": 773,
-        "main-window-load-started": 799,
-        "gdb-interface-created": 808,
-        "main-window-ready-to-show": 1860,
-        "main-window-shown": 2850
-      },
-      "rawLines": [
-        "> revealgdb@0.1.0 start",
-        "> electron . --remote-debugging-port=9222",
-        "PRELOAD: C:\\Users\\barry\\Documents\\Projects\\revealGDB\\out\\preload\\preload.js",
-        "Build Info: {",
-        "  \"debug\": false,",
-        "  \"mode\": \"release\"",
-        "}",
-        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/2e03c097-571d-4d98-8329-b3989f548434",
-        "[startup] app.ready: 144ms",
-        "Settings File: C:\\Users\\barry\\AppData\\Roaming\\revealgdb\\settings.json",
-        "Display: (2560 x 1600)",
-        "Display: (3840 x 2160)",
-        "[startup] main-window-created: 773ms",
-        "Loading file: C:\\Users\\barry\\Documents\\Projects\\revealGDB\\out\\renderer\\index.html",
-        "[startup] main-window-load-started: 799ms",
-        "[startup] gdb-interface-created: 808ms",
-        "[startup] renderer-start",
-        "Notifying GDB Interface that rendering is starting.",
-        "[startup] renderer-end",
-        "Notifying GDB Interface that rendering is complete.",
-        "[startup] main-window-ready-to-show: 1860ms",
-        "[startup] main-window-shown: 2850ms"
-      ]
-    },
-    {
-      "milestones": {
-        "app.ready": 114,
-        "main-window-created": 867,
-        "main-window-load-started": 914,
-        "gdb-interface-created": 920,
-        "main-window-ready-to-show": 2132,
-        "main-window-shown": 3091
-      },
-      "rawLines": [
-        "> revealgdb@0.1.0 start",
-        "> electron . --remote-debugging-port=9222",
-        "PRELOAD: C:\\Users\\barry\\Documents\\Projects\\revealGDB\\out\\preload\\preload.js",
-        "Build Info: {",
-        "  \"debug\": false,",
-        "  \"mode\": \"release\"",
-        "}",
-        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/1063c090-d651-48a7-87b4-1b437182fe6f",
-        "[startup] app.ready: 114ms",
-        "Settings File: C:\\Users\\barry\\AppData\\Roaming\\revealgdb\\settings.json",
-        "Display: (2560 x 1600)",
-        "Display: (3840 x 2160)",
-        "[startup] main-window-created: 867ms",
-        "Loading file: C:\\Users\\barry\\Documents\\Projects\\revealGDB\\out\\renderer\\index.html",
-        "[startup] main-window-load-started: 914ms",
-        "[startup] gdb-interface-created: 920ms",
-        "[startup] renderer-start",
-        "Notifying GDB Interface that rendering is starting.",
-        "[startup] renderer-end",
-        "Notifying GDB Interface that rendering is complete.",
-        "[startup] main-window-ready-to-show: 2132ms",
-        "[startup] main-window-shown: 3091ms"
+        "[startup] main-window-ready-to-show: 2624ms",
+        "[startup] main-window-shown: 2666ms"
       ]
     }
   ]

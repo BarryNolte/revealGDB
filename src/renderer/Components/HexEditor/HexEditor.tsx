@@ -11,8 +11,8 @@ import HexDataView from "./view-data";
 import HexOffsetView from "./view-offset";
 import HexTextView from "./view-text";
 
-/** Callback signature for data change notifications */
-export type ArrayChangeCallback = (index: number, value: number) => void;
+import { ArrayChangeCallback } from "./hex-editor-types";
+export type { ArrayChangeCallback };
 
 /** Props for the HexEditor component */
 export interface HexEditorProps {

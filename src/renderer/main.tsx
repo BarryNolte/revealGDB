@@ -19,9 +19,8 @@ registerLicense(
 // Expose build configuration to the global scope
 // Used by various components to enable/disable debug features
 window.revealGdbBuild = {
-  // eslint-disable-next-line no-undef
   debug: __REVEALGDB_DEBUG__,
-  // eslint-disable-next-line no-undef
+
   mode: __REVEALGDB_BUILD__,
 };
 

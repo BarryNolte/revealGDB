@@ -6,8 +6,7 @@
  */
 import { IMarker } from "react-ace";
 
-import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
-import { gdbShowSourceInfo } from "../../main/mi-interface/mi-interface";
+import { gdbBreakpoint, gdbShowSourceInfo } from "../../common/gdb-state-types";
 
 export type SourceWindowState = {
   source: string;

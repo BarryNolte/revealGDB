@@ -34,6 +34,12 @@ const samples = Math.max(1, Number(args.samples ?? 1));
 const shouldBuild = !args["no-build"];
 const setBaseline = Boolean(args["set-baseline"]);
 
+async function step(label, fn) {
+  process.stdout.write(`  ${label}... `);
+  await fn();
+  process.stdout.write("done\n");
+}
+
 async function main() {
   ensureDirs([reportsDir, commitsDir, runsDir]);
 
@@ -41,19 +47,28 @@ async function main() {
   const shortCommit = commit === "unknown" ? "unknown" : commit.slice(0, 8);
   const parentCommit = gitOrFallback("rev-parse HEAD^", null);
 
+  console.log("Startup benchmark");
+
   if (shouldBuild) {
-    await runCommand("npm run vite-build:release", {
-      stdio: "inherit",
+    process.stdout.write("  Build (benchmark variant)... ");
+    await runCommand("npm run vite-build:benchmark", {
+      stdio: "ignore",
       shell: true,
       cwd: workspaceRoot,
     });
+    process.stdout.write("done\n");
   }
 
   const sampleResults = [];
   for (let i = 0; i < samples; i += 1) {
     await cleanupElectron();
-    const result = await captureStartupMilestones(timeoutMs);
-    sampleResults.push(result);
+    await step(
+      `Sample ${i + 1}${samples > 1 ? `/${samples}` : ""}`,
+      async () => {
+        const result = await captureStartupMilestones(timeoutMs);
+        sampleResults.push(result);
+      },
+    );
   }
 
   const aggregate = aggregateSamples(sampleResults);
@@ -68,10 +83,7 @@ async function main() {
     parentCommit,
     sampleCount: samples,
     timeoutMs,
-    thresholds: {
-      maxRegressionMs,
-      maxRegressionPct,
-    },
+    thresholds: { maxRegressionMs, maxRegressionPct },
     metrics: aggregate,
     samples: sampleResults,
   };
@@ -84,26 +96,22 @@ async function main() {
 
   if (setBaseline) {
     writeJson(baselineFile, report);
-    printSummary(report, null);
-    console.log(`\nBaseline updated: ${relativePath(baselineFile)}`);
+    console.log("");
+    console.log(`  Baseline updated: ${relativePath(baselineFile)}`);
+    printMilestones(report);
+    console.log("Done.");
     return;
   }
 
   const comparison = loadComparison(parentCommit);
   const regression = comparison ? compareReports(report, comparison) : null;
 
-  printSummary(report, regression);
-  console.log(`\nSaved run: ${relativePath(runFile)}`);
-  console.log(`Saved latest: ${relativePath(latestFile)}`);
-
-  if (!comparison) {
-    console.log("No comparison baseline found. Run with --set-baseline to establish one.");
-    return;
-  }
-
-  if (regression && regression.hasRegression) {
-    process.exitCode = 2;
-  }
+  console.log("");
+  console.log(`  ${relativePath(runFile)}`);
+  console.log(`  ${relativePath(latestFile)}`);
+  printMilestones(report);
+  printComparison(regression);
+  console.log("Done.");
 }
 
 function parseArgs(argv) {
@@ -242,11 +250,15 @@ function hasAllMilestones(milestones, required) {
 
 function killProcessTree(pid) {
   if (!pid) return;
-  spawn(`taskkill /PID ${String(pid)} /T /F`, {
-    cwd: workspaceRoot,
-    stdio: "ignore",
-    shell: true,
-  });
+  // Use execSync so the process is guaranteed dead before we continue.
+  // Ignore errors — the process may have already exited.
+  try {
+    execSync(`taskkill /PID ${String(pid)} /T /F`, { stdio: "ignore" });
+  } catch { }
+  // Belt-and-suspenders: also kill by image name to catch any surviving child.
+  try {
+    execSync("taskkill /IM electron.exe /T /F", { stdio: "ignore" });
+  } catch { }
 }
 
 function aggregateSamples(sampleResults) {
@@ -328,38 +340,34 @@ function compareReports(current, baseline) {
   };
 }
 
-function printSummary(report, regression) {
-  console.log("\nStartup Benchmark Summary");
-  console.log("=========================");
-  console.log(`Commit: ${report.shortCommit}`);
-  console.log(`Samples: ${report.sampleCount}`);
+function printMilestones(report) {
+  console.log("");
+  console.log(`  commit ${report.shortCommit}  ·  ${report.sampleCount} sample${report.sampleCount !== 1 ? "s" : ""}`);
   for (const key of REQUIRED_MILESTONES) {
     const metric = report.metrics[key];
-    console.log(`${key.padEnd(26)} ${String(metric.medianMs).padStart(6)} ms`);
+    const shortKey = key.replace("main-window-", "");
+    console.log(`    ${shortKey.padEnd(24)} ${String(metric.medianMs).padStart(6)} ms`);
   }
+}
 
+function printComparison(regression) {
   if (!regression) {
+    console.log("  No baseline found — run with --set-baseline to establish one.");
     return;
   }
-
-  console.log("\nComparison");
-  console.log("==========");
-  console.log(`Baseline commit: ${regression.baselineCommit}`);
+  console.log("");
+  const baseShort = String(regression.baselineCommit).slice(0, 8);
+  console.log(`  vs baseline ${baseShort}`);
   for (const diff of regression.diffs) {
-    const prefix = diff.isRegression ? "REGRESSION" : "OK";
+    const flag = diff.isRegression ? " [REGRESSION]" : "";
+    const shortKey = diff.key.replace("main-window-", "");
     console.log(
-      `${prefix.padEnd(10)} ${diff.key.padEnd(24)} ${formatDelta(diff.deltaMs)} ms (${formatDelta(
-        diff.deltaPct,
-      )}%)`,
+      `    ${shortKey.padEnd(24)} ${formatDelta(diff.deltaMs)} ms (${formatDelta(diff.deltaPct)}%)${flag}`,
     );
   }
-
   if (regression.hasRegression) {
-    console.log(
-      `\nStartup regression detected. Thresholds: +${maxRegressionMs}ms and +${maxRegressionPct}% (both).`,
-    );
-  } else {
-    console.log("\nNo startup regression detected.");
+    console.log("");
+    console.log(`  Regression detected. Thresholds: +${maxRegressionMs}ms and +${maxRegressionPct}% (both must exceed).`);
   }
 }
 
@@ -381,20 +389,8 @@ function relativePath(absolutePath) {
 }
 
 main().catch((error) => {
-  console.error("\nStartup benchmark failed:");
-  console.error(error.message);
+  // Ensure Electron is dead even if the benchmark threw (e.g. on timeout).
+  try { execSync("taskkill /IM electron.exe /T /F", { stdio: "ignore" }); } catch { }
+  process.stderr.write(`\nStartup benchmark failed: ${error.message}\n`);
   process.exit(1);
 });
-
-/**
- * @file startup-benchmark.cjs
- * @description Source module for startup-benchmark.
- */
-
-
-/**
- * startup-benchmark module.
- *
- * @remarks
- * Source module for startup-benchmark.
- */

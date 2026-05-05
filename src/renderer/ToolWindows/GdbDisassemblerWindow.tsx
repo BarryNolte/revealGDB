@@ -18,10 +18,7 @@ import {
 } from "@syncfusion/ej2-react-grids";
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { JSX, useEffect, useId, useMemo, useRef, useState } from "react";
-import {
-  gdbAsmRow,
-  gdbFunction,
-} from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
+import { gdbAsmRow, gdbFunction } from "../../common/gdb-state-types";
 import { doCutCopyPaste, menuCopy, menuCutCopyPaste } from "../utilities/Clipboard";
 import { useGridColumnState } from "../utilities/useGridColumnState";
 import { validateValue, ValueType } from "../utilities/valueValidation";

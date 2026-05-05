@@ -5,20 +5,19 @@
  * Exported symbols include `IElectronAPI`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { GdbAny } from "../common/gdb-common";
-import { NotifyMainRequest, NotifyRenderMessage } from "../common/ipc-contracts";
-import { Local } from "../main/mi-interface/gdb-parsers/gdb-locals";
-import { gdbBreakpoint } from "../main/mi-interface/gdb-state-database/gdbStateDatabase";
 import {
   gdbAsmRow,
+  gdbBreakpoint,
   gdbFunction,
   gdbRegisters,
   gdbShowSourceInfo,
   gdbStackFrame,
   gdbThread,
   gdbThreadGroup,
-} from "../main/mi-interface/gdb-state-database/types/gdbStateTypes";
-import { MemoryData } from "../main/mi-interface/mappers/memory-mapper";
-import { WslDistro } from "../main/utilities/wsl-utilities";
+} from "../common/gdb-state-types";
+import { NotifyMainRequest, NotifyRenderMessage } from "../common/ipc-contracts";
+import { MemoryData, WslDistro } from "../common/ipc-data-types";
+import { ILocal } from "../common/local-view";
 
 type Unsubscribe = () => void;
 type ValueCallback<T> = (data: T) => void;
@@ -53,7 +52,7 @@ export interface IElectronAPI {
     registers: (callback: ValueCallback<Map<string, gdbRegisters>>) => Unsubscribe;
     stackFrames: (callback: ValueCallback<gdbStackFrame[]>) => Unsubscribe;
     sourceFile: (callback: ValueCallback<gdbShowSourceInfo>) => Unsubscribe;
-    locals: (callback: ValueCallback<Local[] | undefined>) => Unsubscribe;
+    locals: (callback: ValueCallback<ILocal[] | undefined>) => Unsubscribe;
     threads: (callback: ValueCallback<ThreadsPayload>) => Unsubscribe;
     breakpoints: (callback: ValueCallback<Map<string, gdbBreakpoint>>) => Unsubscribe;
     memory: (callback: ValueCallback<MemoryData>) => Unsubscribe;

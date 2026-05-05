@@ -4,8 +4,10 @@
  * @remarks
  * Exported symbols include `Platform`, `ShellOption`, `ConnectionGridRow`, `NormalizedConnection`, `DEFAULT_WSL_DISTRO`, `shells`, `DEFAULT_COMMANDS_LIST`, `normalizeDistroName`, and others. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
+import type { NormalizedConnection } from "../../common/connection-types";
 import { GdbAny } from "../../common/gdb-common";
 import { DragAndDropListItem } from "../Components/DragAndDropList/DragAndDropList";
+export type { NormalizedConnection };
 
 // ---------------------------------------------------------------------------
 // Types
@@ -24,13 +26,6 @@ export type ConnectionGridRow = {
   name: string;
   shell: string;
   commands: string;
-};
-
-export type NormalizedConnection = {
-  name: string;
-  shell: string;
-  commands: string[];
-  wslDistribution?: string;
 };
 
 // ---------------------------------------------------------------------------

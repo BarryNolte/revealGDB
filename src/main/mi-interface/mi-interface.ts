@@ -6,7 +6,7 @@
  */
 import { EventEmitter } from "events";
 import { SelectedConnection } from "../../common/gdb-common";
-import { AppSettings } from "../main";
+import { AppSettings } from "../app-settings";
 import { ConnectionNotifier } from "../utilities/ConnectionNotifier";
 import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector/gdb-connector";
 import { gdbConnectorIdfOnWsl } from "./gdb-connector/gdb-connector-general";

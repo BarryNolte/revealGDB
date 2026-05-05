@@ -4,12 +4,8 @@ const notifierMocks = vi.hoisted(() => ({
   send: vi.fn(),
 }));
 
-vi.mock("../../../../src/main/main", () => ({
-  mainWindow: {
-    webContents: {
-      send: notifierMocks.send,
-    },
-  },
+vi.mock("../../../../src/main/ipc-sender", () => ({
+  sendToRenderer: notifierMocks.send,
 }));
 
 import { ConnectionNotifier } from "../../../../src/main/utilities/ConnectionNotifier";

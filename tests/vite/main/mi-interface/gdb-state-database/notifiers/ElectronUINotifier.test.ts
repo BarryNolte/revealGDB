@@ -17,17 +17,9 @@ const { mockWebContentsSend } = vi.hoisted(() => ({
   mockWebContentsSend: vi.fn(),
 }));
 
-vi.mock("../../../../../../src/main/main", async () => {
-  const { createMockBrowserWindow } = await import("../../../../../helpers/ipc-test-harness.js");
-
-  return {
-    mainWindow: createMockBrowserWindow({
-      webContents: {
-        send: mockWebContentsSend,
-      },
-    }),
-  };
-});
+vi.mock("../../../../../../src/main/ipc-sender", () => ({
+  sendToRenderer: mockWebContentsSend,
+}));
 
 describe("ElectronUINotifier", () => {
   beforeEach(() => {

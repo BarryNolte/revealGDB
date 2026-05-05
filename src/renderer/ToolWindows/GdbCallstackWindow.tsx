@@ -16,7 +16,7 @@ import {
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
 import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import { gdbStackFrame } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
+import { gdbStackFrame } from "../../common/gdb-state-types";
 
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { CallstackGridRow, mapStackFramesToGridRows } from "../mappers/grid-data-mappers";

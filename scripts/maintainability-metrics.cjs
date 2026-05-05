@@ -7,6 +7,12 @@ const ts = require('typescript');
 const ROOT = process.cwd();
 const SRC_ROOT = path.join(ROOT, 'src');
 const REPORT_DIR = path.join(ROOT, 'reports', 'maintainability');
+const HISTORY_DIR = path.join(REPORT_DIR, 'history');
+
+const SNAPSHOT_FLAG = process.argv.includes('--snapshot');
+const TOP_HOTSPOTS_COUNT = 25;
+const CC_WARN_THRESHOLD = 15;
+const CC_ERROR_THRESHOLD = 25;
 
 const TARGET_BUCKETS = [
   { name: 'main', dir: path.join(SRC_ROOT, 'main') },
@@ -21,6 +27,8 @@ const EXCLUDED_DIR_SEGMENTS = new Set([
   'test-helpers',
   'performance',
 ]);
+
+// --- File helpers ---
 
 function isTsSourceFile(filePath) {
   return /\.(ts|tsx)$/i.test(filePath) && !/\.d\.ts$/i.test(filePath);
@@ -61,9 +69,98 @@ function countLines(code) {
   return { total, sloc };
 }
 
-function complexityFromSource(sourceFile) {
-  let complexity = 1;
+// --- Per-function cyclomatic complexity ---
 
+function isFunctionLike(node) {
+  return (
+    node.kind === ts.SyntaxKind.FunctionDeclaration ||
+    node.kind === ts.SyntaxKind.FunctionExpression ||
+    node.kind === ts.SyntaxKind.ArrowFunction ||
+    node.kind === ts.SyntaxKind.MethodDeclaration ||
+    node.kind === ts.SyntaxKind.Constructor ||
+    node.kind === ts.SyntaxKind.GetAccessor ||
+    node.kind === ts.SyntaxKind.SetAccessor
+  );
+}
+
+function getFunctionName(node) {
+  if (node.name && ts.isIdentifier(node.name)) return node.name.text;
+  if (node.kind === ts.SyntaxKind.Constructor) return 'constructor';
+  if (node.parent) {
+    const p = node.parent;
+    if (
+      (p.kind === ts.SyntaxKind.VariableDeclaration || p.kind === ts.SyntaxKind.PropertyDeclaration) &&
+      p.name &&
+      ts.isIdentifier(p.name)
+    ) {
+      return p.name.text;
+    }
+  }
+  return '<anonymous>';
+}
+
+function cyclomaticOfSubtree(node) {
+  let cc = 1;
+  function visit(n) {
+    if (n !== node && isFunctionLike(n)) return; // don't recurse into nested functions
+    switch (n.kind) {
+      case ts.SyntaxKind.IfStatement:
+      case ts.SyntaxKind.ForStatement:
+      case ts.SyntaxKind.ForInStatement:
+      case ts.SyntaxKind.ForOfStatement:
+      case ts.SyntaxKind.WhileStatement:
+      case ts.SyntaxKind.DoStatement:
+      case ts.SyntaxKind.CaseClause:
+      case ts.SyntaxKind.CatchClause:
+      case ts.SyntaxKind.ConditionalExpression:
+        cc += 1;
+        break;
+      case ts.SyntaxKind.BinaryExpression: {
+        const op = n.operatorToken && n.operatorToken.kind;
+        if (
+          op === ts.SyntaxKind.AmpersandAmpersandToken ||
+          op === ts.SyntaxKind.BarBarToken ||
+          op === ts.SyntaxKind.QuestionQuestionToken
+        ) {
+          cc += 1;
+        }
+        break;
+      }
+      default:
+        break;
+    }
+    ts.forEachChild(n, visit);
+  }
+  visit(node);
+  return cc;
+}
+
+function slocOfSubtree(node, sourceFile) {
+  const lines = sourceFile.text.slice(node.getStart(sourceFile), node.getEnd()).split(/\r?\n/);
+  return Math.max(1, lines.filter((l) => l.trim().length > 0 && !/^\s*(\/\/|\/\*|\*)/.test(l)).length);
+}
+
+function extractFunctions(sourceFile) {
+  const functions = [];
+  function visit(node) {
+    if (isFunctionLike(node)) {
+      const name = getFunctionName(node);
+      const { line } = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile));
+      functions.push({
+        name,
+        line: line + 1,
+        cc: cyclomaticOfSubtree(node),
+        sloc: slocOfSubtree(node, sourceFile),
+      });
+    }
+    ts.forEachChild(node, visit);
+  }
+  visit(sourceFile);
+  return functions;
+}
+
+function fileLevelCyclomatic(sourceFile) {
+  let cc = 1;
   function visit(node) {
     switch (node.kind) {
       case ts.SyntaxKind.IfStatement:
@@ -75,12 +172,16 @@ function complexityFromSource(sourceFile) {
       case ts.SyntaxKind.CaseClause:
       case ts.SyntaxKind.CatchClause:
       case ts.SyntaxKind.ConditionalExpression:
-        complexity += 1;
+        cc += 1;
         break;
       case ts.SyntaxKind.BinaryExpression: {
         const op = node.operatorToken && node.operatorToken.kind;
-        if (op === ts.SyntaxKind.AmpersandAmpersandToken || op === ts.SyntaxKind.BarBarToken || op === ts.SyntaxKind.QuestionQuestionToken) {
-          complexity += 1;
+        if (
+          op === ts.SyntaxKind.AmpersandAmpersandToken ||
+          op === ts.SyntaxKind.BarBarToken ||
+          op === ts.SyntaxKind.QuestionQuestionToken
+        ) {
+          cc += 1;
         }
         break;
       }
@@ -89,272 +190,414 @@ function complexityFromSource(sourceFile) {
     }
     ts.forEachChild(node, visit);
   }
-
   visit(sourceFile);
-  return complexity;
+  return cc;
 }
 
-function halsteadFromSource(sourceFile) {
-  const operators = new Map();
-  const operands = new Map();
-
-  function add(map, key) {
-    map.set(key, (map.get(key) || 0) + 1);
-  }
-
-  function visit(node) {
-    if (ts.isBinaryExpression(node)) {
-      add(operators, ts.tokenToString(node.operatorToken.kind) || String(node.operatorToken.kind));
-    } else if (ts.isPrefixUnaryExpression(node) || ts.isPostfixUnaryExpression(node)) {
-      add(operators, ts.tokenToString(node.operator) || String(node.operator));
-    } else if (ts.isConditionalExpression(node)) {
-      add(operators, '?:');
-    } else if (ts.isCallExpression(node)) {
-      add(operators, 'call');
-    } else if (ts.isPropertyAccessExpression(node)) {
-      add(operators, '.');
-    }
-
-    if (ts.isIdentifier(node)) {
-      add(operands, node.text);
-    } else if (ts.isStringLiteral(node) || ts.isNumericLiteral(node) || ts.isBigIntLiteral(node)) {
-      add(operands, node.getText(sourceFile));
-    } else if (node.kind === ts.SyntaxKind.TrueKeyword || node.kind === ts.SyntaxKind.FalseKeyword || node.kind === ts.SyntaxKind.NullKeyword) {
-      add(operands, ts.tokenToString(node.kind) || String(node.kind));
-    }
-
-    ts.forEachChild(node, visit);
-  }
-
-  visit(sourceFile);
-
-  const n1 = operators.size;
-  const n2 = operands.size;
-  const N1 = Array.from(operators.values()).reduce((a, b) => a + b, 0);
-  const N2 = Array.from(operands.values()).reduce((a, b) => a + b, 0);
-
-  const vocabulary = Math.max(1, n1 + n2);
-  const length = Math.max(1, N1 + N2);
-  const volume = length * Math.log2(vocabulary);
-
-  return {
-    distinctOperators: n1,
-    distinctOperands: n2,
-    totalOperators: N1,
-    totalOperands: N2,
-    vocabulary,
-    length,
-    volume,
-  };
-}
-
-function maintainabilityIndex(volume, complexity, sloc) {
-  const safeVolume = Math.max(1, volume);
-  const safeSloc = Math.max(1, sloc);
-  const miRaw = 171 - 5.2 * Math.log(safeVolume) - 0.23 * complexity - 16.2 * Math.log(safeSloc);
-  const mi = Math.max(0, (miRaw * 100) / 171);
-  return Number(mi.toFixed(2));
-}
-
-function miRating(mi) {
-  if (mi >= 80) return 'Good';
-  if (mi >= 50) return 'Moderate';
-  return 'Poor';
-}
+// --- File analysis ---
 
 function analyzeFile(filePath) {
   const code = fs.readFileSync(filePath, 'utf8');
   const sourceFile = ts.createSourceFile(filePath, code, ts.ScriptTarget.Latest, true);
-  const lineStats = countLines(code);
-  const cyclomatic = complexityFromSource(sourceFile);
-  const halstead = halsteadFromSource(sourceFile);
-  const mi = maintainabilityIndex(halstead.volume, cyclomatic, lineStats.sloc);
+  const { sloc, total: totalLines } = countLines(code);
+  const cyclomatic = fileLevelCyclomatic(sourceFile);
+  const functions = extractFunctions(sourceFile);
+  const maxFnCC = functions.length > 0 ? Math.max(...functions.map((f) => f.cc)) : 0;
 
   return {
     file: path.relative(ROOT, filePath).replace(/\\/g, '/'),
-    sloc: lineStats.sloc,
-    totalLines: lineStats.total,
+    sloc,
+    totalLines,
     cyclomatic,
-    halsteadVolume: Number(halstead.volume.toFixed(2)),
-    mi,
-    rating: miRating(mi),
+    maxFnCC,
+    fnCount: functions.length,
+    functions,
   };
 }
+
+// --- Aggregation helpers ---
 
 function avg(values) {
   if (values.length === 0) return 0;
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
+function ccLevel(cc) {
+  if (cc >= CC_ERROR_THRESHOLD) return 'High';
+  if (cc >= CC_WARN_THRESHOLD) return 'Medium';
+  return 'Low';
+}
+
+// --- Snapshot / trending ---
+
+function loadLatestSnapshot() {
+  if (!fs.existsSync(HISTORY_DIR)) return null;
+  const files = fs.readdirSync(HISTORY_DIR).filter((f) => f.endsWith('.json')).sort();
+  if (files.length === 0) return null;
+  try {
+    return JSON.parse(fs.readFileSync(path.join(HISTORY_DIR, files[files.length - 1]), 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function computeDeltas(current, previous) {
+  if (!previous) return null;
+  const deltas = {};
+  for (const cb of current.buckets) {
+    const pb = previous.buckets.find((b) => b.name === cb.name);
+    if (!pb) continue;
+    deltas[cb.name] = {
+      avgCC: Number((cb.avgCC - pb.avgCC).toFixed(2)),
+      highCC: cb.highCC - pb.highCC,
+      fnOver25: cb.fnOver25 - (pb.fnOver25 ?? 0),
+      fnOver15: cb.fnOver15 - (pb.fnOver15 ?? 0),
+    };
+  }
+  if (previous.totals) {
+    const cprev = previous.totals;
+    const ccur = current.totals;
+    deltas.totals = {
+      files: ccur.files - cprev.files,
+      functions: ccur.functions - cprev.functions,
+      fnOver25: ccur.fnOver25 - (cprev.fnOver25 ?? 0),
+      fnOver15: ccur.fnOver15 - (cprev.fnOver15 ?? 0),
+    };
+  }
+  return deltas;
+}
+
+function formatDelta(val) {
+  if (val === 0) return '\u2014';
+  return val > 0 ? `+${val}` : `${val}`;
+}
+
+// --- HTML report builder ---
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function ccClass(cc) {
+  if (cc >= CC_ERROR_THRESHOLD) return 'bad';
+  if (cc >= CC_WARN_THRESHOLD) return 'warn';
+  return 'good';
+}
+
+function buildComplexityHtml(report) {
+  const generatedAt = new Date(report.generatedAt).toLocaleString();
+
+  // Summary cards
+  const summaryCards = report.buckets.map((b) => `
+    <div class="summary-card">
+      <h3>${escHtml(b.name)}</h3>
+      <div class="stat-row"><span class="stat-label">Files</span><span class="stat-val">${b.fileCount}</span></div>
+      <div class="stat-row"><span class="stat-label">Functions</span><span class="stat-val">${b.fnCount}</span></div>
+      <div class="stat-row"><span class="stat-label">Avg CC</span><span class="stat-val">${b.avgCC}</span></div>
+      <div class="stat-row"><span class="stat-label">CC &ge; 25</span><span class="stat-val ${b.fnOver25 > 0 ? 'bad' : ''}">${b.fnOver25}</span></div>
+      <div class="stat-row"><span class="stat-label">CC &ge; 15</span><span class="stat-val ${(b.fnOver15 - b.fnOver25) > 0 ? 'warn' : ''}">${b.fnOver15 - b.fnOver25}</span></div>
+    </div>`).join('');
+
+  // Trend section
+  let trendSection = '';
+  if (report.deltas) {
+    const trendRows = report.buckets.map((b) => {
+      const d = report.deltas[b.name];
+      if (!d) return '';
+      return `
+        <tr>
+          <td>${escHtml(b.name)}</td>
+          <td class="num ${d.avgCC > 0 ? 'warn' : d.avgCC < 0 ? 'good' : ''}">${formatDelta(d.avgCC)}</td>
+          <td class="num ${d.highCC > 0 ? 'bad' : d.highCC < 0 ? 'good' : ''}">${formatDelta(d.highCC)}</td>
+          <td class="num ${d.fnOver25 > 0 ? 'bad' : d.fnOver25 < 0 ? 'good' : ''}">${formatDelta(d.fnOver25)}</td>
+          <td class="num ${d.fnOver15 > 0 ? 'warn' : d.fnOver15 < 0 ? 'good' : ''}">${formatDelta(d.fnOver15)}</td>
+        </tr>`;
+    }).join('');
+    let totalsRow = '';
+    if (report.deltas.totals) {
+      const dt = report.deltas.totals;
+      totalsRow = `
+        <tr class="totals-row">
+          <td><strong>total</strong></td>
+          <td class="num">&mdash;</td>
+          <td class="num">&mdash;</td>
+          <td class="num ${dt.fnOver25 > 0 ? 'bad' : dt.fnOver25 < 0 ? 'good' : ''}">${formatDelta(dt.fnOver25)}</td>
+          <td class="num ${dt.fnOver15 > 0 ? 'warn' : dt.fnOver15 < 0 ? 'good' : ''}">${formatDelta(dt.fnOver15)}</td>
+        </tr>`;
+    }
+    trendSection = `
+  <section>
+    <h2>Trend vs Last Snapshot</h2>
+    <table>
+      <thead><tr><th>Bucket</th><th>Avg CC</th><th>High CC files</th><th>Fn &ge; 25</th><th>Fn &ge; 15</th></tr></thead>
+      <tbody>${trendRows}${totalsRow}
+      </tbody>
+    </table>
+  </section>`;
+  }
+
+  // Per-bucket file tables
+  let fileIdx = 0;
+  const bucketSections = report.buckets.map((b) => {
+    const sorted = b.files.slice().sort((x, y) => y.maxFnCC - x.maxFnCC);
+    const fileRows = sorted.map((f) => {
+      const idx = fileIdx++;
+      const rowClass = f.maxFnCC >= CC_ERROR_THRESHOLD ? 'row-bad' : f.maxFnCC >= CC_WARN_THRESHOLD ? 'row-warn' : '';
+      const fnRows = f.functions
+        .slice()
+        .sort((x, y) => y.cc - x.cc)
+        .map((fn) => `
+              <tr>
+                <td class="fn-name">${escHtml(fn.name)}</td>
+                <td class="num">line ${fn.line}</td>
+                <td class="num ${ccClass(fn.cc)}">${fn.cc}</td>
+                <td class="num">${fn.sloc}</td>
+              </tr>`).join('');
+      const shortFile = f.file.replace(/^src\/[^/]+\//, '');
+      const fileLink = `../../${f.file}`;
+      return `
+          <tr class="file-row ${rowClass}" onclick="toggleDetail('fn-detail-${idx}', this)">
+            <td><span class="expand-icon" id="icon-${idx}">&#9654;</span> <a href="${escHtml(fileLink)}" onclick="event.stopPropagation()" title="${escHtml(f.file)}">${escHtml(shortFile)}</a></td>
+            <td class="num">${f.cyclomatic}</td>
+            <td class="num ${ccClass(f.maxFnCC)}">${f.maxFnCC}</td>
+            <td class="num">${f.fnCount}</td>
+            <td class="num">${f.sloc}</td>
+          </tr>
+          <tr class="fn-detail" id="fn-detail-${idx}" style="display:none">
+            <td colspan="5">
+              <table class="fn-table">
+                <thead><tr><th>Function</th><th>Location</th><th>CC</th><th>SLOC</th></tr></thead>
+                <tbody>${fnRows}
+                </tbody>
+              </table>
+            </td>
+          </tr>`;
+    }).join('');
+    return `
+  <section>
+    <h2>${escHtml(b.name)} <span class="badge">${b.fileCount} files &middot; ${b.fnCount} fns &middot; avg CC ${b.avgCC}</span></h2>
+    <table class="file-table">
+      <thead><tr><th>File</th><th>File CC</th><th>Max Fn CC</th><th>Fns</th><th>SLOC</th></tr></thead>
+      <tbody>${fileRows}
+      </tbody>
+    </table>
+  </section>`;
+  }).join('');
+
+  // Top hotspot functions
+  const hotspotRows = report.topHotspots.map((h, i) => {
+    const shortFile = h.file.replace(/^src\/[^/]+\//, '');
+    return `
+        <tr>
+          <td class="num rank">${i + 1}</td>
+          <td class="fn-name">${escHtml(h.fnName)}</td>
+          <td class="file-cell" title="${escHtml(h.file)}"><a href="../../${escHtml(h.file)}">${escHtml(shortFile)}</a>:${h.line}</td>
+          <td>${escHtml(h.bucket)}</td>
+          <td class="num ${ccClass(h.cc)}">${h.cc}</td>
+          <td class="num">${h.sloc}</td>
+        </tr>`;
+  }).join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code Complexity Report &mdash; revealGDB</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px;
+    background: #0d1117;
+    color: #c9d1d9;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  header { margin-bottom: 28px; }
+  header h1 { font-size: 20px; font-weight: 600; color: #e6edf3; }
+  header .meta { font-size: 11px; color: #6e7681; margin-top: 4px; }
+  h2 {
+    font-size: 15px; font-weight: 600; color: #e6edf3;
+    margin-bottom: 10px;
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  h2 .badge { font-size: 11px; font-weight: 400; color: #6e7681; }
+  section { margin-bottom: 36px; }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .summary-card {
+    background: #161b22; border: 1px solid #30363d;
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .summary-card h3 { font-size: 13px; font-weight: 600; color: #e6edf3; margin-bottom: 10px; }
+  .stat-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px; }
+  .stat-label { color: #8b949e; }
+  .stat-val { font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th {
+    text-align: left; color: #6e7681; font-weight: 500;
+    border-bottom: 1px solid #30363d; padding: 5px 8px;
+    white-space: nowrap; background: #161b22;
+    position: sticky; top: 0;
+  }
+  td { padding: 5px 8px; border-bottom: 1px solid #161b22; vertical-align: middle; }
+  .file-table tbody tr:last-child td { border-bottom: none; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.fn-name { font-family: "SFMono-Regular", Consolas, monospace; font-size: 11px; }
+  td.file-cell { font-size: 11px; color: #8b949e; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  td.rank { color: #6e7681; width: 30px; }
+  a { color: #58a6ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .file-row { cursor: pointer; user-select: none; }
+  .file-row:hover { background: #1c2128; }
+  .row-warn > td:first-child { border-left: 2px solid #d29922; padding-left: 6px; }
+  .row-bad  > td:first-child { border-left: 2px solid #f85149; padding-left: 6px; }
+  .expand-icon { display: inline-block; font-size: 9px; color: #6e7681; width: 12px; transition: transform 0.15s; }
+  .expand-icon.open { transform: rotate(90deg); }
+  .fn-detail td { background: #0d1117; padding: 0; }
+  .fn-table { margin: 0; }
+  .fn-table th { background: #0d1117; border-bottom-color: #21262d; font-size: 11px; }
+  .fn-table td { padding: 3px 8px; border-bottom-color: #0d1117; }
+  .totals-row td { border-top: 1px solid #30363d; }
+  .good { color: #3fb950; }
+  .warn { color: #d29922; }
+  .bad  { color: #f85149; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Code Complexity Report</h1>
+  <div class="meta">Generated: ${escHtml(generatedAt)} &nbsp;&middot;&nbsp; Thresholds: warn &ge; ${CC_WARN_THRESHOLD}, error &ge; ${CC_ERROR_THRESHOLD} &nbsp;&middot;&nbsp; Test files excluded</div>
+</header>
+<div class="summary-grid">
+${summaryCards}
+</div>
+${trendSection}
+${bucketSections}
+<section>
+  <h2>Top ${report.topHotspots.length} Hotspot Functions</h2>
+  <table>
+    <thead><tr><th>#</th><th>Function</th><th>File:Line</th><th>Bucket</th><th>CC</th><th>SLOC</th></tr></thead>
+    <tbody>${hotspotRows}
+    </tbody>
+  </table>
+</section>
+<script>
+  function toggleDetail(id, row) {
+    var detail = document.getElementById(id);
+    var icon = row.querySelector('.expand-icon');
+    var hidden = detail.style.display === 'none';
+    detail.style.display = hidden ? '' : 'none';
+    icon.classList.toggle('open', hidden);
+  }
+<\/script>
+</body>
+</html>
+`;
+}
+
+// --- Report writing ---
+
 function writeReports(report) {
   fs.mkdirSync(REPORT_DIR, { recursive: true });
 
-  const jsonPath = path.join(REPORT_DIR, 'mi-report.json');
+  const jsonPath = path.join(REPORT_DIR, 'complexity-report.json');
   fs.writeFileSync(jsonPath, JSON.stringify(report, null, 2) + '\n', 'utf8');
 
-  const mdLines = [];
-  mdLines.push('# Maintainability Metrics Report');
-  mdLines.push('');
-  mdLines.push(`Generated: ${new Date().toISOString()}`);
-  mdLines.push('');
-  mdLines.push('Test files are excluded by filename and test-only directories.');
-  mdLines.push('');
+  const html = buildComplexityHtml(report);
+  const htmlPath = path.join(REPORT_DIR, 'complexity-report.html');
+  fs.writeFileSync(htmlPath, html, 'utf8');
 
-  for (const bucket of report.buckets) {
-    mdLines.push(`## ${bucket.name}`);
-    mdLines.push('');
-    mdLines.push(`- Files analyzed: ${bucket.fileCount}`);
-    mdLines.push(`- Average MI: ${bucket.averageMI.toFixed(2)}`);
-    mdLines.push(`- Median MI: ${bucket.medianMI.toFixed(2)}`);
-    mdLines.push(`- Poor/Moderate/Good: ${bucket.countPoor}/${bucket.countModerate}/${bucket.countGood}`);
-    mdLines.push('');
-    mdLines.push('| File | MI | Rating | Cyclomatic | SLOC | Halstead Volume |');
-    mdLines.push('| --- | ---: | --- | ---: | ---: | ---: |');
-    for (const f of bucket.files.slice(0, 20)) {
-      mdLines.push(`| ${f.file} | ${f.mi.toFixed(2)} | ${f.rating} | ${f.cyclomatic} | ${f.sloc} | ${f.halsteadVolume.toFixed(2)} |`);
-    }
-    mdLines.push('');
-  }
-
-  mdLines.push('## Least Maintainable Files (Overall)');
-  mdLines.push('');
-  mdLines.push('| File | Bucket | MI | Rating | Cyclomatic | SLOC | Halstead Volume |');
-  mdLines.push('| --- | --- | ---: | --- | ---: | ---: | ---: |');
-  for (const item of report.leastMaintainable) {
-    mdLines.push(`| ${item.file} | ${item.bucket} | ${item.mi.toFixed(2)} | ${item.rating} | ${item.cyclomatic} | ${item.sloc} | ${item.halsteadVolume.toFixed(2)} |`);
-  }
-  mdLines.push('');
-
-  const mdPath = path.join(REPORT_DIR, 'mi-report.md');
-  fs.writeFileSync(mdPath, mdLines.join('\n') + '\n', 'utf8');
-
-  const planLines = [];
-  planLines.push('# Maintainability Remediation Plan (MI)');
-  planLines.push('');
-  planLines.push(`Generated: ${new Date().toISOString()}`);
-  planLines.push('');
-  planLines.push('Target set: lowest maintainability files based on current MI analysis.');
-  planLines.push('');
-
-  report.leastMaintainable.forEach((f, index) => {
-    planLines.push(`## ${index + 1}. ${f.file}`);
-    planLines.push('');
-    planLines.push(`- Bucket: ${f.bucket}`);
-    planLines.push(`- Current MI: ${f.mi.toFixed(2)} (${f.rating})`);
-    planLines.push(`- Cyclomatic: ${f.cyclomatic}`);
-    planLines.push(`- SLOC: ${f.sloc}`);
-    planLines.push(`- Halstead Volume: ${f.halsteadVolume.toFixed(2)}`);
-    planLines.push('- Primary drivers: high branch density, function length, and expression volume.');
-    planLines.push('- Remediation actions:');
-    planLines.push('  1. Extract decision-heavy blocks into small pure helpers (target <= 20 SLOC/helper).');
-    planLines.push('  2. Replace nested conditionals with guard clauses and early returns.');
-    planLines.push('  3. Split IO/orchestration code from transformation/parsing logic.');
-    planLines.push('  4. Introduce typed data mappers to reduce ad-hoc object mutation.');
-    planLines.push('  5. Add focused tests around extracted helpers before and after refactor.');
-    planLines.push(`- MI target after remediation: >= ${Math.max(60, Math.ceil(f.mi / 10) * 10)}`);
-    planLines.push('');
-  });
-
-  planLines.push('## Execution Order');
-  planLines.push('');
-  planLines.push('1. Refactor the top 3 lowest-MI files first.');
-  planLines.push('2. Re-run MI report and verify each improved by at least 10 points.');
-  planLines.push('3. Continue with next files until all poor files are in moderate or good range.');
-  planLines.push('');
-
-  const planPath = path.join(REPORT_DIR, 'mi-remediation-plan.md');
-  fs.writeFileSync(planPath, planLines.join('\n') + '\n', 'utf8');
-
-  return { jsonPath, mdPath, planPath };
+  return { jsonPath, htmlPath };
 }
+
+// --- Bucket builder ---
 
 function buildBucket(name, dir) {
   if (!fs.existsSync(dir)) {
-    return {
-      name,
-      fileCount: 0,
-      averageMI: 0,
-      medianMI: 0,
-      countPoor: 0,
-      countModerate: 0,
-      countGood: 0,
-      files: [],
-    };
+    return { name, fileCount: 0, fnCount: 0, avgCC: 0, highCC: 0, mediumCC: 0, lowCC: 0, fnOver25: 0, fnOver15: 0, files: [] };
   }
 
-  const files = walkFiles(dir)
+  const filePaths = walkFiles(dir)
     .map((f) => path.relative(ROOT, f))
     .filter((rel) => !isTestLikeFile(rel))
     .map((rel) => path.join(ROOT, rel));
 
-  const analyzed = files.map(analyzeFile).sort((a, b) => a.mi - b.mi);
-  const miValues = analyzed.map((f) => f.mi).sort((a, b) => a - b);
-  const median =
-    miValues.length === 0
-      ? 0
-      : miValues.length % 2 === 0
-        ? (miValues[miValues.length / 2 - 1] + miValues[miValues.length / 2]) / 2
-        : miValues[Math.floor(miValues.length / 2)];
+  const analyzed = filePaths.map(analyzeFile);
+  const allFns = analyzed.flatMap((f) => f.functions);
 
   return {
     name,
     fileCount: analyzed.length,
-    averageMI: avg(analyzed.map((f) => f.mi)),
-    medianMI: median,
-    countPoor: analyzed.filter((f) => f.rating === 'Poor').length,
-    countModerate: analyzed.filter((f) => f.rating === 'Moderate').length,
-    countGood: analyzed.filter((f) => f.rating === 'Good').length,
+    fnCount: allFns.length,
+    avgCC: Number(avg(analyzed.map((f) => f.cyclomatic)).toFixed(2)),
+    highCC: analyzed.filter((f) => f.maxFnCC >= CC_ERROR_THRESHOLD).length,
+    mediumCC: analyzed.filter((f) => f.maxFnCC >= CC_WARN_THRESHOLD && f.maxFnCC < CC_ERROR_THRESHOLD).length,
+    lowCC: analyzed.filter((f) => f.maxFnCC < CC_WARN_THRESHOLD).length,
+    fnOver25: allFns.filter((fn) => fn.cc >= CC_ERROR_THRESHOLD).length,
+    fnOver15: allFns.filter((fn) => fn.cc >= CC_WARN_THRESHOLD).length,
     files: analyzed,
   };
 }
 
+// --- Entry point ---
+
 function main() {
   const buckets = TARGET_BUCKETS.map((b) => buildBucket(b.name, b.dir));
   const allFiles = buckets.flatMap((b) => b.files.map((f) => ({ ...f, bucket: b.name })));
-  const leastMaintainable = allFiles.sort((a, b) => a.mi - b.mi).slice(0, 10);
+  const allFunctions = allFiles.flatMap((f) =>
+    f.functions.map((fn) => ({ fnName: fn.name, file: f.file, line: fn.line, cc: fn.cc, sloc: fn.sloc, bucket: f.bucket }))
+  );
+  const topHotspots = allFunctions.slice().sort((a, b) => b.cc - a.cc).slice(0, TOP_HOTSPOTS_COUNT);
 
+  const totals = {
+    files: allFiles.length,
+    functions: allFunctions.length,
+    fnOver25: allFunctions.filter((fn) => fn.cc >= CC_ERROR_THRESHOLD).length,
+    fnOver15: allFunctions.filter((fn) => fn.cc >= CC_WARN_THRESHOLD).length,
+  };
+
+  const previous = loadLatestSnapshot();
   const report = {
     generatedAt: new Date().toISOString(),
     root: ROOT,
-    excludedRules: [
-      '*.test.ts|*.test.tsx',
-      '*.spec.ts|*.spec.tsx',
-      '*-test.ts|*-test.tsx|*-test.html',
-      'tests/**',
-      'test/**',
-      '__tests__/**',
-      'test-helpers/**',
-      'performance/**',
-    ],
+    thresholds: { warn: CC_WARN_THRESHOLD, error: CC_ERROR_THRESHOLD },
     buckets,
-    leastMaintainable,
+    totals,
+    topHotspots,
+    deltas: computeDeltas({ buckets, totals }, previous),
   };
 
-  const out = writeReports(report);
-  console.log('Maintainability reports generated:');
-  console.log(`- ${path.relative(ROOT, out.jsonPath).replace(/\\/g, '/')}`);
-  console.log(`- ${path.relative(ROOT, out.mdPath).replace(/\\/g, '/')}`);
-  console.log(`- ${path.relative(ROOT, out.planPath).replace(/\\/g, '/')}`);
+  if (SNAPSHOT_FLAG) {
+    fs.mkdirSync(HISTORY_DIR, { recursive: true });
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 16);
+    const snapPath = path.join(HISTORY_DIR, `${stamp}.json`);
+    fs.writeFileSync(snapPath, JSON.stringify(report, null, 2) + '\n', 'utf8');
+    console.log(`Snapshot saved: ${path.relative(ROOT, snapPath).replace(/\\/g, '/')}`);
+  }
 
-  for (const bucket of buckets) {
-    console.log(
-      `${bucket.name}: files=${bucket.fileCount}, avgMI=${bucket.averageMI.toFixed(2)}, poor/moderate/good=${bucket.countPoor}/${bucket.countModerate}/${bucket.countGood}`
-    );
+  const out = writeReports(report);
+  console.log('Complexity reports generated:');
+  console.log(`  ${path.relative(ROOT, out.jsonPath).replace(/\\/g, '/')}`);
+  console.log(`  ${path.relative(ROOT, out.htmlPath).replace(/\\/g, '/')}`);
+  console.log('');
+  for (const b of buckets) {
+    console.log(`  ${b.name}: ${b.fileCount} files, ${b.fnCount} fns  --  high CC: ${b.fnOver25}  medium CC: ${b.fnOver15 - b.fnOver25}`);
+  }
+  console.log('');
+  if (topHotspots.length > 0) {
+    const top = topHotspots[0];
+    console.log(`  Top hotspot: ${top.fnName} (${top.file}:${top.line}) CC=${top.cc}`);
   }
 }
 
 main();
-
-
-/**
- * @file maintainability-metrics.cjs
- * @description Source module for maintainability-metrics.
- */
-
-
-/**
- * maintainability-metrics module.
- *
- * @remarks
- * Source module for maintainability-metrics.
- */

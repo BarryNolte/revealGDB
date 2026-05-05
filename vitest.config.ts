@@ -50,6 +50,9 @@ const buildDefines = {
 export default defineConfig({
   plugins: [react()],
   define: buildDefines,
+  benchmark: {
+    include: ["tests/bench/**/*.bench.ts"],
+  },
   test: {
     globals: true,
     environment: "jsdom",

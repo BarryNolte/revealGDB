@@ -5,7 +5,7 @@
  * Exported symbols include `ConnectionNotifier`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { Step, StepState } from "../../common/gdb-common";
-import { mainWindow } from "../main";
+import { sendToRenderer } from "../ipc-sender";
 
 export class ConnectionNotifier {
   public static readonly shellRunning: string = "(revealGDB) Shell Running (revealGDB)";
@@ -74,7 +74,7 @@ export class ConnectionNotifier {
         this.notifyGdbStartup("target-running", "in-progress");
         return;
       }
-      mainWindow.webContents.send("connection-status", ["console-capture", { error, line }]);
+      sendToRenderer("connection-status", ["console-capture", { error, line }]);
     });
   }
 
@@ -85,6 +85,6 @@ export class ConnectionNotifier {
    * @param stepState - Current state object read or updated by this operation.
    */
   public notifyGdbStartup(step: Step, stepState: StepState): void {
-    mainWindow.webContents.send("connection-status", ["gdb-startup", step, stepState]);
+    sendToRenderer("connection-status", ["gdb-startup", step, stepState]);
   }
 }

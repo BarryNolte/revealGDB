@@ -4,7 +4,7 @@
  * @remarks
  * Exported symbols include `MiExecAsyncHandler`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
-import { mainWindow } from "../main";
+import { sendToRenderer } from "../ipc-sender";
 import { MiOutputHost } from "./mi-output-types";
 
 export class MiExecAsyncHandler {
@@ -40,7 +40,7 @@ export class MiExecAsyncHandler {
         const tid = this.rgxThreadIdExtractor.exec(data)?.groups?.tid || undefined;
 
         this.host.gdbDB.startThreads(tid);
-        mainWindow.webContents.send("notify-render", { command: "status-running" });
+        sendToRenderer("notify-render", { command: "status-running" });
         break;
       }
       case "stopped": {
@@ -108,7 +108,7 @@ export class MiExecAsyncHandler {
         }
 
         this.host.emit("gdb-stopped");
-        mainWindow.webContents.send("notify-render", { command: "status-stopped" });
+        sendToRenderer("notify-render", { command: "status-stopped" });
         break;
       }
       default: {

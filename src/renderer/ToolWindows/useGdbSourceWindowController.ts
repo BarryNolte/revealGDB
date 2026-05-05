@@ -10,8 +10,7 @@ import "ace-builds/src-noconflict/ext-searchbox";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import AceEditor from "react-ace";
 
-import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
-import { gdbShowSourceInfo } from "../../main/mi-interface/mi-interface";
+import { gdbBreakpoint, gdbShowSourceInfo } from "../../common/gdb-state-types";
 import { configureAceBasePath, defaultMode, editorModes } from "./GdbSourceEditorConfig";
 import {
   SourceWindowState,

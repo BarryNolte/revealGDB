@@ -14,8 +14,8 @@
  * Tests for GdbOutputCapture parsing behavior.
  */
 import { describe, expect, it } from "vitest";
-import { gdbStateDatabase } from "../../../../../src/main/mi-interface/gdb-state-database/gdbStateDatabase";
 import { GdbOutputCapture } from "../../../../../src/main/mi-interface/gdb-parsers/gdb-output-capture";
+import { gdbStateDatabase } from "../../../../../src/main/mi-interface/gdb-state-database/gdbStateDatabase";
 
 describe("GdbOutputCapture", () => {
   it("captures symbol files and sections", () => {
@@ -104,5 +104,39 @@ describe("GdbOutputCapture", () => {
     expect(funcs).toBeDefined();
     expect(funcs).toHaveLength(1);
     expect(funcs?.[0]).toEqual({ line: "1", function: "unit_func" });
+  });
+
+  it("resets buffered capture when a new start marker appears", () => {
+    const db = new gdbStateDatabase();
+    const capture = new GdbOutputCapture(db);
+
+    expect(capture.CaptureLine("<<<<file-info>>>>")).toBe(true);
+    expect(capture.CaptureLine('\\t0x00001000 - 0x00002000 is .text\\n"')).toBe(true);
+
+    expect(capture.CaptureLine("<<<<function-names>>>>")).toBe(true);
+    expect(capture.CaptureLine('"\\nFile "')).toBe(true);
+    expect(capture.CaptureLine('"src/switch.c:\\n"')).toBe(true);
+    expect(capture.CaptureLine('"9:\\tswitch_func();"')).toBe(true);
+    expect(capture.CaptureLine(">>>>end-capture<<<<")).toBe(true);
+
+    expect(db.getSymbolFiles().sections).toHaveLength(0);
+    expect(db.getFunctionNames("src/switch.c")).toEqual([{ line: "9", function: "switch_func" }]);
+  });
+
+  it("consumes end marker while inactive", () => {
+    const db = new gdbStateDatabase();
+    const capture = new GdbOutputCapture(db);
+
+    expect(capture.CaptureLine(">>>>end-capture<<<<")).toBe(true);
+    expect(capture.CaptureLine("still-inactive")).toBe(false);
+
+    expect(db.getSymbolFiles().sections).toHaveLength(0);
+  });
+
+  it("passes through unknown marker-like lines while inactive", () => {
+    const db = new gdbStateDatabase();
+    const capture = new GdbOutputCapture(db);
+
+    expect(capture.CaptureLine("<<<<unknown-capture>>>>")).toBe(false);
   });
 });

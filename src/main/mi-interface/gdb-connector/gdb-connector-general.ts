@@ -5,8 +5,8 @@
  * Exported symbols include `gdbConnectorIdfOnWsl`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { ChildProcess, spawn } from "child_process";
+import { NormalizedConnection } from "../../../common/connection-types";
 import { SelectedConnection } from "../../../common/gdb-common";
-import { NormalizedConnection } from "../../../renderer/Dialogs/connectionManagerModel";
 import { ConnectionNotifier } from "../../utilities/ConnectionNotifier";
 import { gdbStateDatabase } from "../gdb-state-database/gdbStateDatabase";
 import { GdbConnector, OutputAvailableEventArgs } from "./gdb-connector";

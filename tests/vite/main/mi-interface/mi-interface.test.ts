@@ -49,19 +49,13 @@ vi.mock("../../../../src/main/mi-interface/gdb-connector/gdb-connector-general",
   }),
 }));
 
-vi.mock("../../../../src/main/main", async () => {
-  const { createMockBrowserWindow } =
-    await import("../../../helpers/ipc-test-harness.js");
+vi.mock("../../../../src/main/app-settings", () => ({
+  AppSettings: mockSettings,
+}));
 
-  return {
-    AppSettings: mockSettings,
-    mainWindow: createMockBrowserWindow({
-      webContents: {
-        send: mockWebContents.send,
-      },
-    }),
-  };
-});
+vi.mock("../../../../src/main/ipc-sender", () => ({
+  sendToRenderer: mockWebContents.send,
+}));
 
 vi.mock("../../../../src/main/mi-interface/gdb-parsers/gdb-output-capture", () => ({
   GdbOutputCapture: vi.fn(function (this: GdbAny) {

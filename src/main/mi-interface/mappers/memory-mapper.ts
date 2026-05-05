@@ -4,12 +4,8 @@
  * @remarks
  * Exported symbols include `MemoryData`, `mapRegexGroupsToMemoryData`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
-export type MemoryData = {
-  begin: string;
-  offset: string;
-  end: string;
-  data: Uint8Array;
-};
+export type { MemoryData } from "../../../common/ipc-data-types";
+import type { MemoryData } from "../../../common/ipc-data-types";
 
 /**
  * Parses input into hex contents data.

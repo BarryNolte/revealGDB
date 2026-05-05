@@ -4,7 +4,7 @@
  * @remarks
  * Exported symbols include `MemoryResultStrategy`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
-import { mainWindow } from "../../main";
+import { sendToRenderer } from "../../ipc-sender";
 import { mapRegexGroupsToMemoryData } from "../mappers/memory-mapper";
 import { MiOutputHost } from "../mi-output-types";
 import { MiDoneResultStrategy } from "./mi-result-strategy-types";
@@ -39,7 +39,7 @@ export class MemoryResultStrategy implements MiDoneResultStrategy {
    */
   handle(_host: MiOutputHost, output: string, _resList: string): Promise<boolean> {
     const memData = this.rgxMemData.exec(output);
-    mainWindow.webContents.send("data-memory", mapRegexGroupsToMemoryData(memData?.groups));
+    sendToRenderer("data-memory", mapRegexGroupsToMemoryData(memData?.groups));
     return Promise.resolve(true);
   }
 }

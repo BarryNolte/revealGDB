@@ -16,6 +16,8 @@ import { WslUtilities } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
 import { HTMLTableGenerator } from "../../common/HtmlTableGenerator";
 
+const DEBUGGER_DISCONNECTED_BANNER = "".padStart(51, "*"); //" "***************************************************";
+
 /**
  * Performs send notify render as part of this module's internal workflow.
  *
@@ -163,54 +165,50 @@ export function onGdbCommand(command: string, context: IpcRegistrationContext): 
   }
 }
 
-/**
- * Performs handle notify main as part of this module's public API.
- *
- * @remarks
- * Participates in main-process IPC wiring between renderer requests and backend services.
- *
- * @param msg - Message payload received from debugger output or renderer events.
- * @param context - Dependency container used to register handlers and access shared services.
- */
-export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
+const GDB_GUI_PREFIX = "gdb.gui.";
+
+function handleConnectSelectedConnection(
+  msg: NotifyMainRequest,
+  context: IpcRegistrationContext,
+): void {
+  const selectedConnection: unknown = (msg?.data as { connection?: unknown } | undefined)
+    ?.connection;
+  debugLog("Received selected connection from renderer", selectedConnection);
+  if (context.isSelectedConnection(selectedConnection)) {
+    doConnection(selectedConnection, context);
+  } else {
+    console.error("Invalid selected connection payload", selectedConnection);
+  }
+}
+
+function handleCancelConnection(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
   const mainWindow = context.getMainWindow();
   const gdbInterface = context.getGdbInterface();
 
-  switch (msg?.command) {
-    case "connect-selected-connection": {
-      const selectedConnection: unknown = (msg?.data as { connection?: unknown } | undefined)
-        ?.connection;
-      debugLog("Received selected connection from renderer", selectedConnection);
-      if (context.isSelectedConnection(selectedConnection)) {
-        doConnection(selectedConnection, context);
-      } else {
-        console.error("Invalid selected connection payload", selectedConnection);
-      }
-      break;
-    }
-    case "cancel-connection": {
-      gdbInterface.disconnect();
-      sendNotifyRender(context, { command: "cancel-connection" });
+  gdbInterface.disconnect();
+  sendNotifyRender(context, { command: "cancel-connection" });
 
-      gdbInterface.gdbDB.clearDatabase();
-      gdbInterface.gdbDB.allDataUpdateUI();
+  gdbInterface.gdbDB.clearDatabase();
+  gdbInterface.gdbDB.allDataUpdateUI();
 
-      const lines: string[] = [
-        "***************************************************",
-        "***************************************************",
-        "*.............Debugger Disconnected...............*",
-        "***************************************************",
-        "***************************************************",
-      ];
+  const lines: string[] = [
+    DEBUGGER_DISCONNECTED_BANNER,
+    DEBUGGER_DISCONNECTED_BANNER,
+    "*             Debugger Disconnected               *",
+    DEBUGGER_DISCONNECTED_BANNER,
+    DEBUGGER_DISCONNECTED_BANNER,
+  ];
 
-      lines.forEach((line) =>
-        mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.debug, line),
-      );
-      break;
-    }
-    case "command-entry":
-      sendNotifyRender(context, { command: "command-entry" });
-      break;
+  lines.forEach((line) =>
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.debug, line),
+  );
+}
+
+function handleSaveSettings(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
+  const mainWindow = context.getMainWindow();
+  const command = msg?.command || "";
+
+  switch (command) {
     case "save-connections":
       context.appSettings.setSync(
         "gdb.connections",
@@ -221,46 +219,86 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       context.appSettings.setSync("gdb.lastUsedConnection", msg.data as never);
       break;
     case "save-app-show-debug-info":
-      context.appSettings.setSync("gdb.gui.showDebugInfo", msg.data as never);
+      context.appSettings.setSync(`${GDB_GUI_PREFIX}showDebugInfo`, msg.data as never);
       break;
     case "save-app-theme":
-      context.appSettings.setSync("gdb.gui.applicationTheme", msg.data as never);
+      context.appSettings.setSync(`${GDB_GUI_PREFIX}applicationTheme`, msg.data as never);
       setNativeThemeFromAppTheme(msg.data as string);
       break;
     case "save-cmd-history":
       context.appSettings.setSync("gdb.command.history", msg.data as never);
       break;
     case "save-source-viewer-theme":
-      context.appSettings.setSync("gdb.gui.sourceViewerTheme", msg.data as never);
+      context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerTheme`, msg.data as never);
       break;
     case "save-source-viewer-font-size":
-      context.appSettings.setSync("gdb.gui.sourceViewerFontSize", msg.data as never);
+      context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerFontSize`, msg.data as never);
       break;
     case "save-source-viewer-font-name":
-      context.appSettings.setSync("gdb.gui.sourceViewerFontName", msg.data as never);
+      context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerFontName`, msg.data as never);
       break;
-    case "save-dock-layout": {
-      context.appSettings.setSync("gdb.gui.dockLayout", msg.data as never);
-      context.appSettings.setSync("gdb.gui.windowSize", mapElectronWindowToWinPos(mainWindow));
+    case "save-dock-layout":
+      context.appSettings.setSync(`${GDB_GUI_PREFIX}dockLayout`, msg.data as never);
+      context.appSettings.setSync(
+        `${GDB_GUI_PREFIX}windowSize`,
+        mapElectronWindowToWinPos(mainWindow),
+      );
       break;
-    }
     case "save-grid-columns": {
       const { gridName, columns } = msg.data as {
         gridName: GridName;
         columns: GridColumnState[];
       };
-      context.appSettings.setSync(`gdb.gui.gridColumns.${gridName}`, columns as never);
+      context.appSettings.setSync(`${GDB_GUI_PREFIX}gridColumns.${gridName}`, columns as never);
       break;
     }
     case "reset-grid-columns": {
       const resetGridName = msg.data as GridName | undefined;
       if (resetGridName) {
-        context.appSettings.unsetSync(`gdb.gui.gridColumns.${resetGridName}`);
+        context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns.${resetGridName}`);
       } else {
-        context.appSettings.unsetSync("gdb.gui.gridColumns");
+        context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns`);
       }
       break;
     }
+  }
+}
+
+function handleShowSourceAt(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
+  const mainWindow = context.getMainWindow();
+  const gdbInterface = context.getGdbInterface();
+  const { fileName, line } = msg.data as { fileName: string; line: string };
+
+  void (async () => {
+    const contents = await gdbInterface.gdbDB.getSourceFileContents(fileName);
+    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, {
+      fileName,
+      line,
+      contents,
+    });
+  })();
+}
+
+/**
+ * Performs handle notify main as part of this module's public API.
+ *
+ * @remarks
+ * Participates in main-process IPC wiring between renderer requests and backend services.
+ *
+ * @param msg - Message payload received from debugger output or renderer events.
+ * @param context - Dependency container used to register handlers and access shared services.
+ */
+export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
+  switch (msg?.command) {
+    case "connect-selected-connection":
+      handleConnectSelectedConnection(msg, context);
+      break;
+    case "cancel-connection":
+      handleCancelConnection(msg, context);
+      break;
+    case "command-entry":
+      sendNotifyRender(context, { command: "command-entry" });
+      break;
     case "open-external":
       if (isSafeExternalUrl(msg.data)) {
         void shell.openExternal(msg.data);
@@ -277,18 +315,12 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       debugLog("Notifying GDB Interface that rendering is complete.");
       sendNotifyRender(context, { command: "command-entry" });
       break;
-    case "show-source-at": {
-      const { fileName, line } = msg.data as { fileName: string; line: string };
-      void (async () => {
-        const contents = await gdbInterface.gdbDB.getSourceFileContents(fileName);
-        mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, {
-          fileName,
-          line,
-          contents,
-        });
-      })();
+    case "show-source-at":
+      handleShowSourceAt(msg, context);
       break;
-    }
+    default:
+      handleSaveSettings(msg, context);
+      break;
   }
 }
 

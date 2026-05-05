@@ -16,6 +16,7 @@ const tseslintParser = require("@typescript-eslint/parser");
 const react = require("eslint-plugin-react");
 const reactHooks = require("eslint-plugin-react-hooks");
 const prettier = require("eslint-plugin-prettier");
+const sonarjs = require("eslint-plugin-sonarjs");
 const globals = require("globals");
 
 const revealGdbBuildGlobals = {
@@ -53,6 +54,7 @@ module.exports = [
       react,
       "react-hooks": reactHooks,
       prettier,
+      sonarjs,
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -72,6 +74,14 @@ module.exports = [
           argsIgnorePattern: "^_",
         },
       ],
+      "sonarjs/cognitive-complexity": ["warn", 15],
+      "sonarjs/no-duplicate-string": ["warn", { threshold: 4 }],
+      "sonarjs/no-collapsible-if": "warn",
+      "sonarjs/no-identical-functions": "warn",
+      "sonarjs/no-nested-switch": "warn",
+      "complexity": ["warn", 15],
+      "max-depth": ["warn", 4],
+      "max-lines-per-function": ["warn", { max: 80, skipBlankLines: true, skipComments: true }],
     },
   },
   {
@@ -90,6 +100,7 @@ module.exports = [
     plugins: {
       "@typescript-eslint": tseslintPlugin,
       prettier,
+      sonarjs,
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -106,6 +117,14 @@ module.exports = [
           argsIgnorePattern: "^_",
         },
       ],
+      "sonarjs/cognitive-complexity": ["warn", 15],
+      "sonarjs/no-duplicate-string": ["warn", { threshold: 4 }],
+      "sonarjs/no-collapsible-if": "warn",
+      "sonarjs/no-identical-functions": "warn",
+      "sonarjs/no-nested-switch": "warn",
+      "complexity": ["warn", 15],
+      "max-depth": ["warn", 4],
+      "max-lines-per-function": ["warn", { max: 80, skipBlankLines: true, skipComments: true }],
     },
   },
   {

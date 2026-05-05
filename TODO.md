@@ -25,6 +25,7 @@
 - Disassembly Window
   - Highlight registers?
   - "Show Disassembly" button working in source window
+  - maint info line-table [ regexp ]
 - Values on hover in source
 - Tracepoints - How to insert more automatically
 - Better Dock management (multiple source files in a Group)

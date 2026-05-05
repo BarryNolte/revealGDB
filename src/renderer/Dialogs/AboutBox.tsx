@@ -7,7 +7,7 @@
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
 import { forwardRef, JSX, useImperativeHandle, useState } from "react";
-import { AppMainVersionInfo } from "../App";
+import { AppMainVersionInfo } from "../utilities/app-version-state";
 import packageInfo from "./../../../package.json";
 import "./AboutBox.css";
 

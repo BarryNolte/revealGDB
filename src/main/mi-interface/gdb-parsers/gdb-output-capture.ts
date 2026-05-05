@@ -4,16 +4,32 @@
  * @remarks
  * Exported symbols include `CaptureType`, `GdbOutputCapture`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
-import { mainWindow } from "../../main";
+import { sendToRenderer } from "../../ipc-sender";
 import { gdbStateDatabase } from "../gdb-state-database/gdbStateDatabase";
 
 export type CaptureType = "" | "file-info" | "function-names";
+type ActiveCaptureType = Exclude<CaptureType, "">;
 
 export class GdbOutputCapture {
+  private static readonly captureStartMarkers: ReadonlyArray<[string, ActiveCaptureType]> = [
+    ["<<<<file-info>>>>", "file-info"],
+    ["<<<<function-names>>>>", "function-names"],
+  ];
+
+  private static readonly captureEndMarker = ">>>>end-capture<<<<";
+
   private output: string[] = [];
   // Active capture mode, driven by sentinel markers in the output stream.
   private captureType: CaptureType = "";
   private gdbDB: gdbStateDatabase;
+  private readonly captureHandlers: Record<ActiveCaptureType, (capArray: string[]) => void> = {
+    "file-info": (capArray: string[]) => {
+      this.CaptureSymbolFiles(capArray);
+    },
+    "function-names": (capArray: string[]) => {
+      this.CaptureFunctionNames(capArray);
+    },
+  };
 
   constructor(db: gdbStateDatabase) {
     this.gdbDB = db;
@@ -98,7 +114,23 @@ export class GdbOutputCapture {
         }
       }
     });
-    mainWindow.webContents.send("data-disasm-functions", this.gdbDB.getAllFunctionNames());
+    sendToRenderer("data-disasm-functions", this.gdbDB.getAllFunctionNames());
+  }
+
+  private getStartCaptureType(line: string): ActiveCaptureType | undefined {
+    const marker = GdbOutputCapture.captureStartMarkers.find(([startMarker]) =>
+      line.includes(startMarker),
+    );
+    return marker?.[1];
+  }
+
+  private flushCapture(): void {
+    if (this.captureType !== "") {
+      this.captureHandlers[this.captureType](this.output);
+    }
+
+    this.captureType = "";
+    this.output = [];
   }
 
   /**
@@ -111,39 +143,24 @@ export class GdbOutputCapture {
    * @returns True when the operation succeeds; otherwise false.
    */
   CaptureLine(line: string): boolean {
-    if (line.includes("<<<<file-info>>>>")) {
-      this.captureType = "file-info";
-      return true;
-    }
-
-    if (line.includes("<<<<function-names>>>>")) {
-      this.captureType = "function-names";
-      return true;
-    }
-
-    if (line.includes(">>>>end-capture<<<<")) {
-      switch (this.captureType) {
-        case "file-info":
-          this.CaptureSymbolFiles(this.output);
-          break;
-        case "function-names":
-          this.CaptureFunctionNames(this.output);
-          break;
-      }
-      this.captureType = "";
+    const startCaptureType = this.getStartCaptureType(line);
+    if (startCaptureType) {
+      // A new start marker always starts a fresh capture session.
+      this.captureType = startCaptureType;
       this.output = [];
       return true;
     }
 
-    switch (this.captureType) {
-      case "file-info":
-      case "function-names":
-        this.output.push(line);
-        return true;
-      case "":
-        return false;
+    if (line.includes(GdbOutputCapture.captureEndMarker)) {
+      this.flushCapture();
+      return true;
     }
 
+    if (this.captureType === "") {
+      return false;
+    }
+
+    this.output.push(line);
     return true;
   }
 }

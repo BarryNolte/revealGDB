@@ -6,8 +6,7 @@
  */
 import { useEffect } from "react";
 
-import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
-import { gdbShowSourceInfo } from "../../main/mi-interface/mi-interface";
+import { gdbBreakpoint, gdbShowSourceInfo } from "../../common/gdb-state-types";
 
 export type SourceIpcSubscriptionHandlers = {
   onSourceFile: (data: gdbShowSourceInfo) => void;

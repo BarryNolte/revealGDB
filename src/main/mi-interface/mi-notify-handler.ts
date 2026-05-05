@@ -4,7 +4,7 @@
  * @remarks
  * Exported symbols include `MiNotifyAsyncHandler`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
-import { mainWindow } from "../main";
+import { sendToRenderer } from "../ipc-sender";
 import { mapRegexGroupsToBreakpoint } from "./mappers/breakpoint-mapper";
 import { MiOutputHost, gdbShowSourceInfo } from "./mi-output-types";
 
@@ -112,8 +112,8 @@ export class MiNotifyAsyncHandler {
           line: this.host.gdbDB.stackFrames[level].line,
           contents: await this.host.gdbDB.getSourceFileContents(srcFileName),
         };
-        mainWindow.webContents.send("source-file", showSourceInfo);
-        mainWindow.webContents.send("stack-frames", this.host.gdbDB.stackFrames);
+        sendToRenderer("source-file", showSourceInfo);
+        sendToRenderer("stack-frames", this.host.gdbDB.stackFrames);
         break;
       }
       case "cmd-param-changed": {

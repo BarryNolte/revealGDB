@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { AboutBox, type AboutBoxHandle } from "../../../../src/renderer/Dialogs/AboutBox";
 
-vi.mock("../../../../src/renderer/App", () => ({
+vi.mock("../../../../src/renderer/utilities/app-version-state", () => ({
   AppMainVersionInfo: new Map([
     ["Node Version", "22.0.0"],
     ["Electron Version", "35.0.0"],

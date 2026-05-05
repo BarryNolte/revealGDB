@@ -28,15 +28,15 @@ import {
   useRef,
   useState,
 } from "react";
-import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
+import { gdbBreakpoint } from "../../common/gdb-state-types";
 
+import { ButtonComponent, CheckBoxComponent } from "@syncfusion/ej2-react-buttons";
 import imgDelete from "../icons/icons8-delete-48.png";
 import { BreakpointGridRow, mapBreakpointsToGridRows } from "../mappers/grid-data-mappers";
 import { useGridColumnState } from "../utilities/useGridColumnState";
 import "./GdbBreakpointsWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
-import { ButtonComponent, CheckBoxComponent } from "@syncfusion/ej2-react-buttons";
 
 /**
  * Performs gdb break point window as part of this module's public API.

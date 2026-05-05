@@ -9,6 +9,7 @@ import { DockManager } from "../../node_modules/dock-spawn-ts/lib/js/DockManager
 import { JSX, RefObject, Suspense, lazy, useEffect, useRef } from "react";
 import { GdbAny } from "../common/gdb-common";
 import { AppTheme, applyTheme } from "./theme-manager";
+import { setAppMainVersionInfo } from "./utilities/app-version-state";
 
 /* Dialogs */
 import type { AboutBoxHandle } from "./Dialogs/AboutBox";
@@ -100,22 +101,21 @@ function DeferredWindow({
 /* Icon Assets - Tool window icons loaded as static assets */
 // Note: The ?asset query parameter tells Vite to treat these as static assets
 // and return their URLs rather than inlining them
-import iconThread from "./icons/icons8-thread-48.png?asset";
-import iconRegister from "./icons/icons8-cpu-48.png?asset";
-import iconStack from "./icons/icons8-stack-48.png?asset";
-import iconHex from "./icons/icons8-hex-48.png?asset";
 import iconCmd from "./icons/icons8-command-line-48.png?asset";
-import iconSrc from "./icons/icons8-source-code-48.png?asset";
-import iconLocal from "./icons/icons8-local-48.png?asset";
+import iconRegister from "./icons/icons8-cpu-48.png?asset";
 import iconDisa from "./icons/icons8-disassembly-48.png?asset";
 import iconBp from "./icons/icons8-dot-48.png?asset";
+import iconHex from "./icons/icons8-hex-48.png?asset";
+import iconLocal from "./icons/icons8-local-48.png?asset";
+import iconSrc from "./icons/icons8-source-code-48.png?asset";
+import iconStack from "./icons/icons8-stack-48.png?asset";
+import iconThread from "./icons/icons8-thread-48.png?asset";
 
 /* Application Version Info */
 /**
  * Version information for the application and its dependencies.
  * Populated asynchronously from the main process and displayed in the About dialog.
  */
-export let AppMainVersionInfo: Map<string, GdbAny>;
 
 /**
  * Performs app as part of this module's public API.
@@ -134,7 +134,7 @@ export default function App(): JSX.Element {
 
   useEffect(() => {
     window.ipcToMain.queries.app.getVersionInfo().then((e) => {
-      AppMainVersionInfo = e;
+      setAppMainVersionInfo(e);
     });
 
     // Listen for commands from main process to show dialogs

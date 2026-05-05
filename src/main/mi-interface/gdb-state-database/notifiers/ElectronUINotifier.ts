@@ -4,7 +4,7 @@
  * @remarks
  * Exported symbols include `ElectronUINotifier`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
-import { mainWindow } from "../../../main";
+import { sendToRenderer } from "../../../ipc-sender";
 import { LocalsContainer } from "../../gdb-parsers/gdb-locals";
 import {
   gdbBreakpoint,
@@ -26,7 +26,7 @@ export class ElectronUINotifier implements UINotifier {
    * @param locals - Value for `locals` consumed by this operation.
    */
   sendLocals(locals: LocalsContainer | undefined): void {
-    mainWindow.webContents.send("data-locals", locals?.locals);
+    sendToRenderer("data-locals", locals?.locals);
   }
 
   /**
@@ -38,7 +38,7 @@ export class ElectronUINotifier implements UINotifier {
    * @param frames - Value for `frames` consumed by this operation.
    */
   sendStackFrames(frames: gdbStackFrame[]): void {
-    mainWindow.webContents.send("stack-frames", frames);
+    sendToRenderer("stack-frames", frames);
   }
 
   /**
@@ -50,7 +50,7 @@ export class ElectronUINotifier implements UINotifier {
    * @param bkpts - Map of keyed values consumed or updated by this operation.
    */
   sendBreakpoints(bkpts: Map<string, gdbBreakpoint>): void {
-    mainWindow.webContents.send("data-brkpts", bkpts);
+    sendToRenderer("data-brkpts", bkpts);
   }
 
   /**
@@ -62,7 +62,7 @@ export class ElectronUINotifier implements UINotifier {
    * @param regs - Map of keyed values consumed or updated by this operation.
    */
   sendRegisters(regs: Map<string, gdbRegisters>): void {
-    mainWindow.webContents.send("data-register", regs);
+    sendToRenderer("data-register", regs);
   }
 
   /**
@@ -75,7 +75,7 @@ export class ElectronUINotifier implements UINotifier {
    * @param groups - Map of keyed values consumed or updated by this operation.
    */
   sendThreads(threads: Map<string, gdbThread>, groups: Map<string, gdbThreadGroup>): void {
-    mainWindow.webContents.send("data-threads", {
+    sendToRenderer("data-threads", {
       th: threads,
       grp: groups,
     });
@@ -90,6 +90,6 @@ export class ElectronUINotifier implements UINotifier {
    * @param info - Value for `info` consumed by this operation.
    */
   sendSourceFile(info: gdbShowSourceInfo): void {
-    mainWindow.webContents.send("source-file", info);
+    sendToRenderer("source-file", info);
   }
 }

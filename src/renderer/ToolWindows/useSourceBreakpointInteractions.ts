@@ -10,7 +10,7 @@ import AceEditor from "react-ace";
 
 import { MenuEventArgs } from "@syncfusion/ej2-navigations";
 import { GdbAny } from "../../common/gdb-common";
-import { gdbBreakpoint } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
+import { gdbBreakpoint } from "../../common/gdb-state-types";
 import { sendTextToClipboard } from "../utilities/Clipboard";
 import { mapBreakpointsToMarkers, SourceBreakpointMarker } from "./GdbSourceWindowModel";
 

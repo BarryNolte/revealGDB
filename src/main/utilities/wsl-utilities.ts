@@ -7,12 +7,8 @@
 import { Buffer } from "node:buffer";
 import { execSync } from "node:child_process";
 
-export type WslDistro = {
-  name: string;
-  version: string;
-  state: string;
-  default: boolean;
-};
+import type { WslDistro } from "../../common/ipc-data-types";
+export type { WslDistro };
 
 export class WslUtilities {
   /**

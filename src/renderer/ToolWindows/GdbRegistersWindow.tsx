@@ -19,7 +19,7 @@ import {
   Resize,
 } from "@syncfusion/ej2-react-grids";
 import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import { gdbRegisters } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
+import { gdbRegisters } from "../../common/gdb-state-types";
 
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { RegisterGridRow, mapRegistersToGridRows } from "../mappers/grid-data-mappers";

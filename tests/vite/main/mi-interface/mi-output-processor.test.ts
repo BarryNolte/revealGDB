@@ -34,18 +34,9 @@ const { mockWebContentsSend, notifierMock, setNotifierWatching } = vi.hoisted(()
   };
 });
 
-vi.mock("../../../../src/main/main", async () => {
-  const { createMockBrowserWindow } =
-    await import("../../../helpers/ipc-test-harness.js");
-
-  return {
-    mainWindow: createMockBrowserWindow({
-      webContents: {
-        send: mockWebContentsSend,
-      },
-    }),
-  };
-});
+vi.mock("../../../../src/main/ipc-sender", () => ({
+  sendToRenderer: mockWebContentsSend,
+}));
 
 vi.mock("../../../../src/main/utilities/ConnectionNotifier", () => ({
   ConnectionNotifier: {
