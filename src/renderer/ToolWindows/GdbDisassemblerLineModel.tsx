@@ -5,7 +5,7 @@
  * Exported symbols include `toInstructionParts`, `extractFunctionName`, `renderInstructionParts`, `renderGroupCaption`. It coordinates live debugger data with user interactions in docked tool-window views.
  */
 import { JSX } from "react";
-import { DisasmToken } from "../../common/gdb-state-types";
+import { DisasmToken } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
 
 export type DisasmInstructionPart = {
   className: string;

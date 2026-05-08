@@ -7,13 +7,14 @@
 import { sendToRenderer } from "../../ipc-sender";
 import { gdbStateDatabase } from "../gdb-state-database/gdbStateDatabase";
 
-export type CaptureType = "" | "file-info" | "function-names";
+export type CaptureType = "" | "file-info" | "function-names" | "source-files";
 type ActiveCaptureType = Exclude<CaptureType, "">;
 
 export class GdbOutputCapture {
   private static readonly captureStartMarkers: ReadonlyArray<[string, ActiveCaptureType]> = [
     ["<<<<file-info>>>>", "file-info"],
     ["<<<<function-names>>>>", "function-names"],
+    ["<<<<source-files>>>>", "source-files"],
   ];
 
   private static readonly captureEndMarker = ">>>>end-capture<<<<";
@@ -29,10 +30,53 @@ export class GdbOutputCapture {
     "function-names": (capArray: string[]) => {
       this.CaptureFunctionNames(capArray);
     },
+    "source-files": (capArray: string[]) => {
+      this.CaptureSourceFiles(capArray);
+    },
   };
 
   constructor(db: gdbStateDatabase) {
     this.gdbDB = db;
+  }
+
+  /**
+   * List the BFD sections of the exec and core files.
+
+     Usage: maintenance info sections [-all-objects] [FILTERS]
+
+     FILTERS is a list of words, each word is either:
+       + A section name - any section with this name will be printed, or
+       + A section flag - any section with this flag will be printed.  The
+	     known flags are:
+	       ALLOC LOAD RELOC READONLY CODE DATA ROM CONSTRUCTOR
+	       HAS_CONTENTS NEVER_LOAD COFF_SHARED_LIBRARY IS_COMMON
+
+     Sections matching any of the FILTERS will be listed (no FILTERS implies
+     all sections should be printed).
+
+     Options:
+       -all-objects
+         Display information from all loaded object files.
+   */
+
+  CaptureSourceFiles(capArray: string[]): void {
+    const lines = capArray.filter((line) => line.length > 0 && !line.match(/~"\\n"/));
+
+    for (let i = 0; i < lines.length; i += 3) {
+      const symfile = lines[i]?.match(/~"(?<symfile>[^:]+):\\n/)?.groups?.symfile;
+      if (symfile) console.log("Found symbol file: ", symfile);
+
+      const symstatus = lines[i + 1]?.match(/~"\((?<symstatus>[^:]+)\)\\n"/)?.groups?.symstatus;
+      if (symstatus) console.log("Found symbol status: ", symstatus);
+
+      const sourceFiles = lines[i + 2]?.match(/~"(?<sourcefiles>[^"]+)"/)?.groups?.sourcefiles;
+      if (sourceFiles) {
+        console.log("Found source files: ");
+        for (const file of sourceFiles.split(", ")) {
+          console.log("  Source file: ", file.replace(/\\n/g, ""));
+        }
+      }
+    }
   }
 
   /**

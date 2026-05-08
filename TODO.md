@@ -1,13 +1,5 @@
 # Priority Items
 
-- github workflow working
-  - Real Debug/Release builds
-  - Product Icon
-  - Install for all platforms
-    - x64, arm64 (Windows)
-    - x64, arm64 (Linux)
-    - x64, arm64 (Mac)
-
 # Documentation
 
 - Quick Start Guide

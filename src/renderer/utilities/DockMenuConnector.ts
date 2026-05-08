@@ -56,10 +56,14 @@ export class DockMenuConnector {
             di.panel?.floatingDialog?.setPosition(-100000, 0);
             di.panel?.floatingDialog?.hide();
           }
-        } else if (di.panel && di.dialog) {
+        } else {
           // Show panel by docking dialog back into layout
-          this.dockManager.dockDialogUp(this.dockManager.context.model.rootNode, di.dialog);
-          di.dialog = undefined;
+          if (di.panel) {
+            if (di.dialog) {
+              this.dockManager.dockDialogUp(this.dockManager.context.model.rootNode, di.dialog);
+              di.dialog = undefined;
+            }
+          }
         }
       }
       // Update UI and save layout

@@ -1,11 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": [
-    "src/main",
-    "src/renderer",
-    "src/common",
-    "src/preload"
-  ],
+  "entryPoints": ["src/main", "src/renderer", "src/common", "src/preload"],
   "entryPointStrategy": "expand",
   "exclude": [
     "**/*.test.ts",
@@ -24,8 +19,6 @@
   "excludeProtected": false,
   "excludeInternal": true,
   "categorizeByGroup": true,
-  "sort": [
-    "source-order"
-  ],
+  "sort": ["source-order"],
   "plugin": []
 }
