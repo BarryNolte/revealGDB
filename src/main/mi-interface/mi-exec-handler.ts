@@ -14,6 +14,7 @@ export class MiExecAsyncHandler {
     /stopped-threads="(?<stoppedThreads>[^"]*)"/;
   private readonly rgxCoreExtractor: RegExp = /core="(?<core>[^"]*)"/;
   private readonly rgxReasonExtractor: RegExp = /reason="(?<reason>[^"]*)"/;
+  //private readonly rgxFrameFullname: RegExp = /fullname="(?<fullname>[^"]*)"/;
   private readonly rgxSignalName: RegExp = /signal-name="(?<signalName>[^"]*)"/;
   private readonly rgxSignalMeaning: RegExp = /signal-meaning="(?<signalMeaning>[^"]*)"/;
   private readonly rgxExitCode: RegExp = /exit-code="(?<exitCode>[^"]*)"/;
@@ -49,6 +50,7 @@ export class MiExecAsyncHandler {
           this.rgxStoppedThreadsExtractor.exec(data)?.groups?.stoppedThreads || undefined;
         const core = this.rgxCoreExtractor.exec(data)?.groups?.core || undefined;
         const reason = this.rgxReasonExtractor.exec(data)?.groups?.reason || undefined;
+        // const fullname = this.rgxFrameFullname.exec(data)?.groups?.fullname ?? "";
 
         switch (reason) {
           case undefined: {

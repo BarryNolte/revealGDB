@@ -7,7 +7,7 @@
 import { sendToRenderer } from "../../ipc-sender";
 import { gdbStateDatabase } from "../gdb-state-database/gdbStateDatabase";
 
-export type CaptureType = "" | "file-info" | "function-names" | "source-files";
+export type CaptureType = "" | "file-info" | "function-names" | "source-files" | "line-vars";
 type ActiveCaptureType = Exclude<CaptureType, "">;
 
 export class GdbOutputCapture {
@@ -15,6 +15,7 @@ export class GdbOutputCapture {
     ["<<<<file-info>>>>", "file-info"],
     ["<<<<function-names>>>>", "function-names"],
     ["<<<<source-files>>>>", "source-files"],
+    ["<<<<line-vars>>>>", "line-vars"],
   ];
 
   private static readonly captureEndMarker = ">>>>end-capture<<<<";
@@ -33,7 +34,22 @@ export class GdbOutputCapture {
     "source-files": (capArray: string[]) => {
       this.CaptureSourceFiles(capArray);
     },
+    "line-vars": (capArray: string[]) => {
+      this.CaptureLineVars(capArray);
+    },
   };
+
+  /** Strip MI `~"..."` wrapping and decode escape sequences from a single raw line. */
+  private static stripMiEscaping(raw: string): string {
+    // Lines arrive as ~"<content>" — strip the leading ~" and trailing "
+    const m = /^~"(?<content>.*)"$/.exec(raw);
+    const content = m?.groups?.content ?? raw;
+    return content
+      .replace(/\\n/g, "\n")
+      .replace(/\\t/g, "\t")
+      .replace(/\\"/g, '"')
+      .replace(/\\\\/g, "\\");
+  }
 
   constructor(db: gdbStateDatabase) {
     this.gdbDB = db;
@@ -159,6 +175,12 @@ export class GdbOutputCapture {
       }
     });
     sendToRenderer("data-disasm-functions", this.gdbDB.getAllFunctionNames());
+  }
+
+  CaptureLineVars(capArray: string[]): void {
+    const cleanLines = capArray.map((raw) => GdbOutputCapture.stripMiEscaping(raw));
+    console.warn("Captured line vars: ", cleanLines);
+    this.gdbDB.addRawLineVarData(cleanLines);
   }
 
   private getStartCaptureType(line: string): ActiveCaptureType | undefined {

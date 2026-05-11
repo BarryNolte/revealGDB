@@ -5,6 +5,7 @@
  * Exported symbols include `createGdbInterface`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { BrowserWindow } from "electron";
+import path from "path";
 import { IPC_CHANNELS } from "../common/ipc-contracts";
 import { miInterface } from "./mi-interface/mi-interface";
 import { GeneralInfoSender } from "./utilities/GeneralInfoSender";
@@ -25,6 +26,15 @@ export function createGdbInterface(
   _appSettings: SettingsLike,
 ): miInterface {
   const gdbInterface = new miInterface();
+
+  gdbInterface.gdbDB.gdbSrcFileCache.on("first-read", (file: string) => {
+    if (!gdbInterface.gdbDB.hasLineVars(file)) {
+      gdbInterface.runCommand(
+        `echo <<<<line-vars>>>>\nmaint print symbols -source ${path.basename(file)}\necho >>>>end-capture<<<<`,
+      );
+    }
+  });
+
   gdbInterface.on("console-stream", (line: string) => {
     mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.message, line);
   });
@@ -51,13 +61,10 @@ export function createGdbInterface(
         gdbInterface.runCommand(cmd);
       });
 
-      gdbInterface.runCommand("echo <<<<file-info>>>>");
-      gdbInterface.runCommand("info files");
-      gdbInterface.runCommand("echo >>>>end-capture<<<<");
-
-      gdbInterface.runCommand("echo <<<<function-names>>>>");
-      gdbInterface.runCommand("info functions");
-      gdbInterface.runCommand("echo >>>>end-capture<<<<");
+      gdbInterface.runCommand("echo <<<<file-info>>>>\ninfo files\necho >>>>end-capture<<<<");
+      gdbInterface.runCommand(
+        "echo <<<<function-names>>>>\ninfo functions\necho >>>>end-capture<<<<",
+      );
     }
 
     gdbInterface.onStopped.forEach((cmd: string) => {

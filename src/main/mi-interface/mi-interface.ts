@@ -307,4 +307,27 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
   public parseConsoleStream(output: string): boolean {
     return this.outputProcessor.parseConsoleStream(output);
   }
+
+  /**
+   * Evaluates an expression in the current GDB context and returns its value.
+   *
+   * @param expr - The expression to evaluate (e.g. a variable name).
+   * @returns The value string from GDB, or undefined if GDB is not running or times out.
+   */
+  public evaluateExpression(expr: string): Promise<string | undefined> {
+    return new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        this.removeListener("value-evaluated", handler);
+        resolve(undefined);
+      }, 2000);
+
+      const handler = (value: string) => {
+        clearTimeout(timeout);
+        resolve(value);
+      };
+
+      this.once("value-evaluated", handler);
+      this.send(`-data-evaluate-expression "${expr}"`);
+    });
+  }
 }

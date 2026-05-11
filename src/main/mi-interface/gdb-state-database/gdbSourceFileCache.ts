@@ -68,6 +68,7 @@ export class gdbSourceFileCache extends EventEmitter {
         const data = await readFile(this.filePrefix + file, "utf-8");
         this.sourceFiles.set(file, data);
         srcHtml = data;
+        this.emit("first-read", file);
       } catch (ex) {
         this.emit("error-stream", `Error reading file: ${file} : ${ex}`);
       }

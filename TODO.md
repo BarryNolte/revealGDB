@@ -7,6 +7,7 @@
 - How to contribute
 
 # Bugs
+- Disassemble at address not working
 
 # Project Related
 

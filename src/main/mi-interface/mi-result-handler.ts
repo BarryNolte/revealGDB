@@ -83,7 +83,10 @@ export class MiResultRecordHandler {
           }
           case "value": {
             // Response to -data-evaluate-expression
-            this.host.emit("log-stream", `^done value=${resList}`);
+            // this.host.emit("log-stream", `^done value=${resList}`);
+            // Strip surrounding quotes GDB wraps around the value string
+            const rawValue = resList.replace(/^"(.*)"$/, "$1");
+            this.host.emit("value-evaluated", rawValue);
             break;
           }
           case "name": {
