@@ -1,12 +1,13 @@
 import type { JSX, RefObject } from "react";
 import type { GdbAny } from "../../common/gdb-common";
+import RevealToolbar from "../Components/Toolbar";
 import type { WhileConnectingDialogHandle } from "../Dialogs/ConnectionDialog";
 import type { ConnectionManagerHandle } from "../Dialogs/ConnectionManager";
 import type { SettingsHandle } from "../Dialogs/Settings";
-import RevealToolbar from "../Components/Toolbar";
 import { setDockMenuConnector } from "../utilities/dock-menu-state";
-import type { DockMenuConnector } from "../utilities/DockMenuConnector";
+import { UPDATE_WINDOW_LIST } from "../utilities/renderer-events";
 import "./toolbar-test-page.css";
+import { DockMenuConnector } from "../utilities/DockMenuConnector";
 
 type ToolbarWindowSettings = {
   displayName: string;
@@ -208,7 +209,7 @@ export function setupToolbarTestApi(): void {
       (window as WindowWithToolbarTestApi).__TOOLBAR_TEST_SETTINGS__ = { windows };
     },
     dispatchWindowListUpdate: () => {
-      window.dispatchEvent(new Event("update-window-list"));
+      window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
     },
     reset: () => {
       sentCommands.length = 0;

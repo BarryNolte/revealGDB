@@ -4,7 +4,7 @@
  * @remarks
  * Exported symbols include `PointerSize`, `DataViewEnum`, `TextViewEnum`, `convertCharValue`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-export const enum PointerSize {
+export enum PointerSize {
   bit16 = 4,
   bit32 = 8,
   bit64 = 16,
@@ -19,7 +19,7 @@ export const enum PointerSize {
  * - Float32: 32-bit floating point
  * - Float64: 64-bit floating point
  */
-export const enum DataViewEnum {
+export enum DataViewEnum {
   Byte1 = 0,
   Byte2,
   Byte4,
@@ -34,7 +34,7 @@ export const enum DataViewEnum {
  * - ascii: ASCII character display (7-bit printable)
  * - unicode: Full Unicode character support
  */
-export const enum TextViewEnum {
+export enum TextViewEnum {
   none,
   ascii,
   unicode,

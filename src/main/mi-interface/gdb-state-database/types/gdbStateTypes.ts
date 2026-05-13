@@ -14,14 +14,20 @@ export type {
   gdbBreakpoint,
   gdbFeature,
   gdbFunction,
+  gdbLineEntry,
+  gdbLineVarMap,
   gdbParams,
   gdbRegisters,
   gdbSection,
   gdbShowSourceInfo,
   gdbStackFrame,
+  gdbSymbolBlock,
   gdbSymbolFiles,
   gdbThread,
   gdbThreadGroup,
+  gdbVarDecl,
+  gdbVarLocation,
+  gdbVarReference,
 } from "../../../../common/gdb-state-types";
 
 export type LocalsValue = LocalsContainer | undefined;

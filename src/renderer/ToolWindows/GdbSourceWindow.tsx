@@ -4,18 +4,19 @@
  * @remarks
  * Exported symbols include `GdbSourceWindow`. It coordinates live debugger data with user interactions in docked tool-window views.
  */
-import "ace-builds/css/ace.css";
 import { JSX, useId } from "react";
 import { IMarker } from "react-ace";
 
 import GdbSourceWindowView from "./GdbSourceWindowView";
 import { useGdbSourceWindowController } from "./useGdbSourceWindowController";
 
+import { ToolWindowContent } from "./ToolWindowContent";
+
+import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 export { editorThemes } from "./GdbSourceEditorConfig";
 
+import "ace-builds/css/ace.css";
 import "./GdbSourceWindow.css";
-import { ToolWindowContent } from "./ToolWindowContent";
-import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
 /**
  * Performs gdb source window as part of this module's public API.

@@ -4,16 +4,16 @@ name: Build & Release
 # Scheduled: every Friday ~8 PM PDT (Sat 03:00 UTC).
 #   Note: GitHub cron is UTC-only. This is 8 PM PDT (summer) / 7 PM PST (winter).
 # On-demand: workflow_dispatch with optional branch override.
-on:
-  schedule:
-    - cron: "0 3 * * 6"
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: "Branch to build from"
-        required: false
-        default: "main"
-        type: string
+# on:
+#   schedule:
+#     - cron: "0 3 * * 6"
+#   workflow_dispatch:
+#     inputs:
+#       branch:
+#         description: "Branch to build from"
+#         required: false
+#         default: "main"
+#         type: string
 
 # Allow the workflow to push commits and create releases
 permissions:

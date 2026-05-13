@@ -27,6 +27,7 @@ const MAIN_TO_RENDERER_CHANNEL_GROUPS = {
     memory: "data-memory",
     disassembly: "data-disasm",
     functions: "data-disasm-functions",
+    lineVars: "data-line-vars",
   },
 } as const;
 
@@ -42,6 +43,9 @@ const RENDERER_TO_MAIN_CHANNEL_GROUPS = {
     },
     debugger: {
       functionNames: "getFunctionNames",
+      varAtPosition: "queryVarAtPosition",
+      varByName: "getVarByName",
+      evaluateExpression: "evaluateExpression",
     },
   },
   commands: {
@@ -76,6 +80,7 @@ export const IPC_CHANNELS = {
     dataMemory: MAIN_TO_RENDERER_CHANNEL_GROUPS.debuggerData.memory,
     dataDisasm: MAIN_TO_RENDERER_CHANNEL_GROUPS.debuggerData.disassembly,
     dataFunctions: MAIN_TO_RENDERER_CHANNEL_GROUPS.debuggerData.functions,
+    dataLineVars: MAIN_TO_RENDERER_CHANNEL_GROUPS.debuggerData.lineVars,
   },
   rendererToMain: RENDERER_TO_MAIN_CHANNEL_GROUPS,
   rendererInvoke: {
@@ -84,6 +89,7 @@ export const IPC_CHANNELS = {
     getVersionInfo: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.app.versionInfo,
     getWslDistrobutions: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.environment.wslDistributions,
     getFunctionNames: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.debugger.functionNames,
+    getVarByName: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.debugger.varByName,
   },
   rendererSend: {
     gdbCommand: RENDERER_TO_MAIN_CHANNEL_GROUPS.commands.debugger.send,

@@ -10,6 +10,7 @@ import { MiNotifyAsyncHandler } from "./mi-notify-handler";
 import { MiOutputHost, gdbShowSourceInfo } from "./mi-output-types";
 import { MiResultRecordHandler } from "./mi-result-handler";
 import { MiStatusAsyncHandler } from "./mi-status-handler";
+import { CONSOLE_STREAM, ERROR_STREAM, LOG_STREAM } from "./mi-stream-events";
 
 export type { MiOutputHost, gdbShowSourceInfo };
 
@@ -101,7 +102,7 @@ export class MiOutputProcessor {
         await this.parseRawOutput(line);
       } catch (ex) {
         this.host.emit(
-          "error-stream",
+          ERROR_STREAM,
           `\n*************************************\nEXCEPTION: ${ex}\n*************************************\n`,
         );
       }
@@ -178,7 +179,7 @@ export class MiOutputProcessor {
       }
       default: {
         // console.error(`Raw Output Type Unknown: ${output}`);
-        this.host.emit("error-stream", output);
+        this.host.emit(ERROR_STREAM, output);
         return false;
       }
     }
@@ -219,7 +220,7 @@ export class MiOutputProcessor {
         lines.pop();
       }
       lines.forEach((line: string) => {
-        this.host.emit("log-stream", line);
+        this.host.emit(LOG_STREAM, line);
       });
     }
 
@@ -248,7 +249,7 @@ export class MiOutputProcessor {
       }
 
       lines.forEach((currentLine: string) => {
-        this.host.emit("console-stream", currentLine);
+        this.host.emit(CONSOLE_STREAM, currentLine);
       });
       this.savedConsoleStr = "";
     }

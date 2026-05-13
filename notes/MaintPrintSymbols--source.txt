@@ -1,0 +1,823 @@
+
+maint print symbols -source hello_world_main.c
+ 
+Symtab for file /home/barry/perftool/main/hello_world_main.c at 0x29e39e90
+Compilation directory is /home/barry/perftool/build
+Read from object file /home/barry/perftool/build/perftool.elf (0x29e1f280)
+Language: c
+ 
+Line table:
+ 
+ line 53 at 0x400d6108	(stmt)
+ line 53 at 0x400d6108
+ line 54 at 0x400d6110	(stmt)
+ line 55 at 0x400d6116	(stmt)
+ line 56 at 0x400d6116
+ line 56 at 0x400d6118
+ line 0 at 0x400d611a	(stmt)
+ line 58 at 0x400d611c	(stmt)
+ line 59 at 0x400d6125	(stmt)
+ line 60 at 0x400d612b	(stmt)
+ line 61 at 0x400d6130
+ line 0 at 0x400d6132	(stmt)
+ line 64 at 0x400d6134	(stmt)
+ line 65 at 0x400d613c	(stmt)
+ line 66 at 0x400d613c	(stmt)
+ line 66 at 0x400d613c
+ line 67 at 0x400d6140	(stmt)
+ line 67 at 0x400d6140
+ line 68 at 0x400d6145	(stmt)
+ line 68 at 0x400d6145
+ line 70 at 0x400d614b	(stmt)
+ line 72 at 0x400d6151	(stmt)
+ line 75 at 0x400d6154	(stmt)
+ line 76 at 0x400d6154	(stmt)
+ line 77 at 0x400d6154	(stmt)
+ line 78 at 0x400d615a	(stmt)
+ line 80 at 0x400d615a
+ line 81 at 0x400d615d
+ line 78 at 0x400d6160
+ line 86 at 0x400d619c	(stmt)
+ line 86 at 0x400d619c
+ line 86 at 0x400d619f
+ line 87 at 0x400d61a8	(stmt)
+ line 87 at 0x400d61a8
+ line 87 at 0x400d61ab
+ line 88 at 0x400d61b4	(stmt)
+ line 88 at 0x400d61b7
+ line 88 at 0x400d61ba
+ line 89 at 0x400d61c0	(stmt)
+ line 89 at 0x400d61c0
+ line 90 at 0x400d61ca	(stmt)
+ line 91 at 0x400d61d0	(stmt)
+ line 106 at 0x400d61d0
+ line 94 at 0x400d61d4	(stmt)
+ line 95 at 0x400d61da
+ line 94 at 0x400d61dd
+ line 97 at 0x400d61f1	(stmt)
+ line 99 at 0x400d61fc	(stmt)
+ line 99 at 0x400d61fc	(stmt)
+ line 99 at 0x400d61fc
+ line 99 at 0x400d61fe
+ line 100 at 0x400d6201	(stmt)
+ line 101 at 0x400d6209	(stmt)
+ line 99 at 0x400d620f	(stmt)
+ line 103 at 0x400d6214	(stmt)
+ line 104 at 0x400d621a	(stmt)
+ line 104 at 0x400d621a
+ line 105 at 0x400d6222	(stmt)
+ line 0 at 0x400d6225	(stmt)
+ 
+Blockvector:
+ 
+block #000, object at 0x29ee56f0, 3 symbols in 0x400d6108..0x400d6225
+ void app_main(void);
+block object 0x29ee5050, 0x400d6134..0x400d6225 void bar();
+block object 0x29ee5270, 0x400d611c..0x400d6132 int foo(int);
+block object 0x29ee54f0, 0x400d6108..0x400d611a block #001, object at 0x29ee5590 under 0x29ee56f0, 81 symbols in 0x400d6108..0x400d6225 typedef struct
+{
+	int __count;
+	union
+	{
+		wint_t __wch;
+		unsigned char __wchb[4];
+	} __value;
+} _mbstate_t;
+struct __lock
+{
+	int reserved[21];
+};
+  typedef long long int64_t;
+enum
+{
+	CHIP_ESP32 = 1,
+	CHIP_ESP32S2,
+	CHIP_ESP32S3 = 9,
+	CHIP_ESP32C3 = 5,
+	CHIP_ESP32C2 = 12,
+	CHIP_ESP32C6,
+	CHIP_ESP32H2 = 16,
+	CHIP_ESP32P4 = 18,
+	CHIP_ESP32C61 = 20,
+	CHIP_ESP32C5 = 23,
+	CHIP_ESP32H21 = 25,
+	CHIP_ESP32H4 = 28,
+	CHIP_POSIX_LINUX = 999
+} CHIP_ESP32H2;
+const 16(0x10) enum { SPI_FLASH_SLOWRD,
+											SPI_FLASH_FASTRD,
+											SPI_FLASH_DOUT,
+											SPI_FLASH_DIO,
+											SPI_FLASH_QOUT,
+											SPI_FLASH_QIO,
+											SPI_FLASH_OPI_STR = 16,
+											SPI_FLASH_OPI_DTR,
+											SPI_FLASH_READ_MODE_MAX } SPI_FLASH_DIO;
+const 3(0x3) typedef unsigned char __uint8_t;
+typedef unsigned short __uint16_t;
+typedef unsigned short unsigned short;
+enum
+{
+	CHIP_ESP32 = 1,
+	CHIP_ESP32S2,
+	CHIP_ESP32S3 = 9,
+	CHIP_ESP32C3 = 5,
+	CHIP_ESP32C2 = 12,
+	CHIP_ESP32C6,
+	CHIP_ESP32H2 = 16,
+	CHIP_ESP32P4 = 18,
+	CHIP_ESP32C61 = 20,
+	CHIP_ESP32C5 = 23,
+	CHIP_ESP32H21 = 25,
+	CHIP_ESP32H4 = 28,
+	CHIP_POSIX_LINUX = 999
+} CHIP_ESP32;
+const 1(0x1) typedef struct
+{
+	esp_err_t (*start)(void *);
+	esp_err_t (*end)(void *);
+	esp_err_t (*region_protected)(void *, size_t, size_t);
+	esp_err_t (*delay_us)(void *, uint32_t);
+	void *(*get_temp_buffer)(void *, size_t, size_t *);
+	void (*release_temp_buffer)(void *, void *);
+	esp_err_t (*check_yield)(void *, uint32_t, uint32_t *);
+	esp_err_t (*yield)(void *, uint32_t *);
+	int64_t (*get_system_time)(void *);
+	void (*set_flash_op_status)(uint32_t);
+} esp_flash_os_functions_t;
+typedef long long long long;
+typedef long double long double;
+typedef struct __sFILE
+{
+	unsigned char *_p;
+	int _r;
+	int _w;
+	short _flags;
+	short _file;
+	struct __sbuf _bf;
+	int _lbfsize;
+	struct _reent *_data;
+	void *_cookie;
+	int (*_read)(struct _reent *, void *, char *, int);
+	int (*_write)(struct _reent *, void *, const char *, int);
+	_fpos_t (*_seek)(struct _reent *, void *, _fpos_t, int);
+	int (*_close)(struct _reent *, void *);
+	struct __sbuf _ub;
+	unsigned char *_up;
+	int _ur;
+	unsigned char _ubuf[3];
+	unsigned char _nbuf[1];
+	struct __sbuf _lb;
+	int _blksize;
+	_off_t _offset;
+	_flock_t _lock;
+	_mbstate_t _mbstate;
+	int _flags2;
+} __FILE;
+typedef unsigned short uint16_t;
+enum
+{
+	CHIP_ESP32 = 1,
+	CHIP_ESP32S2,
+	CHIP_ESP32S3 = 9,
+	CHIP_ESP32C3 = 5,
+	CHIP_ESP32C2 = 12,
+	CHIP_ESP32C6,
+	CHIP_ESP32H2 = 16,
+	CHIP_ESP32P4 = 18,
+	CHIP_ESP32C61 = 20,
+	CHIP_ESP32C5 = 23,
+	CHIP_ESP32H21 = 25,
+	CHIP_ESP32H4 = 28,
+	CHIP_POSIX_LINUX = 999
+} CHIP_ESP32H4;
+const 28(0x1c) typedef unsigned int unsigned int;
+typedef struct __lock
+{
+	int reserved[21];
+} *_flock_t;
+struct _mprec
+{
+	struct _Bigint *_result;
+	int _result_k;
+	struct _Bigint *_p5s;
+	struct _Bigint **_freelist;
+};
+  enum { CHIP_ESP32 = 1,
+				 CHIP_ESP32S2,
+				 CHIP_ESP32S3 = 9,
+				 CHIP_ESP32C3 = 5,
+				 CHIP_ESP32C2 = 12,
+				 CHIP_ESP32C6,
+				 CHIP_ESP32H2 = 16,
+				 CHIP_ESP32P4 = 18,
+				 CHIP_ESP32C61 = 20,
+				 CHIP_ESP32C5 = 23,
+				 CHIP_ESP32H21 = 25,
+				 CHIP_ESP32H4 = 28,
+				 CHIP_POSIX_LINUX = 999 } CHIP_POSIX_LINUX;
+const 999(0x3e7) typedef struct __lock
+{
+	int reserved[21];
+} *_LOCK_T;
+struct _misc_reent
+{
+	char *_strtok_last;
+	_mbstate_t _mblen_state;
+	_mbstate_t _wctomb_state;
+	_mbstate_t _mbtowc_state;
+	char _l64a_buf[8];
+	int _getdate_err;
+	_mbstate_t _mbrlen_state;
+	_mbstate_t _mbrtowc_state;
+	_mbstate_t _mbsrtowcs_state;
+	_mbstate_t _wcrtomb_state;
+	_mbstate_t _wcsrtombs_state;
+};
+  enum { CHIP_ESP32 = 1,
+				 CHIP_ESP32S2,
+				 CHIP_ESP32S3 = 9,
+				 CHIP_ESP32C3 = 5,
+				 CHIP_ESP32C2 = 12,
+				 CHIP_ESP32C6,
+				 CHIP_ESP32H2 = 16,
+				 CHIP_ESP32P4 = 18,
+				 CHIP_ESP32C61 = 20,
+				 CHIP_ESP32C5 = 23,
+				 CHIP_ESP32H21 = 25,
+				 CHIP_ESP32H4 = 28,
+				 CHIP_POSIX_LINUX = 999 } CHIP_ESP32C2;
+const 12(0xc) typedef char char;
+struct _glue
+{
+	struct _glue *_next;
+	int _niobs;
+	__FILE *_iobs;
+};
+  enum { CHIP_ESP32 = 1,
+				 CHIP_ESP32S2,
+				 CHIP_ESP32S3 = 9,
+				 CHIP_ESP32C3 = 5,
+				 CHIP_ESP32C2 = 12,
+				 CHIP_ESP32C6,
+				 CHIP_ESP32H2 = 16,
+				 CHIP_ESP32P4 = 18,
+				 CHIP_ESP32C61 = 20,
+				 CHIP_ESP32C5 = 23,
+				 CHIP_ESP32H21 = 25,
+				 CHIP_ESP32H4 = 28,
+				 CHIP_POSIX_LINUX = 999 } CHIP_ESP32S2;
+const 2(0x2) enum { CHIP_ESP32 = 1,
+										CHIP_ESP32S2,
+										CHIP_ESP32S3 = 9,
+										CHIP_ESP32C3 = 5,
+										CHIP_ESP32C2 = 12,
+										CHIP_ESP32C6,
+										CHIP_ESP32H2 = 16,
+										CHIP_ESP32P4 = 18,
+										CHIP_ESP32C61 = 20,
+										CHIP_ESP32C5 = 23,
+										CHIP_ESP32H21 = 25,
+										CHIP_ESP32H4 = 28,
+										CHIP_POSIX_LINUX = 999 } CHIP_ESP32C3;
+const 5(0x5) enum { SPI_FLASH_SLOWRD,
+										SPI_FLASH_FASTRD,
+										SPI_FLASH_DOUT,
+										SPI_FLASH_DIO,
+										SPI_FLASH_QOUT,
+										SPI_FLASH_QIO,
+										SPI_FLASH_OPI_STR = 16,
+										SPI_FLASH_OPI_DTR,
+										SPI_FLASH_READ_MODE_MAX } SPI_FLASH_FASTRD;
+const 1(0x1) enum { SPI_FLASH_SLOWRD,
+										SPI_FLASH_FASTRD,
+										SPI_FLASH_DOUT,
+										SPI_FLASH_DIO,
+										SPI_FLASH_QOUT,
+										SPI_FLASH_QIO,
+										SPI_FLASH_OPI_STR = 16,
+										SPI_FLASH_OPI_DTR,
+										SPI_FLASH_READ_MODE_MAX } SPI_FLASH_DOUT;
+const 2(0x2) typedef enum { SPI_FLASH_SLOWRD,
+														SPI_FLASH_FASTRD,
+														SPI_FLASH_DOUT,
+														SPI_FLASH_DIO,
+														SPI_FLASH_QOUT,
+														SPI_FLASH_QIO,
+														SPI_FLASH_OPI_STR = 16,
+														SPI_FLASH_OPI_DTR,
+														SPI_FLASH_READ_MODE_MAX } esp_flash_io_mode_t;
+typedef struct
+{
+	char *pd;
+	MyStruct_t ms;
+	int arr[6];
+	struct
+	{
+		int x : 4;
+		int y : 3;
+		int z : 1;
+	} bf1;
+	struct
+	{
+		int x : 3;
+		int y : 7;
+		int z : 12;
+	} bf2;
+} MyBigStruct;
+typedef unsigned char unsigned char;
+typedef unsigned int size_t;
+struct _Bigint
+{
+	struct _Bigint *_next;
+	int _k;
+	int _maxwds;
+	int _sign;
+	int _wds;
+	__ULong _x[1];
+};
+  typedef unsigned long TickType_t;
+enum
+{
+	CHIP_ESP32 = 1,
+	CHIP_ESP32S2,
+	CHIP_ESP32S3 = 9,
+	CHIP_ESP32C3 = 5,
+	CHIP_ESP32C2 = 12,
+	CHIP_ESP32C6,
+	CHIP_ESP32H2 = 16,
+	CHIP_ESP32P4 = 18,
+	CHIP_ESP32C61 = 20,
+	CHIP_ESP32C5 = 23,
+	CHIP_ESP32H21 = 25,
+	CHIP_ESP32H4 = 28,
+	CHIP_POSIX_LINUX = 999
+} CHIP_ESP32S3;
+const 9(0x9) enum { CHIP_ESP32 = 1,
+										CHIP_ESP32S2,
+										CHIP_ESP32S3 = 9,
+										CHIP_ESP32C3 = 5,
+										CHIP_ESP32C2 = 12,
+										CHIP_ESP32C6,
+										CHIP_ESP32H2 = 16,
+										CHIP_ESP32P4 = 18,
+										CHIP_ESP32C61 = 20,
+										CHIP_ESP32C5 = 23,
+										CHIP_ESP32H21 = 25,
+										CHIP_ESP32H4 = 28,
+										CHIP_POSIX_LINUX = 999 } CHIP_ESP32H21;
+const 25(0x19) typedef struct
+{
+	uint8_t reserved;
+	uint8_t mosi_len;
+	uint8_t miso_len;
+	uint8_t address_bitlen;
+	uint32_t address;
+	const uint8_t *mosi_data;
+	uint8_t *miso_data;
+	uint32_t flags;
+	uint16_t command;
+	uint8_t dummy_bitlen;
+	uint32_t io_mode;
+} spi_flash_trans_t;
+enum
+{
+	SPI_FLASH_SLOWRD,
+	SPI_FLASH_FASTRD,
+	SPI_FLASH_DOUT,
+	SPI_FLASH_DIO,
+	SPI_FLASH_QOUT,
+	SPI_FLASH_QIO,
+	SPI_FLASH_OPI_STR = 16,
+	SPI_FLASH_OPI_DTR,
+	SPI_FLASH_READ_MODE_MAX
+} SPI_FLASH_SLOWRD;
+const 0(0x0) typedef struct spi_flash_chip_t
+{
+	const char *name;
+	const flash_chip_op_timeout_t *timeout;
+	esp_err_t (*probe)(esp_flash_t *, uint32_t);
+	esp_err_t (*reset)(esp_flash_t *);
+	esp_err_t (*detect_size)(esp_flash_t *, uint32_t *);
+	esp_err_t (*erase_chip)(esp_flash_t *);
+	esp_err_t (*erase_sector)(esp_flash_t *, uint32_t);
+	esp_err_t (*erase_block)(esp_flash_t *, uint32_t);
+	uint32_t sector_size;
+	uint32_t block_erase_size;
+	esp_err_t (*get_chip_write_protect)(esp_flash_t *, _Bool *);
+	esp_err_t (*set_chip_write_protect)(esp_flash_t *, _Bool);
+	uint8_t num_protectable_regions;
+	const esp_flash_region_t *protectable_regions;
+	esp_err_t (*get_protected_regions)(esp_flash_t *, uint64_t *);
+	esp_err_t (*set_protected_regions)(esp_flash_t *, uint64_t);
+	esp_err_t (*read)(esp_flash_t *, void *, uint32_t, uint32_t);
+	esp_err_t (*write)(esp_flash_t *, const void *, uint32_t, uint32_t);
+	esp_err_t (*program_page)(esp_flash_t *, const void *, uint32_t, uint32_t);
+	uint32_t page_size;
+	esp_err_t (*write_encrypted)(esp_flash_t *, const void *, uint32_t, uint32_t);
+	esp_err_t (*wait_idle)(esp_flash_t *, uint32_t);
+	esp_err_t (*set_io_mode)(esp_flash_t *);
+	esp_err_t (*get_io_mode)(esp_flash_t *, esp_flash_io_mode_t *);
+	esp_err_t (*read_id)(esp_flash_t *, uint32_t *);
+	esp_err_t (*read_reg)(esp_flash_t *, spi_flash_register_t, uint32_t *);
+	esp_err_t (*yield)(esp_flash_t *, uint32_t);
+	esp_err_t (*sus_setup)(esp_flash_t *);
+	esp_err_t (*read_unique_id)(esp_flash_t *, uint64_t *);
+	spi_flash_caps_t (*get_chip_caps)(esp_flash_t *);
+	esp_err_t (*config_host_io_mode)(esp_flash_t *, uint32_t);
+} spi_flash_chip_t;
+typedef struct esp_flash_t
+{
+	spi_flash_host_inst_t *host;
+	const spi_flash_chip_t *chip_drv;
+	const esp_flash_os_functions_t *os_func;
+	void *os_func_data;
+	esp_flash_io_mode_t read_mode;
+	uint32_t size;
+	uint32_t chip_id;
+	uint32_t busy : 1;
+	uint32_t hpm_dummy_ena : 1;
+	uint32_t reserved_flags : 30;
+	int clock_source;
+} esp_flash_t;
+struct esp_flash_t
+{
+	spi_flash_host_inst_t *host;
+	const spi_flash_chip_t *chip_drv;
+	const esp_flash_os_functions_t *os_func;
+	void *os_func_data;
+	esp_flash_io_mode_t read_mode;
+	uint32_t size;
+	uint32_t chip_id;
+	uint32_t busy : 1;
+	uint32_t hpm_dummy_ena : 1;
+	uint32_t reserved_flags : 30;
+	int clock_source;
+};
+  struct _atexit
+{
+	struct _atexit *_next;
+	int _ind;
+	void (*_fns[32])(void);
+	struct _on_exit_args *_on_exit_args_ptr;
+};
+  struct __sbuf
+{
+	unsigned char *_base;
+	int _size;
+};
+  typedef unsigned char uint8_t;
+enum
+{
+	CHIP_ESP32 = 1,
+	CHIP_ESP32S2,
+	CHIP_ESP32S3 = 9,
+	CHIP_ESP32C3 = 5,
+	CHIP_ESP32C2 = 12,
+	CHIP_ESP32C6,
+	CHIP_ESP32H2 = 16,
+	CHIP_ESP32P4 = 18,
+	CHIP_ESP32C61 = 20,
+	CHIP_ESP32C5 = 23,
+	CHIP_ESP32H21 = 25,
+	CHIP_ESP32H4 = 28,
+	CHIP_POSIX_LINUX = 999
+} CHIP_ESP32C5;
+const 23(0x17) typedef enum { CHIP_ESP32 = 1,
+															CHIP_ESP32S2,
+															CHIP_ESP32S3 = 9,
+															CHIP_ESP32C3 = 5,
+															CHIP_ESP32C2 = 12,
+															CHIP_ESP32C6,
+															CHIP_ESP32H2 = 16,
+															CHIP_ESP32P4 = 18,
+															CHIP_ESP32C61 = 20,
+															CHIP_ESP32C5 = 23,
+															CHIP_ESP32H21 = 25,
+															CHIP_ESP32H4 = 28,
+															CHIP_POSIX_LINUX = 999 } esp_chip_model_t;
+enum
+{
+	SPI_FLASH_SLOWRD,
+	SPI_FLASH_FASTRD,
+	SPI_FLASH_DOUT,
+	SPI_FLASH_DIO,
+	SPI_FLASH_QOUT,
+	SPI_FLASH_QIO,
+	SPI_FLASH_OPI_STR = 16,
+	SPI_FLASH_OPI_DTR,
+	SPI_FLASH_READ_MODE_MAX
+} SPI_FLASH_OPI_STR;
+const 16(0x10) typedef long _off_t;
+typedef long _fpos_t;
+struct __sFILE
+{
+	unsigned char *_p;
+	int _r;
+	int _w;
+	short _flags;
+	short _file;
+	struct __sbuf _bf;
+	int _lbfsize;
+	struct _reent *_data;
+	void *_cookie;
+	int (*_read)(struct _reent *, void *, char *, int);
+	int (*_write)(struct _reent *, void *, const char *, int);
+	_fpos_t (*_seek)(struct _reent *, void *, _fpos_t, int);
+	int (*_close)(struct _reent *, void *);
+	struct __sbuf _ub;
+	unsigned char *_up;
+	int _ur;
+	unsigned char _ubuf[3];
+	unsigned char _nbuf[1];
+	struct __sbuf _lb;
+	int _blksize;
+	_off_t _offset;
+	_flock_t _lock;
+	_mbstate_t _mbstate;
+	int _flags2;
+};
+  enum { CHIP_ESP32 = 1,
+				 CHIP_ESP32S2,
+				 CHIP_ESP32S3 = 9,
+				 CHIP_ESP32C3 = 5,
+				 CHIP_ESP32C2 = 12,
+				 CHIP_ESP32C6,
+				 CHIP_ESP32H2 = 16,
+				 CHIP_ESP32P4 = 18,
+				 CHIP_ESP32C61 = 20,
+				 CHIP_ESP32C5 = 23,
+				 CHIP_ESP32H21 = 25,
+				 CHIP_ESP32H4 = 28,
+				 CHIP_POSIX_LINUX = 999 } CHIP_ESP32C6;
+const 13(0xd) typedef struct
+{
+	const struct spi_flash_host_driver_s *driver;
+} spi_flash_host_inst_t;
+typedef long long __int64_t;
+typedef _Bool _Bool;
+enum
+{
+	SPI_FLASH_SLOWRD,
+	SPI_FLASH_FASTRD,
+	SPI_FLASH_DOUT,
+	SPI_FLASH_DIO,
+	SPI_FLASH_QOUT,
+	SPI_FLASH_QIO,
+	SPI_FLASH_OPI_STR = 16,
+	SPI_FLASH_OPI_DTR,
+	SPI_FLASH_READ_MODE_MAX
+} SPI_FLASH_QOUT;
+const 4(0x4) enum { SPI_FLASH_SLOWRD,
+										SPI_FLASH_FASTRD,
+										SPI_FLASH_DOUT,
+										SPI_FLASH_DIO,
+										SPI_FLASH_QOUT,
+										SPI_FLASH_QIO,
+										SPI_FLASH_OPI_STR = 16,
+										SPI_FLASH_OPI_DTR,
+										SPI_FLASH_READ_MODE_MAX } SPI_FLASH_OPI_DTR;
+const 17(0x11) typedef struct
+{
+	uint32_t sus_mask;
+	struct
+	{
+		uint32_t cmd_rdsr : 8;
+		uint32_t sus_cmd : 8;
+		uint32_t res_cmd : 8;
+		uint32_t reserved : 8;
+	};
+} spi_flash_sus_cmd_conf;
+typedef short short;
+typedef unsigned long __ULong;
+struct __tm
+{
+	int __tm_sec;
+	int __tm_min;
+	int __tm_hour;
+	int __tm_mday;
+	int __tm_mon;
+	int __tm_year;
+	int __tm_wday;
+	int __tm_yday;
+	int __tm_isdst;
+};
+  enum { CHIP_ESP32 = 1,
+				 CHIP_ESP32S2,
+				 CHIP_ESP32S3 = 9,
+				 CHIP_ESP32C3 = 5,
+				 CHIP_ESP32C2 = 12,
+				 CHIP_ESP32C6,
+				 CHIP_ESP32H2 = 16,
+				 CHIP_ESP32P4 = 18,
+				 CHIP_ESP32C61 = 20,
+				 CHIP_ESP32C5 = 23,
+				 CHIP_ESP32H21 = 25,
+				 CHIP_ESP32H4 = 28,
+				 CHIP_POSIX_LINUX = 999 } CHIP_ESP32P4;
+const 18(0x12) struct embed
+{
+	char i;
+	unsigned int o;
+	long long x;
+};
+  typedef unsigned long long unsigned long long;
+typedef unsigned long __uint32_t;
+typedef unsigned int wint_t;
+struct spi_flash_host_driver_s
+{
+	esp_err_t (*dev_config)(spi_flash_host_inst_t *);
+	esp_err_t (*common_command)(spi_flash_host_inst_t *, spi_flash_trans_t *);
+	esp_err_t (*read_id)(spi_flash_host_inst_t *, uint32_t *);
+	void (*erase_chip)(spi_flash_host_inst_t *);
+	void (*erase_sector)(spi_flash_host_inst_t *, uint32_t);
+	void (*erase_block)(spi_flash_host_inst_t *, uint32_t);
+	esp_err_t (*read_status)(spi_flash_host_inst_t *, uint8_t *);
+	esp_err_t (*set_write_protect)(spi_flash_host_inst_t *, _Bool);
+	void (*program_page)(spi_flash_host_inst_t *, const void *, uint32_t, uint32_t);
+	_Bool (*supports_direct_write)(spi_flash_host_inst_t *, const void *);
+	int (*write_data_slicer)(spi_flash_host_inst_t *, uint32_t, uint32_t, uint32_t *, uint32_t);
+	esp_err_t (*read)(spi_flash_host_inst_t *, void *, uint32_t, uint32_t);
+	_Bool (*supports_direct_read)(spi_flash_host_inst_t *, const void *);
+	int (*read_data_slicer)(spi_flash_host_inst_t *, uint32_t, uint32_t, uint32_t *, uint32_t);
+	uint32_t (*host_status)(spi_flash_host_inst_t *);
+	esp_err_t (*configure_host_io_mode)(spi_flash_host_inst_t *, uint32_t, uint32_t, int, esp_flash_io_mode_t);
+	void (*poll_cmd_done)(spi_flash_host_inst_t *);
+	esp_err_t (*flush_cache)(spi_flash_host_inst_t *, uint32_t, uint32_t);
+	void (*check_suspend)(spi_flash_host_inst_t *);
+	void (*resume)(spi_flash_host_inst_t *);
+	void (*suspend)(spi_flash_host_inst_t *);
+	esp_err_t (*sus_setup)(spi_flash_host_inst_t *, const spi_flash_sus_cmd_conf *);
+};
+  typedef unsigned long uint32_t;
+enum
+{
+	SPI_FLASH_SLOWRD,
+	SPI_FLASH_FASTRD,
+	SPI_FLASH_DOUT,
+	SPI_FLASH_DIO,
+	SPI_FLASH_QOUT,
+	SPI_FLASH_QIO,
+	SPI_FLASH_OPI_STR = 16,
+	SPI_FLASH_OPI_DTR,
+	SPI_FLASH_READ_MODE_MAX
+} SPI_FLASH_QIO;
+const 5(0x5) typedef struct
+{
+	int a;
+	char b;
+	union
+	{
+		char c[3];
+		int d;
+	};
+	char e;
+	struct embed embed_t;
+	char h;
+	struct
+	{
+		int f;
+		unsigned int g;
+	};
+} MyStruct_t;
+typedef signed char signed char;
+typedef long long;
+struct _on_exit_args
+{
+	void *_fnargs[32];
+	void *_dso_handle[32];
+	__ULong _fntypes;
+	__ULong _is_cxa;
+};
+  struct _reent
+{
+	int _errno;
+	__FILE *_stdin;
+	__FILE *_stdout;
+	__FILE *_stderr;
+	int _inc;
+	char *_emergency;
+	int _reserved_0;
+	int _reserved_1;
+	struct __locale_t *_locale;
+	struct _mprec *_mp;
+	void (*__cleanup)(struct _reent *);
+	int _gamma_signgam;
+	int _cvtlen;
+	char *_cvtbuf;
+	struct _rand48 *_r48;
+	struct __tm *_localtime_buf;
+	char *_asctime_buf;
+	void (**_sig_func)(int);
+	struct _atexit *_reserved_6;
+	struct _atexit _reserved_7;
+	struct _glue _reserved_8;
+	__FILE *__sf;
+	struct _misc_reent *_misc;
+	char *_signal_buf;
+};
+  typedef struct __sFILE
+{
+	unsigned char *_p;
+	int _r;
+	int _w;
+	short _flags;
+	short _file;
+	struct __sbuf _bf;
+	int _lbfsize;
+	struct _reent *_data;
+	void *_cookie;
+	int (*_read)(struct _reent *, void *, char *, int);
+	int (*_write)(struct _reent *, void *, const char *, int);
+	_fpos_t (*_seek)(struct _reent *, void *, _fpos_t, int);
+	int (*_close)(struct _reent *, void *);
+	struct __sbuf _ub;
+	unsigned char *_up;
+	int _ur;
+	unsigned char _ubuf[3];
+	unsigned char _nbuf[1];
+	struct __sbuf _lb;
+	int _blksize;
+	_off_t _offset;
+	_flock_t _lock;
+	_mbstate_t _mbstate;
+	int _flags2;
+} FILE;
+typedef struct
+{
+	esp_chip_model_t model;
+	uint32_t features;
+	uint16_t revision;
+	uint8_t cores;
+} esp_chip_info_t;
+enum
+{
+	SPI_FLASH_SLOWRD,
+	SPI_FLASH_FASTRD,
+	SPI_FLASH_DOUT,
+	SPI_FLASH_DIO,
+	SPI_FLASH_QOUT,
+	SPI_FLASH_QIO,
+	SPI_FLASH_OPI_STR = 16,
+	SPI_FLASH_OPI_DTR,
+	SPI_FLASH_READ_MODE_MAX
+} SPI_FLASH_READ_MODE_MAX;
+const 18(0x12) typedef unsigned long unsigned long;
+struct _rand48
+{
+	unsigned short _seed[3];
+	unsigned short _mult[3];
+	unsigned short _add;
+	unsigned long long _rand_next;
+};
+  enum { CHIP_ESP32 = 1,
+				 CHIP_ESP32S2,
+				 CHIP_ESP32S3 = 9,
+				 CHIP_ESP32C3 = 5,
+				 CHIP_ESP32C2 = 12,
+				 CHIP_ESP32C6,
+				 CHIP_ESP32H2 = 16,
+				 CHIP_ESP32P4 = 18,
+				 CHIP_ESP32C61 = 20,
+				 CHIP_ESP32C5 = 23,
+				 CHIP_ESP32H21 = 25,
+				 CHIP_ESP32H4 = 28,
+				 CHIP_POSIX_LINUX = 999 } CHIP_ESP32C61;
+const 20(0x14) typedef int int;
+typedef int esp_err_t;
+block #002, object at 0x29ee54f0 under 0x29ee5590, 1 symbols in 0x400d6108..0x400d611a, function foo int x;
+computed at runtime
+		block #003,
+		object at 0x29ee5270 under 0x29ee5590, 0 symbols in 0x400d611c..0x400d6132, function bar block #004, object at 0x29ee5050 under 0x29ee5590, 5 symbols in 0x400d6134..0x400d6225, function app_main struct
+{
+	char *pd;
+	MyStruct_t ms;
+	int arr[6];
+	struct
+	{
+		int x : 4;
+		int y : 3;
+		int z : 1;
+	} bf1;
+	struct
+	{
+		int x : 3;
+		int y : 7;
+		int z : 12;
+	} bf2;
+} mbs;
+computed at runtime struct
+{
+	esp_chip_model_t model;
+	uint32_t features;
+	uint16_t revision;
+	uint8_t cores;
+} chip_info;
+computed at runtime unsigned long flash_size;
+computed at runtime unsigned int major_rev;
+computed at runtime unsigned int minor_rev;
+computed at runtime
+		block #005,
+		object at 0x29ee4300 under 0x29ee5050, 1 symbols in 0x400d61fc..0x400d6214 int i;
+computed at runtime
+ 

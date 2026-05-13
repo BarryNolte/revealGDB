@@ -19,17 +19,8 @@ import {
   Resize,
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
-import {
-  JSX,
-  MouseEvent as ReactMouseEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { JSX, MouseEvent as ReactMouseEvent, RefObject, useEffect, useRef, useState } from "react";
 import { gdbBreakpoint } from "../../common/gdb-state-types";
-
 import { ButtonComponent, CheckBoxComponent } from "@syncfusion/ej2-react-buttons";
 import imgDelete from "../icons/icons8-delete-48.png";
 import { BreakpointGridRow, mapBreakpointsToGridRows } from "../mappers/grid-data-mappers";
@@ -37,6 +28,138 @@ import { useGridColumnState } from "../utilities/useGridColumnState";
 import "./GdbBreakpointsWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
+
+const SELECTION_OPTIONS: SelectionSettingsModel = { mode: "Both", type: "Multiple" };
+const CONTEXT_MENU_ITEMS: ContextMenuItem[] = ["Copy", "Delete"];
+const EDITING = { allowDeleting: true };
+
+function emptyMessageTemplate(): JSX.Element {
+  return (
+    <div className="emptyRecordTemplate">
+      <span>There are no breakpoints.</span>
+    </div>
+  );
+}
+
+function BreakpointActionCell(props: BreakpointGridRow): JSX.Element {
+  return (
+    <div className="bp-delete-container">
+      <ButtonComponent
+        className="bp-delete"
+        name="delete"
+        onClick={(e: ReactMouseEvent<HTMLButtonElement>) => {
+          const attr = e.currentTarget.getAttribute("data-id");
+          window.ipcToMain.commands.debugger.sendGdbCommand(`d ${attr}`);
+        }}
+        data-id={props?.number}
+      >
+        <img className="bp-delete-img" src={imgDelete} alt="Delete Breakpoint"></img>
+      </ButtonComponent>
+      <CheckBoxComponent
+        className="bp-enable"
+        title="Enable"
+        checked={Boolean(props?.enabled)}
+        onClick={(e: ReactMouseEvent<HTMLInputElement>) => {
+          const attr = e.currentTarget.getAttribute("data-id");
+          window.ipcToMain.commands.debugger.sendGdbCommand(
+            e.currentTarget.checked === true ? `enable ${attr}` : `disable ${attr}`,
+          );
+        }}
+        data-id={props?.number}
+      />
+    </div>
+  );
+}
+
+function onAction(args: NotifyArgs): void {
+  switch (args.requestType) {
+    case "delete":
+      {
+        const delArgs: DeleteEventArgs = args;
+        const rows = (delArgs.data ?? []) as BreakpointGridRow[];
+        rows.forEach((bp) => {
+          window.ipcToMain.commands.debugger.sendGdbCommand(`d ${bp.number}`);
+        });
+      }
+      break;
+  }
+}
+
+function handleRecordDoubleClick(e: RecordDoubleClickEventArgs): void {
+  const row = e.rowData as BreakpointGridRow;
+  if (row?.fullName && row?.line) {
+    window.ipcToMain.commands.app.notifyMain({
+      command: "show-source-at",
+      data: { fileName: row.fullName, line: row.line },
+    });
+  }
+}
+
+function useBreakpointData(gridRef: RefObject<GridComponent | null>): BreakpointGridRow[] {
+  const [breakpointData, setBreakpointData] = useState<BreakpointGridRow[]>([]);
+
+  useEffect(() => {
+    const unsubscribe = window.ipcToMain.debuggerData.breakpoints(
+      (data: Map<string, gdbBreakpoint>) => {
+        setBreakpointData(mapBreakpointsToGridRows(data));
+      },
+    );
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (breakpointData.length === 0) {
+      setTimeout(() => {
+        gridRef.current?.refresh();
+      }, 350);
+    }
+  }, [breakpointData, gridRef]);
+
+  return breakpointData;
+}
+
+function breakpointColumnDefinitions(): JSX.Element {
+  return (
+    <ColumnsDirective>
+      <ColumnDirective
+        field="enabled"
+        toolTip="BP Enabled"
+        headerText=""
+        allowEditing={true}
+        template={BreakpointActionCell}
+        textAlign="Left"
+        showColumnMenu={false}
+        width="55px"
+      />
+      <ColumnDirective
+        field="number"
+        headerText="#"
+        isPrimaryKey={true}
+        textAlign="Left"
+        showColumnMenu={false}
+        width="35px"
+        clipMode="EllipsisWithTooltip"
+      />
+      <ColumnDirective field="addr" headerText="Address" clipMode="EllipsisWithTooltip" />
+      <ColumnDirective field="func" headerText="Function" clipMode="EllipsisWithTooltip" />
+      <ColumnDirective field="file" headerText="File" clipMode="EllipsisWithTooltip" />
+      <ColumnDirective field="line" headerText="Line" width="35px" clipMode="EllipsisWithTooltip" />
+      <ColumnDirective field="times" headerText="Times" clipMode="EllipsisWithTooltip" />
+      <ColumnDirective field="installed" headerText="Installed" clipMode="EllipsisWithTooltip" />
+      <ColumnDirective field="fullName" headerText="Full Path" clipMode="EllipsisWithTooltip" />
+      <ColumnDirective field="tg" headerText="Thread Group" clipMode="EllipsisWithTooltip" />
+      <ColumnDirective
+        field="orgloc"
+        headerText="Original Location"
+        clipMode="EllipsisWithTooltip"
+      />
+      <ColumnDirective field="disp" headerText="Display" clipMode="EllipsisWithTooltip" />
+      <ColumnDirective field="type" headerText="Type" clipMode="EllipsisWithTooltip" />
+    </ColumnsDirective>
+  );
+}
 
 /**
  * Performs gdb break point window as part of this module's public API.
@@ -48,114 +171,8 @@ import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
  */
 export default function GdbBreakPointWindow(): JSX.Element {
   const gridRef = useRef<GridComponent | null>(null);
-  const [breakpointData, setBreakpointData] = useState<BreakpointGridRow[]>([]);
+  const breakpointData = useBreakpointData(gridRef);
   useGridColumnState("breakpoints", gridRef);
-
-  /** Grid selection settings: allow multiple row/cell selection */
-  const selectionOptions: SelectionSettingsModel = useMemo(
-    () => ({
-      mode: "Both",
-      type: "Multiple",
-    }),
-    [],
-  );
-
-  /**
-   * Subscribe to breakpoint data updates from GDB.
-   * Transforms GDB breakpoint data into grid-compatible format.
-   */
-  useEffect(() => {
-    const unsubscribe = window.ipcToMain.debuggerData.breakpoints(
-      (data: Map<string, gdbBreakpoint>) => {
-        setBreakpointData(mapBreakpointsToGridRows(data));
-      },
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
-
-  /**
-   * Force a full grid refresh when data becomes empty to work around Syncfusion's
-   * CRUD delta-update path skipping row removal when the incoming dataset is [].
-   */
-  useEffect(() => {
-    if (breakpointData.length === 0) {
-      setTimeout(() => {
-        gridRef.current?.refresh();
-      }, 250);
-    }
-  }, [breakpointData]);
-
-  const emptyMessageTemplate = useCallback((): JSX.Element => {
-    return (
-      <div className="emptyRecordTemplate">
-        <span>There are no breakpoints.</span>
-      </div>
-    );
-  }, []);
-
-  const checkboxTemplate = useCallback((props: BreakpointGridRow) => {
-    return (
-      <div className="bp-delete-container">
-        <ButtonComponent
-          className="bp-delete"
-          name="delete"
-          onClick={(e: ReactMouseEvent<HTMLButtonElement>) => {
-            const attr = e.currentTarget.getAttribute("data-id");
-            window.ipcToMain.commands.debugger.sendGdbCommand(`d ${attr}`);
-          }}
-          data-id={props?.number}
-        >
-          <img className="bp-delete-img" src={imgDelete} alt="Delete Breakpoint"></img>
-        </ButtonComponent>
-        <CheckBoxComponent
-          className="bp-enable"
-          title="Enable"
-          checked={Boolean(props?.enabled)}
-          onClick={(e: ReactMouseEvent<HTMLInputElement>) => {
-            const attr = e.currentTarget.getAttribute("data-id");
-            window.ipcToMain.commands.debugger.sendGdbCommand(
-              e.currentTarget.checked === true ? `enable ${attr}` : `disable ${attr}`,
-            );
-          }}
-          data-id={props?.number}
-        />
-      </div>
-    );
-  }, []);
-
-  const onAction = useCallback((args: NotifyArgs) => {
-    switch (args.requestType) {
-      case "delete":
-        {
-          const delArgs: DeleteEventArgs = args;
-          const rows = (delArgs.data ?? []) as BreakpointGridRow[];
-          rows.forEach((bp) => {
-            window.ipcToMain.commands.debugger.sendGdbCommand(`d ${bp.number}`);
-          });
-        }
-        break;
-    }
-  }, []);
-
-  const contextMenuItems: ContextMenuItem[] = useMemo(() => ["Copy", "Delete"], []);
-  const editing = useMemo(() => ({ allowDeleting: true }), []);
-
-  /**
-   * Handles double-click on stack frame row.
-   * Navigates to the corresponding source location in the source window.
-   */
-  const handleRecordDoubleClick = useCallback((e: RecordDoubleClickEventArgs) => {
-    const row = e.rowData as BreakpointGridRow;
-    if (row?.fullName && row?.line) {
-      window.ipcToMain.commands.app.notifyMain({
-        command: "show-source-at",
-        data: { fileName: row.fullName, line: row.line },
-      });
-    }
-  }, []);
 
   return (
     <ToolWindowContent title={TOOL_WINDOW_TITLES.breakpoints}>
@@ -173,63 +190,15 @@ export default function GdbBreakPointWindow(): JSX.Element {
           allowSorting={false}
           showColumnMenu={true}
           allowFiltering={false}
-          contextMenuItems={contextMenuItems}
-          selectionSettings={selectionOptions}
-          editSettings={editing}
+          contextMenuItems={CONTEXT_MENU_ITEMS}
+          selectionSettings={SELECTION_OPTIONS}
+          editSettings={EDITING}
           ref={gridRef}
           gridLines="Both"
           actionBegin={onAction}
           recordDoubleClick={handleRecordDoubleClick}
         >
-          <ColumnsDirective>
-            <ColumnDirective
-              field="enabled"
-              toolTip="BP Enabled"
-              headerText=""
-              allowEditing={true}
-              template={checkboxTemplate}
-              textAlign="Left"
-              showColumnMenu={false}
-              width="55px"
-            />
-            <ColumnDirective
-              field="number"
-              headerText="#"
-              isPrimaryKey={true}
-              textAlign="Left"
-              showColumnMenu={false}
-              width="35px"
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective field="addr" headerText="Address" clipMode="EllipsisWithTooltip" />
-            <ColumnDirective field="func" headerText="Function" clipMode="EllipsisWithTooltip" />
-            <ColumnDirective field="file" headerText="File" clipMode="EllipsisWithTooltip" />
-            <ColumnDirective
-              field="line"
-              headerText="Line"
-              width="35px"
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective field="times" headerText="Times" clipMode="EllipsisWithTooltip" />
-            <ColumnDirective
-              field="installed"
-              headerText="Installed"
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective
-              field="fullName"
-              headerText="Full Path"
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective field="tg" headerText="Thread Group" clipMode="EllipsisWithTooltip" />
-            <ColumnDirective
-              field="orgloc"
-              headerText="Original Location"
-              clipMode="EllipsisWithTooltip"
-            />
-            <ColumnDirective field="disp" headerText="Display" clipMode="EllipsisWithTooltip" />
-            <ColumnDirective field="type" headerText="Type" clipMode="EllipsisWithTooltip" />
-          </ColumnsDirective>
+          {breakpointColumnDefinitions()}
           <Inject services={[Resize, Reorder, ColumnMenu, ContextMenu]} />
         </GridComponent>
       </div>

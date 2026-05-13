@@ -5,7 +5,7 @@
  * Exported symbols include `registerIpcQueryHandlers`. It is responsible for channel registration, payload marshalling, and returning data to renderer callers.
  */
 import { IPC_CHANNELS } from "../../common/ipc-contracts";
-import { gdbFunction } from "../mi-interface/gdb-state-database/gdbStateDatabase";
+import { gdbFunction, gdbVarLocation } from "../mi-interface/gdb-state-database/gdbStateDatabase";
 import { WslUtilities, type WslDistro } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
 
@@ -75,6 +75,34 @@ export function registerIpcQueryHandlers(context: IpcRegistrationContext): void 
     IPC_CHANNELS.rendererToMain.queries.debugger.functionNames,
     (): Promise<gdbFunction[]> => {
       return Promise.resolve(context.getGdbInterface().gdbDB.getAllFunctionNames());
+    },
+  );
+
+  context.ipcMain.handle(
+    IPC_CHANNELS.rendererToMain.queries.debugger.varAtPosition,
+    (
+      _: unknown,
+      sourceFile: string,
+      line: number,
+      col: number,
+    ): Promise<gdbVarLocation | undefined> => {
+      return Promise.resolve(
+        context.getGdbInterface().gdbDB.queryVarAtPosition(sourceFile, line, col),
+      );
+    },
+  );
+
+  context.ipcMain.handle(
+    IPC_CHANNELS.rendererToMain.queries.debugger.varByName,
+    (_: unknown, sourceFile: string, varName: string): Promise<gdbVarLocation | undefined> => {
+      return Promise.resolve(context.getGdbInterface().gdbDB.getVarByName(sourceFile, varName));
+    },
+  );
+
+  context.ipcMain.handle(
+    IPC_CHANNELS.rendererToMain.queries.debugger.evaluateExpression,
+    (_: unknown, expr: string): Promise<string | undefined> => {
+      return context.getGdbInterface().evaluateExpression(expr);
     },
   );
 }

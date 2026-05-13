@@ -98,7 +98,7 @@ describe("MiResultRecordHandler", () => {
     const ok = await handler.parseResultRecord('^done,value="42"');
 
     expect(ok).toBe(true);
-    expect(host.emit).toHaveBeenCalledWith("log-stream", expect.stringContaining("value="));
+    expect(host.emit).toHaveBeenCalledWith("value-evaluated", "42");
   });
 
   it("logs name result from -var-create", async () => {

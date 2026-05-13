@@ -6,6 +6,7 @@
  */
 import { sendToRenderer } from "../ipc-sender";
 import { MiOutputHost } from "./mi-output-types";
+import { LOG_STREAM } from "./mi-stream-events";
 
 export class MiExecAsyncHandler {
   private readonly rgxExecAsyncRecord: RegExp = /^\*(?<result>[^,]*),?(?<data>.*)?$/;
@@ -14,6 +15,7 @@ export class MiExecAsyncHandler {
     /stopped-threads="(?<stoppedThreads>[^"]*)"/;
   private readonly rgxCoreExtractor: RegExp = /core="(?<core>[^"]*)"/;
   private readonly rgxReasonExtractor: RegExp = /reason="(?<reason>[^"]*)"/;
+  //private readonly rgxFrameFullname: RegExp = /fullname="(?<fullname>[^"]*)"/;
   private readonly rgxSignalName: RegExp = /signal-name="(?<signalName>[^"]*)"/;
   private readonly rgxSignalMeaning: RegExp = /signal-meaning="(?<signalMeaning>[^"]*)"/;
   private readonly rgxExitCode: RegExp = /exit-code="(?<exitCode>[^"]*)"/;
@@ -49,6 +51,7 @@ export class MiExecAsyncHandler {
           this.rgxStoppedThreadsExtractor.exec(data)?.groups?.stoppedThreads || undefined;
         const core = this.rgxCoreExtractor.exec(data)?.groups?.core || undefined;
         const reason = this.rgxReasonExtractor.exec(data)?.groups?.reason || undefined;
+        // const fullname = this.rgxFrameFullname.exec(data)?.groups?.fullname ?? "";
 
         switch (reason) {
           case undefined: {
@@ -67,7 +70,7 @@ export class MiExecAsyncHandler {
             const signalName = this.rgxSignalName.exec(data)?.groups?.signalName || "";
             const signalMeaning = this.rgxSignalMeaning.exec(data)?.groups?.signalMeaning || "";
             this.host.emit(
-              "log-stream",
+              LOG_STREAM,
               `*stopped reason="exited-signalled" signal-name="${signalName}" signal-meaning="${signalMeaning}" core="${core}"`,
             );
             break;
@@ -76,7 +79,7 @@ export class MiExecAsyncHandler {
             const signalName = this.rgxSignalName.exec(data)?.groups?.signalName || "";
             const signalMeaning = this.rgxSignalMeaning.exec(data)?.groups?.signalMeaning || "";
             this.host.emit(
-              "log-stream",
+              LOG_STREAM,
               `*stopped reason="signal-received" signal-name="${signalName}" signal-meaning="${signalMeaning}" core="${core}"`,
             );
             break;
@@ -84,7 +87,7 @@ export class MiExecAsyncHandler {
           case "exited": {
             const exitCode = this.rgxExitCode.exec(data)?.groups?.exitCode || "";
             this.host.emit(
-              "log-stream",
+              LOG_STREAM,
               `*stopped reason="exited" exit-code="${exitCode}" core="${core}"`,
             );
             break;

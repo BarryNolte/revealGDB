@@ -5,6 +5,13 @@
  * Exported symbols include `gdbStateDatabase`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { EventEmitter } from "stream";
+import { sendToRenderer } from "../../ipc-sender";
+import {
+  buildLineVarMap,
+  MaintPrintSymbolsParser,
+  queryVarAtPosition,
+} from "../gdb-parsers/maint-print-symbols-parser";
+import { ERROR_STREAM } from "../mi-stream-events";
 import { ElectronUINotifier } from "./notifiers/ElectronUINotifier";
 import { UINotifier } from "./notifiers/UINotifier";
 import { StateLifecycleCoordinator } from "./orchestration/StateLifecycleCoordinator";
@@ -12,6 +19,7 @@ import { StateUpdateBroadcaster } from "./orchestration/StateUpdateBroadcaster";
 import { BreakpointStore } from "./stores/BreakpointStore";
 import { FeatureStore } from "./stores/FeatureStore";
 import { FunctionStore } from "./stores/FunctionStore";
+import { LineVarStore } from "./stores/LineVarStore";
 import { LocalsStore } from "./stores/LocalsStore";
 import { ParameterStore } from "./stores/ParameterStore";
 import { RegisterStore } from "./stores/RegisterStore";
@@ -28,6 +36,7 @@ import {
   gdbBreakpoint,
   gdbFeature,
   gdbFunction,
+  gdbLineVarMap,
   gdbParams,
   gdbRegisters,
   gdbSection,
@@ -36,6 +45,7 @@ import {
   gdbSymbolFiles,
   gdbThread,
   gdbThreadGroup,
+  gdbVarLocation,
 } from "./types/gdbStateTypes";
 
 export type {
@@ -45,6 +55,7 @@ export type {
   gdbBreakpoint,
   gdbFeature,
   gdbFunction,
+  gdbLineVarMap,
   gdbParams,
   gdbRegisters,
   gdbSection,
@@ -53,6 +64,7 @@ export type {
   gdbSymbolFiles,
   gdbThread,
   gdbThreadGroup,
+  gdbVarLocation,
 };
 
 /**
@@ -74,6 +86,7 @@ export class gdbStateDatabase extends EventEmitter {
   private readonly sourceFileStore: SourceFileStore = new SourceFileStore();
   private readonly symbolStore: SymbolStore = new SymbolStore();
   private readonly functionStore: FunctionStore = new FunctionStore();
+  private readonly lineVarStore: LineVarStore = new LineVarStore();
 
   readonly threadGroups: Map<string, gdbThreadGroup> = this.threadGroupStore.threadGroups;
   readonly threads: Map<string, gdbThread> = this.threadStore.threads;
@@ -88,8 +101,8 @@ export class gdbStateDatabase extends EventEmitter {
 
   constructor(notifier?: UINotifier) {
     super();
-    this.sourceFileStore.gdbSrcFileCache.on("error-stream", (line: string) => {
-      this.emit("error-stream", line);
+    this.sourceFileStore.gdbSrcFileCache.on(ERROR_STREAM, (line: string) => {
+      this.emit(ERROR_STREAM, line);
     });
 
     this.notifier = notifier || new ElectronUINotifier();
@@ -643,7 +656,7 @@ export class gdbStateDatabase extends EventEmitter {
       this.threadStore.stopThreadsAll(this.threadGroups);
     } else {
       this.emit(
-        "error-stream",
+        ERROR_STREAM,
         `Unknown stoppedThreads value, tid: ${tid} stoppedThreads: ${stoppedThreads}`,
       );
     }
@@ -661,7 +674,7 @@ export class gdbStateDatabase extends EventEmitter {
     if (tid === "all") {
       this.threadStore.startThreadsAll(this.threadGroups);
     } else {
-      this.emit("error-stream", `Unknown tid value, tid: ${tid}`);
+      this.emit(ERROR_STREAM, `Unknown tid value, tid: ${tid}`);
     }
   }
 
@@ -693,6 +706,71 @@ export class gdbStateDatabase extends EventEmitter {
    */
   allDataUpdateUI(): void {
     this.updater.allDataUpdateUI();
+  }
+
+  // Line Variable Map
+  addRawLineVarData(rawLines: string[]): void {
+    const parsed = MaintPrintSymbolsParser.parse(rawLines);
+    // Kick off source enrichment; if source is unavailable it will fall back to Approach B
+    void this.enrichLineVarsFromSource(parsed);
+  }
+
+  private async enrichLineVarsFromSource(
+    parsed: ReturnType<typeof MaintPrintSymbolsParser.parse>,
+  ): Promise<void> {
+    const { header, lineTable, blocks } = parsed;
+    const contents = await this.gdbSrcFileCache.getSourceFileContents(header.sourceFile);
+    const sourceLines = contents ? contents.split("\n") : undefined;
+    // Approach C when source is available, Approach B otherwise
+    const map = buildLineVarMap(blocks, lineTable, header, sourceLines);
+    this.lineVarStore.add(map);
+    console.log("Built line var map", JSON.stringify(map));
+    sendToRenderer("data-line-vars", this.serializeLineVarMap(map));
+  }
+
+  getLineVars(sourceFile: string): gdbLineVarMap | undefined {
+    return this.lineVarStore.get(sourceFile);
+  }
+
+  hasLineVars(sourceFile: string): boolean {
+    return this.lineVarStore.has(sourceFile);
+  }
+
+  queryVarAtPosition(sourceFile: string, line: number, col: number): gdbVarLocation | undefined {
+    const map = this.lineVarStore.get(sourceFile);
+    if (!map) return undefined;
+    return queryVarAtPosition(map, line, col);
+  }
+
+  getVarByName(sourceFile: string, varName: string): gdbVarLocation | undefined {
+    const map = this.lineVarStore.get(sourceFile);
+    if (!map) return undefined;
+    for (const locs of map.lineVars.values()) {
+      const found = locs.find((l) => l.name === varName);
+      if (found) return found;
+    }
+    return undefined;
+  }
+
+  private serializeLineVarMap(map: gdbLineVarMap): {
+    sourceFile: string;
+    compilationDir: string;
+    lineVars: [
+      number,
+      {
+        name: string;
+        line: number;
+        colStart: number;
+        colEnd: number;
+        references: { line: number; colStart: number; colEnd: number }[];
+      }[],
+    ][];
+  } {
+    return {
+      sourceFile: map.sourceFile,
+      compilationDir: map.compilationDir,
+      lineVars: Array.from(map.lineVars.entries()),
+    };
   }
 
   // Debugging

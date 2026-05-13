@@ -5,8 +5,16 @@
  * Exported symbols include `createGdbInterface`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { BrowserWindow } from "electron";
+import path from "path";
 import { IPC_CHANNELS } from "../common/ipc-contracts";
 import { miInterface } from "./mi-interface/mi-interface";
+import {
+  CONSOLE_STREAM,
+  DEBUG_STREAM,
+  ERROR_STREAM,
+  HTML_STREAM,
+  LOG_STREAM,
+} from "./mi-interface/mi-stream-events";
 import { GeneralInfoSender } from "./utilities/GeneralInfoSender";
 
 export type SettingsLike = {
@@ -25,19 +33,28 @@ export function createGdbInterface(
   _appSettings: SettingsLike,
 ): miInterface {
   const gdbInterface = new miInterface();
-  gdbInterface.on("console-stream", (line: string) => {
+
+  gdbInterface.gdbDB.gdbSrcFileCache.on("first-read", (file: string) => {
+    if (!gdbInterface.gdbDB.hasLineVars(file)) {
+      gdbInterface.runCommand(
+        `echo <<<<line-vars>>>>\nmaint print symbols -source ${path.basename(file)}\necho >>>>end-capture<<<<`,
+      );
+    }
+  });
+
+  gdbInterface.on(CONSOLE_STREAM, (line: string) => {
     mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.message, line);
   });
-  gdbInterface.on("log-stream", (line: string) => {
+  gdbInterface.on(LOG_STREAM, (line: string) => {
     mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.log, line);
   });
-  gdbInterface.on("error-stream", (line: string) => {
+  gdbInterface.on(ERROR_STREAM, (line: string) => {
     mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.error, line);
   });
-  gdbInterface.on("debug-stream", (line: string) => {
+  gdbInterface.on(DEBUG_STREAM, (line: string) => {
     mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.debug, line);
   });
-  gdbInterface.on("html-stream", (html: string) => {
+  gdbInterface.on(HTML_STREAM, (html: string) => {
     mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.html, html);
   });
   GeneralInfoSender.instance.setRelayTarget(gdbInterface);
@@ -51,13 +68,10 @@ export function createGdbInterface(
         gdbInterface.runCommand(cmd);
       });
 
-      gdbInterface.runCommand("echo <<<<file-info>>>>");
-      gdbInterface.runCommand("info files");
-      gdbInterface.runCommand("echo >>>>end-capture<<<<");
-
-      gdbInterface.runCommand("echo <<<<function-names>>>>");
-      gdbInterface.runCommand("info functions");
-      gdbInterface.runCommand("echo >>>>end-capture<<<<");
+      gdbInterface.runCommand("echo <<<<file-info>>>>\ninfo files\necho >>>>end-capture<<<<");
+      gdbInterface.runCommand(
+        "echo <<<<function-names>>>>\ninfo functions\necho >>>>end-capture<<<<",
+      );
     }
 
     gdbInterface.onStopped.forEach((cmd: string) => {

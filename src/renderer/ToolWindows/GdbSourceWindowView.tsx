@@ -73,7 +73,6 @@ export default function GdbSourceWindowView(props: GdbSourceWindowViewProps): JS
             value={source}
             markers={stackMarkers}
             readOnly={true}
-            showPrintMargin={false}
             showGutter={true}
             name="code-editor-instance"
             setOptions={{ fontFamily: fontName }}

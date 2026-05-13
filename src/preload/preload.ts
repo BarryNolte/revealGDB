@@ -111,6 +111,21 @@ const ipcApi: IpcApiCore = {
     },
     debugger: {
       getFunctionNames: () => invoke(IPC_CHANNELS.rendererToMain.queries.debugger.functionNames),
+      queryVarAtPosition: (sourceFile: string, line: number, col: number) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.queries.debugger.varAtPosition,
+          sourceFile,
+          line,
+          col,
+        ),
+      getVarByName: (sourceFile: string, varName: string) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.queries.debugger.varByName,
+          sourceFile,
+          varName,
+        ),
+      evaluateExpression: (expr: string) =>
+        ipcRenderer.invoke(IPC_CHANNELS.rendererToMain.queries.debugger.evaluateExpression, expr),
     },
   },
   commands: {

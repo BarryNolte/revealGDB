@@ -1,13 +1,5 @@
 # Priority Items
 
-- github workflow working
-  - Real Debug/Release builds
-  - Product Icon
-  - Install for all platforms
-    - x64, arm64 (Windows)
-    - x64, arm64 (Linux)
-    - x64, arm64 (Mac)
-
 # Documentation
 
 - Quick Start Guide
@@ -20,13 +12,12 @@
 
 # New Features
 
+- Click on thread and goto source
 - Thread markers in source (better with multiple source windows)
 - Python Window for running python commands
 - Disassembly Window
   - Highlight registers?
   - "Show Disassembly" button working in source window
-  - maint info line-table [ regexp ]
-- Values on hover in source
 - Tracepoints - How to insert more automatically
 - Better Dock management (multiple source files in a Group)
   - Better source file management

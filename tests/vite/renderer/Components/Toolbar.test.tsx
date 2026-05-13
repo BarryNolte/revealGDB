@@ -23,14 +23,29 @@ vi.mock("@syncfusion/ej2-react-navigations", async () => {
     }) as React.ReactElement[];
 
   return {
-    ToolbarComponent: ({ children }: { children?: React.ReactNode }) => {
-      const items = flatten(children)
+    ToolbarComponent: ({
+      items,
+      children,
+    }: {
+      items?: Array<{
+        id?: string;
+        text?: string;
+        disabled?: boolean;
+        type?: string;
+        click?: () => void;
+      }>;
+      children?: React.ReactNode;
+    }) => {
+      // Support both items prop (current usage) and children (legacy)
+      const propItems = (items ?? []).filter((item) => item.type !== "Separator");
+      const childItems = flatten(children)
         .map((child) => child.props)
         .filter((item) => item.type !== "Separator");
+      const allItems = propItems.length > 0 ? propItems : childItems;
 
       return (
         <div data-testid="toolbar-component">
-          {items.map((item) => (
+          {allItems.map((item) => (
             <button
               key={item.id ?? item.text}
               data-item-id={item.id}

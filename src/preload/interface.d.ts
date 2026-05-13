@@ -14,6 +14,7 @@ import {
   gdbStackFrame,
   gdbThread,
   gdbThreadGroup,
+  gdbVarLocation,
 } from "../common/gdb-state-types";
 import { NotifyMainRequest, NotifyRenderMessage } from "../common/ipc-contracts";
 import { MemoryData, WslDistro } from "../common/ipc-data-types";
@@ -71,6 +72,13 @@ export interface IElectronAPI {
     };
     debugger: {
       getFunctionNames: () => Promise<GdbAny>;
+      queryVarAtPosition: (
+        sourceFile: string,
+        line: number,
+        col: number,
+      ) => Promise<gdbVarLocation | undefined>;
+      getVarByName: (sourceFile: string, varName: string) => Promise<gdbVarLocation | undefined>;
+      evaluateExpression: (expr: string) => Promise<string | undefined>;
     };
   };
 

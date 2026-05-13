@@ -12,10 +12,7 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createGdbInterface } from "../../../src/main/gdb-lifecycle";
-import {
-  createMockAppSettings,
-  createMockBrowserWindow,
-} from "../../helpers/ipc-test-harness";
+import { createMockAppSettings, createMockBrowserWindow } from "../../helpers/ipc-test-harness";
 
 const defaultStartupCommands = ["-list-features", "-data-list-register-names"];
 const defaultStoppedCommands = [
@@ -37,6 +34,10 @@ vi.mock("../../../src/main/mi-interface/mi-interface", async () => {
     onStopped = [...defaultStoppedCommands];
     send = sendMock;
     runCommand = sendMock;
+    gdbDB = {
+      gdbSrcFileCache: new EventEmitter(),
+      hasLineVars: () => false,
+    };
   }
 
   return {
@@ -69,8 +70,8 @@ describe("createGdbInterface", () => {
       expect(calls.filter((call) => call === command)).toHaveLength(2);
     }
 
-    expect(calls.filter((c) => c === "echo <<<<file-info>>>>")).toHaveLength(1);
-    expect(calls.filter((c) => c === "echo <<<<function-names>>>>")).toHaveLength(1);
+    expect(calls.filter((c) => c.startsWith("echo <<<<file-info>>>>"))).toHaveLength(1);
+    expect(calls.filter((c) => c.startsWith("echo <<<<function-names>>>>"))).toHaveLength(1);
     expect(appSettings.getSync).not.toHaveBeenCalled();
   });
 });

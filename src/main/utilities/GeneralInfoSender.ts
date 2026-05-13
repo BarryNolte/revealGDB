@@ -1,4 +1,5 @@
 import { EventEmitter } from "events";
+import { DEBUG_STREAM, HTML_STREAM } from "../mi-interface/mi-stream-events";
 
 export class GeneralInfoSender extends EventEmitter {
   public static instance: GeneralInfoSender = new GeneralInfoSender();
@@ -36,19 +37,19 @@ export class GeneralInfoSender extends EventEmitter {
     const maxLineLength = this.calculateMaxLineLength() + 2;
     const separator = "-".repeat(maxLineLength);
     const target = this.relayTarget ?? this;
-    target.emit("debug-stream", separator);
+    target.emit(DEBUG_STREAM, separator);
     if (this.header) {
-      target.emit("debug-stream", ` ${this.header} `);
+      target.emit(DEBUG_STREAM, ` ${this.header} `);
     }
-    target.emit("debug-stream", separator);
+    target.emit(DEBUG_STREAM, separator);
 
-    this.outputLines.forEach((line) => target.emit("debug-stream", ` ${line} `));
+    this.outputLines.forEach((line) => target.emit(DEBUG_STREAM, ` ${line} `));
     // Clear the output lines after sending
     this.outputLines = [];
   }
 
   public sendHtmlBlock(html: string): void {
     const target = this.relayTarget ?? this;
-    target.emit("html-stream", html);
+    target.emit(HTML_STREAM, html);
   }
 }

@@ -109,6 +109,47 @@ export type gdbFunction = {
   function: string;
 };
 
+export type gdbVarDecl = {
+  name: string;
+  typeStr: string;
+  fields?: string[]; // field names for struct/union types; empty for scalar types
+};
+
+export type gdbVarReference = {
+  line: number; // 1-based source line
+  colStart: number; // 0-based column of first char of name
+  colEnd: number; // 0-based column exclusive end of name
+};
+
+export type gdbVarLocation = {
+  name: string;
+  line: number; // 1-based source line; -1 if unknown
+  colStart: number; // 0-based column of first char of name; -1 if unknown
+  colEnd: number; // 0-based column exclusive end of name; -1 if unknown
+  references: gdbVarReference[]; // all usages within the variable's scope
+  fields?: string[]; // field names for struct/union types; propagated from gdbVarDecl
+  typeStr?: string; // full GDB type expression; propagated from gdbVarDecl
+};
+
+export type gdbSymbolBlock = {
+  startAddr: string;
+  endAddr: string;
+  functionName?: string;
+  vars: gdbVarDecl[];
+};
+
+export type gdbLineEntry = {
+  lineNum: number;
+  address: string;
+  isStmt: boolean;
+};
+
+export type gdbLineVarMap = {
+  sourceFile: string;
+  compilationDir: string;
+  lineVars: Map<number, gdbVarLocation[]>;
+};
+
 export type AddThreadArgs = {
   id: string;
   targetId: string;

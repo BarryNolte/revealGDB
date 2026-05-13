@@ -15,6 +15,8 @@ import { RegistersResultStrategy } from "./mi-result-strategies/registers-result
 import { StackResultStrategy } from "./mi-result-strategies/stack-result-strategy";
 import { ThreadsResultStrategy } from "./mi-result-strategies/threads-result-strategy";
 
+import { ERROR_STREAM, LOG_STREAM } from "./mi-stream-events";
+
 export class MiResultRecordHandler {
   private readonly rgxResultRecord: RegExp = /^\^(?<result>[^,]*),?(?<data>.*)?$/;
   private readonly rgxResultList: RegExp = /^(?<result>.*?)=(?<list>.*)$/;
@@ -83,27 +85,30 @@ export class MiResultRecordHandler {
           }
           case "value": {
             // Response to -data-evaluate-expression
-            this.host.emit("log-stream", `^done value=${resList}`);
+            // this.host.emit("log-stream", `^done value=${resList}`);
+            // Strip surrounding quotes GDB wraps around the value string
+            const rawValue = resList.replace(/^"(.*)"$/, "$1");
+            this.host.emit("value-evaluated", rawValue);
             break;
           }
           case "name": {
             // Response to -var-create
-            this.host.emit("log-stream", `^done name=${resList}`);
+            this.host.emit(LOG_STREAM, `^done name=${resList}`);
             break;
           }
           case "children": {
             // Response to -var-list-children
-            this.host.emit("log-stream", `^done children=${resList}`);
+            this.host.emit(LOG_STREAM, `^done children=${resList}`);
             break;
           }
           case "depth": {
             // Response to -stack-info-depth
-            this.host.emit("log-stream", `^done depth=${resList}`);
+            this.host.emit(LOG_STREAM, `^done depth=${resList}`);
             break;
           }
           case "changed-registers": {
             // Response to -data-list-changed-registers
-            this.host.emit("log-stream", `^done changed-registers=${resList}`);
+            this.host.emit(LOG_STREAM, `^done changed-registers=${resList}`);
             break;
           }
           case "": {
@@ -133,13 +138,20 @@ export class MiResultRecordHandler {
         break;
       }
       case "error": {
+        // If an expression evaluation is in-flight, route the error to the dedicated
+        // 'expression-error' event so it resolves the promise without flooding the
+        // command window (e.g. hovering over a type name causes GDB to report an error).
+        if (this.host.getEvaluatingExpression()) {
+          this.host.emit("expression-error");
+          break;
+        }
         const msgText = this.rgxErrorMsg
           .exec(data)
           ?.groups?.msg?.replaceAll('\\"', '"')
           .replaceAll("\\t", "\t")
           .split("\\n");
         if (msgText) {
-          this.host.emit("error-stream", msgText);
+          this.host.emit(ERROR_STREAM, msgText);
         }
         break;
       }

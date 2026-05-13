@@ -4,6 +4,7 @@
  * @remarks
  * Exported symbols include `GdbDisassemblerWindow`. It coordinates live debugger data with user interactions in docked tool-window views.
  */
+import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns";
 import {
   ColumnDirective,
@@ -17,7 +18,7 @@ import {
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
-import { JSX, useEffect, useId, useMemo, useRef, useState } from "react";
+import { JSX, RefObject, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { gdbAsmRow, gdbFunction } from "../../common/gdb-state-types";
 import { doCutCopyPaste, menuCopy, menuCutCopyPaste } from "../utilities/Clipboard";
 import { useGridColumnState } from "../utilities/useGridColumnState";
@@ -29,6 +30,376 @@ import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
 type DisasmRowTemplateData = Pick<gdbAsmRow, "address" | "offset" | "opcodes">;
 
+const groupOptions: GroupSettingsModel = {
+  columns: ["func"],
+  showDropArea: false,
+  showUngroupButton: false,
+  showToggleButton: false,
+  captionTemplate: renderGroupCaption,
+};
+
+/** Renders a placeholder message when no disassembly data is available. */
+function emptyMessageTemplate(): JSX.Element {
+  return (
+    <div className="emptyRecordTemplate">
+      <span>No disassembly data available.</span>
+    </div>
+  );
+}
+
+/** Renders a single function entry in the function-name combo box dropdown. */
+function itemTemplate(item: gdbFunction): JSX.Element {
+  return <span className="function-item">{item.function}</span>;
+}
+
+interface DisasmControlsPanelProps {
+  menuIdBase: string;
+  functionNameRef: RefObject<ComboBoxComponent | null>;
+  addressErrorRef: RefObject<HTMLTableCellElement | null>;
+  lengthErrorRef: RefObject<HTMLTableCellElement | null>;
+  startRef: RefObject<HTMLInputElement | null>;
+  lengthRef: RefObject<HTMLInputElement | null>;
+  functionList: gdbFunction[];
+  disasmFunction: () => void;
+  validateDisasmParams: () => void;
+}
+
+type DisasmControlsTableProps = Omit<DisasmControlsPanelProps, "menuIdBase">;
+
+/** Renders the input table for selecting a function name or address range to disassemble. */
+function DisasmControlsTable({
+  functionNameRef,
+  addressErrorRef,
+  lengthErrorRef,
+  startRef,
+  lengthRef,
+  functionList,
+  disasmFunction,
+  validateDisasmParams,
+}: DisasmControlsTableProps): JSX.Element {
+  return (
+    <table className="disasmControlTable">
+      <tbody>
+        <tr>
+          <td className="disasmTitle">Function Name:</td>
+          <td colSpan={3}>
+            <ComboBoxComponent
+              ref={functionNameRef}
+              id="function-names"
+              autofill={true}
+              dataSource={functionList}
+              allowFiltering={true}
+              popupHeight={400}
+              fields={{ value: "function" }}
+              itemTemplate={itemTemplate}
+              //TODO: Change this so it doesn't try to disassemble on every change (only on selection)
+              onChange={disasmFunction}
+            ></ComboBoxComponent>
+          </td>
+          <td>
+            <ButtonComponent
+              type="button"
+              onClick={() => {
+                if (functionNameRef?.current) {
+                  disasmFunction();
+                }
+              }}
+            >
+              Disassemble Function
+            </ButtonComponent>
+          </td>
+        </tr>
+        <tr>
+          <td className="disasmTitle">Address:</td>
+          <td>
+            <input id="asm-start" ref={startRef} type="text" placeholder="Address" />
+          </td>
+          <td className="disasmTitle"> --&gt; </td>
+          <td>
+            <input id="asm-length" ref={lengthRef} type="text" placeholder="Length" />
+          </td>
+          <td>
+            <ButtonComponent type="button" onClick={validateDisasmParams}>
+              Disassemble Address
+            </ButtonComponent>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td ref={addressErrorRef}>
+            <span className="validateError">Address is invalide hex</span>
+          </td>
+          <td></td>
+          <td ref={lengthErrorRef}>
+            <span className="validateError">Length is invalid hex</span>
+          </td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+
+/** Renders the controls panel containing the disassembly input table and its context menus. */
+function DisasmControlsPanel({
+  menuIdBase,
+  functionNameRef,
+  addressErrorRef,
+  lengthErrorRef,
+  startRef,
+  lengthRef,
+  functionList,
+  disasmFunction,
+  validateDisasmParams,
+}: DisasmControlsPanelProps): JSX.Element {
+  return (
+    <div className="disasmControls disasm-flex-item">
+      <DisasmControlsTable
+        functionNameRef={functionNameRef}
+        addressErrorRef={addressErrorRef}
+        lengthErrorRef={lengthErrorRef}
+        startRef={startRef}
+        lengthRef={lengthRef}
+        functionList={functionList}
+        disasmFunction={disasmFunction}
+        validateDisasmParams={validateDisasmParams}
+      />
+      <ContextMenuComponent
+        id={`disasm-func-menu-${menuIdBase}`}
+        target="#function-names"
+        items={menuCutCopyPaste}
+        select={(e) =>
+          doCutCopyPaste(e.item.text, document.getElementById("function-names") as HTMLInputElement)
+        }
+      />
+      <ContextMenuComponent
+        id={`disasm-start-menu-${menuIdBase}`}
+        target={`#asm-start`}
+        items={menuCutCopyPaste}
+        select={(e) => {
+          if (startRef.current) {
+            doCutCopyPaste(e.item.text, startRef.current);
+          }
+        }}
+      />
+      <ContextMenuComponent
+        id={`disasm-length-menu-${menuIdBase}`}
+        target={`#asm-length`}
+        items={menuCutCopyPaste}
+        select={(e) => {
+          if (lengthRef.current) {
+            doCutCopyPaste(e.item.text, lengthRef.current);
+          }
+        }}
+      />
+    </div>
+  );
+}
+
+interface DisasmGridPanelProps {
+  menuIdBase: string;
+  gridRef: RefObject<GridComponent | null>;
+  disasmData: gdbAsmRow[];
+  selectionOptions: SelectionSettingsModel;
+  instructionsTemplate: (props: gdbAsmRow) => JSX.Element;
+  doCopy: () => void;
+}
+
+/** Renders the disassembly grid and its context menu. */
+function DisasmGridPanel({
+  menuIdBase,
+  gridRef,
+  disasmData,
+  selectionOptions,
+  instructionsTemplate,
+  doCopy,
+}: DisasmGridPanelProps): JSX.Element {
+  return (
+    <div className="full-size disasm-flex-item">
+      <GridComponent
+        ref={gridRef}
+        id={"disassembly-grid"}
+        dataSource={disasmData}
+        emptyRecordTemplate={emptyMessageTemplate}
+        height="100%"
+        width="100%"
+        rowHeight={16}
+        className="full-size"
+        allowResizing={true}
+        allowReordering={true}
+        allowPaging={false}
+        allowGrouping={true}
+        showColumnMenu={true}
+        allowFiltering={false}
+        groupSettings={groupOptions}
+        selectionSettings={selectionOptions}
+        gridLines="Vertical"
+      >
+        <ColumnsDirective>
+          <ColumnDirective
+            field="address"
+            headerText="Address"
+            isPrimaryKey={true}
+            enableGroupByFormat={true}
+            textAlign="Left"
+            clipMode="EllipsisWithTooltip"
+            template={(props: DisasmRowTemplateData) => (
+              <span className="disasmAddress">{props?.address}</span>
+            )}
+          />
+          <ColumnDirective field="func" headerText="Function" />
+          <ColumnDirective
+            field="offset"
+            headerText="Offset"
+            clipMode="EllipsisWithTooltip"
+            template={(props: DisasmRowTemplateData) => (
+              <span className="disasmOffset">{props?.offset}</span>
+            )}
+          />
+          <ColumnDirective
+            field="opcodes"
+            headerText="Opcodes"
+            template={(props: DisasmRowTemplateData) => (
+              <span className="disasmOpcodes">{props?.opcodes}</span>
+            )}
+          />
+          <ColumnDirective
+            field="instruction"
+            headerText="Instructions"
+            width={500}
+            clipMode="EllipsisWithTooltip"
+            template={instructionsTemplate}
+          />
+        </ColumnsDirective>
+        <Inject services={[Resize, Reorder, Group]} />
+      </GridComponent>
+      <ContextMenuComponent
+        id={`disasm-grid-menu-${menuIdBase}`}
+        target="#disassembly-grid"
+        items={menuCopy}
+        select={doCopy}
+      />
+    </div>
+  );
+}
+
+/** Sends a GDB disassemble command for the function currently selected in the combo box. */
+function doDisasmFunction(functionNameRef: RefObject<ComboBoxComponent | null>) {
+  const func = functionNameRef?.current?.value || "";
+  if (func) {
+    window.ipcToMain.commands.debugger.sendGdbCommand(
+      `-data-disassemble -a ${func} --opcodes bytes`,
+    );
+  }
+}
+
+/**
+ * Validates the address and length inputs and, if both are valid, sends a GDB
+ * disassemble-by-address-range command.
+ */
+function doValidateDisasmParams(
+  startRef: RefObject<HTMLInputElement | null>,
+  lengthRef: RefObject<HTMLInputElement | null>,
+  addressErrorRef: RefObject<HTMLTableCellElement | null>,
+  lengthErrorRef: RefObject<HTMLTableCellElement | null>,
+) {
+  const startInput = validateValue(startRef.current?.value);
+  const lengthInput = validateValue(lengthRef.current?.value);
+
+  if (addressErrorRef.current) {
+    addressErrorRef.current.style.visibility = startInput.isValid ? "hidden" : "visible";
+  }
+
+  if (lengthErrorRef.current) {
+    lengthErrorRef.current.style.visibility = lengthInput.isValid ? "hidden" : "visible";
+  }
+
+  if (!startInput.isValid || !lengthInput.isValid) {
+    return;
+  }
+
+  const start =
+    startInput.valueType == ValueType.DollarPrefix ? startRef.current?.value : startInput.hexValue;
+  const end = startInput.decimalValue! + lengthInput.decimalValue!;
+
+  window.ipcToMain.commands.debugger.sendGdbCommand(
+    `-data-disassemble -s ${start?.trim()} -e 0x${end.toString(16)} --opcodes bytes`,
+  );
+}
+
+/** Custom hook that owns all refs, state, and callbacks for the disassembler window. */
+function useDisassemblerState() {
+  const menuIdBase = useId();
+  const gridRef = useRef<GridComponent>(null);
+  const functionNameRef = useRef<ComboBoxComponent>(null);
+  const addressErrorRef = useRef<HTMLTableCellElement>(null);
+  const lengthErrorRef = useRef<HTMLTableCellElement>(null);
+  const startRef = useRef<HTMLInputElement>(null);
+  const lengthRef = useRef<HTMLInputElement>(null);
+
+  const [functionList, setFunctionList] = useState<gdbFunction[]>([]);
+  const [disasmData, setDisasmData] = useState<gdbAsmRow[]>([]);
+  useGridColumnState("disassembly", gridRef);
+
+  const selectionOptions: SelectionSettingsModel = useMemo(
+    () => ({ mode: "Both", type: "Multiple" }),
+    [],
+  );
+
+  useEffect(() => {
+    const unsubDisasm = window.ipcToMain.debuggerData.disassembly((data: gdbAsmRow[]) => {
+      setDisasmData(data);
+    });
+    const unsubFunctions = window.ipcToMain.debuggerData.functions((data: gdbFunction[]) => {
+      setFunctionList(data);
+    });
+    if (addressErrorRef.current && lengthErrorRef.current) {
+      addressErrorRef.current.style.visibility = "hidden";
+      lengthErrorRef.current.style.visibility = "hidden";
+    }
+    return () => {
+      unsubDisasm();
+      unsubFunctions();
+    };
+  }, []);
+
+  const instructionsTemplate = useCallback(
+    (props: gdbAsmRow): JSX.Element =>
+      renderInstructionParts(props.instructions, (functionAddress: string) => {
+        window.ipcToMain.commands.debugger.sendGdbCommand(
+          `-data-disassemble -a ${functionAddress} --opcodes bytes`,
+        );
+        if (functionNameRef.current) {
+          functionNameRef.current.value = functionAddress;
+        }
+      }),
+    [],
+  );
+  const doCopy = (): void => {
+    gridRef.current?.copy();
+  };
+  const disasmFunction = () => doDisasmFunction(functionNameRef);
+  const validateDisasmParams = () =>
+    doValidateDisasmParams(startRef, lengthRef, addressErrorRef, lengthErrorRef);
+
+  return {
+    menuIdBase,
+    gridRef,
+    functionNameRef,
+    addressErrorRef,
+    lengthErrorRef,
+    startRef,
+    lengthRef,
+    functionList,
+    disasmData,
+    selectionOptions,
+    instructionsTemplate,
+    doCopy,
+    disasmFunction,
+    validateDisasmParams,
+  };
+}
+
 /**
  * Performs gdb disassembler window as part of this module's public API.
  *
@@ -38,327 +409,44 @@ type DisasmRowTemplateData = Pick<gdbAsmRow, "address" | "offset" | "opcodes">;
  * @returns The computed result produced by this operation.
  */
 export default function GdbDisassemblerWindow(): JSX.Element {
-  // Refs for grid and form controls
-  const menuIdBase = useId();
-  const gridRef = useRef<GridComponent>(null);
-  const functionNameRef = useRef<ComboBoxComponent>(null);
-  const addressErrorRef = useRef<HTMLTableCellElement>(null);
-  const lengthErrorRef = useRef<HTMLTableCellElement>(null);
-  const startRef = useRef<HTMLInputElement>(null);
-  const lengthRef = useRef<HTMLInputElement>(null);
-
-  // State for disassembly data and function list
-  const [functionList, setFunctionList] = useState<gdbFunction[]>([]);
-  const [disasmData, setDisasmData] = useState<gdbAsmRow[]>([]);
-  useGridColumnState("disassembly", gridRef);
-
-  /** Grid selection settings: allow multiple row/cell selection */
-  const selectionOptions: SelectionSettingsModel = useMemo(
-    () => ({
-      mode: "Both",
-      type: "Multiple",
-    }),
-    [],
-  );
-
-  /**
-   * Subscribe to disassembly and function list updates on mount.
-   * Also initializes error message visibility.
-   */
-  useEffect(() => {
-    const unsubDisasm = window.ipcToMain.debuggerData.disassembly((data: gdbAsmRow[]) => {
-      setDisasmData(data);
-    });
-
-    const unsubFunctions = window.ipcToMain.debuggerData.functions((data: gdbFunction[]) => {
-      setFunctionList(data);
-    });
-
-    if (addressErrorRef.current && lengthErrorRef.current) {
-      addressErrorRef.current.style.visibility = "hidden";
-      lengthErrorRef.current.style.visibility = "hidden";
-    }
-
-    return () => {
-      unsubDisasm();
-      unsubFunctions();
-    };
-  }, []);
-
-  /**
-   * Performs instructions template as part of this module's internal workflow.
-   *
-   * @remarks
-   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
-   *
-   * @param props - Value for `props` consumed by this operation.
-   * @returns The computed result produced by this operation.
-   */
-  const instructionsTemplate = (props: gdbAsmRow): JSX.Element => {
-    return renderInstructionParts(props.instructions, (functionAddress: string) => {
-      window.ipcToMain.commands.debugger.sendGdbCommand(
-        `-data-disassemble -a ${functionAddress} --opcodes bytes`,
-      );
-      if (functionNameRef.current) {
-        functionNameRef.current.value = functionAddress;
-      }
-    });
-  };
-
-  /**
-   * Performs empty message template as part of this module's public API.
-   *
-   * @remarks
-   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
-   *
-   * @returns The computed result produced by this operation.
-   */
-  function emptyMessageTemplate(): JSX.Element {
-    return (
-      <div className="emptyRecordTemplate">
-        <span>No disassembly data available.</span>
-      </div>
-    );
-  }
-
-  // Custom caption template function
-  const groupOptions: GroupSettingsModel = {
-    columns: ["func"],
-    showDropArea: false,
-    showUngroupButton: false,
-    showToggleButton: false,
-    captionTemplate: renderGroupCaption,
-  };
-
-  /**
-   * Performs item template as part of this module's internal workflow.
-   *
-   * @remarks
-   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
-   *
-   * @param item - Item being processed by this operation.
-   * @returns The computed result produced by this operation.
-   */
-  const itemTemplate = (item: gdbFunction): JSX.Element => {
-    return <span className="function-item">{item.function}</span>;
-  };
-
-  /**
-   * Performs do copy as part of this module's internal workflow.
-   *
-   * @remarks
-   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
-   */
-  const doCopy = (): void => {
-    gridRef.current?.copy();
-  };
-
-  /**
-   * Performs disasm function as part of this module's public API.
-   *
-   * @remarks
-   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
-   */
-  function disasmFunction() {
-    const func = functionNameRef?.current?.value || "";
-    if (func) {
-      const command = `-data-disassemble -a ${func} --opcodes bytes`;
-      window.ipcToMain.commands.debugger.sendGdbCommand(command);
-    }
-  }
-
-  /**
-   * Performs validate disasm params as part of this module's public API.
-   *
-   * @remarks
-   * Supports debugger tool-window rendering, interaction handling, or data synchronization.
-   */
-  function validateDisasmParams() {
-    const startInput = validateValue(startRef.current?.value);
-    const lengthInput = validateValue(lengthRef.current?.value);
-
-    if (addressErrorRef.current) {
-      addressErrorRef.current.style.visibility = startInput.isValid ? "hidden" : "visible";
-    }
-
-    if (lengthErrorRef.current) {
-      lengthErrorRef.current.style.visibility = lengthInput.isValid ? "hidden" : "visible";
-    }
-
-    if (!startInput.isValid || !lengthInput.isValid) {
-      return;
-    }
-
-    const start =
-      startInput.valueType == ValueType.DollarPrefix
-        ? startRef.current?.value
-        : startInput.hexValue;
-    const end = startInput.decimalValue! + lengthInput.decimalValue!;
-
-    window.ipcToMain.commands.debugger.sendGdbCommand(
-      `-data-disassemble -s ${start?.trim()} -e ${end.toString(16)} --opcodes bytes`,
-    );
-  }
+  const {
+    menuIdBase,
+    gridRef,
+    functionNameRef,
+    addressErrorRef,
+    lengthErrorRef,
+    startRef,
+    lengthRef,
+    functionList,
+    disasmData,
+    selectionOptions,
+    instructionsTemplate,
+    doCopy,
+    disasmFunction,
+    validateDisasmParams,
+  } = useDisassemblerState();
 
   return (
     <ToolWindowContent title={TOOL_WINDOW_TITLES.disassembly}>
       <div className="disasm-flex-container">
-        <div className="disasmControls disasm-flex-item">
-          <table className="disasmControlTable">
-            <tbody>
-              <tr>
-                <td className="disasmTitle">Function Name:</td>
-                <td colSpan={3}>
-                  <ComboBoxComponent
-                    ref={functionNameRef}
-                    id="function-names"
-                    autofill={true}
-                    dataSource={functionList}
-                    allowFiltering={true}
-                    popupHeight={400}
-                    fields={{ value: "function" }}
-                    itemTemplate={itemTemplate}
-                    //TODO: Change this so it doesn't try to disassemble on every change (only on selection)
-                    onChange={disasmFunction}
-                  ></ComboBoxComponent>
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (functionNameRef?.current) {
-                        disasmFunction();
-                      }
-                    }}
-                  >
-                    Disassemble Function
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td className="disasmTitle">Address:</td>
-                <td>
-                  <input id="asm-start" ref={startRef} type="text" placeholder="Address" />
-                </td>
-                <td className="disasmTitle"> --&gt; </td>
-                <td>
-                  <input id="asm-length" ref={lengthRef} type="text" placeholder="Length" />
-                </td>
-                <td>
-                  <button type="button" onClick={validateDisasmParams}>
-                    Disassemble Address
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td></td>
-                <td ref={addressErrorRef}>
-                  <span className="validateError">Address is invalide hex</span>
-                </td>
-                <td></td>
-                <td ref={lengthErrorRef}>
-                  <span className="validateError">Length is invalid hex</span>
-                </td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div className="full-size disasm-flex-item">
-          <GridComponent
-            ref={gridRef}
-            id={"disassembly-grid"}
-            dataSource={disasmData}
-            emptyRecordTemplate={emptyMessageTemplate}
-            height="100%"
-            width="100%"
-            rowHeight={16}
-            className="full-size"
-            allowResizing={true}
-            allowReordering={true}
-            allowPaging={false}
-            allowGrouping={true}
-            showColumnMenu={true}
-            allowFiltering={false}
-            groupSettings={groupOptions}
-            selectionSettings={selectionOptions}
-            gridLines="Vertical"
-          >
-            <ColumnsDirective>
-              <ColumnDirective
-                field="address"
-                headerText="Address"
-                isPrimaryKey={true}
-                enableGroupByFormat={true}
-                textAlign="Left"
-                clipMode="EllipsisWithTooltip"
-                template={(props: DisasmRowTemplateData) => (
-                  <span className="disasmAddress">{props?.address}</span>
-                )}
-              />
-              <ColumnDirective field="func" headerText="Function" />
-              <ColumnDirective
-                field="offset"
-                headerText="Offset"
-                clipMode="EllipsisWithTooltip"
-                template={(props: DisasmRowTemplateData) => (
-                  <span className="disasmOffset">{props?.offset}</span>
-                )}
-              />
-              <ColumnDirective
-                field="opcodes"
-                headerText="Opcodes"
-                template={(props: DisasmRowTemplateData) => (
-                  <span className="disasmOpcodes">{props?.opcodes}</span>
-                )}
-              />
-              <ColumnDirective
-                field="instruction"
-                headerText="Instructions"
-                width={500}
-                clipMode="EllipsisWithTooltip"
-                template={instructionsTemplate}
-              />
-            </ColumnsDirective>
-            <Inject services={[Resize, Reorder, Group]} />
-          </GridComponent>
-          <ContextMenuComponent
-            id={`disasm-grid-menu-${menuIdBase}`}
-            target="#disassembly-grid"
-            items={menuCopy}
-            select={doCopy}
-          />
-          <ContextMenuComponent
-            id={`disasm-func-menu-${menuIdBase}`}
-            target="#function-names"
-            items={menuCutCopyPaste}
-            select={(e) =>
-              doCutCopyPaste(
-                e.item.text,
-                document.getElementById("function-names") as HTMLInputElement,
-              )
-            }
-          />
-        </div>
-        <ContextMenuComponent
-          id={`disasm-start-menu-${menuIdBase}`}
-          target={`#asm-start`}
-          items={menuCutCopyPaste}
-          select={(e) => {
-            if (startRef.current) {
-              doCutCopyPaste(e.item.text, startRef.current);
-            }
-          }}
+        <DisasmControlsPanel
+          menuIdBase={menuIdBase}
+          functionNameRef={functionNameRef}
+          addressErrorRef={addressErrorRef}
+          lengthErrorRef={lengthErrorRef}
+          startRef={startRef}
+          lengthRef={lengthRef}
+          functionList={functionList}
+          disasmFunction={disasmFunction}
+          validateDisasmParams={validateDisasmParams}
         />
-        <ContextMenuComponent
-          id={`disasm-length-menu-${menuIdBase}`}
-          target={`#asm-length`}
-          items={menuCutCopyPaste}
-          select={(e) => {
-            if (lengthRef.current) {
-              doCutCopyPaste(e.item.text, lengthRef.current);
-            }
-          }}
+        <DisasmGridPanel
+          menuIdBase={menuIdBase}
+          gridRef={gridRef}
+          disasmData={disasmData}
+          selectionOptions={selectionOptions}
+          instructionsTemplate={instructionsTemplate}
+          doCopy={doCopy}
         />
       </div>
     </ToolWindowContent>

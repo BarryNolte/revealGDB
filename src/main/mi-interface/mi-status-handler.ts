@@ -5,6 +5,7 @@
  * Exported symbols include `MiStatusAsyncHandler`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { MiOutputHost } from "./mi-output-types";
+import { LOG_STREAM } from "./mi-stream-events";
 
 export class MiStatusAsyncHandler {
   private readonly rgxStatusAsyncRecord: RegExp = /^\+(?<result>[^,]*),?(?<data>.*)?$/;
@@ -45,13 +46,13 @@ export class MiStatusAsyncHandler {
             ? ` section-sent="${sectionSent}" total-sent="${totalSent}"`
             : "";
         this.host.emit(
-          "log-stream",
+          LOG_STREAM,
           `+download section="${section}" section-size="${sectionSize}" total-size="${totalSize}"${progress}`,
         );
         break;
       }
       default: {
-        this.host.emit("log-stream", `+${result} ${data}`);
+        this.host.emit(LOG_STREAM, `+${result} ${data}`);
         return false;
       }
     }

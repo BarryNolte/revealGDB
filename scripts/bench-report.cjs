@@ -88,6 +88,17 @@ for (const file of (latest.data.files || [])) {
       : "";
 
     const rows = (group.benchmarks || []).map((bench) => {
+      // Benchmarks that errored out have no hz/timing fields — render a placeholder row.
+      if (bench.hz == null) {
+        const colspan = baseline ? 13 : 11;
+        return `
+        <tr class="bench-error">
+          <td class="rank">${bench.rank}</td>
+          <td class="bench-name">${esc(bench.name)}</td>
+          <td class="num error-label" colspan="${colspan}">⚠ benchmark errored</td>
+        </tr>`;
+      }
+
       const key = `${group.fullName}::${bench.name}`;
       const base = baselineMap.get(key);
 
