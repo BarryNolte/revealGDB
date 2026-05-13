@@ -6,6 +6,7 @@
  */
 import EventEmitter from "events";
 import { readFile } from "fs/promises";
+import { ERROR_STREAM } from "../mi-stream-events";
 
 export class gdbSourceFileCache extends EventEmitter {
   private sourceFiles: Map<string, string> = new Map<string, string>();
@@ -70,7 +71,7 @@ export class gdbSourceFileCache extends EventEmitter {
         srcHtml = data;
         this.emit("first-read", file);
       } catch (ex) {
-        this.emit("error-stream", `Error reading file: ${file} : ${ex}`);
+        this.emit(ERROR_STREAM, `Error reading file: ${file} : ${ex}`);
       }
     } else {
       srcHtml = this.sourceFiles.get(file) || "";

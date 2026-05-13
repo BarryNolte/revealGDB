@@ -16,4 +16,6 @@ export type MiOutputHost = {
   gdbDB: gdbStateDatabase;
   emit: (eventName: string, ...args: unknown[]) => void;
   send: (data: string) => void;
+  /** Returns true while an -data-evaluate-expression command is outstanding. */
+  getEvaluatingExpression: () => boolean;
 };

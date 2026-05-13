@@ -7,6 +7,7 @@
 import { sendToRenderer } from "../ipc-sender";
 import { mapRegexGroupsToBreakpoint } from "./mappers/breakpoint-mapper";
 import { MiOutputHost, gdbShowSourceInfo } from "./mi-output-types";
+import { LOG_STREAM } from "./mi-stream-events";
 
 export class MiNotifyAsyncHandler {
   private readonly rgxNotify: RegExp = /^=(?<cmd>.*?),(?<data>.*$)/;
@@ -164,7 +165,7 @@ export class MiNotifyAsyncHandler {
         const hostName = this.rgxLibraryHostName.exec(data)?.groups?.hostName || "";
         const threadGroup = this.rgxLibraryThreadGroup.exec(data)?.groups?.threadGroup || "";
         this.host.emit(
-          "log-stream",
+          LOG_STREAM,
           `=library-loaded id="${id}" target-name="${targetName}" host-name="${hostName}" thread-group="${threadGroup}"`,
         );
         break;
@@ -175,7 +176,7 @@ export class MiNotifyAsyncHandler {
         const hostName = this.rgxLibraryHostName.exec(data)?.groups?.hostName || "";
         const threadGroup = this.rgxLibraryThreadGroup.exec(data)?.groups?.threadGroup || "";
         this.host.emit(
-          "log-stream",
+          LOG_STREAM,
           `=library-unloaded id="${id}" target-name="${targetName}" host-name="${hostName}" thread-group="${threadGroup}"`,
         );
         break;
@@ -187,7 +188,7 @@ export class MiNotifyAsyncHandler {
         const type = this.rgxMemoryType.exec(data)?.groups?.type;
         const typeStr = type !== undefined ? ` type="${type}"` : "";
         this.host.emit(
-          "log-stream",
+          LOG_STREAM,
           `=memory-changed thread-group=${threadGroup} addr="${addr}" len="${len}"${typeStr}`,
         );
         break;
@@ -198,36 +199,36 @@ export class MiNotifyAsyncHandler {
         const format = this.rgxRecordFormat.exec(data)?.groups?.format;
         const formatStr = format !== undefined ? ` format="${format}"` : "";
         this.host.emit(
-          "log-stream",
+          LOG_STREAM,
           `=record-started thread-group="${threadGroup}" method="${method}"${formatStr}`,
         );
         break;
       }
       case "record-stopped": {
         const threadGroup = this.rgxRecordThreadGroup.exec(data)?.groups?.threadGroup || "";
-        this.host.emit("log-stream", `=record-stopped thread-group="${threadGroup}"`);
+        this.host.emit(LOG_STREAM, `=record-stopped thread-group="${threadGroup}"`);
         break;
       }
       case "traceframe-changed": {
         if (data === "end") {
-          this.host.emit("log-stream", `=traceframe-changed end`);
+          this.host.emit(LOG_STREAM, `=traceframe-changed end`);
         } else {
           const num = this.rgxTraceframeNum.exec(data)?.groups?.num || "";
           const tracepoint = this.rgxTraceframeTracepoint.exec(data)?.groups?.tracepoint || "";
-          this.host.emit("log-stream", `=traceframe-changed num=${num} tracepoint=${tracepoint}`);
+          this.host.emit(LOG_STREAM, `=traceframe-changed num=${num} tracepoint=${tracepoint}`);
         }
         break;
       }
       case "tsv-created": {
         const name = this.rgxTsvName.exec(data)?.groups?.name || "";
         const initial = this.rgxTsvInitial.exec(data)?.groups?.initial || "";
-        this.host.emit("log-stream", `=tsv-created name=${name} initial=${initial}`);
+        this.host.emit(LOG_STREAM, `=tsv-created name=${name} initial=${initial}`);
         break;
       }
       case "tsv-deleted": {
         const name = this.rgxTsvName.exec(data)?.groups?.name;
         const nameStr = name !== undefined ? ` name=${name}` : "";
-        this.host.emit("log-stream", `=tsv-deleted${nameStr}`);
+        this.host.emit(LOG_STREAM, `=tsv-deleted${nameStr}`);
         break;
       }
       case "tsv-modified": {
@@ -235,7 +236,7 @@ export class MiNotifyAsyncHandler {
         const initial = this.rgxTsvInitial.exec(data)?.groups?.initial || "";
         const current = this.rgxTsvCurrent.exec(data)?.groups?.current;
         const currentStr = current !== undefined ? ` current=${current}` : "";
-        this.host.emit("log-stream", `=tsv-modified name=${name} initial=${initial}${currentStr}`);
+        this.host.emit(LOG_STREAM, `=tsv-modified name=${name} initial=${initial}${currentStr}`);
         break;
       }
       default: {

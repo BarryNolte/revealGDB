@@ -11,6 +11,7 @@ import {
   MaintPrintSymbolsParser,
   queryVarAtPosition,
 } from "../gdb-parsers/maint-print-symbols-parser";
+import { ERROR_STREAM } from "../mi-stream-events";
 import { ElectronUINotifier } from "./notifiers/ElectronUINotifier";
 import { UINotifier } from "./notifiers/UINotifier";
 import { StateLifecycleCoordinator } from "./orchestration/StateLifecycleCoordinator";
@@ -100,8 +101,8 @@ export class gdbStateDatabase extends EventEmitter {
 
   constructor(notifier?: UINotifier) {
     super();
-    this.sourceFileStore.gdbSrcFileCache.on("error-stream", (line: string) => {
-      this.emit("error-stream", line);
+    this.sourceFileStore.gdbSrcFileCache.on(ERROR_STREAM, (line: string) => {
+      this.emit(ERROR_STREAM, line);
     });
 
     this.notifier = notifier || new ElectronUINotifier();
@@ -655,7 +656,7 @@ export class gdbStateDatabase extends EventEmitter {
       this.threadStore.stopThreadsAll(this.threadGroups);
     } else {
       this.emit(
-        "error-stream",
+        ERROR_STREAM,
         `Unknown stoppedThreads value, tid: ${tid} stoppedThreads: ${stoppedThreads}`,
       );
     }
@@ -673,7 +674,7 @@ export class gdbStateDatabase extends EventEmitter {
     if (tid === "all") {
       this.threadStore.startThreadsAll(this.threadGroups);
     } else {
-      this.emit("error-stream", `Unknown tid value, tid: ${tid}`);
+      this.emit(ERROR_STREAM, `Unknown tid value, tid: ${tid}`);
     }
   }
 

@@ -8,6 +8,13 @@ import { BrowserWindow } from "electron";
 import path from "path";
 import { IPC_CHANNELS } from "../common/ipc-contracts";
 import { miInterface } from "./mi-interface/mi-interface";
+import {
+  CONSOLE_STREAM,
+  DEBUG_STREAM,
+  ERROR_STREAM,
+  HTML_STREAM,
+  LOG_STREAM,
+} from "./mi-interface/mi-stream-events";
 import { GeneralInfoSender } from "./utilities/GeneralInfoSender";
 
 export type SettingsLike = {
@@ -35,19 +42,19 @@ export function createGdbInterface(
     }
   });
 
-  gdbInterface.on("console-stream", (line: string) => {
+  gdbInterface.on(CONSOLE_STREAM, (line: string) => {
     mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.message, line);
   });
-  gdbInterface.on("log-stream", (line: string) => {
+  gdbInterface.on(LOG_STREAM, (line: string) => {
     mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.log, line);
   });
-  gdbInterface.on("error-stream", (line: string) => {
+  gdbInterface.on(ERROR_STREAM, (line: string) => {
     mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.error, line);
   });
-  gdbInterface.on("debug-stream", (line: string) => {
+  gdbInterface.on(DEBUG_STREAM, (line: string) => {
     mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.debug, line);
   });
-  gdbInterface.on("html-stream", (html: string) => {
+  gdbInterface.on(HTML_STREAM, (html: string) => {
     mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.html, html);
   });
   GeneralInfoSender.instance.setRelayTarget(gdbInterface);

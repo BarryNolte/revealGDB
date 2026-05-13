@@ -26,6 +26,7 @@ import GdbSourceWindow from "./ToolWindows/GdbSourceWindow";
 import { TOOL_WINDOW_TITLES } from "./ToolWindows/toolWindowTitles";
 import { DockMenuConnector } from "./utilities/DockMenuConnector.js";
 import { dockMenuConnector, setDockMenuConnector } from "./utilities/dock-menu-state";
+import { SAVE_DOCK_LAYOUT, UPDATE_WINDOW_LIST } from "./utilities/renderer-events";
 
 const AboutBox = lazy(() =>
   import("./Dialogs/AboutBox.js").then((module) => ({
@@ -241,12 +242,12 @@ export default function App(): JSX.Element {
       // Listen for docking layout changes to trigger saves and UI updates
       dockManager.addLayoutListener({
         onContainerResized: () => {
-          window.dispatchEvent(new Event("update-window-list"));
-          window.dispatchEvent(new Event("save-dock-layout"));
+          window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
+          window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
         },
         onTabChanged: () => {
-          window.dispatchEvent(new Event("update-window-list"));
-          window.dispatchEvent(new Event("save-dock-layout"));
+          window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
+          window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
         },
       });
 
@@ -312,7 +313,7 @@ export default function App(): JSX.Element {
       }
       // Synchronize panel state and trigger toolbar window list update
       dockMenuConnector.reconsilePanels();
-      window.dispatchEvent(new Event("update-window-list"));
+      window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
 
       // Trigger initial sizing only after dock manager exists.
       window.dispatchEvent(new Event("resize"));
@@ -367,7 +368,7 @@ export default function App(): JSX.Element {
         window.innerWidth - (divDockManager.clientLeft + divDockManager.offsetLeft),
         window.innerHeight - (divDockManager.clientTop + divDockManager.offsetTop),
       );
-      window.dispatchEvent(new Event("save-dock-layout"));
+      window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
     };
 
     window.addEventListener("resize", handleResize);
@@ -375,7 +376,7 @@ export default function App(): JSX.Element {
     dockMenuConnector?.reconsilePanels();
 
     // Trigger initial window list update
-    window.dispatchEvent(new Event("update-window-list"));
+    window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
 
     // Cleanup function: remove event listeners on unmount
     return () => {
@@ -515,14 +516,14 @@ window.addEventListener("beforeunload", () => {
   // console.log("Before Unloading Browser Window");
   // console.log("******************************************");
 
-  window.dispatchEvent(new Event("save-dock-layout"));
+  window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
 });
 
 /**
  * Handle dock layout save requests.
  * Serializes the current layout and sends it to the main process for persistence.
  */
-window.addEventListener("save-dock-layout", () => {
+window.addEventListener(SAVE_DOCK_LAYOUT, () => {
   if (!dockManager) {
     return;
   }

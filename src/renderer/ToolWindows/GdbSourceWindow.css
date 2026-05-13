@@ -79,6 +79,111 @@
   font-weight: normal;
 }
 
+/* Syncfusion hover tooltip content styles */
+.tip-name {
+  font-weight: 600;
+}
+
+.tip-eq {
+  opacity: 0.9;
+}
+
+.tip-value {
+  font-family: monospace;
+  font-weight: 700;
+}
+
+.tip-type {
+  display: block;
+  font-style: italic;
+  opacity: 0.9;
+  font-size: 1em;
+  margin-top: 2px;
+}
+
+/* Tooltip size, scrolling, and yellow background */
+.reveal-tip.e-tooltip-wrap {
+  max-width: 500px;
+  overflow: auto;
+  background-color: rgb(255, 255, 153);
+  border-color: rgb(204, 204, 102);
+}
+.reveal-tip.e-tooltip-wrap .e-tip-content {
+  max-height: 300px;
+  overflow: auto;
+  background-color: rgb(255, 255, 153);
+  color: #222;
+  font-size: 14px;
+  line-height: 1.15;
+}
+.reveal-tip.e-tooltip-wrap .e-arrow-tip-outer,
+.reveal-tip.e-tooltip-wrap .e-arrow-tip-inner {
+  border-bottom-color: rgb(255, 255, 153);
+  border-top-color: rgb(255, 255, 153);
+}
+
+/* Complex value tree */
+.tip-struct {
+  display: block;
+  font-family: monospace;
+  font-size: 1em;
+  margin-top: 2px;
+}
+
+.tip-field {
+  display: block;
+  white-space: nowrap;
+  padding: 0;
+}
+
+.tip-field-name {
+  font-weight: 600;
+}
+
+.tip-field-val {
+  font-family: monospace;
+  font-weight: 700;
+}
+
+.tip-indent {
+  padding-left: 14px;
+  border-left: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+.tip-details {
+  padding: 0;
+}
+
+.tip-details > summary {
+  cursor: pointer;
+  list-style: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.tip-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.tip-details > summary::before {
+  content: "▶ ";
+  font-size: 1em;
+  opacity: 0.9;
+}
+
+.tip-details[open] > summary::before {
+  content: "▼ ";
+  font-size: 1em;
+  opacity: 0.9;
+}
+
+.tip-truncated {
+  opacity: 0.65;
+  font-style: italic;
+  font-size: 1em;
+  padding: 2px 0;
+}
+
 .no-source-header {
   padding: 3px;
   text-align: start;

@@ -1,3 +1,9 @@
+/**
+ * Implements LineVarStore logic for managing per-file line-to-variable mappings in the GDB state database.
+ *
+ * @remarks
+ * Exported symbols include `LineVarStore`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { gdbLineVarMap } from "../types/gdbStateTypes";
 
 export class LineVarStore {

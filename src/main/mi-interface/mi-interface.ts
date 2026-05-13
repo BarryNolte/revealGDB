@@ -13,6 +13,7 @@ import { gdbConnectorIdfOnWsl } from "./gdb-connector/gdb-connector-general";
 import { GdbOutputCapture } from "./gdb-parsers/gdb-output-capture";
 import { gdbStateDatabase } from "./gdb-state-database/gdbStateDatabase";
 import { gdbShowSourceInfo, MiOutputProcessor } from "./mi-output-processor";
+import { DEBUG_STREAM, ERROR_STREAM } from "./mi-stream-events";
 
 export type { gdbShowSourceInfo };
 
@@ -30,6 +31,7 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
   private static lnum: number = 0;
   private conn: GdbConnector | null = null;
   readonly gdbDB: gdbStateDatabase = new gdbStateDatabase();
+  public evaluatingExpression: boolean = false;
   // Captures multi-line MI outputs (e.g., symbol files, function list).
   private outputCapture: GdbOutputCapture = new GdbOutputCapture(this.gdbDB);
   private readonly outputProcessor: MiOutputProcessor = new MiOutputProcessor({
@@ -40,6 +42,7 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
     send: (data: string) => {
       this.send(data);
     },
+    getEvaluatingExpression: () => this.evaluatingExpression,
   });
 
   public onStartup: string[] = ["-list-features", "-data-list-register-names"];
@@ -52,8 +55,8 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
 
   constructor() {
     super();
-    this.gdbDB.on("error-stream", (line: string) => {
-      this.emit("error-stream", line);
+    this.gdbDB.on(ERROR_STREAM, (line: string) => {
+      this.emit(ERROR_STREAM, line);
     });
   }
 
@@ -104,7 +107,7 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
   private sendOutputToHandler(args: OutputAvailableEventArgs) {
     if (AppSettings.getSync("gdb.gui.showDebugInfo") as boolean) {
       this.emit(
-        "debug-stream",
+        DEBUG_STREAM,
         `GDB Data (${miInterface.lnum++}): ${args.Output} ${args.Output.endsWith("\n")}`,
       );
     }
@@ -141,7 +144,7 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
    */
   send(data: string): void {
     if (AppSettings.getSync("gdb.gui.showDebugInfo") as boolean) {
-      this.emit("debug-stream", data);
+      this.emit(DEBUG_STREAM, data);
     }
     this.conn?.Send(data);
   }
@@ -316,17 +319,31 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
    */
   public evaluateExpression(expr: string): Promise<string | undefined> {
     return new Promise((resolve) => {
+      const cleanup = () => {
+        clearTimeout(timeout);
+        this.evaluatingExpression = false;
+        this.removeListener("value-evaluated", valueHandler);
+        this.removeListener("expression-error", errorHandler);
+      };
+
       const timeout = setTimeout(() => {
-        this.removeListener("value-evaluated", handler);
+        cleanup();
         resolve(undefined);
       }, 2000);
 
-      const handler = (value: string) => {
-        clearTimeout(timeout);
+      const valueHandler = (value: string) => {
+        cleanup();
         resolve(value);
       };
 
-      this.once("value-evaluated", handler);
+      const errorHandler = () => {
+        cleanup();
+        resolve(undefined);
+      };
+
+      this.once("value-evaluated", valueHandler);
+      this.once("expression-error", errorHandler);
+      this.evaluatingExpression = true;
       this.send(`-data-evaluate-expression "${expr}"`);
     });
   }

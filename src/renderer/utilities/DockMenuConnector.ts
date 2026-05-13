@@ -7,6 +7,7 @@
 import { Dialog } from "dock-spawn-ts";
 import { DockManager } from "../../../node_modules/dock-spawn-ts/lib/js/DockManager.js";
 import { PanelContainer } from "../../../node_modules/dock-spawn-ts/lib/js/PanelContainer.js";
+import { SAVE_DOCK_LAYOUT, TOGGLE_WINDOW, UPDATE_WINDOW_LIST } from "./renderer-events";
 
 /**
  * Metadata for a dockable panel/window.
@@ -41,7 +42,7 @@ export class DockMenuConnector {
     this.dockManager = dm;
 
     // Listen for window visibility toggle requests from toolbar
-    window.addEventListener("toggle-window", (data: Event) => {
+    window.addEventListener(TOGGLE_WINDOW, (data: Event) => {
       const ev = data as CustomEvent;
       const di = this.getDockPanelInfoByDisplayName(ev.detail);
       if (di) {
@@ -67,8 +68,8 @@ export class DockMenuConnector {
         }
       }
       // Update UI and save layout
-      window.dispatchEvent(new Event("update-window-list"));
-      window.dispatchEvent(new Event("save-dock-layout"));
+      window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
+      window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
     });
   }
 

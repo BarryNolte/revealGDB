@@ -7,19 +7,17 @@
 - How to contribute
 
 # Bugs
-- Disassemble at address not working
 
 # Project Related
 
 # New Features
 
+- Click on thread and goto source
 - Thread markers in source (better with multiple source windows)
 - Python Window for running python commands
 - Disassembly Window
   - Highlight registers?
   - "Show Disassembly" button working in source window
-  - maint info line-table [ regexp ]
-- Values on hover in source
 - Tracepoints - How to insert more automatically
 - Better Dock management (multiple source files in a Group)
   - Better source file management

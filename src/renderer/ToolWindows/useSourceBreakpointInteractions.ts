@@ -21,52 +21,11 @@ export type SourceBreakpointInteractions = {
   onMenuSelect: (e: MenuEventArgs) => void;
 };
 
-/**
- * Creates and returns the `useSourceBreakpointInteractions` hook API used by renderer components.
- *
- * @remarks
- * Encapsulates stateful React logic and returns values/callbacks consumed by UI components. Supports debugger tool-window rendering, interaction handling, or data synchronization.
- *
- * @param editorRef - Value for `editorRef` consumed by this operation.
- * @param fullFilePathRef - Filesystem or source path used to locate the target resource.
- * @returns The computed result produced by this operation.
- */
-export function useSourceBreakpointInteractions(
+function useEditorSetup(
   editorRef: RefObject<AceEditor | null>,
-  fullFilePathRef: RefObject<string>,
-): SourceBreakpointInteractions {
+  toggleBreakpointAtRow: (editor: ace.Ace.Editor, row: number) => void,
+): void {
   const gutterClickListenerRef = useRef<((e: GdbAny) => void) | null>(null);
-  const breakpointsRef = useRef<SourceBreakpointMarker[]>([]);
-
-  const updateBreakpointMarkers = useCallback(() => {
-    const session = editorRef.current?.editor.getSession();
-
-    session?.clearBreakpoints();
-    breakpointsRef.current.forEach((bp) => {
-      if (bp.file === fullFilePathRef.current) {
-        session?.setBreakpoint(bp.line, bp.type);
-      }
-    });
-  }, [editorRef, fullFilePathRef]);
-
-  const setBreakpoints = useCallback((data: Map<string, gdbBreakpoint>) => {
-    breakpointsRef.current = mapBreakpointsToMarkers(data);
-  }, []);
-
-  const toggleBreakpointAtRow = useCallback(
-    (editor: ace.Ace.Editor, row: number) => {
-      if (editor.getSession().getBreakpoints()[row] === undefined) {
-        window.ipcToMain.commands.debugger.sendGdbCommand(
-          `break ${fullFilePathRef.current}:${row + 1}`,
-        );
-      } else {
-        window.ipcToMain.commands.debugger.sendGdbCommand(
-          `clear ${fullFilePathRef.current}:${row + 1}`,
-        );
-      }
-    },
-    [fullFilePathRef],
-  );
 
   useEffect(() => {
     const editor = editorRef.current?.editor;
@@ -118,12 +77,13 @@ export function useSourceBreakpointInteractions(
       }
     };
   }, [editorRef, toggleBreakpointAtRow]);
+}
 
-  const onLoad = useCallback((editor: ace.Ace.Editor) => {
-    editor.clearSelection();
-  }, []);
-
-  const onMenuSelect = useCallback(
+function useMenuSelect(
+  editorRef: RefObject<AceEditor | null>,
+  fullFilePathRef: RefObject<string>,
+): (e: MenuEventArgs) => void {
+  return useCallback(
     (e: MenuEventArgs) => {
       const row = editorRef.current?.editor.getCursorPosition().row ?? 0;
 
@@ -170,6 +130,61 @@ export function useSourceBreakpointInteractions(
     },
     [editorRef, fullFilePathRef],
   );
+}
+
+/**
+ * Creates and returns the `useSourceBreakpointInteractions` hook API used by renderer components.
+ *
+ * @remarks
+ * Encapsulates stateful React logic and returns values/callbacks consumed by UI components. Supports debugger tool-window rendering, interaction handling, or data synchronization.
+ *
+ * @param editorRef - Value for `editorRef` consumed by this operation.
+ * @param fullFilePathRef - Filesystem or source path used to locate the target resource.
+ * @returns The computed result produced by this operation.
+ */
+export function useSourceBreakpointInteractions(
+  editorRef: RefObject<AceEditor | null>,
+  fullFilePathRef: RefObject<string>,
+): SourceBreakpointInteractions {
+  const breakpointsRef = useRef<SourceBreakpointMarker[]>([]);
+
+  const updateBreakpointMarkers = useCallback(() => {
+    const session = editorRef.current?.editor.getSession();
+
+    session?.clearBreakpoints();
+    breakpointsRef.current.forEach((bp) => {
+      if (bp.file === fullFilePathRef.current) {
+        session?.setBreakpoint(bp.line, bp.type);
+      }
+    });
+  }, [editorRef, fullFilePathRef]);
+
+  const setBreakpoints = useCallback((data: Map<string, gdbBreakpoint>) => {
+    breakpointsRef.current = mapBreakpointsToMarkers(data);
+  }, []);
+
+  const toggleBreakpointAtRow = useCallback(
+    (editor: ace.Ace.Editor, row: number) => {
+      if (editor.getSession().getBreakpoints()[row] === undefined) {
+        window.ipcToMain.commands.debugger.sendGdbCommand(
+          `break ${fullFilePathRef.current}:${row + 1}`,
+        );
+      } else {
+        window.ipcToMain.commands.debugger.sendGdbCommand(
+          `clear ${fullFilePathRef.current}:${row + 1}`,
+        );
+      }
+    },
+    [fullFilePathRef],
+  );
+
+  useEditorSetup(editorRef, toggleBreakpointAtRow);
+
+  const onLoad = useCallback((editor: ace.Ace.Editor) => {
+    editor.clearSelection();
+  }, []);
+
+  const onMenuSelect = useMenuSelect(editorRef, fullFilePathRef);
 
   return {
     setBreakpoints,

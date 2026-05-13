@@ -1,3 +1,9 @@
+/**
+ * Implements maint-print-symbols-parser logic for processing GDB `maint print symbols` output.
+ *
+ * @remarks
+ * Exported symbols include `MaintPrintSymbolsParser`, `buildLineVarMap`, `extractFieldNames`, `findDeclarationLine`, `findReferences`, `queryVarAtPosition`. It sits on the debugger data path that translates MI records into typed stores and notifications.
+ */
 import {
   gdbLineEntry,
   gdbLineVarMap,
@@ -372,8 +378,8 @@ function addrToLine(addr: string, lineTable: gdbLineEntry[]): number {
   for (const entry of lineTable) {
     if (!entry.isStmt) continue;
     const ea = BigInt(entry.address);
-    if (ea <= target) {
-      if (!best || ea >= BigInt(best.address)) best = entry;
+    if (ea <= target && (!best || ea >= BigInt(best.address))) {
+      best = entry;
     }
   }
   return best?.lineNum ?? lineTable[0]?.lineNum ?? 0;
