@@ -10,7 +10,20 @@ export const menuCutCopyPaste = [{ text: "Cut" }, { text: "Copy" }, { text: "Pas
 export const menuSourceWindow = [
   { text: "Copy", id: "copy" },
   { separator: true },
+  { text: "Toggle Breakpoint", id: "bp-toggle" },
   { text: "Set Breakpoint", id: "bp-set" },
+  { text: "Clear Breakpoint", id: "bp-clear" },
+  { separator: true },
+  { text: "Run to Cursor", id: "bp-run-to-cursor" },
+  { text: "Jump to Cursor", id: "bp-jump-and-stop" },
+  { text: "Jump and Continue", id: "bp-jump" },
+];
+
+export const menuGutterSourceWindow = [
+  { text: "Toggle Breakpoint", id: "bp-toggle" },
+  { text: "Set Breakpoint", id: "bp-set" },
+  { text: "Clear Breakpoint", id: "bp-clear" },
+  { separator: true },
   { text: "Run to Cursor", id: "bp-run-to-cursor" },
   { text: "Jump to Cursor", id: "bp-jump-and-stop" },
   { text: "Jump and Continue", id: "bp-jump" },

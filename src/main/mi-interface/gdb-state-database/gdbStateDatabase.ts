@@ -11,7 +11,7 @@ import {
   MaintPrintSymbolsParser,
   queryVarAtPosition,
 } from "../gdb-parsers/maint-print-symbols-parser";
-import { ERROR_STREAM } from "../mi-stream-events";
+import { ERROR_STREAM, HTML_STREAM } from "../mi-stream-events";
 import { ElectronUINotifier } from "./notifiers/ElectronUINotifier";
 import { UINotifier } from "./notifiers/UINotifier";
 import { StateLifecycleCoordinator } from "./orchestration/StateLifecycleCoordinator";
@@ -103,6 +103,9 @@ export class gdbStateDatabase extends EventEmitter {
     super();
     this.sourceFileStore.gdbSrcFileCache.on(ERROR_STREAM, (line: string) => {
       this.emit(ERROR_STREAM, line);
+    });
+    this.sourceFileStore.gdbSrcFileCache.on(HTML_STREAM, (html: string) => {
+      this.emit(HTML_STREAM, html);
     });
 
     this.notifier = notifier || new ElectronUINotifier();

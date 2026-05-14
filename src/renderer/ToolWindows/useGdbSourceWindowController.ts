@@ -6,11 +6,14 @@
  */
 import { MenuEventArgs } from "@syncfusion/ej2-navigations";
 import { Tooltip } from "@syncfusion/ej2-popups";
+import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import ace from "ace-builds";
 import "ace-builds/src-noconflict/ext-searchbox";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import AceEditor from "react-ace";
-import { gdbBreakpoint, gdbShowSourceInfo } from "../../common/gdb-state-types";
+import { gdbBreakpoint, gdbShowSourceInfo, gdbStackFrame } from "../../common/gdb-state-types";
+import { dockMenuConnector } from "../utilities/dock-menu-state";
+import { DISASM_FUNCTION } from "../utilities/renderer-events";
 import { formatGdbValueHtml, isComplexValue } from "./gdb-value-formatter";
 import { configureAceBasePath, defaultMode, editorModes } from "./GdbSourceEditorConfig";
 import {
@@ -19,6 +22,7 @@ import {
   createInitialSourceWindowState,
   getEditorModeForFile,
 } from "./GdbSourceWindowModel";
+import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 import { useSourceBreakpointInteractions } from "./useSourceBreakpointInteractions";
 import { useSourceEditorSettings } from "./useSourceEditorSettings";
 import { useSourceIpcSubscriptions } from "./useSourceIpcSubscriptions";
@@ -277,7 +281,46 @@ export type GdbSourceWindowController = {
   editorRef: RefObject<AceEditor | null>;
   onLoad: (editor: ace.Ace.Editor) => void;
   onMenuSelect: (e: MenuEventArgs) => void;
+  onGutterMenuSelect: (e: MenuEventArgs) => void;
+  gutterMenuRef: RefObject<ContextMenuComponent | null>;
+  editorMenuRef: RefObject<ContextMenuComponent | null>;
+  onOpenDisassembly: () => void;
 };
+
+/** Detects gutter vs. editor area on right-click and opens the appropriate context menu. */
+function useContextMenuDispatcher(
+  editorRef: RefObject<AceEditor | null>,
+  rightClickedRowRef: RefObject<number>,
+  gutterMenuRef: RefObject<ContextMenuComponent | null>,
+  editorMenuRef: RefObject<ContextMenuComponent | null>,
+): void {
+  useEffect(() => {
+    const editor = editorRef.current?.editor;
+    if (!editor) return;
+
+    const handler = (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const rect = editor.container.getBoundingClientRect();
+      const gutterWidth = editor.renderer.gutterWidth;
+      const isGutter = e.clientX - rect.left < gutterWidth;
+      const row = isGutter
+        ? editor.renderer.screenToTextCoordinates(rect.left + gutterWidth + 5, e.clientY).row
+        : editor.renderer.screenToTextCoordinates(e.clientX, e.clientY).row;
+      rightClickedRowRef.current = row;
+      if (isGutter) {
+        gutterMenuRef.current?.open(e.clientY, e.clientX);
+      } else {
+        editorMenuRef.current?.open(e.clientY, e.clientX);
+      }
+    };
+
+    editor.container.addEventListener("contextmenu", handler);
+    return () => {
+      editor.container.removeEventListener("contextmenu", handler);
+    };
+  }, [editorRef, rightClickedRowRef, gutterMenuRef, editorMenuRef]);
+}
 
 /**
  * Creates and returns the `useGdbSourceWindowController` hook API used by renderer components.
@@ -287,6 +330,23 @@ export type GdbSourceWindowController = {
  *
  * @returns The computed result produced by this operation.
  */
+/** Tracks the top-of-stack function name, falling back to address, in a ref for imperative use. */
+function useTopStackFunc(topStackFuncRef: RefObject<string>): void {
+  useEffect(() => {
+    const unsubStackFrames = window.ipcToMain.debuggerData.stackFrames(
+      (frames: gdbStackFrame[]) => {
+        const topFrame = frames.find((f) => f.level === "0");
+        if (topFrame) {
+          topStackFuncRef.current = topFrame.func || topFrame.addr;
+        }
+      },
+    );
+    return () => {
+      unsubStackFrames();
+    };
+  }, [topStackFuncRef]);
+}
+
 export function useGdbSourceWindowController(): GdbSourceWindowController {
   const [sourceState, setSourceState] = useState(createInitialSourceWindowState);
   const [mode, setMode] = useState(defaultMode);
@@ -294,8 +354,17 @@ export function useGdbSourceWindowController(): GdbSourceWindowController {
 
   const fullFilePathRef = useRef("");
   const editorRef = useRef<AceEditor | null>(null);
-  const { setBreakpoints, updateBreakpointMarkers, onLoad, onMenuSelect } =
-    useSourceBreakpointInteractions(editorRef, fullFilePathRef);
+  const topStackFuncRef = useRef<string>("");
+  const {
+    setBreakpoints,
+    updateBreakpointMarkers,
+    onLoad,
+    onMenuSelect,
+    onGutterMenuSelect,
+    rightClickedRowRef,
+    gutterMenuRef,
+    editorMenuRef,
+  } = useSourceBreakpointInteractions(editorRef, fullFilePathRef);
 
   const displayData = useCallback((data: gdbShowSourceInfo) => {
     if (data.fileName) {
@@ -326,6 +395,14 @@ export function useGdbSourceWindowController(): GdbSourceWindowController {
     onBreakpoints: handleBreakpoints,
   });
 
+  useTopStackFunc(topStackFuncRef);
+
+  const onOpenDisassembly = useCallback(() => {
+    const func = topStackFuncRef.current;
+    window.dispatchEvent(new CustomEvent(DISASM_FUNCTION, { detail: func }));
+    dockMenuConnector?.activatePanel(TOOL_WINDOW_TITLES.disassembly);
+  }, []);
+
   useEffect(() => {
     if (sourceState.currentMarker !== -1) {
       setTimeout(() => {
@@ -334,19 +411,9 @@ export function useGdbSourceWindowController(): GdbSourceWindowController {
     }
   }, [sourceState.currentMarker]);
 
-  // Workaround to prevent right-click context menu on gutter since  you can't
-  // calculate anything useful there.
-  useEffect(() => {
-    editorRef.current?.editor.container.addEventListener("contextmenu", (e: MouseEvent) => {
-      const width = editorRef.current?.editor.renderer.gutterWidth;
-      if (e.x < width!) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }
-      return true;
-    });
-  }, []);
+  // Smart contextmenu dispatcher: detects gutter vs. editor area and opens the
+  // appropriate context menu, recording the clicked row for the menu handlers.
+  useContextMenuDispatcher(editorRef, rightClickedRowRef, gutterMenuRef, editorMenuRef);
 
   useSourceTooltip(editorRef, fullFilePathRef);
 
@@ -360,5 +427,9 @@ export function useGdbSourceWindowController(): GdbSourceWindowController {
     editorRef,
     onLoad,
     onMenuSelect,
+    onGutterMenuSelect,
+    gutterMenuRef,
+    editorMenuRef,
+    onOpenDisassembly,
   };
 }

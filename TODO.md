@@ -1,7 +1,9 @@
 # Priority Items
+- Disassembly Window
+  - Highlight registers? (values on hover)
+- Click on thread and goto source
 
 # Documentation
-
 - Quick Start Guide
 - Hotkey map
 - How to contribute
@@ -11,14 +13,13 @@
 # Project Related
 
 # New Features
-
-- Click on thread and goto source
 - Thread markers in source (better with multiple source windows)
 - Python Window for running python commands
-- Disassembly Window
-  - Highlight registers?
-  - "Show Disassembly" button working in source window
-- Tracepoints - How to insert more automatically
+  - Ctrl+D to end interactive session
+  - Figure out how to deal with interactive output
 - Better Dock management (multiple source files in a Group)
   - Better source file management
 - run startup commands after gdb starts up
+
+# Need more info or find support for...
+- Tracepoints - How to insert more automatically (when they are suppoted)

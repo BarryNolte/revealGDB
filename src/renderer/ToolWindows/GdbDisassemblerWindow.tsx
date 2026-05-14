@@ -21,6 +21,7 @@ import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { JSX, RefObject, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { gdbAsmRow, gdbFunction } from "../../common/gdb-state-types";
 import { doCutCopyPaste, menuCopy, menuCutCopyPaste } from "../utilities/Clipboard";
+import { DISASM_FUNCTION } from "../utilities/renderer-events";
 import { useGridColumnState } from "../utilities/useGridColumnState";
 import { validateValue, ValueType } from "../utilities/valueValidation";
 import { renderGroupCaption, renderInstructionParts } from "./GdbDisassemblerLineModel";
@@ -357,9 +358,24 @@ function useDisassemblerState() {
       addressErrorRef.current.style.visibility = "hidden";
       lengthErrorRef.current.style.visibility = "hidden";
     }
+
+    const handleDisasmFunction = (e: Event) => {
+      const func = (e as CustomEvent<string>).detail;
+      if (func && functionNameRef.current) {
+        functionNameRef.current.value = func;
+      }
+      if (func) {
+        window.ipcToMain.commands.debugger.sendGdbCommand(
+          `-data-disassemble -a ${func} --opcodes bytes`,
+        );
+      }
+    };
+    window.addEventListener(DISASM_FUNCTION, handleDisasmFunction);
+
     return () => {
       unsubDisasm();
       unsubFunctions();
+      window.removeEventListener(DISASM_FUNCTION, handleDisasmFunction);
     };
   }, []);
 

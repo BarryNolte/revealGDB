@@ -13,7 +13,7 @@ import { gdbConnectorIdfOnWsl } from "./gdb-connector/gdb-connector-general";
 import { GdbOutputCapture } from "./gdb-parsers/gdb-output-capture";
 import { gdbStateDatabase } from "./gdb-state-database/gdbStateDatabase";
 import { gdbShowSourceInfo, MiOutputProcessor } from "./mi-output-processor";
-import { DEBUG_STREAM, ERROR_STREAM } from "./mi-stream-events";
+import { DEBUG_STREAM, ERROR_STREAM, HTML_STREAM } from "./mi-stream-events";
 
 export type { gdbShowSourceInfo };
 
@@ -57,6 +57,9 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
     super();
     this.gdbDB.on(ERROR_STREAM, (line: string) => {
       this.emit(ERROR_STREAM, line);
+    });
+    this.gdbDB.on(HTML_STREAM, (html: string) => {
+      this.emit(HTML_STREAM, html);
     });
   }
 

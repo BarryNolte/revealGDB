@@ -38,6 +38,10 @@ export default function GdbSourceWindow(): JSX.Element {
     editorRef,
     onLoad,
     onMenuSelect,
+    onGutterMenuSelect,
+    gutterMenuRef,
+    editorMenuRef,
+    onOpenDisassembly,
   } = useGdbSourceWindowController();
 
   return (
@@ -58,6 +62,10 @@ export default function GdbSourceWindow(): JSX.Element {
         stackMarkers={sourceState.stackMarkers as IMarker[]}
         onLoad={onLoad}
         onMenuSelect={onMenuSelect}
+        onGutterMenuSelect={onGutterMenuSelect}
+        gutterMenuRef={gutterMenuRef}
+        editorMenuRef={editorMenuRef}
+        onOpenDisassembly={onOpenDisassembly}
       />
     </ToolWindowContent>
   );
