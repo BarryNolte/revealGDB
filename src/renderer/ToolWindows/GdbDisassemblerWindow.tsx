@@ -4,6 +4,7 @@
  * @remarks
  * Exported symbols include `GdbDisassemblerWindow`. It coordinates live debugger data with user interactions in docked tool-window views.
  */
+import { Tooltip } from "@syncfusion/ej2-popups";
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns";
 import {
@@ -19,14 +20,16 @@ import {
 } from "@syncfusion/ej2-react-grids";
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { JSX, RefObject, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import { gdbAsmRow, gdbFunction } from "../../common/gdb-state-types";
+import { gdbAsmRow, gdbFunction, gdbRegisters } from "../../common/gdb-state-types";
 import { doCutCopyPaste, menuCopy, menuCutCopyPaste } from "../utilities/Clipboard";
+import { DISASM_FUNCTION } from "../utilities/renderer-events";
 import { useGridColumnState } from "../utilities/useGridColumnState";
 import { validateValue, ValueType } from "../utilities/valueValidation";
 import { renderGroupCaption, renderInstructionParts } from "./GdbDisassemblerLineModel";
 import "./GdbDisassemblerWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
+import { buildTooltipHtml } from "./useGdbSourceWindowController";
 
 type DisasmRowTemplateData = Pick<gdbAsmRow, "address" | "offset" | "opcodes">;
 
@@ -327,25 +330,78 @@ function doValidateDisasmParams(
   );
 }
 
-/** Custom hook that owns all refs, state, and callbacks for the disassembler window. */
-function useDisassemblerState() {
-  const menuIdBase = useId();
-  const gridRef = useRef<GridComponent>(null);
-  const functionNameRef = useRef<ComboBoxComponent>(null);
-  const addressErrorRef = useRef<HTMLTableCellElement>(null);
-  const lengthErrorRef = useRef<HTMLTableCellElement>(null);
-  const startRef = useRef<HTMLInputElement>(null);
-  const lengthRef = useRef<HTMLInputElement>(null);
+/** Hook that manages the register-name set, hover tooltip, and related callbacks. */
+function useRegisterTooltip() {
+  const registerNamesRef = useRef<Set<string>>(new Set());
+  const tooltipAnchorRef = useRef<HTMLDivElement | null>(null);
+  const sfTipRef = useRef<Tooltip | null>(null);
 
-  const [functionList, setFunctionList] = useState<gdbFunction[]>([]);
-  const [disasmData, setDisasmData] = useState<gdbAsmRow[]>([]);
-  useGridColumnState("disassembly", gridRef);
+  useEffect(() => {
+    const anchor = document.createElement("div");
+    anchor.style.cssText = "position:fixed;width:1px;height:1px;pointer-events:none;";
+    document.body.appendChild(anchor);
+    tooltipAnchorRef.current = anchor;
+    sfTipRef.current = new Tooltip(
+      {
+        opensOn: "Custom",
+        cssClass: "reveal-tip",
+        content: "",
+        enableHtmlSanitizer: true,
+        enableHtmlParse: true,
+        position: "RightBottom",
+        offsetX: 10,
+        offsetY: 10,
+        animation: {
+          open: { effect: "FadeIn", duration: 100, delay: 0 },
+          close: { effect: "FadeOut", duration: 100, delay: 0 },
+        },
+      },
+      anchor,
+    );
+    return () => {
+      sfTipRef.current?.destroy();
+      anchor.remove();
+      sfTipRef.current = null;
+      tooltipAnchorRef.current = null;
+    };
+  }, []);
 
-  const selectionOptions: SelectionSettingsModel = useMemo(
-    () => ({ mode: "Both", type: "Multiple" }),
+  useEffect(
+    () =>
+      window.ipcToMain.debuggerData.registers((data: Map<string, gdbRegisters>) => {
+        registerNamesRef.current = new Set(Array.from(data.values()).map((r) => r.name));
+      }),
     [],
   );
 
+  const onRegisterHover = useCallback((regName: string, clientX: number, clientY: number): void => {
+    void window.ipcToMain.queries.debugger.evaluateExpression(`$${regName}`).then((value) => {
+      if (value === undefined) return;
+      const anchor = tooltipAnchorRef.current;
+      const sfTip = sfTipRef.current;
+      if (!anchor || !sfTip) return;
+      anchor.style.left = `${clientX}px`;
+      anchor.style.top = `${clientY}px`;
+      sfTip.content = buildTooltipHtml(regName, value, "register");
+      sfTip.open(anchor);
+    });
+  }, []);
+
+  const onRegisterLeave = useCallback((): void => {
+    sfTipRef.current?.close();
+  }, []);
+
+  return { registerNamesRef, onRegisterHover, onRegisterLeave };
+}
+
+/** Hook that wires up IPC subscriptions and the DISASM_FUNCTION window event. */
+function useDisasmIpcSubscriptions(
+  setDisasmData: (data: gdbAsmRow[]) => void,
+  setFunctionList: (data: gdbFunction[]) => void,
+  addressErrorRef: RefObject<HTMLTableCellElement | null>,
+  lengthErrorRef: RefObject<HTMLTableCellElement | null>,
+  functionNameRef: RefObject<ComboBoxComponent | null>,
+): void {
   useEffect(() => {
     const unsubDisasm = window.ipcToMain.debuggerData.disassembly((data: gdbAsmRow[]) => {
       setDisasmData(data);
@@ -357,23 +413,72 @@ function useDisassemblerState() {
       addressErrorRef.current.style.visibility = "hidden";
       lengthErrorRef.current.style.visibility = "hidden";
     }
+    const handleDisasmFunction = (e: Event) => {
+      const func = (e as CustomEvent<string>).detail;
+      if (func && functionNameRef.current) {
+        functionNameRef.current.value = func;
+      }
+      if (func) {
+        window.ipcToMain.commands.debugger.sendGdbCommand(
+          `-data-disassemble -a ${func} --opcodes bytes`,
+        );
+      }
+    };
+    window.addEventListener(DISASM_FUNCTION, handleDisasmFunction);
     return () => {
       unsubDisasm();
       unsubFunctions();
+      window.removeEventListener(DISASM_FUNCTION, handleDisasmFunction);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+}
+
+/** Custom hook that owns all refs, state, and callbacks for the disassembler window. */
+function useDisassemblerState() {
+  const menuIdBase = useId();
+  const gridRef = useRef<GridComponent>(null);
+  const functionNameRef = useRef<ComboBoxComponent>(null);
+  const addressErrorRef = useRef<HTMLTableCellElement>(null);
+  const lengthErrorRef = useRef<HTMLTableCellElement>(null);
+  const startRef = useRef<HTMLInputElement>(null);
+  const lengthRef = useRef<HTMLInputElement>(null);
+  const { registerNamesRef, onRegisterHover, onRegisterLeave } = useRegisterTooltip();
+
+  const [functionList, setFunctionList] = useState<gdbFunction[]>([]);
+  const [disasmData, setDisasmData] = useState<gdbAsmRow[]>([]);
+  useGridColumnState("disassembly", gridRef);
+
+  const selectionOptions: SelectionSettingsModel = useMemo(
+    () => ({ mode: "Both", type: "Multiple" }),
+    [],
+  );
+
+  useDisasmIpcSubscriptions(
+    setDisasmData,
+    setFunctionList,
+    addressErrorRef,
+    lengthErrorRef,
+    functionNameRef,
+  );
 
   const instructionsTemplate = useCallback(
     (props: gdbAsmRow): JSX.Element =>
-      renderInstructionParts(props.instructions, (functionAddress: string) => {
-        window.ipcToMain.commands.debugger.sendGdbCommand(
-          `-data-disassemble -a ${functionAddress} --opcodes bytes`,
-        );
-        if (functionNameRef.current) {
-          functionNameRef.current.value = functionAddress;
-        }
-      }),
-    [],
+      renderInstructionParts(
+        props.instructions,
+        (functionAddress: string) => {
+          window.ipcToMain.commands.debugger.sendGdbCommand(
+            `-data-disassemble -a ${functionAddress} --opcodes bytes`,
+          );
+          if (functionNameRef.current) {
+            functionNameRef.current.value = functionAddress;
+          }
+        },
+        registerNamesRef.current,
+        onRegisterHover,
+        onRegisterLeave,
+      ),
+    [onRegisterHover, onRegisterLeave, registerNamesRef],
   );
   const doCopy = (): void => {
     gridRef.current?.copy();

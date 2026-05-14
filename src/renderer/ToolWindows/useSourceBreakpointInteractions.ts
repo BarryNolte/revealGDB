@@ -9,6 +9,7 @@ import { RefObject, useCallback, useEffect, useRef } from "react";
 import AceEditor from "react-ace";
 
 import { MenuEventArgs } from "@syncfusion/ej2-navigations";
+import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { GdbAny } from "../../common/gdb-common";
 import { gdbBreakpoint } from "../../common/gdb-state-types";
 import { sendTextToClipboard } from "../utilities/Clipboard";
@@ -19,6 +20,10 @@ export type SourceBreakpointInteractions = {
   updateBreakpointMarkers: () => void;
   onLoad: (editor: ace.Ace.Editor) => void;
   onMenuSelect: (e: MenuEventArgs) => void;
+  onGutterMenuSelect: (e: MenuEventArgs) => void;
+  rightClickedRowRef: RefObject<number>;
+  gutterMenuRef: RefObject<ContextMenuComponent | null>;
+  editorMenuRef: RefObject<ContextMenuComponent | null>;
 };
 
 function useEditorSetup(
@@ -82,10 +87,14 @@ function useEditorSetup(
 function useMenuSelect(
   editorRef: RefObject<AceEditor | null>,
   fullFilePathRef: RefObject<string>,
+  rightClickedRowRef: RefObject<number>,
 ): (e: MenuEventArgs) => void {
   return useCallback(
     (e: MenuEventArgs) => {
-      const row = editorRef.current?.editor.getCursorPosition().row ?? 0;
+      const row =
+        rightClickedRowRef.current >= 0
+          ? rightClickedRowRef.current
+          : (editorRef.current?.editor.getCursorPosition().row ?? 0);
 
       switch (e.item.id) {
         case "copy":
@@ -128,7 +137,58 @@ function useMenuSelect(
           break;
       }
     },
-    [editorRef, fullFilePathRef],
+    [editorRef, fullFilePathRef, rightClickedRowRef],
+  );
+}
+
+function useGutterMenuSelect(
+  editorRef: RefObject<AceEditor | null>,
+  fullFilePathRef: RefObject<string>,
+  rightClickedRowRef: RefObject<number>,
+  toggleBreakpointAtRow: (editor: ace.Ace.Editor, row: number) => void,
+): (e: MenuEventArgs) => void {
+  return useCallback(
+    (e: MenuEventArgs) => {
+      const editor = editorRef.current?.editor;
+      if (!editor) return;
+      const row = rightClickedRowRef.current >= 0 ? rightClickedRowRef.current : 0;
+
+      switch (e.item.id) {
+        case "bp-toggle":
+          toggleBreakpointAtRow(editor, row);
+          break;
+        case "bp-set":
+          window.ipcToMain.commands.debugger.sendGdbCommand(
+            `break ${fullFilePathRef.current}:${row + 1}`,
+          );
+          break;
+        case "bp-clear":
+          window.ipcToMain.commands.debugger.sendGdbCommand(
+            `clear ${fullFilePathRef.current}:${row + 1}`,
+          );
+          break;
+        case "bp-run-to-cursor":
+          window.ipcToMain.commands.debugger.sendGdbCommand(
+            `tbreak ${fullFilePathRef.current}:${row + 1}`,
+          );
+          window.ipcToMain.commands.debugger.sendGdbCommand("continue");
+          break;
+        case "bp-jump-and-stop":
+          window.ipcToMain.commands.debugger.sendGdbCommand(
+            `tbreak ${fullFilePathRef.current}:${row + 1}`,
+          );
+          window.ipcToMain.commands.debugger.sendGdbCommand(
+            `jump ${fullFilePathRef.current}:${row + 1}`,
+          );
+          break;
+        case "bp-jump":
+          window.ipcToMain.commands.debugger.sendGdbCommand(
+            `jump ${fullFilePathRef.current}:${row + 1}`,
+          );
+          break;
+      }
+    },
+    [editorRef, fullFilePathRef, rightClickedRowRef, toggleBreakpointAtRow],
   );
 }
 
@@ -147,6 +207,9 @@ export function useSourceBreakpointInteractions(
   fullFilePathRef: RefObject<string>,
 ): SourceBreakpointInteractions {
   const breakpointsRef = useRef<SourceBreakpointMarker[]>([]);
+  const rightClickedRowRef = useRef<number>(-1);
+  const gutterMenuRef = useRef<ContextMenuComponent | null>(null);
+  const editorMenuRef = useRef<ContextMenuComponent | null>(null);
 
   const updateBreakpointMarkers = useCallback(() => {
     const session = editorRef.current?.editor.getSession();
@@ -184,12 +247,22 @@ export function useSourceBreakpointInteractions(
     editor.clearSelection();
   }, []);
 
-  const onMenuSelect = useMenuSelect(editorRef, fullFilePathRef);
+  const onMenuSelect = useMenuSelect(editorRef, fullFilePathRef, rightClickedRowRef);
+  const onGutterMenuSelect = useGutterMenuSelect(
+    editorRef,
+    fullFilePathRef,
+    rightClickedRowRef,
+    toggleBreakpointAtRow,
+  );
 
   return {
     setBreakpoints,
     updateBreakpointMarkers,
     onLoad,
     onMenuSelect,
+    onGutterMenuSelect,
+    rightClickedRowRef,
+    gutterMenuRef,
+    editorMenuRef,
   };
 }

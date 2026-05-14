@@ -4,15 +4,15 @@
  * @remarks
  * Exported symbols include `ArrayChangeCallback`, `HexEditor`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-import { createRef, JSX, useEffect } from "react";
+import { useRef, JSX, useEffect } from "react";
 import "./HexEditor.css";
 import { MouseKeyboardHandler } from "./MouseKeyboardHandler";
 import HexDataView from "./view-data";
 import HexOffsetView from "./view-offset";
 import HexTextView from "./view-text";
+import { ArrayChangeCallback } from "./hex-editor-types";
 
-/** Callback signature for data change notifications */
-export type ArrayChangeCallback = (index: number, value: number) => void;
+export type { ArrayChangeCallback };
 
 /** Props for the HexEditor component */
 export interface HexEditorProps {
@@ -38,21 +38,19 @@ export default function HexEditor({
   datasource,
   changeCallback,
 }: HexEditorProps): JSX.Element {
-  const hexEditorRef = createRef<HTMLDivElement>();
+  const hexEditorRef = useRef<HTMLDivElement>(null);
 
   // Centralized event handler for all mouse and keyboard interactions
   const mouseKeyboardHandler = new MouseKeyboardHandler(datasource.length, changeCallback);
 
   useEffect(() => {
-    if (hexEditorRef.current) {
-      const changedElements: HTMLCollection =
-        hexEditorRef.current.getElementsByClassName("he-data-changed");
+    const changedElements: HTMLCollection =
+      hexEditorRef.current!.getElementsByClassName("he-data-changed");
 
-      Array.from(changedElements).forEach((element) => {
-        element.classList.remove("he-data-changed");
-      });
-    }
-  }, [datasource, hexEditorRef]);
+    Array.from(changedElements).forEach((element) => {
+      element.classList.remove("he-data-changed");
+    });
+  }, [datasource]);
 
   return (
     <div data-testid="hex-editor">

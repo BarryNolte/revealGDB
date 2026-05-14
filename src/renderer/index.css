@@ -47,6 +47,7 @@
   --disasm-op-address-color: #b87300;
   --disasm-function-color: purple;
   --disasm-text-color: #cc0000;
+  --disasm-register-color: #0066cc;
   --disasm-title-color: #ffffff;
   --disasm-fn-dropdown-bg: #ffffff;
   --disasm-fn-dropdown-text: black;
@@ -125,6 +126,7 @@
   --disasm-op-address-color: orange;
   --disasm-function-color: #cc80ff;
   --disasm-text-color: #ff6060;
+  --disasm-register-color: #66aaff;
   --disasm-title-color: white;
   --disasm-fn-dropdown-bg: black;
   --disasm-fn-dropdown-text: white;

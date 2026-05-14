@@ -29,6 +29,7 @@ describe("GdbSourceWindowView", () => {
     stackMarkers: [],
     onLoad: vi.fn(),
     onCopySelection: vi.fn(),
+    onOpenDisassembly: vi.fn(),
   };
 
   it("shows source editor path when source is available", () => {
@@ -50,12 +51,10 @@ describe("GdbSourceWindowView", () => {
   });
 });
 
-
 /**
  * @file GdbSourceWindowView.test.tsx
  * @description Source module for GdbSourceWindowView.test.
  */
-
 
 /**
  * GdbSourceWindowView.test module.

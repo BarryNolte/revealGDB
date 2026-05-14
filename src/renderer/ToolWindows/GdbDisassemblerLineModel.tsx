@@ -5,7 +5,7 @@
  * Exported symbols include `toInstructionParts`, `extractFunctionName`, `renderInstructionParts`, `renderGroupCaption`. It coordinates live debugger data with user interactions in docked tool-window views.
  */
 import { JSX } from "react";
-import { DisasmToken } from "../../main/mi-interface/gdb-state-database/gdbStateDatabase";
+import { DisasmToken } from "../../common/gdb-state-types";
 
 export type DisasmInstructionPart = {
   className: string;
@@ -102,11 +102,17 @@ export function extractFunctionName(groupKey?: string): string {
  *
  * @param tokens - Value for `tokens` consumed by this operation.
  * @param onFunctionClick - Callback invoked when the associated event occurs.
+ * @param registerNames - Optional set of live register names for the current target architecture.
+ * @param onRegisterHover - Optional callback invoked when the pointer enters a register token.
+ * @param onRegisterLeave - Optional callback invoked when the pointer leaves a register token.
  * @returns The computed result produced by this operation.
  */
 export function renderInstructionParts(
   tokens: DisasmToken[],
   onFunctionClick: (functionAddress: string) => void,
+  registerNames?: Set<string>,
+  onRegisterHover?: (regName: string, clientX: number, clientY: number) => void,
+  onRegisterLeave?: () => void,
 ): JSX.Element {
   const parts = toInstructionParts(tokens).map((part, index) => {
     if (part.functionAddress) {
@@ -122,6 +128,23 @@ export function renderInstructionParts(
       );
     }
 
+    if (part.className === "disasmText" && registerNames && onRegisterHover) {
+      const cleanName = cleanRegisterName(part.value);
+      if (registerNames.has(cleanName)) {
+        return (
+          <span
+            key={`disasmRegister-${index}`}
+            className="disasmRegister"
+            onMouseEnter={(e) => onRegisterHover(cleanName, e.clientX, e.clientY)}
+            onMouseLeave={onRegisterLeave}
+          >
+            {part.value}
+            {part.hasTrailingNbsp ? "\u00A0" : ""}
+          </span>
+        );
+      }
+    }
+
     return (
       <span key={`${part.className}-${index}`} className={part.className}>
         {part.value}
@@ -131,6 +154,12 @@ export function renderInstructionParts(
   });
 
   return <div>{parts}</div>;
+}
+
+/** Strips the AT&T `%` prefix and trailing operand punctuation from a token to get a bare register name. */
+function cleanRegisterName(token: string): string {
+  const stripped = token.startsWith("%") ? token.slice(1) : token;
+  return stripped.replace(/[,;!{}[\]]+$/, "");
 }
 
 /**

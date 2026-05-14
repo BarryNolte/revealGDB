@@ -6,7 +6,8 @@
  */
 import EventEmitter from "events";
 import { readFile } from "fs/promises";
-import { ERROR_STREAM } from "../mi-stream-events";
+import { formatFileReadError } from "../../utilities/html-error-formatter";
+import { HTML_STREAM } from "../mi-stream-events";
 
 export class gdbSourceFileCache extends EventEmitter {
   private sourceFiles: Map<string, string> = new Map<string, string>();
@@ -65,13 +66,12 @@ export class gdbSourceFileCache extends EventEmitter {
     let srcHtml: string = "";
     if (!have && file.length > 0) {
       try {
-        // TODO: Resolve actual path using the active connector.
         const data = await readFile(this.filePrefix + file, "utf-8");
         this.sourceFiles.set(file, data);
         srcHtml = data;
         this.emit("first-read", file);
       } catch (ex) {
-        this.emit(ERROR_STREAM, `Error reading file: ${file} : ${ex}`);
+        this.emit(HTML_STREAM, formatFileReadError(this.filePrefix + file, ex));
       }
     } else {
       srcHtml = this.sourceFiles.get(file) || "";

@@ -18,21 +18,27 @@ vi.mock("@syncfusion/ej2-react-grids", () => ({
 
 let capturedRowDataBound: ((args: unknown) => void) | null = null;
 let capturedValueAccessor: ((field: string, data: unknown) => string) | null = null;
+let capturedCellEdit:
+  | ((args: { type: string; columnName: string; rowData: unknown; cancel?: boolean }) => void)
+  | null = null;
 
 vi.mock("@syncfusion/ej2-react-treegrid", () => ({
   TreeGridComponent: ({
     id,
     children,
     rowDataBound,
+    cellEdit,
     ...rest
   }: {
     id: string;
     children: React.ReactNode;
     rowDataBound?: (args: unknown) => void;
+    cellEdit?: (args: unknown) => void;
     [key: string]: unknown;
   }) => {
     // Capture callbacks so tests can invoke them directly
     capturedRowDataBound = rowDataBound ?? null;
+    capturedCellEdit = (cellEdit as typeof capturedCellEdit) ?? null;
     const cols = (rest as { columnsDirective?: unknown })["columnsDirective"];
     void cols;
     return <div id={id}>{children}</div>;
@@ -80,6 +86,7 @@ beforeEach(() => {
   mockUnsubscribe.mockReset();
   capturedRowDataBound = null;
   capturedValueAccessor = null;
+  capturedCellEdit = null;
   capturedLocalsCallback = null;
 
   (window as unknown as Record<string, unknown>).ipcToMain = {
@@ -182,12 +189,65 @@ describe("GdbLocalsWindow smoke test", () => {
   });
 });
 
+describe("GdbLocalsWindow cellEdit callback", () => {
+  it("cancels edit when type is 'edit', column is 'value', and sublocals is non-empty", () => {
+    render(<GdbLocalsWindow />);
+    const args = {
+      type: "edit",
+      columnName: "value",
+      rowData: { sublocals: [{ name: "child", value: "0" }] },
+      cancel: false,
+    };
+    capturedCellEdit?.(args);
+    expect(args.cancel).toBe(true);
+  });
+
+  it("does not cancel edit when sublocals is empty", () => {
+    render(<GdbLocalsWindow />);
+    const args = { type: "edit", columnName: "value", rowData: { sublocals: [] }, cancel: false };
+    capturedCellEdit?.(args);
+    expect(args.cancel).toBe(false);
+  });
+
+  it("does not cancel edit when type is not 'edit'", () => {
+    render(<GdbLocalsWindow />);
+    const args = {
+      type: "add",
+      columnName: "value",
+      rowData: { sublocals: [{ name: "child", value: "0" }] },
+      cancel: false,
+    };
+    capturedCellEdit?.(args);
+    expect(args.cancel).toBe(false);
+  });
+
+  it("does not cancel edit when columnName is not 'value'", () => {
+    render(<GdbLocalsWindow />);
+    const args = {
+      type: "edit",
+      columnName: "name",
+      rowData: { sublocals: [{ name: "child", value: "0" }] },
+      cancel: false,
+    };
+    capturedCellEdit?.(args);
+    expect(args.cancel).toBe(false);
+  });
+});
+
+describe("GdbLocalsWindow locals callback edge cases", () => {
+  it("sets local data to empty array when callback receives null", () => {
+    render(<GdbLocalsWindow />);
+    act(() => {
+      capturedLocalsCallback?.(null);
+    });
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+});
 
 /**
  * @file GdbLocalsWindow.test.tsx
  * @description Source module for GdbLocalsWindow.test.
  */
-
 
 /**
  * GdbLocalsWindow.test module.

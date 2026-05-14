@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "timestamp": "2026-05-14T05:42:44.676Z",
+  "commit": "13bdcdb31b3b31fed8640bef4b073f15cf3cc09d",
+  "shortCommit": "13bdcdb3",
+  "parentCommit": "13bdcdb31b3b31fed8640bef4b073f15cf3cc09d",
+  "sampleCount": 1,
+  "timeoutMs": 30000,
+  "thresholds": {
+    "maxRegressionMs": 200,
+    "maxRegressionPct": 10
+  },
+  "metrics": {
+    "app.ready": {
+      "medianMs": 114,
+      "minMs": 114,
+      "maxMs": 114,
+      "samples": [
+        114
+      ]
+    },
+    "main-window-created": {
+      "medianMs": 341,
+      "minMs": 341,
+      "maxMs": 341,
+      "samples": [
+        341
+      ]
+    },
+    "main-window-load-started": {
+      "medianMs": 348,
+      "minMs": 348,
+      "maxMs": 348,
+      "samples": [
+        348
+      ]
+    },
+    "gdb-interface-created": {
+      "medianMs": 349,
+      "minMs": 349,
+      "maxMs": 349,
+      "samples": [
+        349
+      ]
+    },
+    "main-window-ready-to-show": {
+      "medianMs": 1804,
+      "minMs": 1804,
+      "maxMs": 1804,
+      "samples": [
+        1804
+      ]
+    },
+    "main-window-shown": {
+      "medianMs": 1824,
+      "minMs": 1824,
+      "maxMs": 1824,
+      "samples": [
+        1824
+      ]
+    }
+  },
+  "samples": [
+    {
+      "milestones": {
+        "app.ready": 114,
+        "main-window-created": 341,
+        "main-window-load-started": 348,
+        "gdb-interface-created": 349,
+        "main-window-ready-to-show": 1804,
+        "main-window-shown": 1824
+      },
+      "rawLines": [
+        "> revealgdb@0.9.2-b6c995b start",
+        "> electron . --remote-debugging-port=9222",
+        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/5305b178-2a86-4fea-a55d-7cd912cdc617",
+        "[startup] app.ready: 114ms",
+        "Settings File: C:\\Users\\barry\\AppData\\Roaming\\revealgdb\\settings.json",
+        "Display: (2560 x 1600)",
+        "Display: (4096 x 2160)",
+        "[startup] main-window-created: 341ms",
+        "[startup] main-window-load-started: 348ms",
+        "[startup] gdb-interface-created: 349ms",
+        "[34684:0513/224242.738:ERROR:CONSOLE:1] \"Request Autofill.enable failed. {\"code\":-32601,\"message\":\"'Autofill.enable' wasn't found\"}\", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)",
+        "[34684:0513/224242.739:ERROR:CONSOLE:1] \"Request Autofill.setAddresses failed. {\"code\":-32601,\"message\":\"'Autofill.setAddresses' wasn't found\"}\", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)",
+        "[startup] renderer-start",
+        "Notifying GDB Interface that rendering is starting.",
+        "[startup] renderer-end",
+        "Notifying GDB Interface that rendering is complete.",
+        "[startup] main-window-ready-to-show: 1804ms",
+        "[startup] main-window-shown: 1824ms"
+      ]
+    }
+  ]
+}

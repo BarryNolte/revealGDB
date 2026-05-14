@@ -7,6 +7,7 @@
 import { screen, shell } from "electron";
 import { GdbAny, SelectedConnection } from "../../common/gdb-common";
 import { GridColumnState, GridName } from "../../common/grid-column-types";
+import { HTMLTableGenerator } from "../../common/HtmlTableGenerator";
 import { IPC_CHANNELS, NotifyMainRequest, NotifyRenderMessage } from "../../common/ipc-contracts";
 import { mapElectronWindowToWinPos } from "../mappers/window-pos-mapper";
 import { setNativeThemeFromAppTheme } from "../theme-support";
@@ -14,7 +15,6 @@ import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
 import { debugLog } from "../utilities/logger";
 import { WslUtilities } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
-import { HTMLTableGenerator } from "../../common/HtmlTableGenerator";
 
 const DEBUGGER_DISCONNECTED_BANNER = "".padStart(51, "*"); //" "***************************************************";
 
@@ -204,6 +204,15 @@ function handleCancelConnection(msg: NotifyMainRequest, context: IpcRegistration
   );
 }
 
+function resetGridColumns(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
+  const resetGridName = msg.data as GridName | undefined;
+  if (resetGridName) {
+    context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns.${resetGridName}`);
+  } else {
+    context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns`);
+  }
+}
+
 function handleSaveSettings(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
   const mainWindow = context.getMainWindow();
   const command = msg?.command || "";
@@ -252,15 +261,9 @@ function handleSaveSettings(msg: NotifyMainRequest, context: IpcRegistrationCont
       context.appSettings.setSync(`${GDB_GUI_PREFIX}gridColumns.${gridName}`, columns as never);
       break;
     }
-    case "reset-grid-columns": {
-      const resetGridName = msg.data as GridName | undefined;
-      if (resetGridName) {
-        context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns.${resetGridName}`);
-      } else {
-        context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns`);
-      }
+    case "reset-grid-columns":
+      resetGridColumns(msg, context);
       break;
-    }
   }
 }
 

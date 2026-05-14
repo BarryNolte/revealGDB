@@ -59,11 +59,9 @@ export class DockMenuConnector {
           }
         } else {
           // Show panel by docking dialog back into layout
-          if (di.panel) {
-            if (di.dialog) {
-              this.dockManager.dockDialogUp(this.dockManager.context.model.rootNode, di.dialog);
-              di.dialog = undefined;
-            }
+          if (di.panel && di.dialog) {
+            this.dockManager.dockDialogUp(this.dockManager.context.model.rootNode, di.dialog);
+            di.dialog = undefined;
           }
         }
       }
@@ -169,5 +167,17 @@ export class DockMenuConnector {
       return false;
     }
     return true;
+  }
+
+  /**
+   * Activates (selects) the tab for the panel with the given display name.
+   *
+   * @param displayName - The display name of the panel to activate.
+   */
+  public activatePanel(displayName: string): void {
+    const panel = this.panelMap.get(displayName)?.panel;
+    if (panel?.tabPage) {
+      panel.tabPage.host.setActiveTab(panel);
+    }
   }
 }

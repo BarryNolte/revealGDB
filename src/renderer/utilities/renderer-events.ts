@@ -9,3 +9,4 @@
 export const UPDATE_WINDOW_LIST = "update-window-list";
 export const SAVE_DOCK_LAYOUT = "save-dock-layout";
 export const TOGGLE_WINDOW = "toggle-window";
+export const DISASM_FUNCTION = "disasm-function";

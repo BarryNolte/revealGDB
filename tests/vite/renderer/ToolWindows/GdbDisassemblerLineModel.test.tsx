@@ -70,4 +70,77 @@ describe("GdbDisassemblerLineModel", () => {
     expect(onFunctionClick).toHaveBeenCalledTimes(1);
     expect(onFunctionClick).toHaveBeenCalledWith("0x4012f0");
   });
+
+  describe("renderInstructionParts non-function token paths", () => {
+    it("renders instruction token as plain span (no trailing NBSP)", () => {
+      const { container } = render(
+        renderInstructionParts([{ type: "instruction", value: "mov" }], vi.fn()),
+      );
+      const span = container.querySelector(".disasmInstruction");
+      expect(span).not.toBeNull();
+      expect(span!.textContent).toBe("mov");
+    });
+
+    it("renders text token as plain span with trailing NBSP when no registerNames", () => {
+      const { container } = render(
+        renderInstructionParts([{ type: "text", value: "eax" }], vi.fn()),
+      );
+      const span = container.querySelector(".disasmText");
+      expect(span).not.toBeNull();
+      expect(span!.textContent).toBe("eax\u00A0");
+    });
+
+    it("renders text token as register span when name is in register set", () => {
+      const onRegisterHover = vi.fn();
+      const onRegisterLeave = vi.fn();
+      const { container } = render(
+        renderInstructionParts(
+          [{ type: "text", value: "eax" }],
+          vi.fn(),
+          new Set(["eax"]),
+          onRegisterHover,
+          onRegisterLeave,
+        ),
+      );
+      expect(container.querySelector(".disasmRegister")).not.toBeNull();
+    });
+
+    it("renders %eax (AT&T % prefix) as register span after stripping prefix", () => {
+      const { container } = render(
+        renderInstructionParts(
+          [{ type: "text", value: "%eax" }],
+          vi.fn(),
+          new Set(["eax"]),
+          vi.fn(),
+        ),
+      );
+      expect(container.querySelector(".disasmRegister")).not.toBeNull();
+    });
+
+    it("renders text as plain span when name is NOT in register set", () => {
+      const { container } = render(
+        renderInstructionParts(
+          [{ type: "text", value: "eax" }],
+          vi.fn(),
+          new Set(["rbx"]),
+          vi.fn(),
+        ),
+      );
+      expect(container.querySelector(".disasmRegister")).toBeNull();
+      expect(container.querySelector(".disasmText")).not.toBeNull();
+    });
+
+    it("renders text as plain span when onRegisterHover is not provided", () => {
+      const { container } = render(
+        renderInstructionParts(
+          [{ type: "text", value: "eax" }],
+          vi.fn(),
+          new Set(["eax"]),
+          // onRegisterHover omitted → no register span
+        ),
+      );
+      expect(container.querySelector(".disasmRegister")).toBeNull();
+      expect(container.querySelector(".disasmText")).not.toBeNull();
+    });
+  });
 });

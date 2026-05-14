@@ -333,7 +333,7 @@ function buildComplexityHtml(report) {
   <section>
     <h2>Trend vs Last Snapshot</h2>
     <table>
-      <thead><tr><th>Bucket</th><th>Avg CC</th><th>High CC files</th><th>Fn &ge; 25</th><th>Fn &ge; 15</th></tr></thead>
+      <thead><tr><th>Bucket</th><th class="num">Avg CC</th><th class="num">High CC files</th><th class="num">Fn &ge; 25</th><th class="num">Fn &ge; 15</th></tr></thead>
       <tbody>${trendRows}${totalsRow}
       </tbody>
     </table>
@@ -358,7 +358,8 @@ function buildComplexityHtml(report) {
                 <td class="num">${fn.sloc}</td>
               </tr>`).join('');
       const shortFile = f.file.replace(/^src\/[^/]+\//, '');
-      const fileLink = `../../${f.file}`;
+      const absFilePath = path.join(ROOT, f.file).replace(/\\/g, '/');
+      const fileLink = `vscode://file/${absFilePath}`;
       return `
           <tr class="file-row ${rowClass}" onclick="toggleDetail('fn-detail-${idx}', this)">
             <td><span class="expand-icon" id="icon-${idx}">&#9654;</span> <a href="${escHtml(fileLink)}" onclick="event.stopPropagation()" title="${escHtml(f.file)}">${escHtml(shortFile)}</a></td>
@@ -370,7 +371,7 @@ function buildComplexityHtml(report) {
           <tr class="fn-detail" id="fn-detail-${idx}" style="display:none">
             <td colspan="5">
               <table class="fn-table">
-                <thead><tr><th>Function</th><th>Location</th><th>CC</th><th>SLOC</th></tr></thead>
+                <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
                 <tbody>${fnRows}
                 </tbody>
               </table>
@@ -381,7 +382,7 @@ function buildComplexityHtml(report) {
   <section>
     <h2>${escHtml(b.name)} <span class="badge">${b.fileCount} files &middot; ${b.fnCount} fns &middot; avg CC ${b.avgCC}</span></h2>
     <table class="file-table">
-      <thead><tr><th>File</th><th>File CC</th><th>Max Fn CC</th><th>Fns</th><th>SLOC</th></tr></thead>
+      <thead><tr><th>File</th><th class="num">File CC</th><th class="num">Max Fn CC</th><th class="num">Fns</th><th class="num">SLOC</th></tr></thead>
       <tbody>${fileRows}
       </tbody>
     </table>
@@ -391,11 +392,12 @@ function buildComplexityHtml(report) {
   // Top hotspot functions
   const hotspotRows = report.topHotspots.map((h, i) => {
     const shortFile = h.file.replace(/^src\/[^/]+\//, '');
+    const absHotPath = path.join(ROOT, h.file).replace(/\\/g, '/');
     return `
         <tr>
           <td class="num rank">${i + 1}</td>
           <td class="fn-name">${escHtml(h.fnName)}</td>
-          <td class="file-cell" title="${escHtml(h.file)}"><a href="../../${escHtml(h.file)}">${escHtml(shortFile)}</a>:${h.line}</td>
+          <td class="file-cell" title="${escHtml(h.file)}"><a href="vscode://file/${escHtml(absHotPath)}:${h.line}">${escHtml(shortFile)}</a>:${h.line}</td>
           <td>${escHtml(h.bucket)}</td>
           <td class="num ${ccClass(h.cc)}">${h.cc}</td>
           <td class="num">${h.sloc}</td>
@@ -452,6 +454,7 @@ function buildComplexityHtml(report) {
   td { padding: 5px 8px; border-bottom: 1px solid #161b22; vertical-align: middle; }
   .file-table tbody tr:last-child td { border-bottom: none; }
   td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  th.num { text-align: right; }
   td.fn-name { font-family: "SFMono-Regular", Consolas, monospace; font-size: 11px; }
   td.file-cell { font-size: 11px; color: #8b949e; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   td.rank { color: #6e7681; width: 30px; }
@@ -486,7 +489,7 @@ ${bucketSections}
 <section>
   <h2>Top ${report.topHotspots.length} Hotspot Functions</h2>
   <table>
-    <thead><tr><th>#</th><th>Function</th><th>File:Line</th><th>Bucket</th><th>CC</th><th>SLOC</th></tr></thead>
+    <thead><tr><th class="num">#</th><th>Function</th><th>File:Line</th><th>Bucket</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
     <tbody>${hotspotRows}
     </tbody>
   </table>

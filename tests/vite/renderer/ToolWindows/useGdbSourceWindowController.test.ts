@@ -70,6 +70,14 @@ describe("getMemberExpression", () => {
     expect(result!.rawExpr).toBe("obj->sub.val");
     expect(result!.fieldPath).toBe("sub.val");
   });
+
+  it("skips earlier matches and returns the one containing the cursor column", () => {
+    // "abc xyz" — cursor at col 4 ('x'). First match "abc" [0,3] is before col=4 so it is skipped.
+    const result = getMemberExpression("abc xyz", 4);
+    expect(result).not.toBeNull();
+    expect(result!.base).toBe("xyz");
+    expect(result!.fieldPath).toBe("");
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -302,5 +310,104 @@ describe("makeTooltipDataProvider", () => {
     await vi.waitFor(() => expect(sfTip.open).toHaveBeenCalled());
     expect(sfTip.content).toContain("realName");
     expect(sfTip.content).not.toContain("someIdent");
+  });
+
+  it("closes tooltip when both IPC results are undefined for member expression path", async () => {
+    mockGetVarByName.mockResolvedValue(undefined);
+    mockEvaluateExpression.mockResolvedValue(undefined);
+
+    const ctx: TooltipContext = {
+      anchor,
+      sfTip: sfTip as unknown as import("@syncfusion/ej2-popups").Tooltip,
+      fullFilePathRef,
+    };
+    const provider = makeTooltipDataProvider(ctx);
+    // "mbs.field" cursor on 'f' (col 4) → member expression path
+    provider(makeMouseEvent(), makeEditor("mbs.field", 0, 4));
+
+    await vi.waitFor(() => expect(sfTip.close).toHaveBeenCalled());
+    expect(sfTip.open).not.toHaveBeenCalled();
+  });
+
+  it("shows empty typeName for member expression when varInfo.typeStr is falsy", async () => {
+    mockGetVarByName.mockResolvedValue({ name: "mbs", typeStr: "" });
+    mockEvaluateExpression.mockResolvedValue("42");
+
+    const ctx: TooltipContext = {
+      anchor,
+      sfTip: sfTip as unknown as import("@syncfusion/ej2-popups").Tooltip,
+      fullFilePathRef,
+    };
+    const provider = makeTooltipDataProvider(ctx);
+    provider(makeMouseEvent(), makeEditor("mbs.field", 0, 4));
+
+    await vi.waitFor(() => expect(sfTip.open).toHaveBeenCalled());
+    expect(sfTip.content).not.toContain('class="tip-type"');
+  });
+
+  it("uses ident when varInfo is undefined (value is defined) for plain identifier", async () => {
+    mockQueryVarAtPosition.mockResolvedValue(undefined);
+    mockEvaluateExpression.mockResolvedValue("99");
+
+    const ctx: TooltipContext = {
+      anchor,
+      sfTip: sfTip as unknown as import("@syncfusion/ej2-popups").Tooltip,
+      fullFilePathRef,
+    };
+    const provider = makeTooltipDataProvider(ctx);
+    provider(makeMouseEvent(), makeEditor("  myVar  ", 0, 2));
+
+    await vi.waitFor(() => expect(sfTip.open).toHaveBeenCalled());
+    expect(sfTip.content).toContain("myVar");
+  });
+
+  it("shows empty typeName for plain identifier when varInfo has no typeStr", async () => {
+    mockQueryVarAtPosition.mockResolvedValue({ name: "n", typeStr: "" });
+    mockEvaluateExpression.mockResolvedValue("7");
+
+    const ctx: TooltipContext = {
+      anchor,
+      sfTip: sfTip as unknown as import("@syncfusion/ej2-popups").Tooltip,
+      fullFilePathRef,
+    };
+    const provider = makeTooltipDataProvider(ctx);
+    provider(makeMouseEvent(), makeEditor("  n  ", 0, 2));
+
+    await vi.waitFor(() => expect(sfTip.open).toHaveBeenCalled());
+    expect(sfTip.content).not.toContain('class="tip-type"');
+  });
+
+  it("falls back to wordMatch when cursor is on non-word char with a word following", async () => {
+    mockQueryVarAtPosition.mockResolvedValue(undefined);
+    mockEvaluateExpression.mockResolvedValue("5");
+
+    const ctx: TooltipContext = {
+      anchor,
+      sfTip: sfTip as unknown as import("@syncfusion/ej2-popups").Tooltip,
+      fullFilePathRef,
+    };
+    const provider = makeTooltipDataProvider(ctx);
+    // cursor at col 0 ';' — getMemberExpression returns null; wordMatch finds "x"
+    provider(makeMouseEvent(), makeEditor(";x", 0, 0));
+
+    await vi.waitFor(() => expect(sfTip.open).toHaveBeenCalled());
+    expect(mockEvaluateExpression).toHaveBeenCalledWith("x");
+  });
+
+  it("falls back to empty ident when cursor is on non-word with no word following", async () => {
+    mockQueryVarAtPosition.mockResolvedValue(undefined);
+    mockEvaluateExpression.mockResolvedValue("0");
+
+    const ctx: TooltipContext = {
+      anchor,
+      sfTip: sfTip as unknown as import("@syncfusion/ej2-popups").Tooltip,
+      fullFilePathRef,
+    };
+    const provider = makeTooltipDataProvider(ctx);
+    // cursor at col 0 ';' — getMemberExpression returns null; no word match in ";;"
+    provider(makeMouseEvent(), makeEditor(";;", 0, 0));
+
+    await vi.waitFor(() => expect(sfTip.open).toHaveBeenCalled());
+    expect(mockEvaluateExpression).toHaveBeenCalledWith("");
   });
 });
