@@ -37,6 +37,11 @@
   color: var(--disasm-text-color);
 }
 
+.disasmRegister {
+  color: var(--disasm-register-color);
+  cursor: default;
+}
+
 .disasmControls {
   padding: 0px 5px;
   background-color: var(--he-header-background-color);

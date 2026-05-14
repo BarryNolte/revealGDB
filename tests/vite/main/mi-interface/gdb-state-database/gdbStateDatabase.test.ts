@@ -19,6 +19,8 @@ import {
   gdbStackFrame,
   gdbStateDatabase,
 } from "../../../../../src/main/mi-interface/gdb-state-database/gdbStateDatabase";
+import { UINotifier } from "../../../../../src/main/mi-interface/gdb-state-database/notifiers/UINotifier";
+import { ERROR_STREAM, HTML_STREAM } from "../../../../../src/main/mi-interface/mi-stream-events";
 
 describe("gdbStateDatabase class", () => {
   let db: gdbStateDatabase;
@@ -50,6 +52,34 @@ describe("gdbStateDatabase class", () => {
 
     it("should have a gdbSrcFileCache instance", () => {
       expect(db.gdbSrcFileCache).toBeDefined();
+    });
+
+    it("should use a provided custom notifier instead of creating a new one", () => {
+      const customNotifier: UINotifier = {
+        sendLocals: vi.fn(),
+        sendStackFrames: vi.fn(),
+        sendBreakpoints: vi.fn(),
+        sendRegisters: vi.fn(),
+        sendThreads: vi.fn(),
+        sendSourceFile: vi.fn(),
+      };
+      const db2 = new gdbStateDatabase(customNotifier);
+      expect(db2).toBeInstanceOf(gdbStateDatabase);
+      db2.removeAllListeners();
+    });
+
+    it("forwards ERROR_STREAM events from gdbSrcFileCache to the database emitter", () => {
+      const handler = vi.fn();
+      db.on(ERROR_STREAM, handler);
+      db.gdbSrcFileCache.emit(ERROR_STREAM, "error line");
+      expect(handler).toHaveBeenCalledWith("error line");
+    });
+
+    it("forwards HTML_STREAM events from gdbSrcFileCache to the database emitter", () => {
+      const handler = vi.fn();
+      db.on(HTML_STREAM, handler);
+      db.gdbSrcFileCache.emit(HTML_STREAM, "<html>");
+      expect(handler).toHaveBeenCalledWith("<html>");
     });
   });
 
@@ -742,11 +772,31 @@ describe("gdbStateDatabase class", () => {
 
     it("should forward source file cache errors", async () => {
       const listener = vi.fn();
-      db.on("error-stream", listener);
+      db.on("html-stream", listener);
 
       await db.getSourceFileContents("/file/that/does/not/exist.c");
 
-      expect(listener).toHaveBeenCalledWith(expect.stringContaining("Error reading file"));
+      expect(listener).toHaveBeenCalledWith(expect.stringContaining("Source File Read Error"));
+    });
+  });
+
+  describe("Line Variable methods", () => {
+    it("queryVarAtPosition returns undefined when no map exists for source file", () => {
+      const result = db.queryVarAtPosition("nonexistent.c", 1, 1);
+      expect(result).toBeUndefined();
+    });
+
+    it("getVarByName returns undefined when no map exists for source file", () => {
+      const result = db.getVarByName("nonexistent.c", "x");
+      expect(result).toBeUndefined();
+    });
+
+    it("hasLineVars returns false when no map exists for source file", () => {
+      expect(db.hasLineVars("nonexistent.c")).toBe(false);
+    });
+
+    it("getLineVars returns undefined when no map exists for source file", () => {
+      expect(db.getLineVars("nonexistent.c")).toBeUndefined();
     });
   });
 });

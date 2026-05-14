@@ -2,6 +2,7 @@
 - Disassembly Window
   - Highlight registers? (values on hover)
 - Click on thread and goto source
+- Clean up debugger 'dot' commands
 
 # Documentation
 - Quick Start Guide

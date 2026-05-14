@@ -97,18 +97,18 @@ describe("gdbSourceFileCache class", () => {
       expect(fs.readFile).not.toHaveBeenCalled();
     });
 
-    it("should emit error-stream event on file read error", async () => {
+    it("should emit html-stream event on file read error", async () => {
       const errorMessage = "ENOENT: no such file or directory";
       vi.mocked(fs.readFile).mockRejectedValue(new Error(errorMessage));
 
       const errorListener = vi.fn();
-      cache.on("error-stream", errorListener);
+      cache.on("html-stream", errorListener);
 
       const result = await cache.getSourceFileContents("/nonexistent/file.c");
 
       expect(result).toBeUndefined();
       expect(errorListener).toHaveBeenCalledTimes(1);
-      expect(errorListener).toHaveBeenCalledWith(expect.stringContaining("Error reading file"));
+      expect(errorListener).toHaveBeenCalledWith(expect.stringContaining("Source File Read Error"));
       expect(errorListener).toHaveBeenCalledWith(expect.stringContaining("/nonexistent/file.c"));
     });
 
@@ -211,9 +211,9 @@ describe("gdbSourceFileCache class", () => {
   });
 
   describe("event emitter functionality", () => {
-    it("should allow subscribing to error-stream events", async () => {
+    it("should allow subscribing to html-stream events", async () => {
       const listener = vi.fn();
-      cache.on("error-stream", listener);
+      cache.on("html-stream", listener);
 
       vi.mocked(fs.readFile).mockRejectedValue(new Error("Test error"));
       await cache.getSourceFileContents("/error/file.c");
@@ -225,8 +225,8 @@ describe("gdbSourceFileCache class", () => {
       const listener1 = vi.fn();
       const listener2 = vi.fn();
 
-      cache.on("error-stream", listener1);
-      cache.on("error-stream", listener2);
+      cache.on("html-stream", listener1);
+      cache.on("html-stream", listener2);
 
       vi.mocked(fs.readFile).mockRejectedValue(new Error("Test error"));
       await cache.getSourceFileContents("/error/file.c");
@@ -237,8 +237,8 @@ describe("gdbSourceFileCache class", () => {
 
     it("should allow removing listeners", async () => {
       const listener = vi.fn();
-      cache.on("error-stream", listener);
-      cache.off("error-stream", listener);
+      cache.on("html-stream", listener);
+      cache.off("html-stream", listener);
 
       vi.mocked(fs.readFile).mockRejectedValue(new Error("Test error"));
       await cache.getSourceFileContents("/error/file.c");
@@ -252,7 +252,7 @@ describe("gdbSourceFileCache class", () => {
       vi.mocked(fs.readFile).mockRejectedValue(null);
 
       const listener = vi.fn();
-      cache.on("error-stream", listener);
+      cache.on("html-stream", listener);
 
       const result = await cache.getSourceFileContents("/test.c");
 

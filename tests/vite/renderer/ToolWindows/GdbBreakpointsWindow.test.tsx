@@ -4,17 +4,25 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import GdbBreakPointWindow from "../../../../src/renderer/ToolWindows/GdbBreakpointsWindow";
 
 const mockRefresh = vi.fn();
+let capturedActionBegin: ((args: unknown) => void) | null = null;
+let capturedRecordDoubleClick: ((args: unknown) => void) | null = null;
 
 vi.mock("@syncfusion/ej2-react-grids", () => ({
   GridComponent: ({
     id,
     children,
     ref,
+    actionBegin,
+    recordDoubleClick,
   }: {
     id: string;
     children: React.ReactNode;
     ref?: React.Ref<unknown>;
+    actionBegin?: (args: unknown) => void;
+    recordDoubleClick?: (args: unknown) => void;
   }) => {
+    capturedActionBegin = actionBegin ?? null;
+    capturedRecordDoubleClick = recordDoubleClick ?? null;
     void ref;
     return (
       <div id={id} data-refresh={mockRefresh as unknown as string}>
@@ -56,6 +64,8 @@ beforeEach(() => {
   mockUnsubscribe.mockReset();
   mockRefresh.mockReset();
   capturedBreakpointCallback = null;
+  capturedActionBegin = null;
+  capturedRecordDoubleClick = null;
 
   (window as unknown as Record<string, unknown>).ipcToMain = {
     debuggerData: {
@@ -66,6 +76,7 @@ beforeEach(() => {
     },
     commands: {
       debugger: { sendGdbCommand: vi.fn() },
+      app: { notifyMain: vi.fn() },
     },
   };
 });
@@ -131,12 +142,88 @@ describe("GdbBreakpointsWindow smoke test", () => {
   });
 });
 
+describe("GdbBreakpointsWindow onAction callback", () => {
+  it("sends delete command for each row when requestType is 'delete'", () => {
+    render(<GdbBreakPointWindow />);
+    const sendGdbCommand = (
+      window as unknown as {
+        ipcToMain: { commands: { debugger: { sendGdbCommand: ReturnType<typeof vi.fn> } } };
+      }
+    ).ipcToMain.commands.debugger.sendGdbCommand;
+
+    capturedActionBegin?.({
+      requestType: "delete",
+      data: [{ number: "1" }, { number: "2" }],
+    });
+
+    expect(sendGdbCommand).toHaveBeenCalledWith("d 1");
+    expect(sendGdbCommand).toHaveBeenCalledWith("d 2");
+  });
+
+  it("does nothing for unrecognised requestType", () => {
+    render(<GdbBreakPointWindow />);
+    const sendGdbCommand = (
+      window as unknown as {
+        ipcToMain: { commands: { debugger: { sendGdbCommand: ReturnType<typeof vi.fn> } } };
+      }
+    ).ipcToMain.commands.debugger.sendGdbCommand;
+
+    capturedActionBegin?.({ requestType: "sort" });
+
+    expect(sendGdbCommand).not.toHaveBeenCalled();
+  });
+});
+
+describe("GdbBreakpointsWindow handleRecordDoubleClick callback", () => {
+  it("sends show-source-at notification when row has fullName and line", () => {
+    render(<GdbBreakPointWindow />);
+    const notifyMain = (
+      window as unknown as {
+        ipcToMain: { commands: { app: { notifyMain: ReturnType<typeof vi.fn> } } };
+      }
+    ).ipcToMain.commands.app.notifyMain;
+
+    capturedRecordDoubleClick?.({
+      rowData: { fullName: "/path/main.c", line: "10" },
+    });
+
+    expect(notifyMain).toHaveBeenCalledWith({
+      command: "show-source-at",
+      data: { fileName: "/path/main.c", line: "10" },
+    });
+  });
+
+  it("does nothing when row has no fullName", () => {
+    render(<GdbBreakPointWindow />);
+    const notifyMain = (
+      window as unknown as {
+        ipcToMain: { commands: { app: { notifyMain: ReturnType<typeof vi.fn> } } };
+      }
+    ).ipcToMain.commands.app.notifyMain;
+
+    capturedRecordDoubleClick?.({ rowData: { line: "10" } });
+
+    expect(notifyMain).not.toHaveBeenCalled();
+  });
+
+  it("does nothing when rowData is missing", () => {
+    render(<GdbBreakPointWindow />);
+    const notifyMain = (
+      window as unknown as {
+        ipcToMain: { commands: { app: { notifyMain: ReturnType<typeof vi.fn> } } };
+      }
+    ).ipcToMain.commands.app.notifyMain;
+
+    capturedRecordDoubleClick?.({ rowData: undefined });
+
+    expect(notifyMain).not.toHaveBeenCalled();
+  });
+});
 
 /**
  * @file GdbBreakpointsWindow.test.tsx
  * @description Source module for GdbBreakpointsWindow.test.
  */
-
 
 /**
  * GdbBreakpointsWindow.test module.

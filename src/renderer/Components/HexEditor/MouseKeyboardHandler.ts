@@ -5,7 +5,7 @@
  * Exported symbols include `MouseEventType`, `MouseCallback`, `MouseKeyboardHandler`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { convertCharValue } from "./common";
-import { ArrayChangeCallback } from "./HexEditor";
+import { ArrayChangeCallback } from "./hex-editor-types";
 import {
   clampIndex,
   getColumnFromIndex,
