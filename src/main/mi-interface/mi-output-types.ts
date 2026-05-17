@@ -18,4 +18,6 @@ export type MiOutputHost = {
   send: (data: string) => void;
   /** Returns true while an -data-evaluate-expression command is outstanding. */
   getEvaluatingExpression: () => boolean;
+  /** Runs each command in the onStopped list through the GDB interface. */
+  runOnStopped: () => void;
 };

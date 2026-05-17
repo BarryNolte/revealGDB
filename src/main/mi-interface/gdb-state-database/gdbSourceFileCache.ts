@@ -84,6 +84,10 @@ export class gdbSourceFileCache extends EventEmitter {
     return srcHtml;
   }
 
+  list(): string[] {
+    return Array.from(this.sourceFiles.keys());
+  }
+
   /**
    * Performs dump as part of this module's public API.
    *

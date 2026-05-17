@@ -43,6 +43,9 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
       this.send(data);
     },
     getEvaluatingExpression: () => this.evaluatingExpression,
+    runOnStopped: () => {
+      this.onStopped.forEach((cmd) => this.runCommand(cmd));
+    },
   });
 
   public onStartup: string[] = ["-list-features", "-data-list-register-names"];
@@ -246,7 +249,7 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
    * @param output - Value for `output` consumed by this operation.
    * @returns A promise that resolves with the computed result after asynchronous processing completes.
    */
-  public parseNotifyAsyncRecord(output: string): Promise<boolean> {
+  public parseNotifyAsyncRecord(output: string): boolean {
     return this.outputProcessor.parseNotifyAsyncRecord(output);
   }
 

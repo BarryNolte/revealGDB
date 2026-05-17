@@ -166,7 +166,7 @@ export class MiOutputProcessor {
         this.parseExecAsyncRecord(output);
         break;
       case "=":
-        await this.parseNotifyAsyncRecord(output);
+        this.parseNotifyAsyncRecord(output);
         break;
       case "+":
         this.parseStatusAsyncRecord(output);
@@ -279,7 +279,7 @@ export class MiOutputProcessor {
    * @param output - Value for `output` consumed by this operation.
    * @returns A promise that resolves with the computed result after asynchronous processing completes.
    */
-  parseNotifyAsyncRecord(output: string): Promise<boolean> {
+  parseNotifyAsyncRecord(output: string): boolean {
     return this.notifyHandler.parseNotifyAsyncRecord(output);
   }
 

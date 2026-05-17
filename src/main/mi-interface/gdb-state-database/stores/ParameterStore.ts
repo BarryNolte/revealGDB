@@ -35,6 +35,10 @@ export class ParameterStore {
     return this.params.get(paramName);
   }
 
+  list(): gdbParams[] {
+    return Array.from(this.params.values());
+  }
+
   /**
    * Clears the operation from managed state.
    *

@@ -43,6 +43,10 @@ export class BreakpointStore {
     this.breakpoints.set(bkpt.number, bkpt);
   }
 
+  list(): gdbBreakpoint[] {
+    return Array.from(this.breakpoints.values());
+  }
+
   /**
    * Removes the operation from managed state.
    *

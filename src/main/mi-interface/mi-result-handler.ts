@@ -47,124 +47,127 @@ export class MiResultRecordHandler {
    */
   async parseResultRecord(output: string): Promise<boolean> {
     const chunks = this.rgxResultRecord.exec(output);
-
     const result = chunks?.groups?.result || "";
     const data = chunks?.groups?.data || "";
 
     switch (result) {
-      case "done": {
-        const resChunks = this.rgxResultList.exec(data);
-
-        const resResult: string = resChunks?.groups?.result || "";
-        const resList: string = resChunks?.groups?.list || "";
-
-        switch (resResult) {
-          case "BreakpointTable": {
-            const bps = resList.matchAll(this.rgxBps);
-            this.host.gdbDB.clearBreakpoints();
-            bps?.forEach((bkpt) => {
-              this.host.gdbDB.createBreakpoint(mapRegexGroupsToBreakpoint(bkpt.groups));
-            });
-
-            sendToRenderer("data-brkpts", this.host.gdbDB.breakpoints);
-            break;
-          }
-          case "features": {
-            const cleanList = this.rgxCleanList.exec(resList)?.groups?.list || "";
-            const features = cleanList.split(",");
-            features.forEach((feature: string) => {
-              this.host.gdbDB.addFeature(feature.replaceAll('"', ""));
-            });
-            break;
-          }
-          case "locals":
-          case "variables": {
-            this.host.gdbDB.parseAndStoreLocals(resList);
-            this.host.gdbDB.localsUpdateUI();
-            break;
-          }
-          case "value": {
-            // Response to -data-evaluate-expression
-            // this.host.emit("log-stream", `^done value=${resList}`);
-            // Strip surrounding quotes GDB wraps around the value string
-            const rawValue = resList.replace(/^"(.*)"$/, "$1");
-            this.host.emit("value-evaluated", rawValue);
-            break;
-          }
-          case "name": {
-            // Response to -var-create
-            this.host.emit(LOG_STREAM, `^done name=${resList}`);
-            break;
-          }
-          case "children": {
-            // Response to -var-list-children
-            this.host.emit(LOG_STREAM, `^done children=${resList}`);
-            break;
-          }
-          case "depth": {
-            // Response to -stack-info-depth
-            this.host.emit(LOG_STREAM, `^done depth=${resList}`);
-            break;
-          }
-          case "changed-registers": {
-            // Response to -data-list-changed-registers
-            this.host.emit(LOG_STREAM, `^done changed-registers=${resList}`);
-            break;
-          }
-          case "": {
-            debugLog("ResultRecord (empty): ARE WE DONE??");
-            break;
-          }
-          default: {
-            const strategy = this.doneResultStrategies.find((doneStrategy) =>
-              doneStrategy.canHandle(resResult),
-            );
-            if (strategy) {
-              await strategy.handle(this.host, output, resList);
-              return true;
-            }
-            console.error(`ResultRecord (Unknown): ${resResult} --> ${resList}`);
-            return false;
-          }
-        }
-        break;
-      }
-      case "running": {
+      case "done":
+        return await this.handleDone(data, output);
+      case "running":
         this.host.emit("gdb-running", data);
         break;
-      }
-      case "connected": {
+      case "connected":
         this.host.emit("gdb-connected", data);
         break;
-      }
-      case "error": {
-        // If an expression evaluation is in-flight, route the error to the dedicated
-        // 'expression-error' event so it resolves the promise without flooding the
-        // command window (e.g. hovering over a type name causes GDB to report an error).
-        if (this.host.getEvaluatingExpression()) {
-          this.host.emit("expression-error");
-          break;
-        }
-        const msgText = this.rgxErrorMsg
-          .exec(data)
-          ?.groups?.msg?.replaceAll('\\"', '"')
-          .replaceAll("\\t", "\t")
-          .split("\\n");
-        if (msgText) {
-          this.host.emit(ERROR_STREAM, msgText);
-        }
+      case "error":
+        this.handleError(data);
         break;
-      }
-      case "exit": {
+      case "exit":
         this.host.emit("gdb-exit", data);
         break;
-      }
       default: {
         console.error(`ResultRecord (Unknown): ${result} --> ${data}`);
         return false;
       }
     }
-
     return true;
+  }
+
+  private async handleDone(data: string, output: string): Promise<boolean> {
+    const resChunks = this.rgxResultList.exec(data);
+    const resResult: string = resChunks?.groups?.result || "";
+    const resList: string = resChunks?.groups?.list || "";
+
+    switch (resResult) {
+      case "BreakpointTable":
+        this.handleBreakpointTable(resList);
+        break;
+      case "new-thread-id":
+        this.host.runOnStopped();
+        break;
+      case "features":
+        this.handleFeatures(resList);
+        break;
+      case "locals":
+      case "variables":
+        this.host.gdbDB.parseAndStoreLocals(resList);
+        this.host.gdbDB.localsUpdateUI();
+        break;
+      case "value": {
+        // Response to -data-evaluate-expression; strip surrounding quotes GDB wraps around the value string
+        const rawValue = resList.replace(/^"(.*)"$/, "$1");
+        this.host.emit("value-evaluated", rawValue);
+        break;
+      }
+      case "":
+        debugLog("ResultRecord (empty): ARE WE DONE??");
+        break;
+      default:
+        return await this.handleDoneDefault(resResult, resList, output);
+    }
+    return true;
+  }
+
+  // Responses to -var-create, -var-list-children, -stack-info-depth, -data-list-changed-registers
+  private static readonly LOG_RESULT_NAMES = new Set([
+    "name",
+    "children",
+    "depth",
+    "changed-registers",
+  ]);
+
+  private handleBreakpointTable(resList: string): void {
+    const bps = resList.matchAll(this.rgxBps);
+    this.host.gdbDB.clearBreakpoints();
+    bps?.forEach((bkpt) => {
+      this.host.gdbDB.createBreakpoint(mapRegexGroupsToBreakpoint(bkpt.groups));
+    });
+    sendToRenderer("data-brkpts", this.host.gdbDB.breakpoints);
+  }
+
+  private handleFeatures(resList: string): void {
+    const cleanList = this.rgxCleanList.exec(resList)?.groups?.list || "";
+    const features = cleanList.split(",");
+    features.forEach((feature: string) => {
+      this.host.gdbDB.addFeature(feature.replaceAll('"', ""));
+    });
+  }
+
+  private async handleDoneDefault(
+    resResult: string,
+    resList: string,
+    output: string,
+  ): Promise<boolean> {
+    if (MiResultRecordHandler.LOG_RESULT_NAMES.has(resResult)) {
+      this.host.emit(LOG_STREAM, `^done ${resResult}=${resList}`);
+      return true;
+    }
+    const strategy = this.doneResultStrategies.find((doneStrategy) =>
+      doneStrategy.canHandle(resResult),
+    );
+    if (strategy) {
+      await strategy.handle(this.host, output, resList);
+      return true;
+    }
+    console.error(`ResultRecord (Unknown): ${resResult} --> ${resList}`);
+    return false;
+  }
+
+  private handleError(data: string): void {
+    // If an expression evaluation is in-flight, route the error to the dedicated
+    // 'expression-error' event so it resolves the promise without flooding the
+    // command window (e.g. hovering over a type name causes GDB to report an error).
+    if (this.host.getEvaluatingExpression()) {
+      this.host.emit("expression-error");
+      return;
+    }
+    const msgText = this.rgxErrorMsg
+      .exec(data)
+      ?.groups?.msg?.replaceAll('\\"', '"')
+      .replaceAll("\\t", "\t")
+      .split("\\n");
+    if (msgText) {
+      this.host.emit(ERROR_STREAM, msgText);
+    }
   }
 }

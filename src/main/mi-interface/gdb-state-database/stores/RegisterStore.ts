@@ -54,6 +54,10 @@ export class RegisterStore {
     return this.registers.get(index);
   }
 
+  list(): gdbRegisters[] {
+    return Array.from(this.registers.values());
+  }
+
   /**
    * Clears the operation from managed state.
    *

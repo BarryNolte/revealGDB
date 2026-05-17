@@ -85,6 +85,10 @@ export class ThreadGroupStore {
     this.threadGroups.get(groupId)?.threads.set(threadId, threadId);
   }
 
+  list(): gdbThreadGroup[] {
+    return Array.from(this.threadGroups.values());
+  }
+
   /**
    * Clears the operation from managed state.
    *

@@ -54,24 +54,6 @@ export class HTMLTableGenerator<Row extends Record<string, GdbAny> & Record<stri
     if (typeof options !== "object") {
       throw new Error("Options must be an object");
     }
-
-    // const requiredOptions: (keyof TableOptions)[] = [
-    //   "titleHeaderBgColor",
-    //   "titleTextColor",
-    //   "headerBgColor",
-    //   "headerTextColor",
-    //   "tdPadding",
-    //   "tdFontWeight",
-    //   "tdColor",
-    //   "tableWidth",
-    //   "showTableHeader",
-    // ];
-
-    // for (const option of requiredOptions) {
-    //   if (typeof options[option] !== "string") {
-    //     throw new Error(`Option "${option}" must be a string`);
-    //   }
-    // }
   }
 
   createTableHTML(): string {
@@ -91,11 +73,11 @@ export class HTMLTableGenerator<Row extends Record<string, GdbAny> & Record<stri
     let theader = "";
     if (showTableHeader) {
       theader = /*html*/ `
-        <tr style="background-color: ${headerBgColor}; text-align: center;">
+        <tr style="background-color: ${headerBgColor}; text-align: left;">
           ${header
             .map(
               (text) =>
-                /*html*/ `<th style="border: 2px solid ${headerBgColor}; padding: ${tdPadding}; color: ${headerTextColor};">${text}</th>`,
+                /*html*/ `<th style="border: 2px solid ${headerBgColor}; padding: ${tdPadding}; color: ${headerTextColor}; text-align: left;">${text}</th>`,
             )
             .join("")}
         </tr>`;
@@ -117,7 +99,7 @@ export class HTMLTableGenerator<Row extends Record<string, GdbAny> & Record<stri
         }
 
         return /*html*/ `
-          <tr style="background-color: #fff; text-align: center;">
+          <tr style="background-color: #fff; text-align: left;">
             ${header
               .map((col) => {
                 const cellValue = row[col];

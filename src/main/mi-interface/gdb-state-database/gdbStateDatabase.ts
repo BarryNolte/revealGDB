@@ -346,6 +346,7 @@ export class gdbStateDatabase extends EventEmitter {
   clearBreakpoints(): void {
     this.breakpointStore.clear();
   }
+
   /**
    * Creates breakpoint for downstream use.
    *
@@ -357,6 +358,7 @@ export class gdbStateDatabase extends EventEmitter {
   createBreakpoint(bkpt: gdbBreakpoint): void {
     this.breakpointStore.create(bkpt);
   }
+
   /**
    * Updates breakpoint using supplied inputs.
    *
@@ -368,6 +370,7 @@ export class gdbStateDatabase extends EventEmitter {
   updateBreakpoint(bkpt: gdbBreakpoint): void {
     this.breakpointStore.update(bkpt);
   }
+
   /**
    * Removes breakpoint from managed state.
    *
@@ -379,6 +382,11 @@ export class gdbStateDatabase extends EventEmitter {
   deleteBreakpoint(id: string): void {
     this.breakpointStore.delete(id);
   }
+
+  breakpointList(): gdbBreakpoint[] {
+    return this.breakpointStore.list();
+  }
+
   /**
    * Performs breakpoints update ui as part of this module's public API.
    *
@@ -413,6 +421,10 @@ export class gdbStateDatabase extends EventEmitter {
    */
   getParam(paramName: string): gdbParams | undefined {
     return this.paramStore.get(paramName);
+  }
+
+  paramList(): gdbParams[] {
+    return this.paramStore.list();
   }
 
   // Features
@@ -499,6 +511,11 @@ export class gdbStateDatabase extends EventEmitter {
   getRegister(index: string): gdbRegisters | undefined {
     return this.registerStore.get(index);
   }
+
+  registerList(): gdbRegisters[] {
+    return this.registerStore.list();
+  }
+
   /**
    * Performs registers update ui as part of this module's public API.
    *

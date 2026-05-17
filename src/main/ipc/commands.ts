@@ -2,18 +2,16 @@
  * Defines commands IPC handlers that bridge renderer requests to main-process behavior.
  *
  * @remarks
- * Exported symbols include `onGdbCommand`, `handleNotifyMain`, `registerIpcCommandHandlers`. It is responsible for channel registration, payload marshalling, and returning data to renderer callers.
+ * Exported symbols include `handleNotifyMain`, `registerIpcCommandHandlers`. It is responsible for channel registration, payload marshalling, and returning data to renderer callers.
  */
-import { screen, shell } from "electron";
+import { shell } from "electron";
 import { GdbAny, SelectedConnection } from "../../common/gdb-common";
 import { GridColumnState, GridName } from "../../common/grid-column-types";
-import { HTMLTableGenerator } from "../../common/HtmlTableGenerator";
 import { IPC_CHANNELS, NotifyMainRequest, NotifyRenderMessage } from "../../common/ipc-contracts";
 import { mapElectronWindowToWinPos } from "../mappers/window-pos-mapper";
 import { setNativeThemeFromAppTheme } from "../theme-support";
-import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
 import { debugLog } from "../utilities/logger";
-import { WslUtilities } from "../utilities/wsl-utilities";
+import { onGdbCommand } from "./on-gdb-command";
 import { IpcRegistrationContext } from "./types";
 
 const DEBUGGER_DISCONNECTED_BANNER = "".padStart(51, "*"); //" "***************************************************";
@@ -70,99 +68,6 @@ function doConnection(
   sendNotifyRender(context, {
     command: connected ? "connection-success" : "connection-failed",
   });
-}
-
-/**
- * Performs on gdb command as part of this module's public API.
- *
- * @remarks
- * Participates in main-process IPC wiring between renderer requests and backend services.
- *
- * @param command - Debugger command text or command descriptor to execute.
- * @param context - Dependency container used to register handlers and access shared services.
- */
-export function onGdbCommand(command: string, context: IpcRegistrationContext): void {
-  const gdbInterface = context.getGdbInterface();
-  const defaultOptions = {
-    titleHeaderBgColor: "blue",
-    titleTextColor: "yellow",
-    headerBgColor: "green",
-    headerTextColor: "yellow",
-    tdPadding: "2px",
-    tdFontWeight: "bold",
-    tdColor: "#000000",
-    tableWidth: "auto",
-    showTableHeader: false,
-  };
-
-  if (command.startsWith(".")) {
-    const cmdrgx = /.(?<cmd>.*)/.exec(command);
-    const cmd = cmdrgx?.groups?.cmd || "";
-    switch (cmd) {
-      case "db":
-        {
-          GeneralInfoSender.instance.addHeader("GDB State Database Dump");
-          gdbInterface.gdbDB.dump().forEach((line) => GeneralInfoSender.instance.addLine(line));
-          GeneralInfoSender.instance.sendOutput();
-        }
-        break;
-      case "debug":
-        {
-          GeneralInfoSender.instance.addHeader("Breaking into Debugger");
-          GeneralInfoSender.instance.sendOutput();
-          // eslint-disable-next-line no-debugger
-          debugger;
-        }
-        break;
-      case "wsl":
-        {
-          const distros = WslUtilities.getWslDistributions();
-          const distroData = {
-            title: "WSL Distros",
-            header: ["default", "name", "version", "state"],
-            content: distros.map((d) => ({
-              default: d.default === true ? "*" : "",
-              name: d.name,
-              version: d.version,
-              state: d.state,
-            })),
-          };
-          const distroOptions = { ...defaultOptions, showTableHeader: true };
-          const distroTable = new HTMLTableGenerator(distroData, distroOptions);
-          const distroHtml = distroTable.createTableHTML();
-          GeneralInfoSender.instance.sendHtmlBlock(distroHtml);
-
-          const sports = WslUtilities.getWslSerialPorts();
-          const spData = {
-            title: "WSL Serial Ports",
-            header: ["col"],
-            content: sports.map((s) => ({ col: s })),
-          };
-
-          const spTable = new HTMLTableGenerator(spData, defaultOptions);
-          const spHtml = spTable.createTableHTML();
-          GeneralInfoSender.instance.sendHtmlBlock(spHtml);
-        }
-        break;
-      case "screen":
-        {
-          const allDisplays = screen.getAllDisplays();
-          GeneralInfoSender.instance.addHeader("Main Window Screen Info");
-
-          // Open a full-size window on each screen available to the device
-          for (const display of allDisplays) {
-            GeneralInfoSender.instance.addLine(`Screen: ${display.id}`);
-            GeneralInfoSender.instance.addLine(`  Bounds: ${JSON.stringify(display.bounds)}`);
-            GeneralInfoSender.instance.addLine(`  Work Area: ${JSON.stringify(display.workArea)}`);
-            GeneralInfoSender.instance.addLine(`  Scale Factor: ${display.scaleFactor}`);
-          }
-          GeneralInfoSender.instance.sendOutput();
-        }
-        break;
-    }
-  } else {
-    gdbInterface.runCommand(command);
-  }
 }
 
 const GDB_GUI_PREFIX = "gdb.gui.";
