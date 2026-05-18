@@ -4,6 +4,7 @@
  * @remarks
  * Exported symbols include `GdbBreakPointWindow`. It coordinates live debugger data with user interactions in docked tool-window views.
  */
+import { ButtonComponent, CheckBoxComponent } from "@syncfusion/ej2-react-buttons";
 import {
   ColumnDirective,
   ColumnMenu,
@@ -19,9 +20,16 @@ import {
   Resize,
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
-import { JSX, MouseEvent as ReactMouseEvent, RefObject, useEffect, useRef, useState } from "react";
+import {
+  JSX,
+  MouseEvent as ReactMouseEvent,
+  RefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { gdbBreakpoint } from "../../common/gdb-state-types";
-import { ButtonComponent, CheckBoxComponent } from "@syncfusion/ej2-react-buttons";
 import imgDelete from "../icons/icons8-delete-48.png";
 import { BreakpointGridRow, mapBreakpointsToGridRows } from "../mappers/grid-data-mappers";
 import { useGridColumnState } from "../utilities/useGridColumnState";
@@ -95,13 +103,20 @@ function handleRecordDoubleClick(e: RecordDoubleClickEventArgs): void {
   }
 }
 
-function useBreakpointData(gridRef: RefObject<GridComponent | null>): BreakpointGridRow[] {
+function useBreakpointData(gridRef: RefObject<GridComponent | null>): {
+  breakpointData: BreakpointGridRow[];
+  onGridCreated: () => void;
+} {
   const [breakpointData, setBreakpointData] = useState<BreakpointGridRow[]>([]);
+  // Tracks the latest data so the created handler can access it without a stale closure
+  const latestDataRef = useRef<BreakpointGridRow[]>([]);
 
   useEffect(() => {
     const unsubscribe = window.ipcToMain.debuggerData.breakpoints(
       (data: Map<string, gdbBreakpoint>) => {
-        setBreakpointData(mapBreakpointsToGridRows(data));
+        const rows = mapBreakpointsToGridRows(data);
+        latestDataRef.current = rows;
+        setBreakpointData(rows);
       },
     );
     return () => {
@@ -109,15 +124,33 @@ function useBreakpointData(gridRef: RefObject<GridComponent | null>): Breakpoint
     };
   }, []);
 
+  // When data becomes empty, explicitly set the Syncfusion DataManager to []
+  // and call dataBind() to force a re-render of the row area.
+  // This runs after React's commit phase, guaranteeing componentDidUpdate has
+  // already fired, so the assignment overrides any in-flight async dataBind.
+  // Note: refresh() is intentionally NOT used here — it only repaints UI chrome
+  // (header/filter bar) and does not re-process data.
   useEffect(() => {
-    if (breakpointData.length === 0) {
-      setTimeout(() => {
-        gridRef.current?.refresh();
-      }, 350);
-    }
+    if (breakpointData.length !== 0) return;
+    const grid = gridRef.current;
+    if (!grid) return;
+    grid.dataSource = [];
+    grid.dataBind();
   }, [breakpointData, gridRef]);
 
-  return breakpointData;
+  // Handle the initialization race: if IPC messages arrive while Syncfusion is
+  // still running componentDidMount, the empty-array update can be dropped
+  // before the grid's data pipeline is ready.  The created event fires once
+  // initialization is complete, at which point we enforce the current state.
+  const onGridCreated = useCallback(() => {
+    if (latestDataRef.current.length !== 0) return;
+    const grid = gridRef.current;
+    if (!grid) return;
+    grid.dataSource = [];
+    grid.dataBind();
+  }, [gridRef]);
+
+  return { breakpointData, onGridCreated };
 }
 
 function breakpointColumnDefinitions(): JSX.Element {
@@ -171,7 +204,7 @@ function breakpointColumnDefinitions(): JSX.Element {
  */
 export default function GdbBreakPointWindow(): JSX.Element {
   const gridRef = useRef<GridComponent | null>(null);
-  const breakpointData = useBreakpointData(gridRef);
+  const { breakpointData, onGridCreated } = useBreakpointData(gridRef);
   useGridColumnState("breakpoints", gridRef);
 
   return (
@@ -197,6 +230,7 @@ export default function GdbBreakPointWindow(): JSX.Element {
           gridLines="Both"
           actionBegin={onAction}
           recordDoubleClick={handleRecordDoubleClick}
+          created={onGridCreated}
         >
           {breakpointColumnDefinitions()}
           <Inject services={[Resize, Reorder, ColumnMenu, ContextMenu]} />

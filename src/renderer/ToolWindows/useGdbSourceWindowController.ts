@@ -14,7 +14,7 @@ import AceEditor from "react-ace";
 import { gdbBreakpoint, gdbShowSourceInfo, gdbStackFrame } from "../../common/gdb-state-types";
 import { dockMenuConnector } from "../utilities/dock-menu-state";
 import { DISASM_FUNCTION } from "../utilities/renderer-events";
-import { formatGdbValueHtml, isComplexValue } from "./gdb-value-formatter";
+import { escapeHtml, formatGdbValueHtml, isComplexValue } from "./gdb-value-formatter";
 import { configureAceBasePath, defaultMode, editorModes } from "./GdbSourceEditorConfig";
 import {
   SourceWindowState,
@@ -96,7 +96,7 @@ export function buildTooltipHtml(
       `<span class="tip-name">${name}</span><span class="tip-eq"> = </span>` +
       formatGdbValueHtml(value);
   } else {
-    valueLine = `<span class="tip-name">${name}</span><span class="tip-eq"> = </span><span class="tip-value">${value}</span>`;
+    valueLine = `<span class="tip-name">${name}</span><span class="tip-eq"> = </span><span class="tip-value">${escapeHtml(value)}</span>`;
   }
   const typeLine = typeName ? `<div class="tip-type">${typeName}</div>` : "";
   return `${valueLine}${typeLine}`;

@@ -1,3 +1,5 @@
+import { escapeHtml } from "../../../renderer/ToolWindows/gdb-value-formatter";
+
 /**
  * Implements gdb locals logic for processing GDB/MI output and debugger state transitions.
  *
@@ -124,7 +126,7 @@ export class LocalsContainer {
       const value = this.cleanValue(rr.groups?.value ?? "");
 
       const parser = this.valueParsers[this.getValueType(value)];
-      this.locals.push(parser(name, value));
+      this.locals.push(parser(name, escapeHtml(value)));
     });
   }
 
