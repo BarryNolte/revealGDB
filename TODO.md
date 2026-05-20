@@ -1,5 +1,4 @@
 # Priority Items
-- Clean up debugger 'dot' commands
 
 # Documentation
 - Quick Start Guide

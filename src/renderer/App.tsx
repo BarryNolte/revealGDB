@@ -15,6 +15,7 @@ import { setAppMainVersionInfo } from "./utilities/app-version-state";
 import type { AboutBoxHandle } from "./Dialogs/AboutBox";
 import type { WhileConnectingDialogHandle } from "./Dialogs/ConnectionDialog.jsx";
 import type { ConnectionManagerHandle } from "./Dialogs/ConnectionManager";
+import type { SectionsViewHandle } from "./Dialogs/SectionsView";
 
 /* Tool Windows */
 import RevealToolbar from "./Components/Toolbar.jsx";
@@ -46,6 +47,11 @@ const ConnectionManager = lazy(() =>
 const ConnectionDialog = lazy(() =>
   import("./Dialogs/ConnectionDialog.js").then((module) => ({
     default: module.ConnectionDialog as unknown as () => JSX.Element,
+  })),
+) as GdbAny;
+const SectionsView = lazy(() =>
+  import("./Dialogs/SectionsView.js").then((module) => ({
+    default: module.SectionsView as unknown as () => JSX.Element,
   })),
 ) as GdbAny;
 /**
@@ -118,6 +124,305 @@ import iconThread from "./icons/icons8-thread-48.png?asset";
  * Populated asynchronously from the main process and displayed in the About dialog.
  */
 
+function handleResize(): void {
+  if (!dockMenuConnector) {
+    return;
+  }
+  const divDockManager = document.getElementById("revealDockDiv")!;
+  dockManager.resize(
+    window.innerWidth - (divDockManager.clientLeft + divDockManager.offsetLeft),
+    window.innerHeight - (divDockManager.clientTop + divDockManager.offsetTop),
+  );
+  window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
+}
+
+function handleAppChange(e: Event): void {
+  const detail = (e as CustomEvent).detail;
+  if (detail?.theme) {
+    applyTheme(detail.theme as AppTheme);
+  }
+}
+
+function setupLayoutListeners(dm: DockManager): void {
+  dm.addLayoutListener({
+    onContainerResized: () => {
+      window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
+      window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
+    },
+    onTabChanged: () => {
+      window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
+      window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
+    },
+  });
+}
+
+function registerAllPanels(connector: DockMenuConnector): void {
+  connector.registerPanel(
+    "sourceWindow",
+    TOOL_WINDOW_TITLES.source,
+    "Source Code Window",
+    "wm-source",
+  );
+  connector.registerPanel(
+    "localsWindow",
+    TOOL_WINDOW_TITLES.locals,
+    "Locals Variable Window",
+    "wm-locals",
+  );
+  connector.registerPanel(
+    "threadsWindow",
+    TOOL_WINDOW_TITLES.threads,
+    "Threads Window",
+    "wm-thread",
+  );
+  connector.registerPanel(
+    "callstackWindow",
+    TOOL_WINDOW_TITLES.callstack,
+    "Call Stack Window",
+    "wm-stack",
+  );
+  connector.registerPanel("memoryWindow", TOOL_WINDOW_TITLES.memory, "Memory Window", "wm-hex");
+  connector.registerPanel(
+    "bpWindow",
+    TOOL_WINDOW_TITLES.breakpoints,
+    "Breakpoints Window",
+    "wm-bp",
+  );
+  connector.registerPanel(
+    "registersWindow",
+    TOOL_WINDOW_TITLES.registers,
+    "Registers Window",
+    "wm-registers",
+  );
+  connector.registerPanel(
+    "disassemblyWindow",
+    TOOL_WINDOW_TITLES.disassembly,
+    "Disassembly Window",
+    "wm-disasm",
+  );
+  connector.registerPanel(
+    "commandWindow",
+    TOOL_WINDOW_TITLES.command,
+    "GDB Command Window",
+    "wm-command",
+  );
+}
+
+function createDefaultLayout(dm: DockManager, connector: DockMenuConnector): void {
+  if (!connector) return;
+  connector.createAllWindows();
+  const documentNode = dm.context.model.documentManagerNode;
+  const srcNode = dm.dockFill(
+    documentNode,
+    connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.source),
+  );
+  const cmdNode = dm.dockRight(
+    srcNode,
+    connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.command),
+    0.5,
+  );
+  const localsNode = dm.dockUp(
+    cmdNode,
+    connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.locals),
+    0.5,
+  );
+  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.threads));
+  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.callstack));
+  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.memory));
+  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.breakpoints));
+  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.registers));
+  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.disassembly));
+}
+
+async function initializeDockManager(gdb: GdbAny): Promise<void> {
+  const dockManagerElement = document.getElementById("revealDockManager")!;
+  dockManager = new DockManager(dockManagerElement);
+  dockManager.config.dialogRootElement = dockManagerElement;
+  dockManager.config.enableBrowserWindows = false;
+  dockManager.initialize();
+  setDockMenuConnector(new DockMenuConnector(dockManager));
+  if (!dockMenuConnector) {
+    console.error("Failed to initialize DockMenuConnector");
+    return;
+  }
+  registerAllPanels(dockMenuConnector);
+  setupLayoutListeners(dockManager);
+  let loadedFromState = false;
+  if (gdb.gui.dockLayout) {
+    try {
+      // loadState is async in dock-spawn-ts; must await before resizing or
+      // all panels stay hidden (resize fires before deserialization completes).
+      await dockManager.loadState(JSON.stringify(gdb.gui.dockLayout));
+      loadedFromState = true;
+    } catch (e) {
+      // Saved layout is corrupt or incompatible — fall through to default layout.
+      console.warn("dock-spawn-ts: failed to restore saved layout, using default", e);
+    }
+  }
+  if (!loadedFromState) {
+    createDefaultLayout(dockManager, dockMenuConnector);
+  }
+  dockMenuConnector.reconsilePanels();
+  window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
+  // Trigger initial sizing only after dock manager exists.
+  window.dispatchEvent(new Event("resize"));
+}
+
+function PrimaryToolWindows(): JSX.Element {
+  return (
+    <>
+      <div
+        id="sourceWindow"
+        data-panel-caption={TOOL_WINDOW_TITLES.source}
+        hidden={true}
+        data-panel-icon={iconSrc}
+      >
+        <DeferredWindow title={TOOL_WINDOW_TITLES.source}>
+          <GdbSourceWindow />
+        </DeferredWindow>
+      </div>
+      <div
+        id="localsWindow"
+        data-panel-caption={TOOL_WINDOW_TITLES.locals}
+        hidden={true}
+        data-panel-icon={iconLocal}
+      >
+        <DeferredWindow title={TOOL_WINDOW_TITLES.locals}>
+          <GdbLocalsWindow />
+        </DeferredWindow>
+      </div>
+      <div
+        id="threadsWindow"
+        data-panel-caption={TOOL_WINDOW_TITLES.threads}
+        data-panel-icon={iconThread}
+        hidden={true}
+      >
+        <DeferredWindow title={TOOL_WINDOW_TITLES.threads}>
+          <GdbThreadsWindow />
+        </DeferredWindow>
+      </div>
+      <div
+        id="registersWindow"
+        data-panel-caption={TOOL_WINDOW_TITLES.registers}
+        hidden={true}
+        data-panel-icon={iconRegister}
+      >
+        <DeferredWindow title={TOOL_WINDOW_TITLES.registers}>
+          <GdbRegistersWindow />
+        </DeferredWindow>
+      </div>
+    </>
+  );
+}
+
+function SecondaryToolWindows(): JSX.Element {
+  return (
+    <>
+      <div
+        id="disassemblyWindow"
+        data-panel-caption={TOOL_WINDOW_TITLES.disassembly}
+        hidden={true}
+        data-panel-icon={iconDisa}
+      >
+        <DeferredWindow title={TOOL_WINDOW_TITLES.disassembly}>
+          <GdbDisassemblerWindow />
+        </DeferredWindow>
+      </div>
+      <div
+        id="commandWindow"
+        data-panel-caption={TOOL_WINDOW_TITLES.command}
+        hidden={true}
+        data-panel-icon={iconCmd}
+      >
+        <DeferredWindow title={TOOL_WINDOW_TITLES.command}>
+          <GdbCommandWindow />
+        </DeferredWindow>
+      </div>
+      <div
+        id="memoryWindow"
+        data-panel-caption={TOOL_WINDOW_TITLES.memory}
+        hidden={true}
+        data-panel-icon={iconHex}
+      >
+        <DeferredWindow title={TOOL_WINDOW_TITLES.memory}>
+          <GdbMemoryWindow />
+        </DeferredWindow>
+      </div>
+      <div
+        id="callstackWindow"
+        data-panel-caption={TOOL_WINDOW_TITLES.callstack}
+        hidden={true}
+        data-panel-icon={iconStack}
+      >
+        <DeferredWindow title={TOOL_WINDOW_TITLES.callstack}>
+          <GdbCallStackWindow />
+        </DeferredWindow>
+      </div>
+      <div
+        id="bpWindow"
+        data-panel-caption={TOOL_WINDOW_TITLES.breakpoints}
+        hidden={true}
+        data-panel-icon={iconBp}
+      >
+        <DeferredWindow title={TOOL_WINDOW_TITLES.breakpoints}>
+          <GdbBreakPointWindow />
+        </DeferredWindow>
+      </div>
+    </>
+  );
+}
+
+function DockLayout(): JSX.Element {
+  return (
+    <div id="revealDockDiv" className="full-size">
+      <div id="revealDockManager" className="revealDockManager"></div>
+      <ToolWindowsHostErrorBoundary>
+        <PrimaryToolWindows />
+        <SecondaryToolWindows />
+      </ToolWindowsHostErrorBoundary>
+    </div>
+  );
+}
+
+interface AppDialogsProps {
+  aboutBoxRef: RefObject<AboutBoxHandle | null>;
+  settingsRef: RefObject<SettingsHandle | null>;
+  connectionsRef: RefObject<ConnectionManagerHandle | null>;
+  whileConnectingRef: RefObject<WhileConnectingDialogHandle | null>;
+  sectionsViewRef: RefObject<SectionsViewHandle | null>;
+}
+
+function AppDialogs({
+  aboutBoxRef,
+  settingsRef,
+  connectionsRef,
+  whileConnectingRef,
+  sectionsViewRef,
+}: AppDialogsProps): JSX.Element {
+  return (
+    <>
+      <Suspense fallback={null}>
+        <AboutBox ref={aboutBoxRef} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <Settings ref={settingsRef} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <ConnectionManager ref={connectionsRef} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <ConnectionDialog
+          ref={whileConnectingRef}
+          connectionsRef={connectionsRef as RefObject<ConnectionManagerHandle>}
+        />
+      </Suspense>
+      <Suspense fallback={null}>
+        <SectionsView ref={sectionsViewRef} />
+      </Suspense>
+    </>
+  );
+}
+
 /**
  * Performs app as part of this module's public API.
  *
@@ -132,6 +437,7 @@ export default function App(): JSX.Element {
   const settingsRef = useRef<SettingsHandle>(null);
   const connectionsRef = useRef<ConnectionManagerHandle>(null);
   const whileConnectingRef = useRef<WhileConnectingDialogHandle>(null);
+  const sectionsViewRef = useRef<SectionsViewHandle>(null);
 
   useEffect(() => {
     window.ipcToMain.queries.app.getVersionInfo().then((e) => {
@@ -153,193 +459,20 @@ export default function App(): JSX.Element {
         case "settings-dialog":
           settingsRef.current?.ShowDialog();
           break;
+        case "sections-view":
+          sectionsViewRef.current?.ShowDialog();
+          break;
       }
     });
-
-    /**
-     * Performs initialize dock manager as part of this module's internal workflow.
-     *
-     * @remarks
-     * Includes explicit error-handling logic for expected failure paths. Performs asynchronous work and should be used with completion ordering in mind.
-     *
-     * @param gdb - Value for `gdb` consumed by this operation.
-     * @returns A promise that resolves with the computed result after asynchronous processing completes.
-     */
-    const initializeDockManager = async (gdb: GdbAny): Promise<void> => {
-      // Initialize the dock manager system
-      const dockManagerElement = document.getElementById("revealDockManager")!;
-      dockManager = new DockManager(dockManagerElement);
-      dockManager.config.dialogRootElement = dockManagerElement;
-      dockManager.config.enableBrowserWindows = false;
-      dockManager.initialize();
-
-      // Create connector to manage panel registration and menu integration
-      setDockMenuConnector(new DockMenuConnector(dockManager));
-
-      if (!dockMenuConnector) {
-        console.error("Failed to initialize DockMenuConnector");
-        return;
-      }
-
-      // Register all tool windows with the dock system
-      // Parameters: elementId, displayName, title, iconClass
-      dockMenuConnector.registerPanel(
-        "sourceWindow",
-        TOOL_WINDOW_TITLES.source,
-        "Source Code Window",
-        "wm-source",
-      );
-      dockMenuConnector.registerPanel(
-        "localsWindow",
-        TOOL_WINDOW_TITLES.locals,
-        "Locals Variable Window",
-        "wm-locals",
-      );
-      dockMenuConnector.registerPanel(
-        "threadsWindow",
-        TOOL_WINDOW_TITLES.threads,
-        "Threads Window",
-        "wm-thread",
-      );
-      dockMenuConnector.registerPanel(
-        "callstackWindow",
-        TOOL_WINDOW_TITLES.callstack,
-        "Call Stack Window",
-        "wm-stack",
-      );
-      dockMenuConnector.registerPanel(
-        "memoryWindow",
-        TOOL_WINDOW_TITLES.memory,
-        "Memory Window",
-        "wm-hex",
-      );
-      dockMenuConnector.registerPanel(
-        "bpWindow",
-        TOOL_WINDOW_TITLES.breakpoints,
-        "Breakpoints Window",
-        "wm-bp",
-      );
-      dockMenuConnector.registerPanel(
-        "registersWindow",
-        TOOL_WINDOW_TITLES.registers,
-        "Registers Window",
-        "wm-registers",
-      );
-      dockMenuConnector.registerPanel(
-        "disassemblyWindow",
-        TOOL_WINDOW_TITLES.disassembly,
-        "Disassembly Window",
-        "wm-disasm",
-      );
-
-      dockMenuConnector.registerPanel(
-        "commandWindow",
-        TOOL_WINDOW_TITLES.command,
-        "GDB Command Window",
-        "wm-command",
-      );
-
-      // Listen for docking layout changes to trigger saves and UI updates
-      dockManager.addLayoutListener({
-        onContainerResized: () => {
-          window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
-          window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
-        },
-        onTabChanged: () => {
-          window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
-          window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
-        },
-      });
-
-      // Load saved layout or create default layout
-      let loadedFromState = false;
-      if (gdb.gui.dockLayout) {
-        try {
-          // loadState is async in dock-spawn-ts; must await before resizing or
-          // all panels stay hidden (resize fires before deserialization completes).
-          await dockManager.loadState(JSON.stringify(gdb.gui.dockLayout));
-          loadedFromState = true;
-        } catch (e) {
-          // Saved layout is corrupt or incompatible — fall through to default layout.
-          console.warn("dock-spawn-ts: failed to restore saved layout, using default", e);
-        }
-      }
-      if (!loadedFromState) {
-        // Create default layout for first-time use
-        const documentNode = dockManager.context.model.documentManagerNode;
-
-        if (!dockMenuConnector) return;
-
-        dockMenuConnector.createAllWindows();
-
-        const srcNode = dockManager.dockFill(
-          documentNode,
-          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.source),
-        );
-        const cmdNode = dockManager.dockRight(
-          srcNode,
-          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.command),
-          0.5,
-        );
-        const localsNode = dockManager.dockUp(
-          cmdNode,
-          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.locals),
-          0.5,
-        );
-        dockManager.dockFill(
-          localsNode,
-          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.threads),
-        );
-        dockManager.dockFill(
-          localsNode,
-          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.callstack),
-        );
-        dockManager.dockFill(
-          localsNode,
-          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.memory),
-        );
-        dockManager.dockFill(
-          localsNode,
-          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.breakpoints),
-        );
-        dockManager.dockFill(
-          localsNode,
-          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.registers),
-        );
-        dockManager.dockFill(
-          localsNode,
-          dockMenuConnector.getPanelByDisplayName(TOOL_WINDOW_TITLES.disassembly),
-        );
-      }
-      // Synchronize panel state and trigger toolbar window list update
-      dockMenuConnector.reconsilePanels();
-      window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
-
-      // Trigger initial sizing only after dock manager exists.
-      window.dispatchEvent(new Event("resize"));
-    };
 
     // Load settings first so dock initialization can avoid race conditions.
     window.ipcToMain.queries.app.getSettings().then(async (gdb: GdbAny): Promise<void> => {
       // Apply saved theme before dock layout renders
       const savedTheme: AppTheme = gdb.gui?.applicationTheme ?? "Auto";
       applyTheme(savedTheme);
-
       await initializeDockManager(gdb);
     });
 
-    // Handle live theme changes from the settings dialog
-    /**
-     * Performs handle app change as part of this module's internal workflow.
-     *
-     * @param e - Value for `e` consumed by this operation.
-     */
-    const handleAppChange = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (detail?.theme) {
-        applyTheme(detail.theme as AppTheme);
-      }
-    };
     window.addEventListener("changeApplication", handleAppChange);
 
     // Handle OS theme changes pushed from the main process (Auto mode)
@@ -353,29 +486,8 @@ export default function App(): JSX.Element {
       });
     });
 
-    // Handle window resize events to adjust dock layout
-    /**
-     * Performs handle resize as part of this module's internal workflow.
-     */
-    const handleResize = () => {
-      if (!dockMenuConnector) {
-        return;
-      }
-
-      const divDockManager = document.getElementById("revealDockDiv")!;
-
-      dockManager.resize(
-        window.innerWidth - (divDockManager.clientLeft + divDockManager.offsetLeft),
-        window.innerHeight - (divDockManager.clientTop + divDockManager.offsetTop),
-      );
-      window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
-    };
-
     window.addEventListener("resize", handleResize);
-
     dockMenuConnector?.reconsilePanels();
-
-    // Trigger initial window list update
     window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
 
     // Cleanup function: remove event listeners on unmount
@@ -393,116 +505,14 @@ export default function App(): JSX.Element {
         whileConnectingRef={whileConnectingRef as RefObject<WhileConnectingDialogHandle>}
         settingsRef={settingsRef as RefObject<SettingsHandle>}
       />
-      <div id="revealDockDiv" className="full-size">
-        <div id="revealDockManager" className="revealDockManager"></div>
-        <ToolWindowsHostErrorBoundary>
-          <div
-            id="sourceWindow"
-            data-panel-caption={TOOL_WINDOW_TITLES.source}
-            hidden={true}
-            data-panel-icon={iconSrc}
-          >
-            <DeferredWindow title={TOOL_WINDOW_TITLES.source}>
-              <GdbSourceWindow />
-            </DeferredWindow>
-          </div>
-          <div
-            id="localsWindow"
-            data-panel-caption={TOOL_WINDOW_TITLES.locals}
-            hidden={true}
-            data-panel-icon={iconLocal}
-          >
-            <DeferredWindow title={TOOL_WINDOW_TITLES.locals}>
-              <GdbLocalsWindow />
-            </DeferredWindow>
-          </div>
-          <div
-            id="threadsWindow"
-            data-panel-caption={TOOL_WINDOW_TITLES.threads}
-            data-panel-icon={iconThread}
-            hidden={true}
-          >
-            <DeferredWindow title={TOOL_WINDOW_TITLES.threads}>
-              <GdbThreadsWindow />
-            </DeferredWindow>
-          </div>
-          <div
-            id="registersWindow"
-            data-panel-caption={TOOL_WINDOW_TITLES.registers}
-            hidden={true}
-            data-panel-icon={iconRegister}
-          >
-            <DeferredWindow title={TOOL_WINDOW_TITLES.registers}>
-              <GdbRegistersWindow />
-            </DeferredWindow>
-          </div>
-          <div
-            id="disassemblyWindow"
-            data-panel-caption={TOOL_WINDOW_TITLES.disassembly}
-            hidden={true}
-            data-panel-icon={iconDisa}
-          >
-            <DeferredWindow title={TOOL_WINDOW_TITLES.disassembly}>
-              <GdbDisassemblerWindow />
-            </DeferredWindow>
-          </div>
-          <div
-            id="commandWindow"
-            data-panel-caption={TOOL_WINDOW_TITLES.command}
-            hidden={true}
-            data-panel-icon={iconCmd}
-          >
-            <DeferredWindow title={TOOL_WINDOW_TITLES.command}>
-              <GdbCommandWindow />
-            </DeferredWindow>
-          </div>
-          <div
-            id="memoryWindow"
-            data-panel-caption={TOOL_WINDOW_TITLES.memory}
-            hidden={true}
-            data-panel-icon={iconHex}
-          >
-            <DeferredWindow title={TOOL_WINDOW_TITLES.memory}>
-              <GdbMemoryWindow />
-            </DeferredWindow>
-          </div>
-          <div
-            id="callstackWindow"
-            data-panel-caption={TOOL_WINDOW_TITLES.callstack}
-            hidden={true}
-            data-panel-icon={iconStack}
-          >
-            <DeferredWindow title={TOOL_WINDOW_TITLES.callstack}>
-              <GdbCallStackWindow />
-            </DeferredWindow>
-          </div>
-          <div
-            id="bpWindow"
-            data-panel-caption={TOOL_WINDOW_TITLES.breakpoints}
-            hidden={true}
-            data-panel-icon={iconBp}
-          >
-            <DeferredWindow title={TOOL_WINDOW_TITLES.breakpoints}>
-              <GdbBreakPointWindow />
-            </DeferredWindow>
-          </div>
-        </ToolWindowsHostErrorBoundary>
-      </div>
-      <Suspense fallback={null}>
-        <AboutBox ref={aboutBoxRef} />
-      </Suspense>
-      <Suspense fallback={null}>
-        <Settings ref={settingsRef} />
-      </Suspense>
-      <Suspense fallback={null}>
-        <ConnectionManager ref={connectionsRef} />
-      </Suspense>
-      <Suspense fallback={null}>
-        <ConnectionDialog
-          ref={whileConnectingRef}
-          connectionsRef={connectionsRef as RefObject<ConnectionManagerHandle>}
-        />
-      </Suspense>
+      <DockLayout />
+      <AppDialogs
+        aboutBoxRef={aboutBoxRef}
+        settingsRef={settingsRef}
+        connectionsRef={connectionsRef}
+        whileConnectingRef={whileConnectingRef}
+        sectionsViewRef={sectionsViewRef}
+      />
     </div>
   );
 }

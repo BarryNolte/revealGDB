@@ -73,6 +73,20 @@ function parseLineTable(lines: string[]): gdbLineEntry[] {
 const rgxBlockEntry =
   /block #\d+[,\s]+object at [^,]+,\s*\d+ symbols in (?<start>0x[0-9a-f]+)\.\.(?<end>0x[0-9a-f]+)(?:[^,\n]*,\s*function\s+(?<func>\S+))?/gi;
 
+function resolveSubBlockNames(blocks: gdbSymbolBlock[]): void {
+  for (const block of blocks) {
+    if (block.functionName !== undefined) continue;
+    if (block.vars.length === 0) continue;
+    const parent = blocks.find(
+      (b) =>
+        b.functionName !== undefined &&
+        addrLe(b.startAddr, block.startAddr) &&
+        addrLe(block.endAddr, b.endAddr),
+    );
+    if (parent) block.functionName = parent.functionName;
+  }
+}
+
 function parseBlockvector(lines: string[]): gdbSymbolBlock[] {
   // Collect the blockvector section — split on \n first so section headers
   // are found even when multiple logical lines share one array element
@@ -138,17 +152,7 @@ function parseBlockvector(lines: string[]): gdbSymbolBlock[] {
 
   // Resolve sub-blocks: blocks without a functionName that fall inside a
   // named function block. Assign them the parent function name.
-  for (const block of blocks) {
-    if (block.functionName !== undefined) continue;
-    if (block.vars.length === 0) continue;
-    const parent = blocks.find(
-      (b) =>
-        b.functionName !== undefined &&
-        addrLe(b.startAddr, block.startAddr) &&
-        addrLe(block.endAddr, b.endAddr),
-    );
-    if (parent) block.functionName = parent.functionName;
-  }
+  resolveSubBlockNames(blocks);
 
   // Keep only blocks that have a function name (direct or resolved) and at
   // least one variable.
@@ -158,6 +162,27 @@ function parseBlockvector(lines: string[]): gdbSymbolBlock[] {
 /** Unsigned hex address comparison: is a <= b? */
 function addrLe(a: string, b: string): boolean {
   return BigInt(a) <= BigInt(b);
+}
+
+function processSemicolonToken(
+  text: string,
+  tokenStart: number,
+  semiIndex: number,
+): gdbVarDecl | null {
+  const token = text.slice(tokenStart, semiIndex).trim();
+  let j = semiIndex + 1;
+  while (j < text.length && (text[j] === "\n" || text[j] === " " || text[j] === "\t")) j++;
+  const nlPos = text.indexOf("\n", j);
+  const disposition = (nlPos === -1 ? text.slice(j) : text.slice(j, nlPos)).trim();
+  const isLocal = disposition.startsWith("computed at runtime");
+  const isStatic = /^const \d/.test(disposition);
+  if (isLocal || isStatic) {
+    const nameMatch = /(?:^|\s)(\w+)\s*$/.exec(token);
+    if (nameMatch) {
+      return { name: nameMatch[1], typeStr: token, fields: extractFieldNames(token) };
+    }
+  }
+  return null;
 }
 
 /**
@@ -203,31 +228,9 @@ function extractVarsFromChunk(lines: string[]): gdbVarDecl[] {
 
     // At depth 0, look for the pattern: <identifier>;\n<disposition>
     if (depth === 0 && ch === ";") {
-      // Extract the token from tokenStart..i
-      const token = text.slice(tokenStart, i).trim();
+      const varDecl = processSemicolonToken(text, tokenStart, i);
+      if (varDecl) vars.push(varDecl);
       tokenStart = i + 1;
-
-      // The disposition is on the next non-empty text after the semicolon.
-      // Find the next non-whitespace run after the ";"
-      let j = i + 1;
-      while (j < text.length && (text[j] === "\n" || text[j] === " " || text[j] === "\t")) j++;
-      // Read to end of that line
-      const nlPos = text.indexOf("\n", j);
-      const disposition = (nlPos === -1 ? text.slice(j) : text.slice(j, nlPos)).trim();
-
-      // Only keep locals (computed at runtime) and statics (const N(...))
-      const isLocal = disposition.startsWith("computed at runtime");
-      const isStatic = /^const \d/.test(disposition);
-
-      if (isLocal || isStatic) {
-        // The variable name is the last identifier before the ";"
-        const nameMatch = /(?:^|\s)(\w+)\s*$/.exec(token);
-        if (nameMatch) {
-          vars.push({ name: nameMatch[1], typeStr: token, fields: extractFieldNames(token) });
-        }
-      }
-
-      // Advance past the semicolon
       i++;
       continue;
     }

@@ -126,6 +126,7 @@ const ipcApi: IpcApiCore = {
         ),
       evaluateExpression: (expr: string) =>
         ipcRenderer.invoke(IPC_CHANNELS.rendererToMain.queries.debugger.evaluateExpression, expr),
+      getSectionData: () => invoke(IPC_CHANNELS.rendererToMain.queries.debugger.sections),
     },
   },
   commands: {

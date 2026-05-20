@@ -298,6 +298,8 @@ function useContextMenuDispatcher(
     const editor = editorRef.current?.editor;
     if (!editor) return;
 
+    editor.setShowPrintMargin(false);
+
     const handler = (e: MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
