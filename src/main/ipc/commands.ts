@@ -135,6 +135,18 @@ function handleSaveSettings(msg: NotifyMainRequest, context: IpcRegistrationCont
     case "save-app-show-debug-info":
       context.appSettings.setSync(`${GDB_GUI_PREFIX}showDebugInfo`, msg.data as never);
       break;
+    case "save-sections-view-options": {
+      const opts = msg.data as { showEmptySpace: boolean; showLegend: boolean };
+      context.appSettings.setSync(
+        `${GDB_GUI_PREFIX}sectionsView.showEmptySpace`,
+        opts.showEmptySpace as never,
+      );
+      context.appSettings.setSync(
+        `${GDB_GUI_PREFIX}sectionsView.showLegend`,
+        opts.showLegend as never,
+      );
+      break;
+    }
     case "save-app-theme":
       context.appSettings.setSync(`${GDB_GUI_PREFIX}applicationTheme`, msg.data as never);
       setNativeThemeFromAppTheme(msg.data as string);

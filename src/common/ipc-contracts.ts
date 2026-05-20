@@ -46,6 +46,7 @@ const RENDERER_TO_MAIN_CHANNEL_GROUPS = {
       varAtPosition: "queryVarAtPosition",
       varByName: "getVarByName",
       evaluateExpression: "evaluateExpression",
+      sections: "getSectionData",
     },
   },
   commands: {
@@ -107,7 +108,8 @@ export type NotifyRenderCommand =
   | "command-entry"
   | "about-box"
   | "settings-dialog"
-  | "connections-dialog";
+  | "connections-dialog"
+  | "sections-view";
 
 export type NotifyRenderMessage = {
   command: NotifyRenderCommand;
@@ -130,6 +132,7 @@ export type NotifyMainCommand =
   | "save-dock-layout"
   | "save-grid-columns"
   | "reset-grid-columns"
+  | "save-sections-view-options"
   | "open-external"
   | "renderStart"
   | "renderEnd";

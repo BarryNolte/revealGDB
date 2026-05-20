@@ -4,6 +4,7 @@
  * @remarks
  * Exported symbols include `registerIpcQueryHandlers`. It is responsible for channel registration, payload marshalling, and returning data to renderer callers.
  */
+import { gdbSymbolFiles } from "../../common/gdb-state-types";
 import { IPC_CHANNELS } from "../../common/ipc-contracts";
 import { gdbFunction, gdbVarLocation } from "../mi-interface/gdb-state-database/gdbStateDatabase";
 import { WslUtilities, type WslDistro } from "../utilities/wsl-utilities";
@@ -103,6 +104,13 @@ export function registerIpcQueryHandlers(context: IpcRegistrationContext): void 
     IPC_CHANNELS.rendererToMain.queries.debugger.evaluateExpression,
     (_: unknown, expr: string): Promise<string | undefined> => {
       return context.getGdbInterface().evaluateExpression(expr);
+    },
+  );
+
+  context.ipcMain.handle(
+    IPC_CHANNELS.rendererToMain.queries.debugger.sections,
+    (): Promise<gdbSymbolFiles> => {
+      return Promise.resolve(context.getGdbInterface().gdbDB.gdbSymbolFiles);
     },
   );
 }

@@ -12,6 +12,7 @@ import {
   gdbRegisters,
   gdbShowSourceInfo,
   gdbStackFrame,
+  gdbSymbolFiles,
   gdbThread,
   gdbThreadGroup,
   gdbVarLocation,
@@ -79,6 +80,7 @@ export interface IElectronAPI {
       ) => Promise<gdbVarLocation | undefined>;
       getVarByName: (sourceFile: string, varName: string) => Promise<gdbVarLocation | undefined>;
       evaluateExpression: (expr: string) => Promise<string | undefined>;
+      getSectionData: () => Promise<gdbSymbolFiles>;
     };
   };
 
