@@ -1,7 +1,9 @@
 // @vitest-environment node
 
 import { bench, describe } from "vitest";
+import { mapRegexGroupsToBreakpoint } from "../../src/main/mi-interface/mappers/breakpoint-mapper";
 import { mapRegexGroupsToMemoryData } from "../../src/main/mi-interface/mappers/memory-mapper";
+import { mapToRegisterEntry } from "../../src/main/mi-interface/mappers/register-mapper";
 
 // ─── mapRegexGroupsToMemoryData / parseHexContents ───────────────────────────
 
@@ -52,5 +54,72 @@ describe("mapRegexGroupsToMemoryData", () => {
 
   bench("1024 bytes", () => {
     mapRegexGroupsToMemoryData(groups1024);
+  });
+});
+
+// ─── mapRegexGroupsToBreakpoint ───────────────────────────────────────────────
+
+// GDB emits breakpoint info as named capture groups from a regex match.
+// These benchmarks cover a minimal breakpoint and a fully-populated one.
+
+const bpGroupsMinimal: Record<string, string> = {
+  number: "1",
+  type: "breakpoint",
+  disp: "keep",
+  enabled: "y",
+  addr: "0x00000000",
+  func: "",
+  file: "",
+  fullname: "",
+  line: "",
+  tg: "",
+  times: "0",
+  installed: "",
+  orgLoc: "",
+};
+
+const bpGroupsFull: Record<string, string> = {
+  number: "3",
+  type: "breakpoint",
+  disp: "keep",
+  enabled: "y",
+  addr: "0x08004abc",
+  func: "HAL_UART_Transmit",
+  file: "stm32f4xx_hal_uart.c",
+  fullname: "/workspace/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c",
+  line: "427",
+  tg: "i1",
+  times: "5",
+  installed: "y",
+  orgLoc: "stm32f4xx_hal_uart.c:427",
+};
+
+describe("mapRegexGroupsToBreakpoint", () => {
+  bench("minimal breakpoint", () => {
+    mapRegexGroupsToBreakpoint(bpGroupsMinimal);
+  });
+
+  bench("fully populated breakpoint", () => {
+    mapRegexGroupsToBreakpoint(bpGroupsFull);
+  });
+});
+
+// ─── mapToRegisterEntry ───────────────────────────────────────────────────────
+
+// mapToRegisterEntry is called for every register on every stop event.
+// The "new register" path (no existing entry) and the "update unchanged" /
+// "update changed" paths all follow slightly different code paths.
+
+describe("mapToRegisterEntry", () => {
+  bench("new register (no existing entry)", () => {
+    mapToRegisterEntry("0", "0x00000000", undefined);
+  });
+
+  bench("update register — value unchanged", () => {
+    mapToRegisterEntry("0", "0xdeadbeef", { name: "r0", value: "0xdeadbeef", changed: false });
+  });
+
+  bench("update register — value changed", () => {
+    mapToRegisterEntry("0", "0xcafebabe", { name: "r0", value: "0xdeadbeef", changed: false });
   });
 });

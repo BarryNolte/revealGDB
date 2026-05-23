@@ -77,10 +77,11 @@ function pctColor(pct) {
 }
 
 function deltaColor(deltaMs, deltaPct) {
-  // Red only if BOTH thresholds exceeded (matches startup-benchmark logic)
+  // Negative delta = faster = good (green)
+  if (deltaMs <= 0) return "good";
   if (deltaMs > 200 && deltaPct > 10) return "bad";
   if (deltaMs > 100 || deltaPct > 5) return "warn";
-  return "good";
+  return "";
 }
 
 function ccColor(cc) {
@@ -99,7 +100,7 @@ function coverageCard() {
     return `
 <div class="card">
   <h2>Coverage</h2>
-  ${staleLabel(null, "npm run test:coverage")}
+  ${staleLabel(null, "npm run metrics:coverage")}
   <p class="empty">No coverage data found.</p>
 </div>`;
   }
@@ -130,7 +131,7 @@ function coverageCard() {
   return `
 <div class="card">
   <h2>Coverage <a class="card-link" href="${fileUrl('coverage/index.html')}">full report →</a></h2>
-  ${staleLabel(mtime, "npm run test:coverage")}
+  ${staleLabel(mtime, "npm run metrics:coverage")}
   <div class="metrics">${bars}
   </div>
 </div>`;
@@ -152,13 +153,9 @@ function startupCard() {
 </div>`;
   }
 
-  const KEY_MILESTONES = [
-    "main-window-created",
-    "main-window-ready-to-show",
-    "main-window-shown",
-  ];
+  const milestones = Object.keys(latest.data.metrics || {});
 
-  const rows = KEY_MILESTONES.map((key) => {
+  const rows = milestones.map((key) => {
     const lMetric = latest.data.metrics?.[key];
     const bMetric = baseline?.data?.metrics?.[key];
     const cur = lMetric?.medianMs ?? null;
@@ -173,7 +170,7 @@ function startupCard() {
     if (deltaMs !== null) {
       const sign = deltaMs >= 0 ? "+" : "";
       deltaStr = `${sign}${deltaMs}ms (${sign}${Math.round(deltaPct)}%)`;
-      deltaClass = deltaColor(Math.abs(deltaMs), Math.abs(deltaPct));
+      deltaClass = deltaColor(deltaMs, deltaPct);
     }
 
     const shortKey = key.replace("main-window-", "");
@@ -281,13 +278,13 @@ function benchCard() {
 </div>`;
   }
 
-  // Build lookup: `${groupFullName}::${name}` → hz
-  const baselineHz = new Map();
+  // Build lookup: `${groupFullName}::${name}` → mean (ms per operation)
+  const baselineMean = new Map();
   if (baseline) {
     for (const file of (baseline.data.files || [])) {
       for (const group of (file.groups || [])) {
         for (const bench of (group.benchmarks || [])) {
-          baselineHz.set(`${group.fullName}::${bench.name}`, bench.hz);
+          baselineMean.set(`${group.fullName}::${bench.name}`, bench.mean);
         }
       }
     }
@@ -300,9 +297,10 @@ function benchCard() {
   }
 
   function benchDeltaColor(pct) {
-    if (pct <= -25) return "bad";
-    if (pct <= -10) return "warn";
-    if (pct >= 5) return "good";
+    // pct is mean-time % change: negative = less time = good (green)
+    if (pct <= -5) return "good";
+    if (pct >= 25) return "bad";
+    if (pct >= 10) return "warn";
     return "";
   }
 
@@ -322,12 +320,12 @@ function benchCard() {
         if (!baseline) {
           deltaCell = `<td class="num">—</td>`;
         } else {
-          const baseHz = baselineHz.get(`${group.fullName}::${bench.name}`);
-          if (baseHz != null) {
-            const pct = ((bench.hz - baseHz) / baseHz) * 100;
+          const baseMean = baselineMean.get(`${group.fullName}::${bench.name}`);
+          if (baseMean != null && bench.mean != null) {
+            const pct = ((bench.mean - baseMean) / baseMean) * 100;
             const sign = pct >= 0 ? "+" : "";
             const cls = benchDeltaColor(pct);
-            const arrow = pct >= 0 ? "↑" : "↓";
+            const arrow = pct <= 0 ? "↓" : "↑"; // ↓ = less time = better
             deltaCell = `<td class="num ${cls}">${sign}${pct.toFixed(1)}% ${arrow}</td>`;
           } else {
             deltaCell = `<td class="num">new</td>`;

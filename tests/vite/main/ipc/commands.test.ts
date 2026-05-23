@@ -10,7 +10,7 @@
  * @description Source module for commands.test.
  */
 
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { IPC_CHANNELS, NotifyMainRequest } from "../../../../src/common/ipc-contracts";
 import {
   handleNotifyMain,
@@ -18,6 +18,19 @@ import {
   registerIpcCommandHandlers,
 } from "../../../../src/main/ipc/commands";
 import { createIpcRegistrationHarness } from "../../../helpers/ipc-test-harness";
+
+const gissMocks = vi.hoisted(() => ({
+  sendHtmlBlock: vi.fn(),
+  addLine: vi.fn(),
+  addHeader: vi.fn(),
+  sendOutput: vi.fn(),
+}));
+
+vi.mock("../../../../src/main/utilities/GeneralInfoSender", () => ({
+  GeneralInfoSender: {
+    instance: gissMocks,
+  },
+}));
 
 vi.mock("../../../../src/main/theme-support", () => ({
   setNativeThemeFromAppTheme: vi.fn(),
@@ -30,11 +43,15 @@ vi.mock("../../../../src/main/utilities/wsl-utilities", () => ({
   },
 }));
 
-import { screen } from "electron";
+import { screen, shell } from "electron";
 import { setNativeThemeFromAppTheme } from "../../../../src/main/theme-support";
 import { WslUtilities } from "../../../../src/main/utilities/wsl-utilities";
 
 describe("handleNotifyMain", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("handles renderEnd by sending command-entry notify-render", () => {
     const { context, send } = createIpcRegistrationHarness();
     const msg: NotifyMainRequest = { command: "renderEnd" };
@@ -228,9 +245,129 @@ describe("handleNotifyMain", () => {
       command: "command-entry",
     });
   });
+
+  it("handles open-external with a valid https URL by calling shell.openExternal", () => {
+    const { context } = createIpcRegistrationHarness();
+
+    handleNotifyMain({ command: "open-external", data: "https://example.com" }, context);
+
+    expect(vi.mocked(shell.openExternal)).toHaveBeenCalledWith("https://example.com");
+  });
+
+  it("handles open-external with a valid http URL", () => {
+    const { context } = createIpcRegistrationHarness();
+
+    handleNotifyMain({ command: "open-external", data: "http://example.com/page" }, context);
+
+    expect(vi.mocked(shell.openExternal)).toHaveBeenCalledWith("http://example.com/page");
+  });
+
+  it("rejects ftp:// URLs in open-external as unsafe and logs an error", () => {
+    const { context } = createIpcRegistrationHarness();
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    handleNotifyMain(
+      { command: "open-external", data: "ftp://files.example.com/file.txt" },
+      context,
+    );
+
+    expect(vi.mocked(shell.openExternal)).not.toHaveBeenCalled();
+    expect(errorSpy).toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+
+  it("rejects empty string in open-external as an invalid URL", () => {
+    const { context } = createIpcRegistrationHarness();
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    handleNotifyMain({ command: "open-external", data: "" }, context);
+
+    expect(vi.mocked(shell.openExternal)).not.toHaveBeenCalled();
+    expect(errorSpy).toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+
+  it("rejects non-string data in open-external as an invalid URL", () => {
+    const { context } = createIpcRegistrationHarness();
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    handleNotifyMain({ command: "open-external", data: 42 as never }, context);
+
+    expect(vi.mocked(shell.openExternal)).not.toHaveBeenCalled();
+    expect(errorSpy).toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+
+  it("handles save-sections-view-options by persisting both view settings", () => {
+    const { context, appSettings } = createIpcRegistrationHarness();
+
+    handleNotifyMain(
+      {
+        command: "save-sections-view-options",
+        data: { showEmptySpace: true, showLegend: false },
+      },
+      context,
+    );
+
+    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.sectionsView.showEmptySpace", true);
+    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.sectionsView.showLegend", false);
+  });
+
+  it("handles show-source-at by fetching file contents and sending to the renderer", async () => {
+    const getSourceFileContents = vi.fn().mockResolvedValue("int main() {}");
+    const { context, send } = createIpcRegistrationHarness({
+      gdbInterface: { gdbDB: { getSourceFileContents } },
+    });
+
+    handleNotifyMain(
+      { command: "show-source-at", data: { fileName: "/src/main.c", line: "10" } },
+      context,
+    );
+
+    await vi.waitFor(() =>
+      expect(send).toHaveBeenCalledWith(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, {
+        fileName: "/src/main.c",
+        line: "10",
+        contents: "int main() {}",
+      }),
+    );
+    expect(getSourceFileContents).toHaveBeenCalledWith("/src/main.c");
+  });
+
+  it("sends connection-failed when the connection attempt returns false", () => {
+    const { context, send } = createIpcRegistrationHarness({
+      isSelectedConnection: ((value: unknown) =>
+        Boolean(value && typeof value === "object" && "name" in (value as object))) as never,
+      gdbInterface: { connect: vi.fn().mockReturnValue(false) },
+    });
+
+    handleNotifyMain(
+      {
+        command: "connect-selected-connection",
+        data: { connection: { name: "profile", shell: "bash", commands: ["gdb"] } },
+      },
+      context,
+    );
+
+    expect(send).toHaveBeenCalledWith(IPC_CHANNELS.mainToRenderer.notifications.render, {
+      command: "connection-failed",
+    });
+  });
+
+  it("does not throw for unrecognised commands", () => {
+    const { context } = createIpcRegistrationHarness();
+
+    expect(() =>
+      handleNotifyMain({ command: "unknown-command-xyz" as never }, context),
+    ).not.toThrow();
+  });
 });
 
 describe("onGdbCommand", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("routes ordinary commands to the gdb interface", () => {
     const { context, gdbInterface } = createIpcRegistrationHarness();
 
@@ -240,19 +377,167 @@ describe("onGdbCommand", () => {
   });
 
   it("handles dot-commands for db, wsl, and screen", () => {
-    const { context, gdbInterface, mainWindow } = createIpcRegistrationHarness();
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+    const { context } = createIpcRegistrationHarness();
 
-    onGdbCommand(".db", context);
+    onGdbCommand(".db locals", context);
     onGdbCommand(".wsl", context);
     onGdbCommand(".screen", context);
 
-    expect(gdbInterface.gdbDB.dump).toHaveBeenCalledTimes(1);
     expect(WslUtilities.getWslDistributions).toHaveBeenCalledTimes(1);
     expect(WslUtilities.getWslSerialPorts).toHaveBeenCalledTimes(1);
     expect(screen.getAllDisplays).toHaveBeenCalledTimes(1);
+  });
 
-    logSpy.mockRestore();
+  it("outputs an error for an unknown dot command", () => {
+    const { context } = createIpcRegistrationHarness();
+
+    onGdbCommand(".notarealcommand", context);
+
+    expect(gissMocks.addLine).toHaveBeenCalledWith(expect.stringContaining(".notarealcommand"));
+    expect(gissMocks.sendOutput).toHaveBeenCalled();
+  });
+
+  it("outputs an error for an unknown .db subcommand", () => {
+    const { context } = createIpcRegistrationHarness();
+
+    onGdbCommand(".db unknownsub", context);
+
+    expect(gissMocks.addLine).toHaveBeenCalledWith(
+      expect.stringContaining("Unknown .db subcommand"),
+    );
+    expect(gissMocks.sendOutput).toHaveBeenCalled();
+  });
+
+  it(".help sends an HTML table via GeneralInfoSender", () => {
+    const { context } = createIpcRegistrationHarness();
+
+    onGdbCommand(".help", context);
+
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("<table"));
+  });
+
+  it(".debug sends a header output via GeneralInfoSender", () => {
+    const { context } = createIpcRegistrationHarness();
+
+    onGdbCommand(".debug", context);
+
+    expect(gissMocks.addHeader).toHaveBeenCalledWith(expect.stringContaining("Debugger"));
+    expect(gissMocks.sendOutput).toHaveBeenCalled();
+  });
+
+  it(".db sources calls gdbSrcFileCache.list and sends an HTML block", () => {
+    const list = vi.fn(() => ["/src/main.c", "/src/util.c"]);
+    const { context } = createIpcRegistrationHarness({
+      gdbInterface: { gdbDB: { gdbSrcFileCache: { list } } },
+    });
+
+    onGdbCommand(".db sources", context);
+
+    expect(list).toHaveBeenCalled();
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("<table"));
+  });
+
+  it(".db threads calls threadGroups.values and threads.values and sends HTML", () => {
+    const threadGroups = new Map([["i1", { gid: "i1", threads: new Map() }]]);
+    const threads = new Map([
+      [
+        "1",
+        {
+          active: true,
+          id: "1",
+          targetId: "t1",
+          details: "",
+          name: "main",
+          state: "stopped",
+          frame: { func: "main" },
+        },
+      ],
+    ]);
+    const { context } = createIpcRegistrationHarness({
+      gdbInterface: { gdbDB: { threadGroups, threads } },
+    });
+
+    onGdbCommand(".db threads", context);
+
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledTimes(2);
+  });
+
+  it(".db features calls featureList and sends an HTML block", () => {
+    const featureList = vi.fn(() => [{ feature: "async", available: true }]);
+    const { context } = createIpcRegistrationHarness({
+      gdbInterface: { gdbDB: { featureList } },
+    });
+
+    onGdbCommand(".db features", context);
+
+    expect(featureList).toHaveBeenCalled();
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("<table"));
+  });
+
+  it(".db parameters calls paramList and sends an HTML block", () => {
+    const paramList = vi.fn(() => [{ name: "print object", value: "on" }]);
+    const { context } = createIpcRegistrationHarness({
+      gdbInterface: { gdbDB: { paramList } },
+    });
+
+    onGdbCommand(".db parameters", context);
+
+    expect(paramList).toHaveBeenCalled();
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("<table"));
+  });
+
+  it(".db symbols reads gdbSymbolFiles and sends an HTML block", () => {
+    const gdbSymbolFiles = {
+      mainSym: "app.elf",
+      sections: [{ startAddr: "0x0", endAddr: "0x100", section: ".text", file: "main.c" }],
+    };
+    const { context } = createIpcRegistrationHarness({
+      gdbInterface: { gdbDB: { gdbSymbolFiles } },
+    });
+
+    onGdbCommand(".db symbols", context);
+
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("app.elf"));
+  });
+
+  it(".db stack reads gdbInterface.stackFrames from context and sends an HTML block", () => {
+    const { context } = createIpcRegistrationHarness({
+      gdbInterface: { gdbDB: { stackFrames: [] } },
+    });
+
+    onGdbCommand(".db stack", context);
+
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("<table"));
+  });
+
+  it(".db breakpoints reads gdbInterface.breakpointList from context and sends HTML", () => {
+    const { context } = createIpcRegistrationHarness({
+      gdbInterface: { gdbDB: { breakpointList: vi.fn().mockReturnValue([]) } },
+    });
+
+    onGdbCommand(".db breakpoints", context);
+
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("<table"));
+  });
+
+  it(".db registers reads gdbInterface.registerList from context and sends HTML", () => {
+    const { context } = createIpcRegistrationHarness({
+      gdbInterface: { gdbDB: { registerList: vi.fn().mockReturnValue([]) } },
+    });
+
+    onGdbCommand(".db registers", context);
+
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("<table"));
+  });
+
+  it(".db functions reads gdbInterface.gdbFunctionNames from context and sends HTML", () => {
+    const { context } = createIpcRegistrationHarness({
+      gdbInterface: { gdbDB: { gdbFunctionNames: new Map() } },
+    });
+
+    onGdbCommand(".db functions", context);
+
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("<table"));
   });
 });
 

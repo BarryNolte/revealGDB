@@ -72,7 +72,7 @@ describe("GdbMenu", () => {
 
     const preferencesItem = (fileMenu?.submenu as Array<{ click?: () => void }>)[0];
     const fileExitItem = (fileMenu?.submenu as Array<{ click?: () => void }>)[2];
-    const commandEntryItem = (viewMenu?.submenu as Array<{ click?: () => void }>)[0];
+    const commandEntryItem = (viewMenu?.submenu as Array<{ click?: () => void }>)[2];
     const continueItem = (debugMenu?.submenu as Array<{ click?: () => void }>)[0];
     const stepOverItem = (debugMenu?.submenu as Array<{ click?: () => void }>)[1];
     const stepIntoItem = (debugMenu?.submenu as Array<{ click?: () => void }>)[2];

@@ -10,7 +10,6 @@ import { miInterface } from "../mi-interface/mi-interface";
 import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
 import { WslUtilities } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
-import { gdbInterface } from "../main";
 
 type DotCommandHandler = (gdbInterface: miInterface, subCommands?: string[]) => void;
 
@@ -123,7 +122,7 @@ function handleDbParameters(gdbInterface: miInterface): void {
   );
 }
 
-function handleDbStack(_gdbInterface: miInterface): void {
+function handleDbStack(gdbInterface: miInterface): void {
   const stackData = {
     title: "GDB Stack Frames",
     header: ["active", "level", "func", "addr", "args", "file", "fullName", "line", "from", "arch"],
@@ -145,7 +144,7 @@ function handleDbStack(_gdbInterface: miInterface): void {
   );
 }
 
-function handleDbBreakpoints(_gdbInterface: miInterface): void {
+function handleDbBreakpoints(gdbInterface: miInterface): void {
   const bpData = {
     title: "GDB Breakpoints",
     header: [
@@ -183,7 +182,7 @@ function handleDbBreakpoints(_gdbInterface: miInterface): void {
     new HTMLTableGenerator(bpData, DB_TABLE_OPTIONS).createTableHTML(),
   );
 }
-function handleDbRegisters(_gdbInterface: miInterface): void {
+function handleDbRegisters(gdbInterface: miInterface): void {
   const regData = {
     title: "GDB Registers",
     header: ["name", "value", "changed"],
@@ -216,7 +215,7 @@ function handleDbSymbols(gdbInterface: miInterface): void {
   );
 }
 
-function handleDbFunctions(_gdbInterface: miInterface): void {
+function handleDbFunctions(gdbInterface: miInterface): void {
   const funcData = {
     title: "GDB Functions",
     header: ["name", "line", "function"],

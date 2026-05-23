@@ -95,4 +95,56 @@ describe("GdbSourceWindowModel", () => {
       { line: 19, type: "ace_breakpoint_disabled", file: "/tmp/main.c" },
     ]);
   });
+
+  it("returns no marker for line zero (currentMarker < 0 branch)", () => {
+    // parseInt("0") - 1 = -1, so currentMarker < 0 is true
+    const markerData = createMarkerForLine("0");
+    expect(markerData.currentMarker).toBe(-1);
+    expect(markerData.markers).toEqual([]);
+  });
+
+  it("applySourceUpdate falls back to prevState fileName when data has no fileName", () => {
+    const initial = createInitialSourceWindowState();
+    const withSource = applySourceUpdate(initial, {
+      fileName: "/tmp/main.c",
+      line: "5",
+      contents: "void f() {}",
+    });
+
+    // Update without a fileName — should keep existing fullpath and filename
+    const updated = applySourceUpdate(withSource, {
+      fileName: undefined,
+      line: "8",
+      contents: "void g() {}",
+    });
+
+    expect(updated.fullpath).toBe("/tmp/main.c");
+    expect(updated.filename).toBe("main.c");
+    expect(updated.line).toBe("8");
+    expect(updated.hasSource).toBe(true);
+  });
+
+  it("applySourceUpdate falls back to prevState line when data has no line", () => {
+    const initial = createInitialSourceWindowState();
+    const withSource = applySourceUpdate(initial, {
+      fileName: "/tmp/main.c",
+      line: "5",
+      contents: "void f() {}",
+    });
+
+    // Update without a line — should keep existing line
+    const updated = applySourceUpdate(withSource, {
+      fileName: "/tmp/main.c",
+      line: undefined,
+      contents: undefined,
+    });
+
+    expect(updated.line).toBe("5");
+    expect(updated.hasSource).toBe(false);
+    expect(updated.fullpath).toBe("/tmp/main.c");
+  });
+
+  it("mapBreakpointsToMarkers returns empty array when called with undefined", () => {
+    expect(mapBreakpointsToMarkers(undefined)).toEqual([]);
+  });
 });

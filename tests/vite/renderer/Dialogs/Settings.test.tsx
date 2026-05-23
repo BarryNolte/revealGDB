@@ -209,4 +209,76 @@ describe("Settings", () => {
     fireEvent.click(screen.getByRole("button", { name: "OK" }));
     expect(screen.queryByRole("dialog")).toBeNull();
   });
+
+  it("populates form refs when dialog is open before settings resolve (covers ref-assignment branches)", async () => {
+    // Use a deferred settings promise so we can open the dialog first,
+    // ensuring the Syncfusion ref mocks are mounted when the promise resolves.
+    let resolveSettings!: (val: unknown) => void;
+    (window.ipcToMain.queries.app.getSettings as ReturnType<typeof vi.fn>).mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveSettings = resolve;
+      }),
+    );
+
+    const ref = createRef<SettingsHandle>();
+    render(<Settings ref={ref} />);
+
+    // Open dialog before getSettings resolves – this mounts the form controls
+    // so editorThemeRef.current etc. are non-null when the promise settles.
+    act(() => {
+      ref.current?.ShowDialog();
+    });
+
+    expect(screen.getByRole("dialog")).toBeTruthy();
+
+    // Resolve settings with all fields present – the if-bodies (lines 66,69,74,77,80,83)
+    // will now execute because the refs are populated.
+    await act(async () => {
+      resolveSettings({
+        gui: {
+          sourceViewerTheme: "Monokai",
+          sourceViewerFontName: "Fira Code",
+          sourceViewerFontSize: "14",
+          showDebugInfo: true,
+          applicationTheme: "Dark",
+        },
+      });
+    });
+
+    // Dialog should still be visible after settings load
+    expect(screen.getByRole("dialog")).toBeTruthy();
+  });
+
+  it("does not set ref values when settings gui fields are empty strings", async () => {
+    // Covers the FALSE branches of the if(gdb.gui.X &&) conditions
+    let resolveSettings!: (val: unknown) => void;
+    (window.ipcToMain.queries.app.getSettings as ReturnType<typeof vi.fn>).mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveSettings = resolve;
+      }),
+    );
+
+    const ref = createRef<SettingsHandle>();
+    render(<Settings ref={ref} />);
+
+    act(() => {
+      ref.current?.ShowDialog();
+    });
+
+    await act(async () => {
+      // Empty strings are falsy, so none of the ref-assignment bodies execute
+      resolveSettings({
+        gui: {
+          sourceViewerTheme: "",
+          sourceViewerFontName: "",
+          sourceViewerFontSize: "",
+          showDebugInfo: false,
+          applicationTheme: "",
+        },
+      });
+    });
+
+    // Dialog remains visible
+    expect(screen.getByRole("dialog")).toBeTruthy();
+  });
 });

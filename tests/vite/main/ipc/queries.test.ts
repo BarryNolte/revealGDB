@@ -129,4 +129,119 @@ describe("registerIpcQueryHandlers", () => {
 
     errorSpy.mockRestore();
   });
+
+  it("registers all debugger query channels (varAtPosition, varByName, evaluateExpression, sections)", () => {
+    const { context, ipcMain } = createIpcRegistrationHarness();
+
+    registerIpcQueryHandlers(context);
+
+    const registeredChannels = ipcMain.handle.mock.calls.map(([ch]) => ch);
+
+    expect(registeredChannels).toContain(
+      IPC_CHANNELS.rendererToMain.queries.debugger.varAtPosition,
+    );
+    expect(registeredChannels).toContain(IPC_CHANNELS.rendererToMain.queries.debugger.varByName);
+    expect(registeredChannels).toContain(
+      IPC_CHANNELS.rendererToMain.queries.debugger.evaluateExpression,
+    );
+    expect(registeredChannels).toContain(IPC_CHANNELS.rendererToMain.queries.debugger.sections);
+  });
+
+  it("queryVarAtPosition handler delegates to gdbDB.queryVarAtPosition with correct args", async () => {
+    const expected = { name: "ptr", value: "0xdeadbeef" };
+    const queryVarAtPosition = vi.fn().mockReturnValue(expected);
+    const { context, ipcMain } = createIpcRegistrationHarness({
+      gdbInterface: { gdbDB: { queryVarAtPosition } },
+    });
+
+    registerIpcQueryHandlers(context);
+
+    const handler = ipcMain.handle.mock.calls.find(
+      ([ch]) => ch === IPC_CHANNELS.rendererToMain.queries.debugger.varAtPosition,
+    )?.[1];
+
+    const result = await handler(null, "/src/main.c", 42, 7);
+
+    expect(queryVarAtPosition).toHaveBeenCalledWith("/src/main.c", 42, 7);
+    expect(result).toEqual(expected);
+  });
+
+  it("getVarByName handler delegates to gdbDB.getVarByName with correct args", async () => {
+    const expected = { name: "count", value: "3" };
+    const getVarByName = vi.fn().mockReturnValue(expected);
+    const { context, ipcMain } = createIpcRegistrationHarness({
+      gdbInterface: { gdbDB: { getVarByName } },
+    });
+
+    registerIpcQueryHandlers(context);
+
+    const handler = ipcMain.handle.mock.calls.find(
+      ([ch]) => ch === IPC_CHANNELS.rendererToMain.queries.debugger.varByName,
+    )?.[1];
+
+    const result = await handler(null, "/src/util.c", "count");
+
+    expect(getVarByName).toHaveBeenCalledWith("/src/util.c", "count");
+    expect(result).toEqual(expected);
+  });
+
+  it("evaluateExpression handler delegates to gdbInterface.evaluateExpression", async () => {
+    const evaluateExpression = vi.fn().mockResolvedValue("99");
+    const { context, ipcMain } = createIpcRegistrationHarness({
+      gdbInterface: { evaluateExpression },
+    });
+
+    registerIpcQueryHandlers(context);
+
+    const handler = ipcMain.handle.mock.calls.find(
+      ([ch]) => ch === IPC_CHANNELS.rendererToMain.queries.debugger.evaluateExpression,
+    )?.[1];
+
+    const result = await handler(null, "x + 1");
+
+    expect(evaluateExpression).toHaveBeenCalledWith("x + 1");
+    expect(result).toBe("99");
+  });
+
+  it("getSectionData handler returns gdbInterface.gdbDB.gdbSymbolFiles", async () => {
+    const gdbSymbolFiles = { mainSym: "app.elf", sections: [] };
+    const { context, ipcMain } = createIpcRegistrationHarness({
+      gdbInterface: { gdbDB: { gdbSymbolFiles } },
+    });
+
+    registerIpcQueryHandlers(context);
+
+    const handler = ipcMain.handle.mock.calls.find(
+      ([ch]) => ch === IPC_CHANNELS.rendererToMain.queries.debugger.sections,
+    )?.[1];
+
+    const result = await handler();
+
+    expect(result).toBe(gdbSymbolFiles);
+  });
+
+  it("getSettings handler throws after exhausting all retries", async () => {
+    vi.useFakeTimers();
+
+    const getSync = vi.fn<(key: string) => unknown>().mockImplementation(() => {
+      throw new Error("always locked");
+    });
+    const { context, ipcMain } = createIpcRegistrationHarness({
+      appSettings: { getSync },
+    });
+
+    registerIpcQueryHandlers(context);
+
+    const handler = ipcMain.handle.mock.calls.find(
+      ([ch]) => ch === IPC_CHANNELS.rendererToMain.queries.app.settings,
+    )?.[1];
+
+    const promise = handler();
+    // Attach rejection handler before advancing timers so the rejection is never unhandled
+    const rejection = expect(promise).rejects.toThrow("always locked");
+    await vi.runAllTimersAsync();
+    await rejection;
+
+    vi.useRealTimers();
+  });
 });

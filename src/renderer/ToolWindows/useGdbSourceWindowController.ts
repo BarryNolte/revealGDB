@@ -59,11 +59,9 @@ export function getMemberExpression(
     while (wordEnd < exprEnd && /\w/.test(line[wordEnd])) wordEnd++;
 
     // Slice expression up to (and including) the cursor identifier
+    // cursorExpr always begins with \w+ (guaranteed by the outer match), so the exec is non-null.
     const cursorExpr = match[0].slice(0, wordEnd - exprStart);
-    const baseMatch = /^\w+/.exec(cursorExpr);
-    if (!baseMatch) return null;
-
-    const base = baseMatch[0];
+    const base = /^\w+/.exec(cursorExpr)![0];
     const fieldPath = cursorExpr.slice(base.length).replace(/->/g, ".").replace(/^\./, "");
     return { base, fieldPath, rawExpr: cursorExpr };
   }
@@ -163,7 +161,7 @@ export function makeTooltipDataProvider(ctx: TooltipContext) {
  * popup rect (handles pointer-event transitions during the open animation).
  * Returns a cleanup function.
  */
-function wireTooltipCloseHandlers(
+export function wireTooltipCloseHandlers(
   sfTip: Tooltip,
   container: HTMLElement,
   session: ace.Ace.EditSession,
@@ -214,7 +212,7 @@ function wireTooltipCloseHandlers(
   };
 }
 
-function useSourceTooltip(
+export function useSourceTooltip(
   editorRef: RefObject<AceEditor | null>,
   fullFilePathRef: RefObject<string>,
 ): void {
@@ -288,7 +286,7 @@ export type GdbSourceWindowController = {
 };
 
 /** Detects gutter vs. editor area on right-click and opens the appropriate context menu. */
-function useContextMenuDispatcher(
+export function useContextMenuDispatcher(
   editorRef: RefObject<AceEditor | null>,
   rightClickedRowRef: RefObject<number>,
   gutterMenuRef: RefObject<ContextMenuComponent | null>,

@@ -441,6 +441,149 @@ test("newly added item can be dragged and properly exits drag mode", () => {
   expect(labels).toEqual(["One", "Two", "Three"]);
 });
 
+test("applies custom className to container", () => {
+  render(<DragAndDropList items={["A", "B"]} ariaLabel="Test" className="my-custom-class" />);
+  const container = document.querySelector(".drag-drop-list-container");
+  expect(container?.className).toBe("drag-drop-list-container my-custom-class");
+});
+
+test("dragover event with dataTransfer sets dropEffect to move", () => {
+  render(<DragAndDropList items={["One", "Two"]} ariaLabel="Test" />);
+  const list = document.querySelector(".drag-drop-list") as HTMLElement;
+  const dataTransfer = createDataTransfer();
+  // Override dropEffect so we can verify it was actually set by the handler
+  dataTransfer.dropEffect = "none" as DataTransfer["dropEffect"];
+  expect(() => fireEvent.dragOver(list, { dataTransfer })).not.toThrow();
+  expect(dataTransfer.dropEffect).toBe("move");
+});
+
+test("dragover event without dataTransfer does not throw", () => {
+  render(<DragAndDropList items={["One", "Two"]} ariaLabel="Test" />);
+  const list = document.querySelector(".drag-drop-list") as HTMLElement;
+  expect(() => fireEvent.dragOver(list)).not.toThrow();
+});
+
+test("drop event after drag calls onReorder with current item order", () => {
+  const onReorder = vi.fn();
+  render(<DragAndDropList items={["A", "B", "C"]} onReorder={onReorder} ariaLabel="Test" />);
+  const options = getListItems();
+  const dataTransfer = createDataTransfer();
+  fireEvent.dragStart(options[2], { dataTransfer });
+  fireEvent.dragEnter(options[0], { dataTransfer });
+  const list = document.querySelector(".drag-drop-list") as HTMLElement;
+  fireEvent.drop(list, { dataTransfer });
+  expect(onReorder).toHaveBeenCalledWith(["C", "A", "B"]);
+});
+
+test("drop event without onReorder does not throw", () => {
+  render(<DragAndDropList items={["A", "B"]} ariaLabel="Test" />);
+  const list = document.querySelector(".drag-drop-list") as HTMLElement;
+  const dataTransfer = createDataTransfer();
+  fireEvent.dragStart(getListItems()[0], { dataTransfer });
+  expect(() => fireEvent.drop(list, { dataTransfer })).not.toThrow();
+});
+
+test("does not add item when input is empty", () => {
+  const onReorder = vi.fn();
+  render(<DragAndDropList items={["Alpha", "Beta"]} onReorder={onReorder} ariaLabel="Test" />);
+  fireEvent.click(screen.getByRole("button", { name: "Add item to list" }));
+  expect(getOptionLabels()).toEqual(["Alpha", "Beta"]);
+  expect(onReorder).not.toHaveBeenCalled();
+});
+
+test("does not add item when input is whitespace only", () => {
+  const onReorder = vi.fn();
+  render(<DragAndDropList items={["Alpha"]} onReorder={onReorder} ariaLabel="Test" />);
+  const input = screen.getByLabelText("Add item") as HTMLInputElement;
+  fireEvent.change(input, { target: { value: "   " } });
+  fireEvent.keyDown(input, { key: "Enter" });
+  expect(getOptionLabels()).toEqual(["Alpha"]);
+  expect(onReorder).not.toHaveBeenCalled();
+});
+
+test("clicking item label does not delete the item", () => {
+  render(<DragAndDropList items={["Alpha", "Beta"]} ariaLabel="Test" />);
+  const label = document.querySelector(".drag-drop-list-item-label") as HTMLElement;
+  fireEvent.click(label);
+  expect(getOptionLabels()).toEqual(["Alpha", "Beta"]);
+});
+
+test("uses default ariaLabel when ariaLabel prop is omitted", () => {
+  render(<DragAndDropList items={["A", "B"]} />);
+  const list = document.querySelector(".drag-drop-list") as HTMLElement;
+  expect(list.getAttribute("aria-label")).toBe("Reorder list");
+});
+
+test("dragstart on list element (not li) returns early without error", () => {
+  render(<DragAndDropList items={["One", "Two"]} ariaLabel="Test" />);
+  const list = document.querySelector(".drag-drop-list") as HTMLElement;
+  const dataTransfer = createDataTransfer();
+  // Fire dragstart directly on the ul, not on an li — triggers the !li early return
+  expect(() => fireEvent.dragStart(list, { dataTransfer })).not.toThrow();
+  // No drag should have started — no item should have is-dragging class
+  getListItems().forEach((item) => {
+    expect(item.className).not.toContain("is-dragging");
+  });
+});
+
+test("dragstart without dataTransfer returns early without error", () => {
+  render(<DragAndDropList items={["One", "Two"]} ariaLabel="Test" />);
+  const items = getListItems();
+  // Fire dragstart without a dataTransfer — triggers the !transfer early return
+  expect(() => fireEvent.dragStart(items[0])).not.toThrow();
+});
+
+test("dragenter on list element (not li) returns early without error", () => {
+  render(<DragAndDropList items={["One", "Two", "Three"]} ariaLabel="Test" />);
+  const list = document.querySelector(".drag-drop-list") as HTMLElement;
+  const dataTransfer = createDataTransfer();
+  fireEvent.dragStart(getListItems()[0], { dataTransfer });
+  // Fire dragenter on the ul itself, not an li — triggers !li early return in dragEnter
+  expect(() => fireEvent.dragEnter(list, { dataTransfer })).not.toThrow();
+  // Order should be unchanged
+  expect(getOptionLabels()).toEqual(["One", "Two", "Three"]);
+});
+
+test("dragenter with no active drag (null draggedIndex) returns early", () => {
+  render(<DragAndDropList items={["One", "Two", "Three"]} ariaLabel="Test" />);
+  const items = getListItems();
+  const dataTransfer = createDataTransfer();
+  // Fire dragenter without first firing dragstart — draggedIndexRef is null
+  expect(() => fireEvent.dragEnter(items[1], { dataTransfer })).not.toThrow();
+  // Order should be unchanged
+  expect(getOptionLabels()).toEqual(["One", "Two", "Three"]);
+});
+
+test("mounts without error when ResizeObserver is defined", () => {
+  const mockObserver = { observe: vi.fn(), unobserve: vi.fn(), disconnect: vi.fn() };
+  const MockResizeObserver = vi.fn(() => mockObserver);
+  Object.defineProperty(globalThis, "ResizeObserver", {
+    writable: true,
+    configurable: true,
+    value: MockResizeObserver,
+  });
+  try {
+    render(<DragAndDropList items={["A", "B"]} ariaLabel="Test" />);
+    expect(getListItems().length).toBe(2);
+  } finally {
+    Object.defineProperty(globalThis, "ResizeObserver", {
+      writable: true,
+      configurable: true,
+      value: undefined,
+    });
+  }
+});
+
+test("keydown on input with non-Enter key does not add item", () => {
+  const onReorder = vi.fn();
+  render(<DragAndDropList items={["Alpha"]} onReorder={onReorder} ariaLabel="Test" />);
+  const input = screen.getByLabelText("Add item") as HTMLInputElement;
+  fireEvent.change(input, { target: { value: "NewItem" } });
+  fireEvent.keyDown(input, { key: "Tab" });
+  expect(getOptionLabels()).toEqual(["Alpha"]);
+  expect(onReorder).not.toHaveBeenCalled();
+});
+
 
 /**
  * @file DragAndDropList.test.tsx

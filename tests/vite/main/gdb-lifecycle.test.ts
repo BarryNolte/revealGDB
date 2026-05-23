@@ -74,4 +74,64 @@ describe("createGdbInterface", () => {
     expect(calls.filter((c) => c.startsWith("echo <<<<function-names>>>>"))).toHaveLength(1);
     expect(appSettings.getSync).not.toHaveBeenCalled();
   });
+
+  it("forwards CONSOLE_STREAM to mainWindow.webContents.send", () => {
+    const mainWindow = createMockBrowserWindow();
+    const gdb = createGdbInterface(mainWindow as never, createMockAppSettings());
+    gdb.emit("console-stream", "hello console");
+    expect(mainWindow.webContents.send).toHaveBeenCalledWith("console-message", "hello console");
+  });
+
+  it("forwards LOG_STREAM to mainWindow.webContents.send", () => {
+    const mainWindow = createMockBrowserWindow();
+    const gdb = createGdbInterface(mainWindow as never, createMockAppSettings());
+    gdb.emit("log-stream", "log line");
+    expect(mainWindow.webContents.send).toHaveBeenCalledWith("log-message", "log line");
+  });
+
+  it("forwards ERROR_STREAM to mainWindow.webContents.send", () => {
+    const mainWindow = createMockBrowserWindow();
+    const gdb = createGdbInterface(mainWindow as never, createMockAppSettings());
+    gdb.emit("error-stream", "some error");
+    expect(mainWindow.webContents.send).toHaveBeenCalledWith("error-message", "some error");
+  });
+
+  it("forwards DEBUG_STREAM to mainWindow.webContents.send", () => {
+    const mainWindow = createMockBrowserWindow();
+    const gdb = createGdbInterface(mainWindow as never, createMockAppSettings());
+    gdb.emit("debug-stream", "debug info");
+    expect(mainWindow.webContents.send).toHaveBeenCalledWith("debug-message", "debug info");
+  });
+
+  it("forwards HTML_STREAM to mainWindow.webContents.send", () => {
+    const mainWindow = createMockBrowserWindow();
+    const gdb = createGdbInterface(mainWindow as never, createMockAppSettings());
+    gdb.emit("html-stream", "<b>html</b>");
+    expect(mainWindow.webContents.send).toHaveBeenCalledWith("html-message", "<b>html</b>");
+  });
+
+  it("skips maint print symbols command when hasLineVars returns true", () => {
+    const mainWindow = createMockBrowserWindow();
+    const gdb = createGdbInterface(mainWindow as never, createMockAppSettings());
+
+    // Override hasLineVars to return true for this test
+    (gdb.gdbDB as { hasLineVars: (f: string) => boolean }).hasLineVars = () => true;
+    sendMock.mockClear();
+
+    gdb.gdbDB.gdbSrcFileCache.emit("first-read", "myfile.c");
+
+    const calls = sendMock.mock.calls.map((a) => a[0] as string);
+    expect(calls.some((c) => (c as string).includes("maint print symbols"))).toBe(false);
+  });
+
+  it("runs maint print symbols command when hasLineVars returns false", () => {
+    const mainWindow = createMockBrowserWindow();
+    const gdb = createGdbInterface(mainWindow as never, createMockAppSettings());
+    sendMock.mockClear();
+
+    gdb.gdbDB.gdbSrcFileCache.emit("first-read", "target.c");
+
+    const calls = sendMock.mock.calls.map((a) => a[0] as string);
+    expect(calls.some((c) => (c as string).includes("maint print symbols"))).toBe(true);
+  });
 });

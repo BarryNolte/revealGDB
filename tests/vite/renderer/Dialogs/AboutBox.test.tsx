@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from "@testing-library/react";
 import { act, createRef } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { AboutBox, type AboutBoxHandle } from "../../../../src/renderer/Dialogs/AboutBox";
+import { AppMainVersionInfo } from "../../../../src/renderer/utilities/app-version-state";
 
 vi.mock("../../../../src/renderer/utilities/app-version-state", () => ({
   AppMainVersionInfo: new Map([
@@ -62,6 +63,10 @@ vi.mock("@syncfusion/ej2-react-popups", () => ({
 }));
 
 describe("AboutBox", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("shows version info from AppMainVersionInfo and closes from the footer button", () => {
     const ref = createRef<AboutBoxHandle>();
 
@@ -88,5 +93,64 @@ describe("AboutBox", () => {
     fireEvent.click(screen.getByRole("button", { name: "OK" }));
 
     expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("openIcons8Link calls notifyMain with open-external for icons8.com", () => {
+    const notifyMain = vi.fn();
+    Object.defineProperty(window, "ipcToMain", {
+      configurable: true,
+      writable: true,
+      value: { commands: { app: { notifyMain } } },
+    });
+
+    const ref = createRef<AboutBoxHandle>();
+    render(<AboutBox ref={ref} />);
+
+    act(() => {
+      ref.current?.ShowDialog();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Icons8" }));
+    expect(notifyMain).toHaveBeenCalledWith({
+      command: "open-external",
+      data: "https://icons8.com/",
+    });
+  });
+
+  it("openBMCLink calls notifyMain with open-external for buymeacoffee.com", () => {
+    const notifyMain = vi.fn();
+    Object.defineProperty(window, "ipcToMain", {
+      configurable: true,
+      writable: true,
+      value: { commands: { app: { notifyMain } } },
+    });
+
+    const ref = createRef<AboutBoxHandle>();
+    render(<AboutBox ref={ref} />);
+
+    act(() => {
+      ref.current?.ShowDialog();
+    });
+
+    const bmcButton = document.querySelector(".aboutBox-buymeacoffee-button") as HTMLButtonElement;
+    expect(bmcButton).not.toBeNull();
+    fireEvent.click(bmcButton);
+    expect(notifyMain).toHaveBeenCalledWith({
+      command: "open-external",
+      data: "https://buymeacoffee.com/barrynolte",
+    });
+  });
+
+  it("getInfoValue returns empty string when AppMainVersionInfo is missing a key", () => {
+    vi.spyOn(AppMainVersionInfo as Map<string, unknown>, "get").mockReturnValueOnce(undefined);
+
+    const ref = createRef<AboutBoxHandle>();
+    render(<AboutBox ref={ref} />);
+
+    act(() => {
+      ref.current?.ShowDialog();
+    });
+
+    expect(screen.getByRole("dialog")).toBeTruthy();
   });
 });

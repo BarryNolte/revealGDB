@@ -7,6 +7,7 @@ import { readFileSync } from "fs";
 import { resolve } from "path";
 import { describe, expect, it } from "vitest";
 import {
+  escapeHtml,
   formatGdbValueHtml,
   isComplexValue,
   parseGdbValue,
@@ -357,5 +358,118 @@ describe("formatGdbValueHtml — data-file smoke tests", () => {
     expect(html).toContain(">b<");
     expect(html).toContain(">e<");
     expect(html).not.toContain("?");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// escapeHtml
+// ---------------------------------------------------------------------------
+
+describe("escapeHtml", () => {
+  it("escapes & < >", () => {
+    expect(escapeHtml("a & b < c > d")).toBe("a &amp; b &lt; c &gt; d");
+  });
+
+  it("returns string unchanged when no special chars", () => {
+    expect(escapeHtml("hello world")).toBe("hello world");
+  });
+
+  it("escapes multiple occurrences", () => {
+    expect(escapeHtml("<<>>&&")).toBe("&lt;&lt;&gt;&gt;&amp;&amp;");
+  });
+
+  it("handles empty string", () => {
+    expect(escapeHtml("")).toBe("");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// unescapeGdbMiValue — exercised via formatGdbValueHtml
+// ---------------------------------------------------------------------------
+
+describe("formatGdbValueHtml — MI unescape", () => {
+  it("unescapes \\\\ (double backslash in MI) to single backslash", () => {
+    // MI encodes a literal backslash as \\
+    // JavaScript string "\\\\n" represents the 3-char sequence: backslash backslash n
+    // After unescape this becomes: backslash n → which is a literal \n in the scalar
+    const html = formatGdbValueHtml("{v = \\\\n}");
+    expect(html).toContain("\\n");
+  });
+
+  it('unescapes \\" (escaped quote in MI) to double quote', () => {
+    // MI encodes a literal " as \"
+    // JavaScript string '\\\"hello\\\"' represents the chars: \" h e l l o \"
+    // After unescape this becomes: "hello"
+    const html = formatGdbValueHtml('{msg = \\"hello\\"}');
+    expect(html).toContain('"hello"');
+  });
+
+  it("passes through \\n (MI newline escape) unchanged", () => {
+    // \\n in MI is not one of the two special cases (only \\ and \" are unescaped)
+    // so the backslash is kept as-is
+    const html = formatGdbValueHtml("{s = \\n}");
+    // The backslash is kept; HTML-escaping doesn't affect it
+    expect(html).toContain("\\n");
+  });
+
+  it("handles a trailing backslash at end of string (no following char)", () => {
+    // Edge case: backslash at the very last position of the string.
+    // The loop condition is `i + 1 < s.length`, so the backslash is output as-is.
+    const html = formatGdbValueHtml("{v = x\\}");
+    // The backslash is preserved in the output
+    expect(html).toContain("x\\");
+  });
+
+  it("renders plain string with no backslashes unchanged", () => {
+    const html = formatGdbValueHtml("{key = value}");
+    expect(html).toContain(">key<");
+    expect(html).toContain(">value<");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// splitTopLevel edge cases (exercised via parseGdbValue)
+// ---------------------------------------------------------------------------
+
+describe("parseGdbValue — splitTopLevel edge cases", () => {
+  it("returns empty struct for {,} (comma-only inner → empty parts list)", () => {
+    // splitTopLevel(","): ch=',' at depth 0 → part="".trim()="" → if(part) FALSE
+    // end: last="" → if(last) FALSE → returns []
+    // parseGdbValue: parts.length===0 → if(parts.length===0) TRUE branch taken
+    const node = parseGdbValue("{,}");
+    expect(node.kind).toBe("struct");
+    if (node.kind === "struct") expect(node.fields).toHaveLength(0);
+  });
+
+  it("returns empty struct for {,,} (multiple commas, no content)", () => {
+    const node = parseGdbValue("{,,}");
+    expect(node.kind).toBe("struct");
+    if (node.kind === "struct") expect(node.fields).toHaveLength(0);
+  });
+
+  it("handles anonymous complex member in a struct (isComplexValue branch)", () => {
+    // First part 'a = 1' matches STRUCT_FIELD_RE.
+    // Second part '{x = 2}' does NOT match STRUCT_FIELD_RE but IS a complex value.
+    // Exercises the `if (isComplexValue(part))` branch inside the struct field mapper.
+    const node = parseGdbValue("{a = 1, {x = 2}}");
+    expect(node.kind).toBe("struct");
+    if (node.kind === "struct") {
+      expect(node.fields).toHaveLength(2);
+      expect(node.fields[0].key).toBe("a");
+      expect(node.fields[1].key).toBe(""); // anonymous
+      expect(node.fields[1].value.kind).toBe("struct");
+    }
+  });
+
+  it("handles anonymous scalar member in a struct (plain fallback branch)", () => {
+    // First part 'a = 1' matches. Second part '99' is neither keyed nor complex.
+    // Exercises: return { key: "", value: { kind: "scalar", text: part } }
+    const node = parseGdbValue("{a = 1, 99}");
+    expect(node.kind).toBe("struct");
+    if (node.kind === "struct") {
+      expect(node.fields).toHaveLength(2);
+      expect(node.fields[1].key).toBe("");
+      expect(node.fields[1].value).toEqual({ kind: "scalar", text: "99" });
+    }
   });
 });

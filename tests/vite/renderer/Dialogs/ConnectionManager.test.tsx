@@ -10,6 +10,7 @@ import {
 
 const connectionManagerMocks = vi.hoisted(() => ({
   showDialog: vi.fn(),
+  deleteConnection: vi.fn(),
   hideDialog: false,
   viewProps: null as Record<string, unknown> | null,
 }));
@@ -36,7 +37,7 @@ vi.mock("../../../../src/renderer/Dialogs/useConnectionManagerController", () =>
     wslDistroChangeHandler: vi.fn(),
     connectionNameChangeHandler: vi.fn(),
     handleConnectionRowSelected: vi.fn(),
-    handleDeleteConnection: vi.fn(),
+    handleDeleteConnection: connectionManagerMocks.deleteConnection,
     dialogCloseFunc: vi.fn(),
     dialogOpenFunc: vi.fn(),
     showDialog: connectionManagerMocks.showDialog,
@@ -66,5 +67,15 @@ describe("ConnectionManager", () => {
     });
 
     expect(connectionManagerMocks.showDialog).toHaveBeenCalledWith(onClose);
+  });
+
+  it("handleDeleteConnection wrapper calls the controller delete handler", () => {
+    render(<ConnectionManager />);
+
+    act(() => {
+      (connectionManagerMocks.viewProps?.handleDeleteConnection as (i: number) => void)(2);
+    });
+
+    expect(connectionManagerMocks.deleteConnection).toHaveBeenCalledWith(2);
   });
 });

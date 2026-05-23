@@ -35,6 +35,18 @@ run(`HTML violations report → reports/coupling/report.html`, () => {
     `npx depcruise --config "${DEPCRUISE_CONFIG}" "${SRC}" --output-type err-html --output-to "${REPORT_HTML}"`,
     { stdio: ["ignore", "ignore", "pipe"] }
   );
+
+  // Fix relative src/ links so they open the correct file.
+  // dependency-cruiser emits href="src/..." relative to the project root,
+  // but the HTML lives in reports/coupling/, so we rewrite them to
+  // vscode://file/ URIs which work when the report is viewed inside VS Code.
+  const rootUri = ROOT.replace(/\\/g, "/");
+  let html = fs.readFileSync(REPORT_HTML, "utf8");
+  html = html.replace(
+    /href="(src\/[^"]+)"/g,
+    (_, p) => `href="vscode://file/${rootUri}/${p}"`
+  );
+  fs.writeFileSync(REPORT_HTML, html, "utf8");
 });
 
 run(`Dependency graph → reports/coupling/graph.svg`, () => {

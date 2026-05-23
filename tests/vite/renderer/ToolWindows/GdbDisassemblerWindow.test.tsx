@@ -50,6 +50,10 @@ vi.mock("../../../../src/renderer/utilities/useGridColumnState", () => ({
 const mockUnsubDisasm = vi.fn();
 const mockUnsubFunctions = vi.fn();
 const mockUnsubRegisters = vi.fn();
+let capturedDisasmCallback: ((data: unknown) => void) | null = null;
+let capturedFunctionsCallback: ((data: unknown) => void) | null = null;
+let capturedRegistersCallback: ((data: unknown) => void) | null = null;
+
 type DisasmTestWindow = Window & {
   ipcToMain: {
     debuggerData: {
@@ -67,12 +71,24 @@ beforeEach(() => {
   mockUnsubDisasm.mockReset();
   mockUnsubFunctions.mockReset();
   mockUnsubRegisters.mockReset();
+  capturedDisasmCallback = null;
+  capturedFunctionsCallback = null;
+  capturedRegistersCallback = null;
 
   (window as unknown as Record<string, unknown>).ipcToMain = {
     debuggerData: {
-      disassembly: vi.fn(() => mockUnsubDisasm),
-      functions: vi.fn(() => mockUnsubFunctions),
-      registers: vi.fn(() => mockUnsubRegisters),
+      disassembly: vi.fn((cb: (data: unknown) => void) => {
+        capturedDisasmCallback = cb;
+        return mockUnsubDisasm;
+      }),
+      functions: vi.fn((cb: (data: unknown) => void) => {
+        capturedFunctionsCallback = cb;
+        return mockUnsubFunctions;
+      }),
+      registers: vi.fn((cb: (data: unknown) => void) => {
+        capturedRegistersCallback = cb;
+        return mockUnsubRegisters;
+      }),
     },
     commands: {
       debugger: { sendGdbCommand: vi.fn() },
@@ -180,6 +196,67 @@ describe("GdbDisassemblerWindow branch coverage", () => {
     expect(ipc.commands.debugger.sendGdbCommand).toHaveBeenCalledWith(
       expect.stringContaining("-data-disassemble -s $main"),
     );
+  });
+});
+
+describe("GdbDisassemblerWindow IPC data callbacks", () => {
+  it("disassembly IPC callback fires without error", () => {
+    render(<GdbDisassemblerWindow />);
+    act(() => {
+      capturedDisasmCallback?.([
+        {
+          address: "0x1000",
+          func: "main",
+          offset: "+0",
+          opcodes: "55",
+          instructions: [{ type: "text", text: "push rbp" }],
+        },
+      ]);
+    });
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("disassembly IPC callback with empty array fires without error", () => {
+    render(<GdbDisassemblerWindow />);
+    act(() => {
+      capturedDisasmCallback?.([]);
+    });
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("functions IPC callback updates function list without error", () => {
+    render(<GdbDisassemblerWindow />);
+    act(() => {
+      capturedFunctionsCallback?.([{ function: "main" }, { function: "foo" }]);
+    });
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("functions IPC callback with empty array fires without error", () => {
+    render(<GdbDisassemblerWindow />);
+    act(() => {
+      capturedFunctionsCallback?.([]);
+    });
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("registers IPC callback stores register names without error", () => {
+    render(<GdbDisassemblerWindow />);
+    act(() => {
+      capturedRegistersCallback?.(
+        new Map([
+          ["0", { name: "rax", value: "0x0" }],
+          ["1", { name: "rbx", value: "0x1" }],
+        ]),
+      );
+    });
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("unsubscribes from registers on unmount", () => {
+    const { unmount } = render(<GdbDisassemblerWindow />);
+    unmount();
+    expect(mockUnsubRegisters).toHaveBeenCalledTimes(1);
   });
 });
 

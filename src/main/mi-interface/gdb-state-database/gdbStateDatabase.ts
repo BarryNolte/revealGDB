@@ -792,15 +792,4 @@ export class gdbStateDatabase extends EventEmitter {
       lineVars: Array.from(map.lineVars.entries()),
     };
   }
-
-  // Debugging
-  /**
-   * Performs dump as part of this module's public API.
-   *
-   * @remarks
-   * Participates in the MI processing pipeline that updates debugger state and notifications.
-   */
-  dump(): string[] {
-    return this.lifecycle.dump();
-  }
 }

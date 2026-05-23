@@ -50,8 +50,22 @@ function loadCoverageInputs() {
     coverageMap.merge(readJson(VITEST_FINAL));
   }
 
+  // istanbul-lib-coverage renumbers statement IDs when merging two FileCoverage objects
+  // for the same file if their statementMap locations differ. Vitest instruments TypeScript
+  // directly while Playwright instruments the Vite bundle (source-mapped back), producing
+  // incompatible statementMaps. Merging both causes statement counts to double, halving the
+  // reported coverage percentage. To avoid this, only add Playwright coverage for files that
+  // vitest did not cover.
+  const vitestFiles = new Set(coverageMap.files());
+
   for (const filePath of listJsonFiles(PLAYWRIGHT_DIR)) {
-    coverageMap.merge(readJson(filePath));
+    const data = readJson(filePath);
+    const playwrightOnly = Object.fromEntries(
+      Object.entries(data).filter(([key]) => !vitestFiles.has(key))
+    );
+    if (Object.keys(playwrightOnly).length > 0) {
+      coverageMap.merge(playwrightOnly);
+    }
   }
 
   return coverageMap;

@@ -306,4 +306,332 @@ describe("useConnectionDialogController", () => {
     document.body.removeChild(outsideButton);
     document.body.removeChild(outputDiv);
   });
+
+  it("normalizeConnections returns empty array for non-array connections value", async () => {
+    vi.useFakeTimers();
+    const connDialog = { show: vi.fn(), hide: vi.fn() };
+    const outputDiv = document.createElement("div");
+    document.body.appendChild(outputDiv);
+
+    Object.defineProperty(window, "ipcToMain", {
+      configurable: true,
+      writable: true,
+      value: {
+        queries: {
+          app: {
+            // Return connections as a non-array value (object) to trigger the !Array.isArray branch
+            getSettings: vi.fn().mockResolvedValue({ connections: "not-an-array" }),
+          },
+        },
+        notifications: {
+          render: vi.fn(() => vi.fn()),
+          connectionStatus: vi.fn(() => vi.fn()),
+        },
+        commands: { app: { notifyMain: vi.fn() } },
+      },
+    });
+
+    const { result } = renderHook(() =>
+      useConnectionDialogController({
+        connectionsRef: undefined,
+        connDlgRef: { current: connDialog } as never,
+        outputRef: { current: outputDiv } as never,
+      }),
+    );
+
+    await act(async () => {
+      await vi.runAllTimersAsync();
+    });
+
+    // normalizeConnections returned [] because connections was not an array
+    expect(result.current.definedConnections).toEqual([]);
+
+    document.body.removeChild(outputDiv);
+  });
+
+  it("openConnectionManagerClickHandler shows dialog when connectionsRef is null", async () => {
+    vi.useFakeTimers();
+    const connDialog = { show: vi.fn(), hide: vi.fn() };
+    const outputDiv = document.createElement("div");
+    document.body.appendChild(outputDiv);
+    const connectionsButton = document.createElement("button");
+    connectionsButton.id = "connectionsButton";
+    document.body.appendChild(connectionsButton);
+
+    Object.defineProperty(window, "ipcToMain", {
+      configurable: true,
+      writable: true,
+      value: {
+        queries: {
+          app: {
+            getSettings: vi.fn().mockResolvedValue({ connections: [] }),
+          },
+        },
+        notifications: {
+          render: vi.fn(() => vi.fn()),
+          connectionStatus: vi.fn(() => vi.fn()),
+        },
+        commands: { app: { notifyMain: vi.fn() } },
+      },
+    });
+
+    renderHook(() =>
+      useConnectionDialogController({
+        // connectionsRef is undefined — its .current is falsy → triggers show + return
+        connectionsRef: undefined,
+        connDlgRef: { current: connDialog } as never,
+        outputRef: { current: outputDiv } as never,
+      }),
+    );
+
+    await act(async () => {
+      await vi.runAllTimersAsync();
+    });
+
+    // Clicking connectionsButton triggers openConnectionManagerClickHandler
+    act(() => {
+      connectionsButton.click();
+    });
+
+    await act(async () => {
+      await vi.runAllTimersAsync();
+    });
+
+    // The handler should call hide first, then (because connectionsRef is null) call show
+    expect(connDialog.hide).toHaveBeenCalled();
+    expect(connDialog.show).toHaveBeenCalled();
+
+    document.body.removeChild(connectionsButton);
+    document.body.removeChild(outputDiv);
+  });
+
+  it("document click handler skips non-Element targets (covers line 217)", async () => {
+    vi.useFakeTimers();
+    const connDialog = { show: vi.fn(), hide: vi.fn() };
+    const outputDiv = document.createElement("div");
+    document.body.appendChild(outputDiv);
+
+    Object.defineProperty(window, "ipcToMain", {
+      configurable: true,
+      writable: true,
+      value: {
+        queries: {
+          app: {
+            getSettings: vi.fn().mockResolvedValue({ connections: [] }),
+          },
+        },
+        notifications: {
+          render: vi.fn(() => vi.fn()),
+          connectionStatus: vi.fn(() => vi.fn()),
+        },
+        commands: { app: { notifyMain: vi.fn() } },
+      },
+    });
+
+    renderHook(() =>
+      useConnectionDialogController({
+        connectionsRef: undefined,
+        connDlgRef: { current: connDialog } as never,
+        outputRef: { current: outputDiv } as never,
+      }),
+    );
+
+    await act(async () => {
+      await vi.runAllTimersAsync();
+    });
+
+    // Dispatch a click event directly on the document (target = document, not an Element)
+    // This triggers the !(eventTarget instanceof Element) → return early branch
+    act(() => {
+      document.dispatchEvent(new MouseEvent("click", { bubbles: false }));
+    });
+
+    // connDialog methods should NOT have been called (handler returned early)
+    expect(connDialog.hide).not.toHaveBeenCalled();
+
+    document.body.removeChild(outputDiv);
+  });
+
+  it("normalizeConnections generates fallback name for connections without a name property", async () => {
+    vi.useFakeTimers();
+    const connDialog = { show: vi.fn(), hide: vi.fn() };
+    const outputDiv = document.createElement("div");
+    document.body.appendChild(outputDiv);
+
+    Object.defineProperty(window, "ipcToMain", {
+      configurable: true,
+      writable: true,
+      value: {
+        queries: {
+          app: {
+            // connection object has no 'name' → name ?? `Connection ${index+1}` branch
+            getSettings: vi
+              .fn()
+              .mockResolvedValue({ connections: [{ shell: "wsl" }, { shell: "native-gdb" }] }),
+          },
+        },
+        notifications: {
+          render: vi.fn(() => vi.fn()),
+          connectionStatus: vi.fn(() => vi.fn()),
+        },
+        commands: { app: { notifyMain: vi.fn() } },
+      },
+    });
+
+    const { result } = renderHook(() =>
+      useConnectionDialogController({
+        connectionsRef: undefined,
+        connDlgRef: { current: connDialog } as never,
+        outputRef: { current: outputDiv } as never,
+      }),
+    );
+
+    await act(async () => {
+      await vi.runAllTimersAsync();
+    });
+
+    expect(result.current.definedConnections[0]?.name).toBe("Connection 1");
+    expect(result.current.definedConnections[1]?.name).toBe("Connection 2");
+
+    document.body.removeChild(outputDiv);
+  });
+
+  it("console-capture with error=true adds consoleError class to the output div", async () => {
+    const statusSubscriptions: Array<(msg: unknown) => void> = [];
+    const connDialog = { show: vi.fn(), hide: vi.fn() };
+    const outputDiv = document.createElement("div");
+    document.body.appendChild(outputDiv);
+
+    Object.defineProperty(window, "ipcToMain", {
+      configurable: true,
+      writable: true,
+      value: {
+        queries: {
+          app: {
+            getSettings: vi.fn().mockResolvedValue({ connections: [] }),
+          },
+        },
+        notifications: {
+          render: vi.fn(() => vi.fn()),
+          connectionStatus: vi.fn((callback: (msg: unknown) => void) => {
+            statusSubscriptions.push(callback);
+            return vi.fn();
+          }),
+        },
+        commands: { app: { notifyMain: vi.fn() } },
+      },
+    });
+
+    renderHook(() =>
+      useConnectionDialogController({
+        connectionsRef: undefined,
+        connDlgRef: { current: connDialog } as never,
+        outputRef: { current: outputDiv } as never,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(statusSubscriptions.length).toBeGreaterThan(0);
+    });
+
+    act(() => {
+      statusSubscriptions[0]?.(["console-capture", { error: true, line: "error happened" }]);
+    });
+
+    const errorDiv = outputDiv.querySelector(".consoleError");
+    expect(errorDiv).not.toBeNull();
+    expect(errorDiv?.textContent).toBe("error happened");
+
+    document.body.removeChild(outputDiv);
+  });
+
+  it("onSelectedConnectionChange with null triggers save-last-used-connection with null data", async () => {
+    const notifyMain = vi.fn();
+    const connDialog = { show: vi.fn(), hide: vi.fn() };
+    const outputDiv = document.createElement("div");
+    document.body.appendChild(outputDiv);
+
+    Object.defineProperty(window, "ipcToMain", {
+      configurable: true,
+      writable: true,
+      value: {
+        queries: {
+          app: {
+            getSettings: vi.fn().mockResolvedValue({ connections: [{ name: "A" }] }),
+          },
+        },
+        notifications: {
+          render: vi.fn(() => vi.fn()),
+          connectionStatus: vi.fn(() => vi.fn()),
+        },
+        commands: { app: { notifyMain } },
+      },
+    });
+
+    const { result } = renderHook(() =>
+      useConnectionDialogController({
+        connectionsRef: undefined,
+        connDlgRef: { current: connDialog } as never,
+        outputRef: { current: outputDiv } as never,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.definedConnections).toHaveLength(1);
+    });
+
+    act(() => {
+      // Pass null to trigger the (itemData as DefinedConnection | undefined) ?? null branch
+      result.current.onSelectedConnectionChange(null);
+    });
+
+    expect(notifyMain).toHaveBeenCalledWith({
+      command: "save-last-used-connection",
+      data: null,
+    });
+
+    document.body.removeChild(outputDiv);
+  });
+
+  it("resetDialogState is safe when outputRef.current is null", async () => {
+    const connDialog = { show: vi.fn(), hide: vi.fn() };
+
+    Object.defineProperty(window, "ipcToMain", {
+      configurable: true,
+      writable: true,
+      value: {
+        queries: {
+          app: {
+            getSettings: vi.fn().mockResolvedValue({ connections: [] }),
+          },
+        },
+        notifications: {
+          render: vi.fn(() => vi.fn()),
+          connectionStatus: vi.fn(() => vi.fn()),
+        },
+        commands: { app: { notifyMain: vi.fn() } },
+      },
+    });
+
+    const { result } = renderHook(() =>
+      useConnectionDialogController({
+        connectionsRef: undefined,
+        connDlgRef: { current: connDialog } as never,
+        // outputRef.current is null → resetDialogState if(outputRef.current) false branch
+        outputRef: { current: null } as never,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.definedConnections).toHaveLength(0);
+    });
+
+    // showDialog calls resetDialogState which has the if(outputRef.current) check
+    act(() => {
+      result.current.showDialog();
+    });
+
+    // If we get here without throwing, the false branch was safely handled
+    expect(connDialog.show).toHaveBeenCalled();
+  });
 });

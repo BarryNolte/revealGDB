@@ -20,8 +20,8 @@ vi.mock("../../../../src/renderer/ToolWindows/GdbSourceWindowModel", () => ({
   }),
 }));
 
-import { sendTextToClipboard } from "../../../../src/renderer/utilities/Clipboard";
 import { useSourceBreakpointInteractions } from "../../../../src/renderer/ToolWindows/useSourceBreakpointInteractions";
+import { sendTextToClipboard } from "../../../../src/renderer/utilities/Clipboard";
 
 function makeFakeEditor(breakpoints: Record<number, string> = {}) {
   const session = {
@@ -328,6 +328,237 @@ describe("useSourceBreakpointInteractions", () => {
     });
     expect(window.ipcToMain.commands.debugger.sendGdbCommand).toHaveBeenCalledWith(
       expect.stringContaining("jump"),
+    );
+  });
+
+  it("onGutterMenuSelect bp-jump-and-stop sends tbreak and jump", async () => {
+    const fakeEditor = makeFakeEditor();
+    const editorRef = { current: { editor: fakeEditor } };
+    const fullFilePathRef = { current: "/src/main.c" };
+    const { result } = renderHook(() =>
+      useSourceBreakpointInteractions(editorRef as never, fullFilePathRef),
+    );
+    await act(async () => {});
+    act(() => {
+      result.current.onGutterMenuSelect({ item: { id: "bp-jump-and-stop" } } as never);
+    });
+    expect(window.ipcToMain.commands.debugger.sendGdbCommand).toHaveBeenCalledWith(
+      expect.stringContaining("tbreak"),
+    );
+    expect(window.ipcToMain.commands.debugger.sendGdbCommand).toHaveBeenCalledWith(
+      expect.stringContaining("jump"),
+    );
+  });
+
+  it("gutterclick listener toggles breakpoint at clicked row", async () => {
+    const fakeEditor = makeFakeEditor({});
+    let capturedGutterHandler: ((e: unknown) => void) | null = null;
+    fakeEditor.on = vi.fn((event: string, handler: (e: unknown) => void) => {
+      if (event === "gutterclick") capturedGutterHandler = handler;
+    });
+
+    const editorRef = { current: { editor: fakeEditor } };
+    const fullFilePathRef = { current: "/src/main.c" };
+    renderHook(() => useSourceBreakpointInteractions(editorRef as never, fullFilePathRef));
+    await act(async () => {});
+
+    expect(capturedGutterHandler).not.toBeNull();
+
+    // Simulate a valid gutter click on row 3
+    const mockTarget = { className: "ace_gutter-cell", getBoundingClientRect: () => ({ left: 0 }) };
+    const fakeEvent = {
+      domEvent: { target: mockTarget },
+      clientX: 10,
+      editor: fakeEditor,
+      getDocumentPosition: vi.fn(() => ({ row: 3 })),
+      stop: vi.fn(),
+    };
+    act(() => {
+      capturedGutterHandler!(fakeEvent);
+    });
+
+    expect(window.ipcToMain.commands.debugger.sendGdbCommand).toHaveBeenCalledWith(
+      "break /src/main.c:4",
+    );
+    expect(fakeEvent.stop).toHaveBeenCalled();
+  });
+
+  it("gutterclick listener skips when target is not ace_gutter-cell", async () => {
+    const fakeEditor = makeFakeEditor({});
+    let capturedGutterHandler: ((e: unknown) => void) | null = null;
+    fakeEditor.on = vi.fn((event: string, handler: (e: unknown) => void) => {
+      if (event === "gutterclick") capturedGutterHandler = handler;
+    });
+
+    const editorRef = { current: { editor: fakeEditor } };
+    const fullFilePathRef = { current: "/src/main.c" };
+    renderHook(() => useSourceBreakpointInteractions(editorRef as never, fullFilePathRef));
+    await act(async () => {});
+
+    const fakeEvent = {
+      domEvent: { target: { className: "ace_line", getBoundingClientRect: () => ({ left: 0 }) } },
+      clientX: 10,
+      editor: fakeEditor,
+      getDocumentPosition: vi.fn(() => ({ row: 3 })),
+      stop: vi.fn(),
+    };
+    act(() => {
+      capturedGutterHandler!(fakeEvent);
+    });
+
+    expect(window.ipcToMain.commands.debugger.sendGdbCommand).not.toHaveBeenCalled();
+  });
+
+  it("gutterclick listener skips when editor is not focused", async () => {
+    const fakeEditor = makeFakeEditor({});
+    fakeEditor.isFocused = vi.fn(() => false);
+    let capturedGutterHandler: ((e: unknown) => void) | null = null;
+    fakeEditor.on = vi.fn((event: string, handler: (e: unknown) => void) => {
+      if (event === "gutterclick") capturedGutterHandler = handler;
+    });
+
+    const editorRef = { current: { editor: fakeEditor } };
+    const fullFilePathRef = { current: "/src/main.c" };
+    renderHook(() => useSourceBreakpointInteractions(editorRef as never, fullFilePathRef));
+    await act(async () => {});
+
+    const fakeEvent = {
+      domEvent: {
+        target: { className: "ace_gutter-cell", getBoundingClientRect: () => ({ left: 0 }) },
+      },
+      clientX: 10,
+      editor: fakeEditor,
+      getDocumentPosition: vi.fn(() => ({ row: 3 })),
+      stop: vi.fn(),
+    };
+    act(() => {
+      capturedGutterHandler!(fakeEvent);
+    });
+
+    expect(window.ipcToMain.commands.debugger.sendGdbCommand).not.toHaveBeenCalled();
+  });
+
+  it("gutterclick listener skips when clientX is too far right of gutter cell", async () => {
+    const fakeEditor = makeFakeEditor({});
+    let capturedGutterHandler: ((e: unknown) => void) | null = null;
+    fakeEditor.on = vi.fn((event: string, handler: (e: unknown) => void) => {
+      if (event === "gutterclick") capturedGutterHandler = handler;
+    });
+
+    const editorRef = { current: { editor: fakeEditor } };
+    const fullFilePathRef = { current: "/src/main.c" };
+    renderHook(() => useSourceBreakpointInteractions(editorRef as never, fullFilePathRef));
+    await act(async () => {});
+
+    const fakeEvent = {
+      domEvent: {
+        target: { className: "ace_gutter-cell", getBoundingClientRect: () => ({ left: 0 }) },
+      },
+      clientX: 100, // > 25 + 0 → skip
+      editor: fakeEditor,
+      getDocumentPosition: vi.fn(() => ({ row: 3 })),
+      stop: vi.fn(),
+    };
+    act(() => {
+      capturedGutterHandler!(fakeEvent);
+    });
+
+    expect(window.ipcToMain.commands.debugger.sendGdbCommand).not.toHaveBeenCalled();
+  });
+
+  it("F1 command notifies main with command-entry", async () => {
+    const fakeEditor = makeFakeEditor();
+    const commands: { name: string; exec: (e: unknown) => void }[] = [];
+    fakeEditor.commands.addCommand = vi.fn((cmd: { name: string; exec: (e: unknown) => void }) => {
+      commands.push(cmd);
+    });
+
+    const editorRef = { current: { editor: fakeEditor } };
+    const fullFilePathRef = { current: "/src/main.c" };
+    renderHook(() => useSourceBreakpointInteractions(editorRef as never, fullFilePathRef));
+    await act(async () => {});
+
+    const f1 = commands.find((c) => c.name === "F1_Goto_Command_Entry");
+    expect(f1).toBeDefined();
+    act(() => {
+      f1!.exec(fakeEditor);
+    });
+    expect(window.ipcToMain.commands.app.notifyMain).toHaveBeenCalledWith({
+      command: "command-entry",
+    });
+  });
+
+  it("onMenuSelect uses cursor row when rightClickedRowRef is still -1 (default)", async () => {
+    const fakeEditor = makeFakeEditor();
+    fakeEditor.getCursorPosition = vi.fn(() => ({ row: 7 }));
+    const editorRef = { current: { editor: fakeEditor } };
+    const fullFilePathRef = { current: "/src/main.c" };
+    const { result } = renderHook(() =>
+      useSourceBreakpointInteractions(editorRef as never, fullFilePathRef),
+    );
+    await act(async () => {});
+    // Do NOT set rightClickedRowRef — stays at -1 → uses getCursorPosition().row
+    act(() => {
+      result.current.onMenuSelect({ item: { id: "bp-set" } } as never);
+    });
+    expect(window.ipcToMain.commands.debugger.sendGdbCommand).toHaveBeenCalledWith(
+      "break /src/main.c:8",
+    );
+  });
+
+  it("onMenuSelect copy uses empty string when getSelectedText returns undefined", async () => {
+    const fakeEditor = makeFakeEditor();
+    fakeEditor.getSelectedText = vi.fn(() => undefined as unknown as string);
+    const editorRef = { current: { editor: fakeEditor } };
+    const fullFilePathRef = { current: "/src/main.c" };
+    const { result } = renderHook(() =>
+      useSourceBreakpointInteractions(editorRef as never, fullFilePathRef),
+    );
+    await act(async () => {});
+    act(() => {
+      result.current.onMenuSelect({ item: { id: "copy" } } as never);
+    });
+    expect(sendTextToClipboard).toHaveBeenCalledWith("");
+  });
+
+  it("onMenuSelect falls back to row 0 when editorRef.current is null (??0 branch)", async () => {
+    // editorRef.current is null → editorRef.current?.editor.getCursorPosition().row
+    // evaluates to undefined → ?? 0 gives 0
+    const editorRef = { current: null as unknown as { editor: ReturnType<typeof makeFakeEditor> } };
+    const fullFilePathRef = { current: "/src/main.c" };
+    const { result } = renderHook(() =>
+      useSourceBreakpointInteractions(editorRef as never, fullFilePathRef),
+    );
+    await act(async () => {});
+    // rightClickedRowRef = -1 (default) AND editorRef.current = null → row = 0
+    act(() => {
+      result.current.onMenuSelect({ item: { id: "bp-set" } } as never);
+    });
+    expect(window.ipcToMain.commands.debugger.sendGdbCommand).toHaveBeenCalledWith(
+      "break /src/main.c:1",
+    );
+  });
+
+  it("F9 command toggles breakpoint at cursor row", async () => {
+    const fakeEditor = makeFakeEditor({});
+    const commands: { name: string; exec: (e: unknown) => void }[] = [];
+    fakeEditor.commands.addCommand = vi.fn((cmd: { name: string; exec: (e: unknown) => void }) => {
+      commands.push(cmd);
+    });
+
+    const editorRef = { current: { editor: fakeEditor } };
+    const fullFilePathRef = { current: "/src/main.c" };
+    renderHook(() => useSourceBreakpointInteractions(editorRef as never, fullFilePathRef));
+    await act(async () => {});
+
+    const f9 = commands.find((c) => c.name === "F9_Breakpoint_Toggle");
+    expect(f9).toBeDefined();
+    act(() => {
+      f9!.exec(fakeEditor as never);
+    });
+    // row 5 (from getCursorPosition mock) → line 6
+    expect(window.ipcToMain.commands.debugger.sendGdbCommand).toHaveBeenCalledWith(
+      "break /src/main.c:6",
     );
   });
 

@@ -73,6 +73,18 @@ vi.mock("@syncfusion/ej2-react-grids", () => ({
     const columns = flatten(children);
     return (
       <div data-testid="connection-state-grid">
+        <div data-testid="grid-headers">
+          {columns.map((column, columnIndex) => {
+            if (typeof column.props.headerTemplate === "function") {
+              return (
+                <span key={`header-${columnIndex}`}>
+                  {column.props.headerTemplate({ headerText: column.props.headerText ?? "" })}
+                </span>
+              );
+            }
+            return null;
+          })}
+        </div>
         {dataSource.map((row, index) => (
           <div key={`row-${index}`}>
             {columns.map((column, columnIndex) => {

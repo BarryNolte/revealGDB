@@ -163,4 +163,46 @@ describe("doCutCopyPaste", () => {
     const input = makeInput("value", 0, 0);
     expect(() => doCutCopyPaste("Unknown", input)).not.toThrow();
   });
+
+  it("Copy with null selection uses empty string", async () => {
+    vi.spyOn(window, "getSelection").mockReturnValue(null);
+    const input = makeInput("hello", 0, 0);
+    doCutCopyPaste("Copy", input);
+    await Promise.resolve();
+    expect(writeTextMock).toHaveBeenCalledWith("");
+  });
+
+  it("Cut uses element.value.length when selectionStart is null", async () => {
+    const input = makeInput("hello world", 0, 5);
+    Object.defineProperty(input, "selectionStart", { get: () => null, configurable: true });
+    Object.defineProperty(input, "selectionEnd", { get: () => null, configurable: true });
+
+    vi.spyOn(window, "getSelection").mockReturnValue({ toString: () => "" } as Selection);
+
+    doCutCopyPaste("Cut", input);
+    await Promise.resolve();
+
+    // When both start and end are null, falls back to value.length → removes nothing
+    expect(input.value).toBe("hello world");
+  });
+
+  it("Paste uses element.value.length as fallback when selectionStart/End are null", async () => {
+    const input = makeInput("hello", 0, 0);
+    Object.defineProperty(input, "selectionStart", { get: () => null, configurable: true });
+    Object.defineProperty(input, "selectionEnd", { get: () => null, configurable: true });
+
+    doCutCopyPaste("Paste", input);
+    await new Promise((r) => setTimeout(r, 0));
+
+    // clipboard text "clipboard text" inserted at end (length 5)
+    expect(input.value).toBe("helloclipboard text");
+  });
+
+  it("Paste does not throw when readText rejects", async () => {
+    readTextMock.mockRejectedValue(new Error("denied"));
+    const input = makeInput("hello", 0, 0);
+    expect(() => doCutCopyPaste("Paste", input)).not.toThrow();
+    await new Promise((r) => setTimeout(r, 0));
+    // No crash — the .catch handler swallows the error
+  });
 });

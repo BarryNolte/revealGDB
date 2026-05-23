@@ -20,6 +20,9 @@ vi.mock("electron", () => ({
   screen: {
     getAllDisplays: vi.fn(() => []),
   },
+  shell: {
+    openExternal: vi.fn(() => Promise.resolve()),
+  },
 }));
 
 // Mock main.ts to provide a mainWindow object
@@ -34,4 +37,12 @@ vi.mock("./src/main/main", () => ({
   isWin: true,
   isLinux: false,
   gdbAppInfo: new Map(),
+  gdbInterface: {
+    gdbDB: {
+      stackFrames: [],
+      breakpointList: vi.fn(() => []),
+      registerList: vi.fn(() => []),
+      gdbFunctionNames: new Map(),
+    },
+  },
 }));

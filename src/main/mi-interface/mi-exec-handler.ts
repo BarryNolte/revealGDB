@@ -38,88 +38,92 @@ export class MiExecAsyncHandler {
     const data = chunks?.groups?.data || "";
 
     switch (result) {
-      case "running": {
-        const tid = this.rgxThreadIdExtractor.exec(data)?.groups?.tid || undefined;
-
-        this.host.gdbDB.startThreads(tid);
-        sendToRenderer("notify-render", { command: "status-running" });
+      case "running":
+        this.handleRunning(data);
         break;
-      }
-      case "stopped": {
-        const tid = this.rgxThreadIdExtractor.exec(data)?.groups?.tid || undefined;
-        const stoppedThreads =
-          this.rgxStoppedThreadsExtractor.exec(data)?.groups?.stoppedThreads || undefined;
-        const core = this.rgxCoreExtractor.exec(data)?.groups?.core || undefined;
-        const reason = this.rgxReasonExtractor.exec(data)?.groups?.reason || undefined;
-        // const fullname = this.rgxFrameFullname.exec(data)?.groups?.fullname ?? "";
-
-        switch (reason) {
-          case undefined: {
-            this.host.gdbDB.stopThreads(tid, stoppedThreads);
-            break;
-          }
-          case "end-stepping-range":
-          case "breakpoint-hit": {
-            // const bph = this.rgxBphExtractor.exec(data);
-            // const disp = bph?.groups?.disp || undefined;
-            // const bphBkptno = bph?.groups?.bkptno || undefined;
-            // console.log(`ExecAsyncRecord (stopped): ${disp} ${bphBkptno}`);
-            break;
-          }
-          case "exited-signalled": {
-            const signalName = this.rgxSignalName.exec(data)?.groups?.signalName || "";
-            const signalMeaning = this.rgxSignalMeaning.exec(data)?.groups?.signalMeaning || "";
-            this.host.emit(
-              LOG_STREAM,
-              `*stopped reason="exited-signalled" signal-name="${signalName}" signal-meaning="${signalMeaning}" core="${core}"`,
-            );
-            break;
-          }
-          case "signal-received": {
-            const signalName = this.rgxSignalName.exec(data)?.groups?.signalName || "";
-            const signalMeaning = this.rgxSignalMeaning.exec(data)?.groups?.signalMeaning || "";
-            this.host.emit(
-              LOG_STREAM,
-              `*stopped reason="signal-received" signal-name="${signalName}" signal-meaning="${signalMeaning}" core="${core}"`,
-            );
-            break;
-          }
-          case "exited": {
-            const exitCode = this.rgxExitCode.exec(data)?.groups?.exitCode || "";
-            this.host.emit(
-              LOG_STREAM,
-              `*stopped reason="exited" exit-code="${exitCode}" core="${core}"`,
-            );
-            break;
-          }
-          case "watchpoint-trigger":
-          case "read-watchpoint-trigger":
-          case "access-watchpoint-trigger":
-          case "function-finished":
-          case "location-reached":
-          case "watchpoint-scope":
-          case "exited-normally":
-          case "solib-event":
-          case "fork":
-          case "vfork":
-          case "syscall-entry":
-          case "syscall-return":
-          case "exec":
-          case "no-history":
-          default:
-            break;
-        }
-
-        this.host.emit("gdb-stopped");
-        sendToRenderer("notify-render", { command: "status-stopped" });
+      case "stopped":
+        this.handleStopped(data);
         break;
-      }
-      default: {
+      default:
         // console.error(`ExecAsyncRecord (Unknown): ${result} --> ${data}`);
         return false;
-      }
     }
 
     return true;
+  }
+
+  private handleRunning(data: string): void {
+    const tid = this.rgxThreadIdExtractor.exec(data)?.groups?.tid || undefined;
+    this.host.gdbDB.startThreads(tid);
+    sendToRenderer("notify-render", { command: "status-running" });
+  }
+
+  private handleStopped(data: string): void {
+    const tid = this.rgxThreadIdExtractor.exec(data)?.groups?.tid || undefined;
+    const stoppedThreads =
+      this.rgxStoppedThreadsExtractor.exec(data)?.groups?.stoppedThreads || undefined;
+    const core = this.rgxCoreExtractor.exec(data)?.groups?.core || undefined;
+    const reason = this.rgxReasonExtractor.exec(data)?.groups?.reason || undefined;
+    // const fullname = this.rgxFrameFullname.exec(data)?.groups?.fullname ?? "";
+
+    this.handleStoppedReason(reason, data, tid, stoppedThreads, core);
+
+    this.host.emit("gdb-stopped");
+    sendToRenderer("notify-render", { command: "status-stopped" });
+  }
+
+  private handleStoppedReason(
+    reason: string | undefined,
+    data: string,
+    tid: string | undefined,
+    stoppedThreads: string | undefined,
+    core: string | undefined,
+  ): void {
+    switch (reason) {
+      case undefined: {
+        this.host.gdbDB.stopThreads(tid, stoppedThreads);
+        break;
+      }
+      case "end-stepping-range":
+      case "breakpoint-hit": {
+        // const bph = this.rgxBphExtractor.exec(data);
+        // const disp = bph?.groups?.disp || undefined;
+        // const bphBkptno = bph?.groups?.bkptno || undefined;
+        // console.log(`ExecAsyncRecord (stopped): ${disp} ${bphBkptno}`);
+        break;
+      }
+      case "exited-signalled":
+      case "signal-received": {
+        this.handleSignalStopped(reason, data, core);
+        break;
+      }
+      case "exited": {
+        const exitCode = this.rgxExitCode.exec(data)?.groups?.exitCode || "";
+        this.host.emit(
+          LOG_STREAM,
+          `*stopped reason="exited" exit-code="${exitCode}" core="${core}"`,
+        );
+        break;
+      }
+      // known but unhandled: watchpoint-trigger, read-watchpoint-trigger,
+      // access-watchpoint-trigger, function-finished, location-reached,
+      // watchpoint-scope, exited-normally, solib-event, fork, vfork,
+      // syscall-entry, syscall-return, exec, no-history
+      default:
+        this.host.emit(
+          LOG_STREAM,
+          `*stopped reason="${reason}" data="${data}" tid="${tid}" stopped-threads="${stoppedThreads}" core="${core}"`,
+        );
+        break;
+    }
+  }
+
+  private handleSignalStopped(reason: string, data: string, core: string | undefined): void {
+    const signalName = this.rgxSignalName.exec(data)?.groups?.signalName || "";
+    const signalMeaning = this.rgxSignalMeaning.exec(data)?.groups?.signalMeaning || "";
+    this.host.emit(
+      LOG_STREAM,
+      `*stopped reason="${reason}" signal-name="${signalName}" signal-meaning="${signalMeaning}" core="${core}"`,
+    );
   }
 }

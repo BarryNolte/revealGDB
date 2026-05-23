@@ -5,16 +5,121 @@
  */
 
 // @vitest-environment jsdom
+import { act, renderHook } from "@testing-library/react";
 import type { Ace } from "ace-builds";
+import ace from "ace-builds";
 import { type RefObject } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { TooltipContext } from "../../../../src/renderer/ToolWindows/useGdbSourceWindowController";
 import {
-  buildTooltipHtml,
-  getDisplayTypeName,
-  getMemberExpression,
-  makeTooltipDataProvider,
+    buildTooltipHtml,
+    getDisplayTypeName,
+    getMemberExpression,
+    makeTooltipDataProvider,
+    useContextMenuDispatcher,
+    useGdbSourceWindowController,
+    useSourceTooltip,
+    wireTooltipCloseHandlers,
 } from "../../../../src/renderer/ToolWindows/useGdbSourceWindowController";
+
+// ---------------------------------------------------------------------------
+// Module mocks required for the hook
+// ---------------------------------------------------------------------------
+
+const {
+  mockOnLoad,
+  mockOnMenuSelect,
+  mockOnGutterMenuSelect,
+  mockSetBreakpoints,
+  mockUpdateBreakpointMarkers,
+  mockRightClickedRowRef,
+  mockGutterMenuRef,
+  mockEditorMenuRef,
+  mockUseSourceIpcSubscriptions,
+  mockActivatePanel,
+} = vi.hoisted(() => ({
+  mockOnLoad: vi.fn(),
+  mockOnMenuSelect: vi.fn(),
+  mockOnGutterMenuSelect: vi.fn(),
+  mockSetBreakpoints: vi.fn(),
+  mockUpdateBreakpointMarkers: vi.fn(),
+  mockRightClickedRowRef: { current: -1 },
+  mockGutterMenuRef: { current: null },
+  mockEditorMenuRef: { current: null },
+  mockUseSourceIpcSubscriptions: vi.fn(),
+  mockActivatePanel: vi.fn(),
+}));
+
+vi.mock("ace-builds", () => ({
+  default: {
+    require: vi.fn().mockReturnValue({
+      HoverTooltip: class {
+        setDataProvider = vi.fn();
+        addToEditor = vi.fn();
+        removeFromEditor = vi.fn();
+      },
+    }),
+    config: { set: vi.fn() },
+  },
+}));
+
+vi.mock("ace-builds/src-noconflict/ext-searchbox", () => ({}));
+
+vi.mock("react-ace", () => ({
+  default: vi.fn().mockReturnValue(null),
+}));
+
+vi.mock("@syncfusion/ej2-popups", () => ({
+  Tooltip: vi.fn().mockImplementation(function () {
+    return {
+      destroy: vi.fn(),
+      close: vi.fn(),
+      open: vi.fn(),
+      content: "",
+      beforeOpen: null,
+    };
+  }),
+}));
+
+vi.mock("@syncfusion/ej2-react-navigations", () => ({
+  ContextMenuComponent: vi.fn().mockReturnValue(null),
+}));
+
+vi.mock("../../../../src/renderer/ToolWindows/useSourceBreakpointInteractions", () => ({
+  useSourceBreakpointInteractions: vi.fn().mockReturnValue({
+    setBreakpoints: mockSetBreakpoints,
+    updateBreakpointMarkers: mockUpdateBreakpointMarkers,
+    onLoad: mockOnLoad,
+    onMenuSelect: mockOnMenuSelect,
+    onGutterMenuSelect: mockOnGutterMenuSelect,
+    rightClickedRowRef: mockRightClickedRowRef,
+    gutterMenuRef: mockGutterMenuRef,
+    editorMenuRef: mockEditorMenuRef,
+  }),
+}));
+
+vi.mock("../../../../src/renderer/ToolWindows/useSourceEditorSettings", () => ({
+  useSourceEditorSettings: vi.fn().mockReturnValue({
+    theme: "vs-dark",
+    fontSize: 14,
+    lineHeight: 20,
+    fontName: "monospace",
+  }),
+}));
+
+vi.mock("../../../../src/renderer/ToolWindows/useSourceIpcSubscriptions", () => ({
+  useSourceIpcSubscriptions: (args: unknown) => mockUseSourceIpcSubscriptions(args),
+}));
+
+vi.mock("../../../../src/renderer/ToolWindows/GdbSourceEditorConfig", () => ({
+  configureAceBasePath: vi.fn(),
+  defaultMode: "ace/mode/text",
+  editorModes: new Map(),
+}));
+
+vi.mock("../../../../src/renderer/utilities/dock-menu-state", () => ({
+  dockMenuConnector: { activatePanel: mockActivatePanel },
+}));
 
 // ---------------------------------------------------------------------------
 // getMemberExpression
@@ -26,6 +131,12 @@ describe("getMemberExpression", () => {
     expect(getMemberExpression("int x = 0;", 3)).toBeNull(); // space
     expect(getMemberExpression("int x = 0;", 6)).toBeNull(); // '='
     expect(getMemberExpression("int x = 0;", 9)).toBeNull(); // ';'
+  });
+
+  it("returns null when col is past the end of the line (short-circuit guard)", () => {
+    // col >= line.length → early return; exercises the || short-circuit branch
+    expect(getMemberExpression("abc", 3)).toBeNull(); // col == length
+    expect(getMemberExpression("abc", 10)).toBeNull(); // col >> length
   });
 
   it("returns base only for a plain identifier", () => {
@@ -409,5 +520,701 @@ describe("makeTooltipDataProvider", () => {
 
     await vi.waitFor(() => expect(sfTip.open).toHaveBeenCalled());
     expect(mockEvaluateExpression).toHaveBeenCalledWith("");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// useGdbSourceWindowController — hook tests
+// ---------------------------------------------------------------------------
+
+describe("useGdbSourceWindowController", () => {
+  let mockStackFramesUnsub: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    mockStackFramesUnsub = vi.fn();
+    (window as unknown as Record<string, unknown>).ipcToMain = {
+      debuggerData: {
+        stackFrames: vi.fn().mockReturnValue(mockStackFramesUnsub),
+      },
+      queries: {
+        debugger: {
+          queryVarAtPosition: vi.fn().mockResolvedValue(undefined),
+          getVarByName: vi.fn().mockResolvedValue(undefined),
+          evaluateExpression: vi.fn().mockResolvedValue(undefined),
+        },
+      },
+    };
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns expected shape from hook", () => {
+    const { result } = renderHook(() => useGdbSourceWindowController());
+    const ctrl = result.current;
+    expect(ctrl).toHaveProperty("sourceState");
+    expect(ctrl).toHaveProperty("mode");
+    expect(ctrl).toHaveProperty("theme");
+    expect(ctrl).toHaveProperty("fontSize");
+    expect(ctrl).toHaveProperty("lineHeight");
+    expect(ctrl).toHaveProperty("fontName");
+    expect(ctrl).toHaveProperty("editorRef");
+    expect(ctrl).toHaveProperty("onLoad");
+    expect(ctrl).toHaveProperty("onMenuSelect");
+    expect(ctrl).toHaveProperty("onGutterMenuSelect");
+    expect(ctrl).toHaveProperty("gutterMenuRef");
+    expect(ctrl).toHaveProperty("editorMenuRef");
+    expect(ctrl).toHaveProperty("onOpenDisassembly");
+  });
+
+  it("onOpenDisassembly dispatches DISASM_FUNCTION event", () => {
+    const { result } = renderHook(() => useGdbSourceWindowController());
+
+    const listener = vi.fn();
+    window.addEventListener("disasm-function", listener);
+
+    act(() => {
+      result.current.onOpenDisassembly();
+    });
+
+    expect(listener).toHaveBeenCalledTimes(1);
+    window.removeEventListener("disasm-function", listener);
+  });
+
+  it("handleSourceFile updates sourceState when called via onSourceFile", () => {
+    let capturedOnSourceFile: ((data: unknown) => void) | null = null;
+    mockUseSourceIpcSubscriptions.mockImplementation(
+      (args: { onSourceFile: (data: unknown) => void }) => {
+        capturedOnSourceFile = args.onSourceFile;
+      },
+    );
+
+    const { result } = renderHook(() => useGdbSourceWindowController());
+
+    const data = { fileName: "/src/main.c", filePath: "/src/main.c", lineNumber: 10, content: "" };
+    act(() => {
+      capturedOnSourceFile!(data);
+    });
+
+    expect(mockUpdateBreakpointMarkers).toHaveBeenCalled();
+    expect(result.current.sourceState).toBeDefined();
+  });
+
+  it("handleBreakpoints calls setBreakpoints and updateBreakpointMarkers", () => {
+    let capturedOnBreakpoints: ((data: unknown) => void) | null = null;
+    mockUseSourceIpcSubscriptions.mockImplementation(
+      (args: { onBreakpoints: (data: unknown) => void }) => {
+        capturedOnBreakpoints = args.onBreakpoints;
+      },
+    );
+
+    renderHook(() => useGdbSourceWindowController());
+
+    const bpMap = new Map();
+    act(() => {
+      capturedOnBreakpoints!(bpMap);
+    });
+
+    expect(mockSetBreakpoints).toHaveBeenCalledWith(bpMap);
+    expect(mockUpdateBreakpointMarkers).toHaveBeenCalled();
+  });
+
+  it("subscribes to stack frames on mount and unsubscribes on unmount", () => {
+    const { unmount } = renderHook(() => useGdbSourceWindowController());
+    expect(
+      (
+        window as unknown as {
+          ipcToMain: { debuggerData: { stackFrames: ReturnType<typeof vi.fn> } };
+        }
+      ).ipcToMain.debuggerData.stackFrames,
+    ).toHaveBeenCalled();
+    unmount();
+    expect(mockStackFramesUnsub).toHaveBeenCalled();
+  });
+
+  it("stack frame callback updates topStackFuncRef (func field)", async () => {
+    let capturedFrameCallback: ((frames: unknown[]) => void) | null = null;
+    (
+      window as unknown as {
+        ipcToMain: { debuggerData: { stackFrames: ReturnType<typeof vi.fn> }; queries: unknown };
+      }
+    ).ipcToMain.debuggerData.stackFrames = vi.fn((cb: (frames: unknown[]) => void) => {
+      capturedFrameCallback = cb;
+      return mockStackFramesUnsub;
+    });
+
+    const { result } = renderHook(() => useGdbSourceWindowController());
+    expect(capturedFrameCallback).not.toBeNull();
+
+    act(() => {
+      capturedFrameCallback!([{ level: "0", func: "main", addr: "0x1000" }]);
+    });
+
+    // trigger onOpenDisassembly to verify topStackFuncRef was captured correctly
+    const listener = vi.fn();
+    window.addEventListener("disasm-function", listener);
+    act(() => {
+      result.current.onOpenDisassembly();
+    });
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining({ detail: "main" }));
+    window.removeEventListener("disasm-function", listener);
+  });
+
+  it("stack frame callback does not update when no level-0 frame exists", async () => {
+    let capturedFrameCallback: ((frames: unknown[]) => void) | null = null;
+    (
+      window as unknown as {
+        ipcToMain: { debuggerData: { stackFrames: ReturnType<typeof vi.fn> }; queries: unknown };
+      }
+    ).ipcToMain.debuggerData.stackFrames = vi.fn((cb: (frames: unknown[]) => void) => {
+      capturedFrameCallback = cb;
+      return mockStackFramesUnsub;
+    });
+
+    const { result } = renderHook(() => useGdbSourceWindowController());
+    expect(capturedFrameCallback).not.toBeNull();
+
+    // Only non-top frames — topFrame is undefined → if(topFrame) false branch
+    act(() => {
+      capturedFrameCallback!([{ level: "1", func: "helper", addr: "0x2000" }]);
+    });
+
+    // topStackFuncRef.current stays "" (never updated)
+    const listener = vi.fn();
+    window.addEventListener("disasm-function", listener);
+    act(() => {
+      result.current.onOpenDisassembly();
+    });
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining({ detail: "" }));
+    window.removeEventListener("disasm-function", listener);
+  });
+
+  it("stack frame callback uses addr when topFrame.func is empty", async () => {
+    let capturedFrameCallback: ((frames: unknown[]) => void) | null = null;
+    (
+      window as unknown as {
+        ipcToMain: { debuggerData: { stackFrames: ReturnType<typeof vi.fn> }; queries: unknown };
+      }
+    ).ipcToMain.debuggerData.stackFrames = vi.fn((cb: (frames: unknown[]) => void) => {
+      capturedFrameCallback = cb;
+      return mockStackFramesUnsub;
+    });
+
+    const { result } = renderHook(() => useGdbSourceWindowController());
+
+    // func="" → topFrame.func || topFrame.addr uses addr (false branch of ||)
+    act(() => {
+      capturedFrameCallback!([{ level: "0", func: "", addr: "0x8000" }]);
+    });
+
+    const listener = vi.fn();
+    window.addEventListener("disasm-function", listener);
+    act(() => {
+      result.current.onOpenDisassembly();
+    });
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining({ detail: "0x8000" }));
+    window.removeEventListener("disasm-function", listener);
+  });
+
+  it("displayData does not update fullFilePathRef when fileName is empty", () => {
+    let capturedOnSourceFile: ((data: unknown) => void) | null = null;
+    mockUseSourceIpcSubscriptions.mockImplementation(
+      (args: { onSourceFile: (data: unknown) => void }) => {
+        capturedOnSourceFile = args.onSourceFile;
+      },
+    );
+
+    renderHook(() => useGdbSourceWindowController());
+
+    // fileName="" → if(data.fileName) false branch — fullFilePathRef not updated
+    act(() => {
+      capturedOnSourceFile!({ fileName: "", line: "5", contents: undefined });
+    });
+
+    expect(mockUpdateBreakpointMarkers).toHaveBeenCalled();
+  });
+
+  it("sourceState.currentMarker effect fires setTimeout when marker becomes non-negative", async () => {
+    vi.useFakeTimers();
+    let capturedOnSourceFile: ((data: unknown) => void) | null = null;
+    mockUseSourceIpcSubscriptions.mockImplementation(
+      (args: { onSourceFile: (data: unknown) => void }) => {
+        capturedOnSourceFile = args.onSourceFile;
+      },
+    );
+
+    const { result } = renderHook(() => useGdbSourceWindowController());
+
+    // Provide contents → applySourceUpdate sets hasSource=true, currentMarker = parseInt("10")-1 = 9
+    act(() => {
+      capturedOnSourceFile!({
+        fileName: "/src/main.c",
+        line: "10",
+        contents: "int main() { return 0; }",
+      });
+    });
+
+    // currentMarker should be 9 (line 10, 0-based)
+    expect(result.current.sourceState.currentMarker).toBe(9);
+
+    // Advance timers so the setTimeout(150) fires (editorRef.current is null in tests,
+    // so scrollToLine is not called, but the if(currentMarker !== -1) TRUE branch IS covered)
+    act(() => {
+      vi.runAllTimers();
+    });
+
+    vi.useRealTimers();
+  });
+
+  it("onOpenDisassembly calls dockMenuConnector.activatePanel", () => {
+    const { result } = renderHook(() => useGdbSourceWindowController());
+    act(() => {
+      result.current.onOpenDisassembly();
+    });
+    expect(mockActivatePanel).toHaveBeenCalled();
+  });
+
+  it("scrollToLine is called on editorRef.current when currentMarker changes and editor is set", () => {
+    vi.useFakeTimers();
+    let capturedOnSourceFile: ((data: unknown) => void) | null = null;
+    mockUseSourceIpcSubscriptions.mockImplementation(
+      (args: { onSourceFile: (data: unknown) => void }) => {
+        capturedOnSourceFile = args.onSourceFile;
+      },
+    );
+
+    const { result } = renderHook(() => useGdbSourceWindowController());
+
+    const mockScrollToLine = vi.fn();
+    result.current.editorRef.current = {
+      editor: { scrollToLine: mockScrollToLine },
+    } as unknown as import("react-ace").default;
+
+    act(() => {
+      capturedOnSourceFile!({ fileName: "/src/test.c", line: "5", contents: "int x = 0;" });
+    });
+
+    act(() => {
+      vi.runAllTimers();
+    });
+
+    expect(mockScrollToLine).toHaveBeenCalledWith(4, true, true);
+    vi.useRealTimers();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// wireTooltipCloseHandlers
+// ---------------------------------------------------------------------------
+
+describe("wireTooltipCloseHandlers", () => {
+  let sfTip: {
+    close: ReturnType<typeof vi.fn>;
+    beforeOpen: ((args: { element: HTMLElement | null }) => void) | null;
+  };
+  let container: HTMLDivElement;
+  let session: { on: ReturnType<typeof vi.fn>; off: ReturnType<typeof vi.fn> };
+  let cleanupFn: () => void;
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    sfTip = { close: vi.fn(), beforeOpen: null };
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    session = { on: vi.fn(), off: vi.fn() };
+    cleanupFn = wireTooltipCloseHandlers(
+      sfTip as unknown as import("@syncfusion/ej2-popups").Tooltip,
+      container,
+      session as unknown as Ace.EditSession,
+    );
+  });
+
+  afterEach(() => {
+    cleanupFn();
+    container.remove();
+    vi.useRealTimers();
+  });
+
+  it("subscribes to changeScrollTop on the session", () => {
+    expect(session.on).toHaveBeenCalledWith("changeScrollTop", expect.any(Function));
+  });
+
+  it("changeScrollTop listener closes the tooltip immediately", () => {
+    const scrollCb = session.on.mock.calls.find(
+      ([ev]: [string]) => ev === "changeScrollTop",
+    )?.[1] as (() => void) | undefined;
+    scrollCb?.();
+    expect(sfTip.close).toHaveBeenCalledTimes(1);
+  });
+
+  it("container mouseleave schedules sfTip.close after 80 ms", () => {
+    container.dispatchEvent(new MouseEvent("mouseleave"));
+    expect(sfTip.close).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(80);
+    expect(sfTip.close).toHaveBeenCalledTimes(1);
+  });
+
+  it("scheduled close is suppressed when mouse is inside popup rect", () => {
+    const popup = document.createElement("div");
+    Object.defineProperty(popup, "getBoundingClientRect", {
+      value: () => ({ left: 100, right: 200, top: 100, bottom: 200 }),
+    });
+    sfTip.beforeOpen!({ element: popup });
+    document.dispatchEvent(new MouseEvent("mousemove", { clientX: 150, clientY: 150 }));
+    container.dispatchEvent(new MouseEvent("mouseleave"));
+    vi.advanceTimersByTime(80);
+    expect(sfTip.close).not.toHaveBeenCalled();
+  });
+
+  it("scheduled close fires when mouse is outside popup rect", () => {
+    const popup = document.createElement("div");
+    Object.defineProperty(popup, "getBoundingClientRect", {
+      value: () => ({ left: 100, right: 200, top: 100, bottom: 200 }),
+    });
+    sfTip.beforeOpen!({ element: popup });
+    document.dispatchEvent(new MouseEvent("mousemove", { clientX: 50, clientY: 50 }));
+    container.dispatchEvent(new MouseEvent("mouseleave"));
+    vi.advanceTimersByTime(80);
+    expect(sfTip.close).toHaveBeenCalledTimes(1);
+  });
+
+  it("popup mouseleave also triggers scheduled close", () => {
+    const popup = document.createElement("div");
+    document.body.appendChild(popup);
+    // Move mouse away from origin so the zero-rect popup is not treated as containing it
+    document.dispatchEvent(new MouseEvent("mousemove", { clientX: 1, clientY: 1 }));
+    sfTip.beforeOpen!({ element: popup });
+    popup.dispatchEvent(new MouseEvent("mouseleave"));
+    vi.advanceTimersByTime(80);
+    expect(sfTip.close).toHaveBeenCalledTimes(1);
+    popup.remove();
+  });
+
+  it("beforeOpen deregisters previous popup mouseleave listener on new open", () => {
+    const popup1 = document.createElement("div");
+    const popup2 = document.createElement("div");
+    document.body.appendChild(popup1);
+    document.body.appendChild(popup2);
+    sfTip.beforeOpen!({ element: popup1 });
+    sfTip.beforeOpen!({ element: popup2 });
+    popup1.dispatchEvent(new MouseEvent("mouseleave"));
+    vi.advanceTimersByTime(80);
+    expect(sfTip.close).not.toHaveBeenCalled();
+    popup1.remove();
+    popup2.remove();
+  });
+
+  it("beforeOpen is a no-op when same element is passed again", () => {
+    const popup = document.createElement("div");
+    document.body.appendChild(popup);
+    // Move mouse away from origin so the zero-rect popup is not treated as containing it
+    document.dispatchEvent(new MouseEvent("mousemove", { clientX: 1, clientY: 1 }));
+    sfTip.beforeOpen!({ element: popup });
+    sfTip.beforeOpen!({ element: popup });
+    popup.dispatchEvent(new MouseEvent("mouseleave"));
+    vi.advanceTimersByTime(80);
+    expect(sfTip.close).toHaveBeenCalledTimes(1);
+    popup.remove();
+  });
+
+  it("cleanup removes mouseleave listener from container", () => {
+    cleanupFn();
+    container.dispatchEvent(new MouseEvent("mouseleave"));
+    vi.advanceTimersByTime(80);
+    expect(sfTip.close).not.toHaveBeenCalled();
+  });
+
+  it("cleanup calls session.off for changeScrollTop", () => {
+    cleanupFn();
+    expect(session.off).toHaveBeenCalledWith("changeScrollTop", expect.any(Function));
+  });
+
+  it("cleanup cancels any pending scheduled close", () => {
+    container.dispatchEvent(new MouseEvent("mouseleave"));
+    cleanupFn();
+    vi.advanceTimersByTime(80);
+    expect(sfTip.close).not.toHaveBeenCalled();
+  });
+
+  it("scheduled close with no popup element still calls sfTip.close", () => {
+    // tipPopupEl is null — the if(tipPopupEl) branch is false, so goes straight to sfTip.close()
+    container.dispatchEvent(new MouseEvent("mouseleave"));
+    vi.advanceTimersByTime(80);
+    expect(sfTip.close).toHaveBeenCalledTimes(1);
+  });
+
+  it("second scheduledClose clears the pending timer before setting a new one", () => {
+    // First mouseleave — closeTimer is null, so if(closeTimer) is false; sets the timer.
+    container.dispatchEvent(new MouseEvent("mouseleave"));
+    // Second mouseleave BEFORE the 80ms fires — closeTimer is now set, so if(closeTimer)
+    // is TRUE; clearTimeout is called (covers that branch), then a fresh timer is set.
+    container.dispatchEvent(new MouseEvent("mouseleave"));
+    // Advance past 80ms — only the second timer fires, so sfTip.close is called exactly once.
+    vi.advanceTimersByTime(80);
+    expect(sfTip.close).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// useContextMenuDispatcher
+// ---------------------------------------------------------------------------
+
+describe("useContextMenuDispatcher", () => {
+  it("returns early when editorRef.current is null", () => {
+    const nullRef = { current: null } as RefObject<import("react-ace").default | null>;
+    renderHook(() =>
+      useContextMenuDispatcher(
+        nullRef,
+        { current: -1 },
+        { current: null } as RefObject<import("@syncfusion/ej2-react-navigations").ContextMenuComponent | null>,
+        { current: null } as RefObject<import("@syncfusion/ej2-react-navigations").ContextMenuComponent | null>,
+      ),
+    );
+    // No error thrown; no setShowPrintMargin calls
+  });
+
+  it("calls setShowPrintMargin(false) when editor is present", () => {
+    const mockSetShowPrintMargin = vi.fn();
+    const editorContainer = document.createElement("div");
+    document.body.appendChild(editorContainer);
+    const editorRef = {
+      current: {
+        editor: {
+          setShowPrintMargin: mockSetShowPrintMargin,
+          container: editorContainer,
+          renderer: { gutterWidth: 40, screenToTextCoordinates: vi.fn().mockReturnValue({ row: 5 }) },
+        },
+      },
+    } as unknown as RefObject<import("react-ace").default | null>;
+
+    renderHook(() =>
+      useContextMenuDispatcher(
+        editorRef,
+        { current: -1 },
+        { current: null } as RefObject<import("@syncfusion/ej2-react-navigations").ContextMenuComponent | null>,
+        { current: null } as RefObject<import("@syncfusion/ej2-react-navigations").ContextMenuComponent | null>,
+      ),
+    );
+
+    expect(mockSetShowPrintMargin).toHaveBeenCalledWith(false);
+    editorContainer.remove();
+  });
+
+  it("contextmenu in editor area opens editor menu", () => {
+    const mockEditorOpen = vi.fn();
+    const mockGutterOpen = vi.fn();
+    const editorContainer = document.createElement("div");
+    Object.defineProperty(editorContainer, "getBoundingClientRect", {
+      value: () => ({ left: 0, top: 0, right: 500, bottom: 500 }),
+      configurable: true,
+    });
+    document.body.appendChild(editorContainer);
+
+    const rightClickedRowRef = { current: -1 };
+    const editorRef = {
+      current: {
+        editor: {
+          setShowPrintMargin: vi.fn(),
+          container: editorContainer,
+          renderer: {
+            gutterWidth: 40,
+            screenToTextCoordinates: vi.fn().mockReturnValue({ row: 3 }),
+          },
+        },
+      },
+    } as unknown as RefObject<import("react-ace").default | null>;
+
+    renderHook(() =>
+      useContextMenuDispatcher(
+        editorRef,
+        rightClickedRowRef,
+        { current: { open: mockGutterOpen } } as RefObject<import("@syncfusion/ej2-react-navigations").ContextMenuComponent | null>,
+        { current: { open: mockEditorOpen } } as RefObject<import("@syncfusion/ej2-react-navigations").ContextMenuComponent | null>,
+      ),
+    );
+
+    // clientX=100 > gutterWidth=40 → editor area
+    act(() => {
+      editorContainer.dispatchEvent(
+        new MouseEvent("contextmenu", { clientX: 100, clientY: 200, bubbles: false }),
+      );
+    });
+
+    expect(mockEditorOpen).toHaveBeenCalledWith(200, 100);
+    expect(mockGutterOpen).not.toHaveBeenCalled();
+    expect(rightClickedRowRef.current).toBe(3);
+    editorContainer.remove();
+  });
+
+  it("contextmenu in gutter area opens gutter menu", () => {
+    const mockEditorOpen = vi.fn();
+    const mockGutterOpen = vi.fn();
+    const editorContainer = document.createElement("div");
+    Object.defineProperty(editorContainer, "getBoundingClientRect", {
+      value: () => ({ left: 0, top: 0, right: 500, bottom: 500 }),
+      configurable: true,
+    });
+    document.body.appendChild(editorContainer);
+
+    const editorRef = {
+      current: {
+        editor: {
+          setShowPrintMargin: vi.fn(),
+          container: editorContainer,
+          renderer: {
+            gutterWidth: 40,
+            screenToTextCoordinates: vi.fn().mockReturnValue({ row: 7 }),
+          },
+        },
+      },
+    } as unknown as RefObject<import("react-ace").default | null>;
+
+    renderHook(() =>
+      useContextMenuDispatcher(
+        editorRef,
+        { current: -1 },
+        { current: { open: mockGutterOpen } } as RefObject<import("@syncfusion/ej2-react-navigations").ContextMenuComponent | null>,
+        { current: { open: mockEditorOpen } } as RefObject<import("@syncfusion/ej2-react-navigations").ContextMenuComponent | null>,
+      ),
+    );
+
+    // clientX=30 < gutterWidth=40 → gutter area
+    act(() => {
+      editorContainer.dispatchEvent(
+        new MouseEvent("contextmenu", { clientX: 30, clientY: 200, bubbles: false }),
+      );
+    });
+
+    expect(mockGutterOpen).toHaveBeenCalledWith(200, 30);
+    expect(mockEditorOpen).not.toHaveBeenCalled();
+    editorContainer.remove();
+  });
+
+  it("cleanup removes contextmenu listener on unmount", () => {
+    const mockEditorOpen = vi.fn();
+    const editorContainer = document.createElement("div");
+    Object.defineProperty(editorContainer, "getBoundingClientRect", {
+      value: () => ({ left: 0, top: 0, right: 500, bottom: 500 }),
+      configurable: true,
+    });
+    document.body.appendChild(editorContainer);
+
+    const editorRef = {
+      current: {
+        editor: {
+          setShowPrintMargin: vi.fn(),
+          container: editorContainer,
+          renderer: { gutterWidth: 40, screenToTextCoordinates: vi.fn().mockReturnValue({ row: 3 }) },
+        },
+      },
+    } as unknown as RefObject<import("react-ace").default | null>;
+
+    const { unmount } = renderHook(() =>
+      useContextMenuDispatcher(
+        editorRef,
+        { current: -1 },
+        { current: null } as RefObject<import("@syncfusion/ej2-react-navigations").ContextMenuComponent | null>,
+        { current: { open: mockEditorOpen } } as RefObject<import("@syncfusion/ej2-react-navigations").ContextMenuComponent | null>,
+      ),
+    );
+
+    unmount();
+
+    act(() => {
+      editorContainer.dispatchEvent(
+        new MouseEvent("contextmenu", { clientX: 100, clientY: 200, bubbles: false }),
+      );
+    });
+
+    expect(mockEditorOpen).not.toHaveBeenCalled();
+    editorContainer.remove();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// useSourceTooltip
+// ---------------------------------------------------------------------------
+
+describe("useSourceTooltip", () => {
+  let mockRefEditor: HTMLDivElement;
+  let mockSession: { on: ReturnType<typeof vi.fn>; off: ReturnType<typeof vi.fn> };
+
+  beforeEach(() => {
+    mockRefEditor = document.createElement("div");
+    document.body.appendChild(mockRefEditor);
+    mockSession = { on: vi.fn(), off: vi.fn() };
+    vi.mocked(ace.require).mockClear();
+  });
+
+  afterEach(() => {
+    mockRefEditor.remove();
+  });
+
+  it("returns early when editorRef.current is null", () => {
+    const nullRef = { current: null } as RefObject<import("react-ace").default | null>;
+    const { unmount } = renderHook(() => useSourceTooltip(nullRef, { current: "" }));
+    unmount();
+    expect(vi.mocked(ace.require)).not.toHaveBeenCalled();
+  });
+
+  it("creates HoverTooltip when editor is present", () => {
+    const editorRef = {
+      current: {
+        editor: { session: mockSession },
+        refEditor: mockRefEditor,
+      },
+    } as unknown as RefObject<import("react-ace").default | null>;
+
+    const { unmount } = renderHook(() => useSourceTooltip(editorRef, { current: "" }));
+
+    expect(vi.mocked(ace.require)).toHaveBeenCalledWith("ace/tooltip");
+    unmount();
+  });
+
+  it("wires tooltip close handlers via session changeScrollTop subscription", () => {
+    const editorRef = {
+      current: {
+        editor: { session: mockSession },
+        refEditor: mockRefEditor,
+      },
+    } as unknown as RefObject<import("react-ace").default | null>;
+
+    const { unmount } = renderHook(() => useSourceTooltip(editorRef, { current: "" }));
+
+    expect(mockSession.on).toHaveBeenCalledWith("changeScrollTop", expect.any(Function));
+    unmount();
+  });
+
+  it("cleanup calls removeFromEditor and session.off on unmount", () => {
+    let capturedInst: {
+      removeFromEditor: ReturnType<typeof vi.fn>;
+      addToEditor: ReturnType<typeof vi.fn>;
+      setDataProvider: ReturnType<typeof vi.fn>;
+    } | null = null;
+
+    vi.mocked(ace.require).mockReturnValueOnce({
+      HoverTooltip: class {
+        setDataProvider = vi.fn();
+        addToEditor = vi.fn();
+        removeFromEditor = vi.fn();
+        constructor() {
+          capturedInst = this as typeof capturedInst;
+        }
+      },
+    });
+
+    const editorRef = {
+      current: {
+        editor: { session: mockSession },
+        refEditor: mockRefEditor,
+      },
+    } as unknown as RefObject<import("react-ace").default | null>;
+
+    const { unmount } = renderHook(() => useSourceTooltip(editorRef, { current: "" }));
+    unmount();
+
+    expect(capturedInst?.removeFromEditor).toHaveBeenCalled();
+    expect(mockSession.off).toHaveBeenCalledWith("changeScrollTop", expect.any(Function));
   });
 });

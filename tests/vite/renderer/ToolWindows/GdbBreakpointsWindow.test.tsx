@@ -1,11 +1,45 @@
 // @vitest-environment jsdom
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import GdbBreakPointWindow from "../../../../src/renderer/ToolWindows/GdbBreakpointsWindow";
 
 const mockRefresh = vi.fn();
 let capturedActionBegin: ((args: unknown) => void) | null = null;
 let capturedRecordDoubleClick: ((args: unknown) => void) | null = null;
+let capturedOnGridCreated: (() => void) | null = null;
+let capturedBreakpointCellTemplate: ((row: unknown) => JSX.Element) | null = null;
+
+vi.mock("@syncfusion/ej2-react-buttons", () => ({
+  ButtonComponent: ({
+    children,
+    onClick,
+    ...rest
+  }: {
+    children?: React.ReactNode;
+    onClick?: React.MouseEventHandler<HTMLButtonElement>;
+    [key: string]: unknown;
+  }) => (
+    <button onClick={onClick} {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)}>
+      {children}
+    </button>
+  ),
+  CheckBoxComponent: ({
+    onClick,
+    checked,
+    ...rest
+  }: {
+    onClick?: React.MouseEventHandler<HTMLInputElement>;
+    checked?: boolean;
+    [key: string]: unknown;
+  }) => (
+    <input
+      type="checkbox"
+      onClick={onClick}
+      defaultChecked={checked}
+      {...(rest as React.InputHTMLAttributes<HTMLInputElement>)}
+    />
+  ),
+}));
 
 vi.mock("@syncfusion/ej2-react-grids", () => ({
   GridComponent: ({
@@ -14,15 +48,18 @@ vi.mock("@syncfusion/ej2-react-grids", () => ({
     ref,
     actionBegin,
     recordDoubleClick,
+    created,
   }: {
     id: string;
     children: React.ReactNode;
     ref?: React.Ref<unknown>;
     actionBegin?: (args: unknown) => void;
     recordDoubleClick?: (args: unknown) => void;
+    created?: () => void;
   }) => {
     capturedActionBegin = actionBegin ?? null;
     capturedRecordDoubleClick = recordDoubleClick ?? null;
+    capturedOnGridCreated = created ?? null;
     void ref;
     return (
       <div id={id} data-refresh={mockRefresh as unknown as string}>
@@ -31,7 +68,12 @@ vi.mock("@syncfusion/ej2-react-grids", () => ({
     );
   },
   ColumnsDirective: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  ColumnDirective: () => null,
+  ColumnDirective: ({ template }: { template?: (row: unknown) => JSX.Element }) => {
+    if (template && !capturedBreakpointCellTemplate) {
+      capturedBreakpointCellTemplate = template;
+    }
+    return null;
+  },
   Inject: () => null,
   Resize: {},
   Reorder: {},
@@ -66,6 +108,8 @@ beforeEach(() => {
   capturedBreakpointCallback = null;
   capturedActionBegin = null;
   capturedRecordDoubleClick = null;
+  capturedOnGridCreated = null;
+  capturedBreakpointCellTemplate = null;
 
   (window as unknown as Record<string, unknown>).ipcToMain = {
     debuggerData: {
@@ -217,6 +261,122 @@ describe("GdbBreakpointsWindow handleRecordDoubleClick callback", () => {
     capturedRecordDoubleClick?.({ rowData: undefined });
 
     expect(notifyMain).not.toHaveBeenCalled();
+  });
+});
+
+describe("GdbBreakpointsWindow onGridCreated callback", () => {
+  const fullBpMap = new Map([
+    [
+      "1",
+      {
+        number: "1",
+        type: "breakpoint",
+        disp: "keep",
+        enabled: "y",
+        addr: "0x1234",
+        func: "main",
+        file: "main.c",
+        fullname: "/path/main.c",
+        line: "10",
+        tg: "[1]",
+        times: "0",
+        installed: "y",
+        orgloc: "main.c:10",
+      },
+    ],
+  ]);
+
+  it("does nothing when data is non-empty (early return branch)", () => {
+    render(<GdbBreakPointWindow />);
+
+    // Deliver data so latestDataRef is non-empty
+    act(() => {
+      capturedBreakpointCallback?.(fullBpMap);
+    });
+
+    // onGridCreated should early-return without throwing
+    act(() => {
+      capturedOnGridCreated?.();
+    });
+
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("does nothing when data is empty and gridRef is null (null-guard branch)", () => {
+    render(<GdbBreakPointWindow />);
+
+    // No data delivered — latestDataRef is empty, gridRef.current is null (mock)
+    act(() => {
+      capturedOnGridCreated?.();
+    });
+
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+});
+
+describe("GdbBreakpointsWindow onAction with empty data", () => {
+  it("onAction delete with no data property uses empty array fallback", () => {
+    render(<GdbBreakPointWindow />);
+    const sendGdbCommand = (
+      window as unknown as {
+        ipcToMain: { commands: { debugger: { sendGdbCommand: ReturnType<typeof vi.fn> } } };
+      }
+    ).ipcToMain.commands.debugger.sendGdbCommand;
+
+    // Omitting the data property exercises the `?? []` fallback branch
+    capturedActionBegin?.({ requestType: "delete" });
+
+    expect(sendGdbCommand).not.toHaveBeenCalled();
+  });
+});
+
+describe("GdbBreakpointsWindow BreakpointActionCell", () => {
+  const getSendGdbCommand = () =>
+    (
+      window as unknown as {
+        ipcToMain: { commands: { debugger: { sendGdbCommand: ReturnType<typeof vi.fn> } } };
+      }
+    ).ipcToMain.commands.debugger.sendGdbCommand;
+
+  it("delete button calls sendGdbCommand with breakpoint number", () => {
+    render(<GdbBreakPointWindow />);
+    const sendGdbCommand = getSendGdbCommand();
+
+    const { getByRole } = render(
+      <>{capturedBreakpointCellTemplate?.({ number: "5", enabled: true })}</>,
+    );
+
+    fireEvent.click(getByRole("button"));
+
+    expect(sendGdbCommand).toHaveBeenCalledWith("d 5");
+  });
+
+  it("checkbox click when enabled sends disable command", () => {
+    render(<GdbBreakPointWindow />);
+    const sendGdbCommand = getSendGdbCommand();
+
+    // enabled=true → checked=true → clicking unchecks → disable
+    const { getByRole } = render(
+      <>{capturedBreakpointCellTemplate?.({ number: "5", enabled: true })}</>,
+    );
+
+    fireEvent.click(getByRole("checkbox"));
+
+    expect(sendGdbCommand).toHaveBeenCalledWith("disable 5");
+  });
+
+  it("checkbox click when disabled sends enable command", () => {
+    render(<GdbBreakPointWindow />);
+    const sendGdbCommand = getSendGdbCommand();
+
+    // enabled=false → checked=false → clicking checks → enable
+    const { getByRole } = render(
+      <>{capturedBreakpointCellTemplate?.({ number: "3", enabled: false })}</>,
+    );
+
+    fireEvent.click(getByRole("checkbox"));
+
+    expect(sendGdbCommand).toHaveBeenCalledWith("enable 3");
   });
 });
 

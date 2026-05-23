@@ -13,6 +13,7 @@ import { setNativeThemeFromAppTheme } from "../theme-support";
 import { debugLog } from "../utilities/logger";
 import { onGdbCommand } from "./on-gdb-command";
 import { IpcRegistrationContext } from "./types";
+export { onGdbCommand } from "./on-gdb-command";
 
 const DEBUGGER_DISCONNECTED_BANNER = "".padStart(51, "*"); //" "***************************************************";
 

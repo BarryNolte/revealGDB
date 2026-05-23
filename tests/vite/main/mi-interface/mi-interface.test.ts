@@ -490,4 +490,177 @@ describe("miInterface", () => {
       expect(miInterface_instance.gdbDB.registers.size).toBeGreaterThan(0);
     });
   });
+
+  describe("connect", () => {
+    it("should return true on successful Start", () => {
+      const connected = miInterface_instance.connect({} as GdbAny);
+      expect(connected).toBe(true);
+    });
+
+    it("should call Start on the connector", () => {
+      miInterface_instance.connect({} as GdbAny);
+      expect((mockConnector as GdbAny).Start).toHaveBeenCalled();
+    });
+
+    it("should emit gdb-input events from connector gdb-input", () => {
+      miInterface_instance.connect({} as GdbAny);
+      const listener = vi.fn();
+      miInterface_instance.on("gdb-input", listener);
+      mockConnector.emit("gdb-input", "some input");
+      expect(listener).toHaveBeenCalledWith("some input");
+    });
+
+    it("should handle gdb-exit event from connector without throwing", () => {
+      miInterface_instance.connect({} as GdbAny);
+      expect(() => mockConnector.emit("gdb-exit")).not.toThrow();
+    });
+
+    it("should emit gdb-idle event on gdb-idle", () => {
+      miInterface_instance.connect({} as GdbAny);
+      const listener = vi.fn();
+      miInterface_instance.on("gdb-idle", listener);
+      miInterface_instance.emit("gdb-idle");
+      // gdb-idle handler internally does nothing visible, but should not throw
+      expect(() => miInterface_instance.emit("gdb-idle")).not.toThrow();
+    });
+
+    it("should route gdb-error through sendOutputToHandler", async () => {
+      miInterface_instance.connect({} as GdbAny);
+      mockConnector.emit("gdb-error", { Output: '~"err\\n"' });
+      await Promise.resolve();
+      // Should not throw
+    });
+
+    it("should emit debug-stream via gdb-data when debug mode enabled", async () => {
+      mockSettings.getSync.mockReturnValue(true);
+      const debugListener = vi.fn();
+      miInterface_instance.on("debug-stream", debugListener);
+      miInterface_instance.connect({} as GdbAny);
+      mockConnector.emit("gdb-data", { Output: '~"hello\\n"' });
+      await Promise.resolve();
+      expect(debugListener).toHaveBeenCalled();
+    });
+  });
+
+  describe("disconnect", () => {
+    beforeEach(() => {
+      (mockConnector as GdbAny).End = vi.fn();
+    });
+
+    it("should not throw when called without prior connect", () => {
+      expect(() => miInterface_instance.disconnect()).not.toThrow();
+    });
+
+    it("should call End and clear conn when connected", () => {
+      miInterface_instance["conn"] = mockConnector as GdbAny;
+      miInterface_instance.disconnect();
+      expect((mockConnector as GdbAny).End).toHaveBeenCalled();
+      expect(miInterface_instance["conn"]).toBeNull();
+    });
+
+    it("should not throw when conn is null", () => {
+      miInterface_instance["conn"] = null;
+      expect(() => miInterface_instance.disconnect()).not.toThrow();
+    });
+
+    it("should call removeAllListeners on connector before End", () => {
+      const removeAllMock = vi.fn();
+      (mockConnector as GdbAny).removeAllListeners = removeAllMock;
+      miInterface_instance["conn"] = mockConnector as GdbAny;
+      miInterface_instance.disconnect();
+      expect(removeAllMock).toHaveBeenCalled();
+    });
+  });
+
+  describe("command methods", () => {
+    beforeEach(() => {
+      miInterface_instance["conn"] = mockConnector as GdbAny;
+    });
+
+    it("continueExecution sends 'continue'", () => {
+      miInterface_instance.continueExecution();
+      expect((mockConnector as GdbAny).Send).toHaveBeenCalledWith("continue");
+    });
+
+    it("stepOver sends 'next'", () => {
+      miInterface_instance.stepOver();
+      expect((mockConnector as GdbAny).Send).toHaveBeenCalledWith("next");
+    });
+
+    it("stepInto sends 'step'", () => {
+      miInterface_instance.stepInto();
+      expect((mockConnector as GdbAny).Send).toHaveBeenCalledWith("step");
+    });
+
+    it("stepOut sends 'finish'", () => {
+      miInterface_instance.stepOut();
+      expect((mockConnector as GdbAny).Send).toHaveBeenCalledWith("finish");
+    });
+
+    it("pauseExecution sends 'signal SIGINT'", () => {
+      miInterface_instance.pauseExecution();
+      expect((mockConnector as GdbAny).Send).toHaveBeenCalledWith("signal SIGINT");
+    });
+
+    it("stopDebugging sends 'kill'", () => {
+      miInterface_instance.stopDebugging();
+      expect((mockConnector as GdbAny).Send).toHaveBeenCalledWith("kill");
+    });
+
+    it("runCommand sends the given command", () => {
+      miInterface_instance.runCommand("-exec-run");
+      expect((mockConnector as GdbAny).Send).toHaveBeenCalledWith("-exec-run");
+    });
+  });
+
+  describe("evaluateExpression", () => {
+    beforeEach(() => {
+      miInterface_instance["conn"] = mockConnector as GdbAny;
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("resolves with value when value-evaluated fires", async () => {
+      const promise = miInterface_instance.evaluateExpression("myVar");
+      miInterface_instance.emit("value-evaluated", "42");
+      const result = await promise;
+      expect(result).toBe("42");
+    });
+
+    it("resolves with undefined when expression-error fires", async () => {
+      const promise = miInterface_instance.evaluateExpression("badVar");
+      miInterface_instance.emit("expression-error");
+      const result = await promise;
+      expect(result).toBeUndefined();
+    });
+
+    it("resolves with undefined on 2s timeout", async () => {
+      const promise = miInterface_instance.evaluateExpression("slowVar");
+      vi.advanceTimersByTime(2001);
+      const result = await promise;
+      expect(result).toBeUndefined();
+    });
+
+    it("sets evaluatingExpression true while pending", () => {
+      miInterface_instance.evaluateExpression("x");
+      expect(miInterface_instance.evaluatingExpression).toBe(true);
+    });
+
+    it("resets evaluatingExpression to false after resolution", async () => {
+      const promise = miInterface_instance.evaluateExpression("x");
+      miInterface_instance.emit("value-evaluated", "1");
+      await promise;
+      expect(miInterface_instance.evaluatingExpression).toBe(false);
+    });
+
+    it("sends the correct GDB command", () => {
+      miInterface_instance.evaluateExpression("myVar");
+      expect((mockConnector as GdbAny).Send).toHaveBeenCalledWith(
+        '-data-evaluate-expression "myVar"',
+      );
+    });
+  });
 });

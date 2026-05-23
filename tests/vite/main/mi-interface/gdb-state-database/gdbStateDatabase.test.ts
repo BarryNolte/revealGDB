@@ -13,9 +13,12 @@
 /**
  * Tests for gdbStateDatabase behavior and edge cases.
  */
+import { readFileSync } from "fs";
+import { join } from "path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   gdbBreakpoint,
+  gdbSection,
   gdbStackFrame,
   gdbStateDatabase,
 } from "../../../../../src/main/mi-interface/gdb-state-database/gdbStateDatabase";
@@ -732,21 +735,6 @@ describe("gdbStateDatabase class", () => {
     });
   });
 
-  describe("dump method", () => {
-    it("should log all database state to console", () => {
-      db.addFeature("python");
-      db.addParam("language", "c");
-      const lines = db.dump();
-
-      expect(lines.some((l) => l.includes("Features:"))).toBe(true);
-      expect(lines.some((l) => l.includes("Parameters:"))).toBe(true);
-    });
-
-    it("should not throw on empty database", () => {
-      expect(() => db.dump()).not.toThrow();
-    });
-  });
-
   describe("event emitter integration", () => {
     it("should emit error-stream events", () => {
       const listener = vi.fn();
@@ -797,6 +785,280 @@ describe("gdbStateDatabase class", () => {
 
     it("getLineVars returns undefined when no map exists for source file", () => {
       expect(db.getLineVars("nonexistent.c")).toBeUndefined();
+    });
+  });
+
+  describe("Locals methods", () => {
+    it("parseAndStoreLocals stores parsed locals", () => {
+      db.parseAndStoreLocals('locals=[{name="x",value="1"}]');
+      expect(db.getLocals()).toBeDefined();
+    });
+
+    it("getLocals returns undefined before any locals are stored", () => {
+      expect(db.getLocals()).toBeUndefined();
+    });
+
+    it("clearLocals removes stored locals", () => {
+      db.parseAndStoreLocals('locals=[{name="x",value="1"}]');
+      db.clearLocals();
+      expect(db.getLocals()).toBeUndefined();
+    });
+
+    it("localsUpdateUI delegates to notifier", () => {
+      const notifier: UINotifier = {
+        sendLocals: vi.fn(),
+        sendStackFrames: vi.fn(),
+        sendBreakpoints: vi.fn(),
+        sendRegisters: vi.fn(),
+        sendThreads: vi.fn(),
+        sendSourceFile: vi.fn(),
+      };
+      const db2 = new gdbStateDatabase(notifier);
+      db2.localsUpdateUI();
+      expect(notifier.sendLocals).toHaveBeenCalled();
+      db2.removeAllListeners();
+    });
+  });
+
+  describe("Function store methods", () => {
+    it("addFunctionNames adds a function entry for a file", () => {
+      db.addFunctionNames("main.c", "42", "main");
+      expect(db.gdbFunctionNames.has("main.c")).toBe(true);
+      expect(db.gdbFunctionNames.get("main.c")).toHaveLength(1);
+    });
+
+    it("getFunctionNames returns functions for an existing file", () => {
+      db.addFunctionNames("main.c", "42", "main");
+      db.addFunctionNames("main.c", "50", "helper");
+      const fns = db.getFunctionNames("main.c");
+      expect(fns).toHaveLength(2);
+      expect(fns?.[0]).toEqual({ line: "42", function: "main" });
+    });
+
+    it("getFunctionNames returns undefined for a missing file", () => {
+      expect(db.getFunctionNames("nonexistent.c")).toBeUndefined();
+    });
+
+    it("getFunction returns the full function map", () => {
+      db.addFunctionNames("main.c", "1", "main");
+      db.addFunctionNames("util.c", "10", "helper");
+      const map = db.getFunction();
+      expect(map.size).toBe(2);
+      expect(map.has("main.c")).toBe(true);
+      expect(map.has("util.c")).toBe(true);
+    });
+
+    it("getAllFunctionNames returns all functions sorted alphabetically", () => {
+      db.addFunctionNames("main.c", "1", "zebra");
+      db.addFunctionNames("util.c", "5", "alpha");
+      db.addFunctionNames("main.c", "10", "middle");
+      const all = db.getAllFunctionNames();
+      expect(all).toHaveLength(3);
+      expect(all[0].function).toBe("alpha");
+      expect(all[1].function).toBe("middle");
+      expect(all[2].function).toBe("zebra");
+    });
+  });
+
+  describe("Symbol File methods", () => {
+    it("addMainSymbolFile sets the main symbol file path", () => {
+      db.addMainSymbolFile("/path/to/main.elf");
+      expect(db.gdbSymbolFiles.mainSym).toBe("/path/to/main.elf");
+    });
+
+    it("addSection appends a section to symbol files", () => {
+      const section: gdbSection = {
+        startAddr: "0x1000",
+        endAddr: "0x2000",
+        section: ".text",
+        file: "/path/to/main.elf",
+      };
+      db.addSection(section);
+      expect(db.gdbSymbolFiles.sections).toHaveLength(1);
+      expect(db.gdbSymbolFiles.sections[0]).toEqual(section);
+    });
+
+    it("getSymbolFiles returns the symbol files object", () => {
+      db.addMainSymbolFile("/path/to/app");
+      const sym = db.getSymbolFiles();
+      expect(sym.mainSym).toBe("/path/to/app");
+    });
+  });
+
+  describe("UI update and lifecycle methods", () => {
+    let mockNotifier: UINotifier;
+    let dbN: gdbStateDatabase;
+
+    beforeEach(() => {
+      mockNotifier = {
+        sendLocals: vi.fn(),
+        sendStackFrames: vi.fn(),
+        sendBreakpoints: vi.fn(),
+        sendRegisters: vi.fn(),
+        sendThreads: vi.fn(),
+        sendSourceFile: vi.fn(),
+      };
+      dbN = new gdbStateDatabase(mockNotifier);
+    });
+
+    afterEach(() => {
+      dbN.removeAllListeners();
+    });
+
+    it("stackUpdateUI notifies with current stack frames", () => {
+      dbN.stackUpdateUI();
+      expect(mockNotifier.sendStackFrames).toHaveBeenCalledWith(dbN.stackFrames);
+    });
+
+    it("breakpointsUpdateUI notifies with current breakpoints", () => {
+      dbN.breakpointsUpdateUI();
+      expect(mockNotifier.sendBreakpoints).toHaveBeenCalledWith(dbN.breakpoints);
+    });
+
+    it("breakpointList returns an array of current breakpoints", () => {
+      const bkpt: gdbBreakpoint = {
+        number: "1",
+        type: "breakpoint",
+        disp: "keep",
+        enabled: "y",
+        addr: "0x1000",
+        func: "main",
+        file: "main.c",
+        fullname: "/main.c",
+        line: "10",
+        tg: "i1",
+        times: "0",
+        installed: "y",
+        orgloc: "main.c:10",
+      };
+      dbN.createBreakpoint(bkpt);
+      const list = dbN.breakpointList();
+      expect(list).toHaveLength(1);
+      expect(list[0].number).toBe("1");
+    });
+
+    it("paramList returns an array of current parameters", () => {
+      dbN.addParam("lang", "c");
+      dbN.addParam("arch", "x86_64");
+      const list = dbN.paramList();
+      expect(list).toHaveLength(2);
+    });
+
+    it("registersUpdateUI notifies with current registers", () => {
+      dbN.registersUpdateUI();
+      expect(mockNotifier.sendRegisters).toHaveBeenCalledWith(dbN.registers);
+    });
+
+    it("registerList returns an array of current registers", () => {
+      dbN.addRegister("0", "rax");
+      dbN.addRegister("1", "rbx");
+      const list = dbN.registerList();
+      expect(list).toHaveLength(2);
+    });
+
+    it("threadUpdateUI notifies with threads and thread groups", () => {
+      dbN.threadUpdateUI();
+      expect(mockNotifier.sendThreads).toHaveBeenCalledWith(dbN.threads, dbN.threadGroups);
+    });
+
+    it("clearSourceFiles calls notifier.sendSourceFile with blank source info", () => {
+      dbN.clearSourceFiles();
+      expect(mockNotifier.sendSourceFile).toHaveBeenCalledWith(
+        expect.objectContaining({ fileName: " ", line: "0" }),
+      );
+    });
+
+    it("clearDatabase clears all stores", () => {
+      dbN.addFeature("python");
+      dbN.addParam("lang", "c");
+      dbN.addStackFrame({
+        active: false,
+        level: "0",
+        func: "main",
+        addr: "0x0",
+        args: "",
+        file: "main.c",
+        fullName: "/main.c",
+        line: "1",
+        from: "",
+        arch: "x86_64",
+      });
+      dbN.clearDatabase();
+      expect(dbN.features.size).toBe(0);
+      expect(dbN.params.size).toBe(0);
+      expect(dbN.stackFrames).toHaveLength(0);
+    });
+
+    it("allDataUpdateUI calls all notifier send methods", () => {
+      dbN.allDataUpdateUI();
+      expect(mockNotifier.sendLocals).toHaveBeenCalled();
+      expect(mockNotifier.sendStackFrames).toHaveBeenCalled();
+      expect(mockNotifier.sendBreakpoints).toHaveBeenCalled();
+      expect(mockNotifier.sendRegisters).toHaveBeenCalled();
+      expect(mockNotifier.sendThreads).toHaveBeenCalled();
+    });
+  });
+
+  describe("addRawLineVarData and Line Variable Map with data", () => {
+    const sourceFile = "/home/barry/perftool/main/hello_world_main.c";
+    const corpusLines = readFileSync(
+      join(__dirname, "../../../../../notes/MaintPrintSymbols--source.txt"),
+      "utf-8",
+    ).split(/\r?\n/);
+
+    beforeEach(() => {
+      vi.spyOn(db.gdbSrcFileCache, "getSourceFileContents").mockResolvedValue(undefined);
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it("addRawLineVarData populates lineVarStore after async enrichment", async () => {
+      db.addRawLineVarData(corpusLines);
+      await vi.waitFor(() => {
+        expect(db.hasLineVars(sourceFile)).toBe(true);
+      });
+    });
+
+    it("getLineVars returns the populated map after addRawLineVarData", async () => {
+      db.addRawLineVarData(corpusLines);
+      await vi.waitFor(() => {
+        const map = db.getLineVars(sourceFile);
+        expect(map).toBeDefined();
+        expect(map?.sourceFile).toBe(sourceFile);
+      });
+    });
+
+    it("queryVarAtPosition does not throw when map is populated", async () => {
+      db.addRawLineVarData(corpusLines);
+      await vi.waitFor(() => {
+        expect(db.hasLineVars(sourceFile)).toBe(true);
+      });
+      expect(() => db.queryVarAtPosition(sourceFile, 10, 0)).not.toThrow();
+    });
+
+    it("getVarByName returns a variable when its name exists in the map", async () => {
+      db.addRawLineVarData(corpusLines);
+      await vi.waitFor(() => {
+        expect(db.hasLineVars(sourceFile)).toBe(true);
+      });
+      const map = db.getLineVars(sourceFile)!;
+      const firstEntry = [...map.lineVars.values()][0]?.[0];
+      if (firstEntry) {
+        const found = db.getVarByName(sourceFile, firstEntry.name);
+        expect(found).toBeDefined();
+        expect(found?.name).toBe(firstEntry.name);
+      }
+    });
+
+    it("getVarByName returns undefined for an unknown variable name", async () => {
+      db.addRawLineVarData(corpusLines);
+      await vi.waitFor(() => {
+        expect(db.hasLineVars(sourceFile)).toBe(true);
+      });
+      const result = db.getVarByName(sourceFile, "__nonexistent__");
+      expect(result).toBeUndefined();
     });
   });
 });

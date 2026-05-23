@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-import { act, renderHook } from "@testing-library/react";
+import { act, render, renderHook } from "@testing-library/react";
+import { createElement } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useGdbCommandController } from "../../../../src/renderer/ToolWindows/useGdbCommandController";
 
@@ -367,5 +368,128 @@ describe("useGdbCommandController", () => {
       result.current.onInputKeydownHandler({ key: "Enter" } as never);
     });
     expect(window.ipcToMain.commands.debugger.sendGdbCommand).toHaveBeenCalledWith("next");
+  });
+
+  it("appendMessage via debug callback appends span to outputRef", async () => {
+    const { result } = renderHook(() => useGdbCommandController());
+    const div = document.createElement("div");
+    result.current.outputRef.current = div;
+    await act(async () => {});
+
+    act(() => {
+      debugCallback?.("debug output");
+    });
+    expect(div.querySelectorAll("span").length).toBeGreaterThan(0);
+  });
+
+  it("notification with unrecognised command does nothing", async () => {
+    const { result } = renderHook(() => useGdbCommandController());
+    const input = document.createElement("input");
+    const focusSpy = vi.spyOn(input, "focus");
+    result.current.inputRef.current = input;
+    await act(async () => {});
+
+    act(() => {
+      notifyCallback?.({ command: "some-other-command" });
+    });
+
+    expect(focusSpy).not.toHaveBeenCalled();
+  });
+
+  it("appendHtmlMessage with null outputRef does not throw", async () => {
+    renderHook(() => useGdbCommandController());
+    // outputRef.current is null — htmlCallback should not throw
+    await act(async () => {});
+
+    act(() => {
+      htmlCallback?.("<b>safe</b>");
+    });
+  });
+
+  it("onShowHistory does nothing when historyRef is null", async () => {
+    const { result } = renderHook(() => useGdbCommandController());
+    await act(async () => {});
+    // historyRef.current is null by default — should not throw
+    act(() => {
+      result.current.onShowHistory();
+    });
+  });
+
+  it("onInputKeydownHandler with unknown key does nothing", async () => {
+    const { result } = renderHook(() => useGdbCommandController());
+    const select = document.createElement("select");
+    select.hidden = true;
+    result.current.historyRef.current = select;
+    await act(async () => {});
+
+    act(() => {
+      result.current.onInputKeydownHandler({ key: "Tab" } as never);
+    });
+
+    // hidden state unchanged
+    expect(select.hidden).toBe(true);
+  });
+
+  it("onSelectKeydownHandler with unknown key only stops propagation", async () => {
+    const { result } = renderHook(() => useGdbCommandController());
+    const select = document.createElement("select");
+    select.hidden = false;
+    result.current.historyRef.current = select;
+    await act(async () => {});
+
+    const stopPropagation = vi.fn();
+    act(() => {
+      result.current.onSelectKeydownHandler({
+        key: "Tab",
+        stopPropagation,
+      } as never);
+    });
+
+    expect(stopPropagation).toHaveBeenCalled();
+    expect(select.hidden).toBe(false);
+  });
+
+  it("ondblclick handler sets input value from selected option and hides select", async () => {
+    // This test renders a real component so historyRef is populated before
+    // the useEffect runs and ondblclick is properly assigned.
+    type Ctrl = ReturnType<typeof useGdbCommandController>;
+    let ctrl: Ctrl | null = null;
+
+    function TestComponent() {
+      ctrl = useGdbCommandController();
+      return createElement(
+        "div",
+        null,
+        createElement("select", {
+          ref: ctrl.historyRef as React.Ref<HTMLSelectElement>,
+          id: "test-hist",
+        }),
+        createElement("input", {
+          ref: ctrl.inputRef as React.Ref<HTMLInputElement>,
+          id: "test-input",
+        }),
+      );
+    }
+
+    await act(async () => {
+      render(createElement(TestComponent));
+    });
+
+    const select = ctrl!.historyRef.current!;
+    const input = ctrl!.inputRef.current!;
+
+    // Populate the select with an option and select it
+    const opt = document.createElement("option");
+    opt.value = "my-command";
+    select.add(opt);
+    select.options.selectedIndex = 0;
+    select.hidden = false;
+
+    act(() => {
+      select.dispatchEvent(new Event("dblclick"));
+    });
+
+    expect(select.hidden).toBe(true);
+    expect(input.value).toBe("my-command");
   });
 });

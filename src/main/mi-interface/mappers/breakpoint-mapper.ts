@@ -6,6 +6,10 @@
  */
 import { gdbBreakpoint } from "../gdb-state-database/types/gdbStateTypes";
 
+function getGroup(groups: Record<string, string> | undefined, key: string): string {
+  return groups?.[key] ?? "";
+}
+
 /**
  * Maps source input into regex groups to breakpoint output.
  *
@@ -19,18 +23,18 @@ export function mapRegexGroupsToBreakpoint(
   groups: Record<string, string> | undefined,
 ): gdbBreakpoint {
   return {
-    number: groups?.number ?? "",
-    type: groups?.type ?? "",
-    disp: groups?.disp ?? "",
-    enabled: groups?.enabled ?? "",
-    addr: groups?.addr ?? "",
-    func: groups?.func ?? "",
-    file: groups?.file ?? "",
-    fullname: groups?.fullname ?? "",
-    line: groups?.line ?? "",
-    tg: groups?.tg ?? "",
-    times: groups?.times ?? "",
-    installed: groups?.installed ?? "",
-    orgloc: groups?.orgLoc ?? groups?.orgloc ?? "",
+    number: getGroup(groups, "number"),
+    type: getGroup(groups, "type"),
+    disp: getGroup(groups, "disp"),
+    enabled: getGroup(groups, "enabled"),
+    addr: getGroup(groups, "addr"),
+    func: getGroup(groups, "func"),
+    file: getGroup(groups, "file"),
+    fullname: getGroup(groups, "fullname"),
+    line: getGroup(groups, "line"),
+    tg: getGroup(groups, "tg"),
+    times: getGroup(groups, "times"),
+    installed: getGroup(groups, "installed"),
+    orgloc: getGroup(groups, "orgLoc") || getGroup(groups, "orgloc"),
   };
 }

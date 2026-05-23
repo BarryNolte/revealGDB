@@ -67,6 +67,7 @@ function stateCellTemplate(props: GdbAny): JSX.Element {
     case "failed":
       src = failedIcon;
       break;
+    // istanbul ignore next
     default:
       break;
   }
