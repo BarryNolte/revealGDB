@@ -4,6 +4,8 @@
  * @remarks
  * Exported symbols include `MiNotifyAsyncHandler`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
+import { IPC_CHANNELS } from "../../common/ipc-contracts";
+import { sendToRenderer } from "../ipc-sender";
 import { mapRegexGroupsToBreakpoint } from "./mappers/breakpoint-mapper";
 import { MiOutputHost /*, gdbShowSourceInfo */ } from "./mi-output-types";
 import { LOG_STREAM } from "./mi-stream-events";
@@ -18,6 +20,8 @@ export class MiNotifyAsyncHandler {
   private readonly rgxThreadGroupExited: RegExp = /^id="(?<id>[^"]*)"$/;
   private readonly rgxThreadCreated: RegExp = /^id="(?<id>[^"]*)",group-id="(?<grpid>[^"]*)"$/;
   private readonly rgxThreadExited: RegExp = /^id="(?<id>[^"]*)",group-id="(?<grpid>[^"]*)"$/;
+  private readonly rgxThreadSelected: RegExp =
+    /frame={level="(?<level>\d*)".*fullname="(?<filename>[^"]*)",line="(?<line>[^"]*)"/;
   private readonly rgxBreakpointDeleted: RegExp = /id="(?<id>[^"]+)"/;
   private readonly rgxLibraryId: RegExp = /id="(?<id>[^"]*)"/;
   private readonly rgxLibraryTargetName: RegExp = /target-name="(?<targetName>[^"]*)"/;
@@ -108,26 +112,50 @@ export class MiNotifyAsyncHandler {
     if (cmd.startsWith("thread-group-")) {
       return this.handleThreadGroupCommand(cmd, data);
     }
-    switch (cmd) {
-      case "thread-created": {
-        const groups = this.rgxThreadCreated.exec(data)?.groups;
-        if (groups?.id && groups?.grpid) {
-          this.host.gdbDB.createThread(groups.id, groups.grpid);
-        }
-        this.host.gdbDB.threadUpdateUI();
-        return true;
-      }
-      case "thread-exited": {
-        const id = this.rgxThreadExited.exec(data)?.groups?.id;
-        if (id) {
-          this.host.gdbDB.deleteThread(id);
-        }
-        this.host.gdbDB.threadUpdateUI();
-        return true;
-      }
-      default:
-        return false;
+    const handlers: Record<string, () => boolean> = {
+      "thread-selected": () => this.handleThreadSelected(data),
+      "thread-created": () => this.handleThreadCreated(data),
+      "thread-exited": () => this.handleThreadExited(data),
+    };
+    return handlers[cmd]?.() ?? false;
+  }
+
+  private handleThreadSelected(data: string): boolean {
+    const groups = this.rgxThreadSelected.exec(data)?.groups;
+    if (groups?.level) {
+      this.host.gdbDB.setActiveFrame(parseInt(groups.level, 10));
     }
+    this.host.gdbDB.stackUpdateUI();
+
+    if (groups?.filename && groups?.line) {
+      void (async () => {
+        const contents = await this.host.gdbDB.getSourceFileContents(groups.filename);
+        sendToRenderer(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, {
+          fileName: groups.filename,
+          line: parseInt(groups.line, 10),
+          contents,
+        });
+      })();
+    }
+    return true;
+  }
+
+  private handleThreadCreated(data: string): boolean {
+    const groups = this.rgxThreadCreated.exec(data)?.groups;
+    if (groups?.id && groups?.grpid) {
+      this.host.gdbDB.createThread(groups.id, groups.grpid);
+    }
+    this.host.gdbDB.threadUpdateUI();
+    return true;
+  }
+
+  private handleThreadExited(data: string): boolean {
+    const id = this.rgxThreadExited.exec(data)?.groups?.id;
+    if (id) {
+      this.host.gdbDB.deleteThread(id);
+    }
+    this.host.gdbDB.threadUpdateUI();
+    return true;
   }
 
   private handleBreakpointCommand(cmd: string, data: string): boolean {

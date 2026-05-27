@@ -1,4 +1,7 @@
 # Priority Items
+- List of "Dangerous" commands, with warnings and choice to continue.
+- Settings to turn off symbol interagation
+- Detect "Backtrace unavailable" or "A fatal error inter to GDB"
 
 # Documentation
 - Quick Start Guide
@@ -6,11 +9,14 @@
 - How to contribute
 
 # Bugs
+If connection fails, stays in connect mode
 
 # Project Related
 
 # New Features
 - Thread markers in source (better with multiple source windows)
+- Watchpoints
+- Goto Definitions (from function table)
 - Python Window for running python commands
   - Ctrl+D to end interactive session
   - Figure out how to deal with interactive output

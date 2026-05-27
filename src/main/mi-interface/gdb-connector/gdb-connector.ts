@@ -70,4 +70,13 @@ export class GdbConnector extends EventEmitter {
   public Send(_data: string): void {
     //console.log(data);
   }
+
+  /**
+   * Sends raw bytes/data to the debugger process without appending a newline.
+   *
+   * @param _data - Raw data to send directly to the process stdin.
+   */
+  public SendRaw(_data: string): void {
+    //console.log(data);
+  }
 }

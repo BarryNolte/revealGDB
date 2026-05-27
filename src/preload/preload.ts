@@ -5,7 +5,7 @@
  * This file primarily contains internal declarations and implementation details. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { contextBridge, ipcRenderer } from "electron";
-import { IPC_CHANNELS, NotifyMainRequest } from "../common/ipc-contracts";
+import { DebuggerCommand, IPC_CHANNELS, NotifyMainRequest } from "../common/ipc-contracts";
 import type { IElectronAPI } from "./interface";
 
 type IpcApiCore = Pick<
@@ -131,8 +131,9 @@ const ipcApi: IpcApiCore = {
   },
   commands: {
     debugger: {
-      sendGdbCommand: (command: string) =>
+      sendGdbCommand: (command: DebuggerCommand) =>
         send(IPC_CHANNELS.rendererToMain.commands.debugger.send, command),
+      sendControlD: () => send(IPC_CHANNELS.rendererToMain.commands.debugger.sendControlD, null),
     },
     app: {
       notifyMain: (command: NotifyMainRequest) =>
@@ -165,5 +166,6 @@ contextBridge.exposeInMainWorld("ipcToMain", {
   getWslDistrobutions: ipcApi.queries.environment.getWslDistrobutions,
   getFunctionNames: ipcApi.queries.debugger.getFunctionNames,
   sendGdbCommand: ipcApi.commands.debugger.sendGdbCommand,
+  sendControlD: ipcApi.commands.debugger.sendControlD,
   notifyMain: ipcApi.commands.app.notifyMain,
 });

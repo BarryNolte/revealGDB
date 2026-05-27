@@ -8,6 +8,7 @@ import type { JSX } from "react";
 import { useEffect, useRef } from "react";
 import { ConnectionDialog, type WhileConnectingDialogHandle } from "../Dialogs/ConnectionDialog";
 import "./connectiondialog-test-page.css";
+import { initIpcMock, setIpcFullLegacyAliases } from "./ipc-test-setup";
 
 type TestConnection = {
   name: string;
@@ -63,81 +64,8 @@ let hideDialogImpl: () => void = () => undefined;
  * Performs setup connection dialog test api as part of this module's public API.
  */
 export function setupConnectionDialogTestApi(): void {
-  const ipc = window.ipcToMain ?? ({} as Window["ipcToMain"]);
-  if (!window.ipcToMain) {
-    Object.defineProperty(window, "ipcToMain", {
-      value: ipc,
-      configurable: true,
-      writable: true,
-    });
-  }
-
+  const ipc = initIpcMock();
   const notifyMainCalls: NotifyMainCall[] = [];
-
-  ipc.messages = {
-    console: () => () => undefined,
-    log: () => () => undefined,
-    error: () => () => undefined,
-    debug: () => () => undefined,
-  };
-  ipc.notifications = {
-    connectionStatus: () => () => undefined,
-    render: () => () => undefined,
-    themeChanged: () => () => undefined,
-  };
-  ipc.debuggerData = {
-    registers: () => () => undefined,
-    stackFrames: () => () => undefined,
-    sourceFile: () => () => undefined,
-    locals: () => () => undefined,
-    threads: () => () => undefined,
-    breakpoints: () => () => undefined,
-    memory: () => () => undefined,
-    disassembly: () => () => undefined,
-    functions: () => () => undefined,
-  };
-  ipc.queries = {
-    app: {
-      getSettings: () => Promise.resolve(defaultSettings),
-      getSystemFonts: () => Promise.resolve([]),
-      getVersionInfo: () => Promise.resolve(new Map()),
-    },
-    environment: {
-      getWslDistrobutions: () => Promise.resolve([]),
-    },
-    debugger: {
-      getFunctionNames: () => Promise.resolve([]),
-    },
-  };
-  ipc.commands = {
-    debugger: {
-      sendGdbCommand: () => undefined,
-    },
-    app: {
-      notifyMain: () => undefined,
-    },
-  };
-
-  ipc.consoleMessage = ipc.messages.console;
-  ipc.logMessage = ipc.messages.log;
-  ipc.errorMessage = ipc.messages.error;
-  ipc.debugMessage = ipc.messages.debug;
-  ipc.connectionStatus = ipc.notifications.connectionStatus;
-  ipc.notifyRender = ipc.notifications.render;
-  ipc.dataRegisters = ipc.debuggerData.registers;
-  ipc.stackFrames = ipc.debuggerData.stackFrames;
-  ipc.sourceFile = ipc.debuggerData.sourceFile;
-  ipc.dataLocals = ipc.debuggerData.locals;
-  ipc.dataThreads = ipc.debuggerData.threads;
-  ipc.dataBrkPts = ipc.debuggerData.breakpoints;
-  ipc.dataMemory = ipc.debuggerData.memory;
-  ipc.dataDisasm = ipc.debuggerData.disassembly;
-  ipc.dataFunctions = ipc.debuggerData.functions;
-  ipc.getSettings = ipc.queries.app.getSettings;
-  ipc.getSystemFonts = ipc.queries.app.getSystemFonts;
-  ipc.getVersionInfo = ipc.queries.app.getVersionInfo;
-  ipc.getWslDistrobutions = ipc.queries.environment.getWslDistrobutions;
-  ipc.getFunctionNames = ipc.queries.debugger.getFunctionNames;
 
   ipc.queries.app.getSettings = () => {
     const settings = (window as WindowWithConnectionDialogTest).__CONNECTION_DIALOG_TEST_SETTINGS__;
@@ -147,8 +75,6 @@ export function setupConnectionDialogTestApi(): void {
       connections: settings?.connections ?? defaultSettings.connections,
     });
   };
-  ipc.getSettings = ipc.queries.app.getSettings;
-
   ipc.commands.app.notifyMain = (message) => {
     notifyMainCalls.push({
       command: message?.command,
@@ -166,8 +92,7 @@ export function setupConnectionDialogTestApi(): void {
       };
     }
   };
-  ipc.notifyMain = ipc.commands.app.notifyMain;
-  ipc.sendGdbCommand = ipc.commands.debugger.sendGdbCommand;
+  setIpcFullLegacyAliases(ipc);
 
   (window as WindowWithConnectionDialogTest).__CONNECTION_DIALOG_TEST_API__ = {
     getNotifyMainCalls: () => notifyMainCalls.slice(),

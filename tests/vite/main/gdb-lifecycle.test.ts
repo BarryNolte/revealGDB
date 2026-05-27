@@ -37,7 +37,10 @@ vi.mock("../../../src/main/mi-interface/mi-interface", async () => {
     gdbDB = {
       gdbSrcFileCache: new EventEmitter(),
       hasLineVars: () => false,
+      clearDatabase: vi.fn(),
+      allDataUpdateUI: vi.fn(),
     };
+    disconnect = vi.fn();
   }
 
   return {
@@ -108,6 +111,21 @@ describe("createGdbInterface", () => {
     const gdb = createGdbInterface(mainWindow as never, createMockAppSettings());
     gdb.emit("html-stream", "<b>html</b>");
     expect(mainWindow.webContents.send).toHaveBeenCalledWith("html-message", "<b>html</b>");
+  });
+
+  it("handles gdb-end by disconnecting, clearing state, and notifying the renderer", () => {
+    const mainWindow = createMockBrowserWindow();
+    const gdb = createGdbInterface(mainWindow as never, createMockAppSettings());
+
+    gdb.emit("gdb-end", 0, "SIGTERM");
+
+    expect(gdb.disconnect).toHaveBeenCalledTimes(1);
+    expect(gdb.gdbDB.clearDatabase).toHaveBeenCalledTimes(1);
+    expect(gdb.gdbDB.allDataUpdateUI).toHaveBeenCalledTimes(1);
+    expect(mainWindow.webContents.send).toHaveBeenCalledWith(
+      "notify-render",
+      expect.objectContaining({ command: "cancel-connection" }),
+    );
   });
 
   it("skips maint print symbols command when hasLineVars returns true", () => {

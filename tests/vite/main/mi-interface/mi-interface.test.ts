@@ -515,6 +515,15 @@ describe("miInterface", () => {
       expect(() => mockConnector.emit("gdb-exit")).not.toThrow();
     });
 
+    it("should forward gdb-end event from connector", () => {
+      const listener = vi.fn();
+      miInterface_instance.on("gdb-end", listener);
+      miInterface_instance.connect({} as GdbAny);
+
+      expect(() => mockConnector.emit("gdb-end", 0, "SIGTERM")).not.toThrow();
+      expect(listener).toHaveBeenCalledWith(0, "SIGTERM");
+    });
+
     it("should emit gdb-idle event on gdb-idle", () => {
       miInterface_instance.connect({} as GdbAny);
       const listener = vi.fn();

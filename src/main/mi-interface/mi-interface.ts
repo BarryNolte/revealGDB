@@ -24,6 +24,7 @@ export interface GdbCommandInterface {
   stepOut(): void;
   pauseExecution(): void;
   stopDebugging(): void;
+  sendControlD(): void;
   runCommand(command: string): void;
 }
 
@@ -91,6 +92,10 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
       this.sendOutputToHandler(args);
     });
 
+    this.conn.on("gdb-end", (code: number | null, signal: string | null) => {
+      this.emit("gdb-end", code, signal);
+    });
+
     this.conn.on("gdb-input", (input: string) => {
       this.emit("gdb-input", input);
     });
@@ -156,6 +161,18 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
   }
 
   /**
+   * Sends raw data to the debugger stdin without automatic line termination.
+   *
+   * @param data - Raw bytes/characters to forward directly to GDB.
+   */
+  sendRaw(data: string): void {
+    if (AppSettings.getSync("gdb.gui.showDebugInfo") as boolean) {
+      this.emit(DEBUG_STREAM, `raw:${JSON.stringify(data)}`);
+    }
+    this.conn?.SendRaw(data);
+  }
+
+  /**
    * Performs continue execution as part of this module's public API.
    *
    * @remarks
@@ -213,6 +230,13 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
    */
   public stopDebugging(): void {
     this.send("kill");
+  }
+
+  /**
+   * Sends Ctrl+D (EOT) to the active GDB process.
+   */
+  public sendControlD(): void {
+    this.sendRaw("\u0004");
   }
 
   /**

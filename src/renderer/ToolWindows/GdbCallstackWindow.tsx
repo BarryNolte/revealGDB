@@ -15,7 +15,7 @@ import {
   Resize,
   SelectionSettingsModel,
 } from "@syncfusion/ej2-react-grids";
-import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { JSX, useEffect, useId, useRef, useState } from "react";
 import { gdbStackFrame } from "../../common/gdb-state-types";
 
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
@@ -25,6 +25,28 @@ import { useGridColumnState } from "../utilities/useGridColumnState";
 import "./GdbCallstackWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
+
+const CALLSTACK_SELECTION_OPTIONS: SelectionSettingsModel = { mode: "Both", type: "Multiple" };
+
+function callstackEmptyTemplate(): JSX.Element {
+  return (
+    <div className="emptyRecordTemplate">
+      <span>Callstack is empty.</span>
+    </div>
+  );
+}
+
+function handleCallstackDoubleClick(e: RecordDoubleClickEventArgs): void {
+  const row = e.rowData as CallstackGridRow | undefined;
+  if (!row?.level) {
+    return;
+  }
+
+  window.ipcToMain.commands.debugger.sendGdbCommand({
+    kind: "select-stack-frame",
+    frameLevel: row.level,
+  });
+}
 
 /**
  * Performs gdb call stack window as part of this module's public API.
@@ -40,15 +62,6 @@ export default function GdbCallStackWindow(): JSX.Element {
   const [stackData, setStackData] = useState<CallstackGridRow[]>([]);
   useGridColumnState("callstack", gridRef);
 
-  /** Grid selection settings: allow multiple row/cell selection */
-  const selectionOptions: SelectionSettingsModel = useMemo(
-    () => ({
-      mode: "Both",
-      type: "Multiple",
-    }),
-    [],
-  );
-
   /**
    * Subscribe to stack frame updates from GDB.
    * Transforms GDB stack data into grid-compatible format.
@@ -63,28 +76,6 @@ export default function GdbCallStackWindow(): JSX.Element {
     };
   }, []);
 
-  /**
-   * Template for empty grid state.
-   * Displays a friendly message when no stack frames are available.
-   */
-  const emptyMessageTemplate = useCallback((): JSX.Element => {
-    return (
-      <div className="emptyRecordTemplate">
-        <span>Callstack is empty.</span>
-      </div>
-    );
-  }, []);
-
-  /**
-   * Handles double-click on stack frame row.
-   * Navigates to the corresponding source location in the source window.
-   */
-  const handleRecordDoubleClick = useCallback((e: RecordDoubleClickEventArgs) => {
-    window.ipcToMain.commands.debugger.sendGdbCommand(`frame ${e.rowIndex}`);
-    window.ipcToMain.commands.debugger.sendGdbCommand("-data-list-register-values x");
-    window.ipcToMain.commands.debugger.sendGdbCommand("-stack-list-locals 1");
-  }, []);
-
   return (
     <ToolWindowContent title={TOOL_WINDOW_TITLES.callstack}>
       <div className="full-size flex-container">
@@ -92,7 +83,7 @@ export default function GdbCallStackWindow(): JSX.Element {
           ref={gridRef}
           id="callstack-grid"
           dataSource={stackData}
-          emptyRecordTemplate={emptyMessageTemplate}
+          emptyRecordTemplate={callstackEmptyTemplate}
           height="100%"
           rowHeight={16}
           allowResizing={true}
@@ -102,9 +93,9 @@ export default function GdbCallStackWindow(): JSX.Element {
           showColumnMenu={true}
           allowFiltering={false}
           allowSelection={true}
-          selectionSettings={selectionOptions}
+          selectionSettings={CALLSTACK_SELECTION_OPTIONS}
           gridLines="Both"
-          recordDoubleClick={handleRecordDoubleClick}
+          recordDoubleClick={handleCallstackDoubleClick}
         >
           <ColumnsDirective>
             <ColumnDirective field="active" headerText="" width={50} showColumnMenu={false} />

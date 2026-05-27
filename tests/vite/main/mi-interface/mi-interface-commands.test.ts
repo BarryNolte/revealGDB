@@ -11,6 +11,14 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
+
+vi.mock("../../../../src/main/app-settings", () => ({
+  AppSettings: {
+    getSync: vi.fn(() => false),
+    setSync: vi.fn(),
+  },
+}));
+
 import { miInterface } from "../../../../src/main/mi-interface/mi-interface";
 
 describe("miInterface command wrappers", () => {

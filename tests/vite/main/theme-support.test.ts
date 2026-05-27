@@ -12,13 +12,9 @@
 
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("electron", async () => {
-  const actual = await vi.importActual<typeof import("electron")>("electron");
-  return {
-    ...actual,
-    nativeTheme: { themeSource: "system" },
-  };
-});
+vi.mock("electron", () => ({
+  nativeTheme: { themeSource: "system" },
+}));
 
 import { nativeTheme } from "electron";
 import { setNativeThemeFromAppTheme } from "../../../src/main/theme-support";

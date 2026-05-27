@@ -52,6 +52,7 @@ const RENDERER_TO_MAIN_CHANNEL_GROUPS = {
   commands: {
     debugger: {
       send: "gdb-command",
+      sendControlD: "gdb-control-d",
     },
     app: {
       notify: "notify-main",
@@ -94,9 +95,17 @@ export const IPC_CHANNELS = {
   },
   rendererSend: {
     gdbCommand: RENDERER_TO_MAIN_CHANNEL_GROUPS.commands.debugger.send,
+    gdbControlD: RENDERER_TO_MAIN_CHANNEL_GROUPS.commands.debugger.sendControlD,
     notifyMain: RENDERER_TO_MAIN_CHANNEL_GROUPS.commands.app.notify,
   },
 } as const;
+
+export type DebuggerSelectStackFrameCommand = {
+  kind: "select-stack-frame";
+  frameLevel: string;
+};
+
+export type DebuggerCommand = string | DebuggerSelectStackFrameCommand;
 
 export type NotifyRenderCommand =
   | "theme-changed"

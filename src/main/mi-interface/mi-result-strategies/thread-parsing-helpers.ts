@@ -15,6 +15,10 @@ export type ParsedThreadFrameData = {
   arch: string;
 };
 
+function grp(groups: RegExpExecArray["groups"], key: string): string {
+  return groups?.[key] || "";
+}
+
 /**
  * Parses input into thread frame from groups data.
  *
@@ -28,13 +32,13 @@ export function parseThreadFrameFromGroups(
   groups: RegExpExecArray["groups"],
 ): ParsedThreadFrameData {
   return {
-    level: groups?.level || "",
-    addr: groups?.addr || "",
-    func: groups?.func || "",
-    args: groups?.args || "",
-    file: groups?.file || "",
-    fullName: groups?.fullname || "",
-    line: groups?.line || "",
-    arch: groups?.arch || "",
+    level: grp(groups, "level"),
+    addr: grp(groups, "addr"),
+    func: grp(groups, "func"),
+    args: grp(groups, "args"),
+    file: grp(groups, "file"),
+    fullName: grp(groups, "fullname"),
+    line: grp(groups, "line"),
+    arch: grp(groups, "arch"),
   };
 }

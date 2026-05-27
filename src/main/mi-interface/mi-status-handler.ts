@@ -17,6 +17,27 @@ export class MiStatusAsyncHandler {
 
   constructor(private readonly host: MiOutputHost) {}
 
+  private getDataGroup(rgx: RegExp, data: string, key: string): string | undefined {
+    return rgx.exec(data)?.groups?.[key];
+  }
+
+  private handleDownload(data: string): void {
+    const section = this.getDataGroup(this.rgxSection, data, "section") ?? "";
+    const sectionSize = this.getDataGroup(this.rgxSectionSize, data, "sectionSize") ?? "";
+    const totalSize = this.getDataGroup(this.rgxTotalSize, data, "totalSize") ?? "";
+    const sectionSent = this.getDataGroup(this.rgxSectionSent, data, "sectionSent");
+    const totalSent = this.getDataGroup(this.rgxTotalSent, data, "totalSent");
+
+    const progress =
+      sectionSent !== undefined && totalSent !== undefined
+        ? ` section-sent="${sectionSent}" total-sent="${totalSent}"`
+        : "";
+    this.host.emit(
+      LOG_STREAM,
+      `+download section="${section}" section-size="${sectionSize}" total-size="${totalSize}"${progress}`,
+    );
+  }
+
   /**
    * Parses input into status async record data.
    *
@@ -34,21 +55,7 @@ export class MiStatusAsyncHandler {
 
     switch (result) {
       case "download": {
-        const section = this.rgxSection.exec(data)?.groups?.section || "";
-        const sectionSize = this.rgxSectionSize.exec(data)?.groups?.sectionSize || "";
-        const totalSize = this.rgxTotalSize.exec(data)?.groups?.totalSize || "";
-        // section-sent and total-sent are only present on periodic progress updates
-        const sectionSent = this.rgxSectionSent.exec(data)?.groups?.sectionSent;
-        const totalSent = this.rgxTotalSent.exec(data)?.groups?.totalSent;
-
-        const progress =
-          sectionSent !== undefined && totalSent !== undefined
-            ? ` section-sent="${sectionSent}" total-sent="${totalSent}"`
-            : "";
-        this.host.emit(
-          LOG_STREAM,
-          `+download section="${section}" section-size="${sectionSize}" total-size="${totalSize}"${progress}`,
-        );
+        this.handleDownload(data);
         break;
       }
       default: {

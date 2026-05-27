@@ -17,7 +17,7 @@ import {
   gdbThreadGroup,
   gdbVarLocation,
 } from "../common/gdb-state-types";
-import { NotifyMainRequest, NotifyRenderMessage } from "../common/ipc-contracts";
+import { DebuggerCommand, NotifyMainRequest, NotifyRenderMessage } from "../common/ipc-contracts";
 import { MemoryData, WslDistro } from "../common/ipc-data-types";
 import { ILocal } from "../common/local-view";
 
@@ -86,7 +86,8 @@ export interface IElectronAPI {
 
   commands: {
     debugger: {
-      sendGdbCommand: (command: string) => void;
+      sendGdbCommand: (command: DebuggerCommand) => void;
+      sendControlD: () => void;
     };
     app: {
       notifyMain: (command: NotifyMainRequest) => void;
@@ -246,6 +247,11 @@ export interface IElectronAPI {
    * @param command - The GDB MI command string to execute
    */
   sendGdbCommand: (command: string) => void;
+
+  /**
+   * Sends Ctrl+D (EOT) to GDB.
+   */
+  sendControlD: () => void;
 
   /**
    * Sends a general notification/command to the main process.

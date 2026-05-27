@@ -6,6 +6,7 @@
  */
 import { screen } from "electron";
 import { HTMLTableGenerator } from "../../common/HtmlTableGenerator";
+import { DebuggerCommand, DebuggerSelectStackFrameCommand } from "../../common/ipc-contracts";
 import { miInterface } from "../mi-interface/mi-interface";
 import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
 import { WslUtilities } from "../utilities/wsl-utilities";
@@ -315,6 +316,20 @@ const DOT_COMMANDS = new Map<string, DotCommandHandler>([
   ["screen", handleScreen],
 ]);
 
+function handleSelectStackFrame(
+  command: DebuggerSelectStackFrameCommand,
+  context: IpcRegistrationContext,
+): void {
+  if (!command.frameLevel) {
+    return;
+  }
+
+  const gdbInterface = context.getGdbInterface();
+  gdbInterface.runCommand(`frame ${command.frameLevel}`);
+  gdbInterface.runCommand("-data-list-register-values x");
+  gdbInterface.runCommand("-stack-list-locals 1");
+}
+
 /**
  * Performs on gdb command as part of this module's public API.
  *
@@ -324,7 +339,12 @@ const DOT_COMMANDS = new Map<string, DotCommandHandler>([
  * @param command - Debugger command text or command descriptor to execute.
  * @param context - Dependency container used to register handlers and access shared services.
  */
-export function onGdbCommand(command: string, context: IpcRegistrationContext): void {
+export function onGdbCommand(command: DebuggerCommand, context: IpcRegistrationContext): void {
+  if (typeof command !== "string") {
+    handleSelectStackFrame(command, context);
+    return;
+  }
+
   if (command.startsWith(".")) {
     const cmd = command.split(" ");
     const func = DOT_COMMANDS.get(cmd[0].substring(1));
@@ -339,4 +359,16 @@ export function onGdbCommand(command: string, context: IpcRegistrationContext): 
     return;
   }
   context.getGdbInterface().runCommand(command);
+}
+
+/**
+ * Sends Ctrl+D (EOT) to the active GDB process.
+ *
+ * @remarks
+ * Participates in main-process IPC wiring between renderer requests and backend services.
+ *
+ * @param context - Dependency container used to register handlers and access shared services.
+ */
+export function onGdbControlD(context: IpcRegistrationContext): void {
+  context.getGdbInterface().sendControlD();
 }

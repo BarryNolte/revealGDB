@@ -15,6 +15,7 @@ import {
   HTML_STREAM,
   LOG_STREAM,
 } from "./mi-interface/mi-stream-events";
+import { disconnectAndResetApplication } from "./utilities/disconnect-helper";
 import { GeneralInfoSender } from "./utilities/GeneralInfoSender";
 
 export type SettingsLike = {
@@ -56,6 +57,9 @@ export function createGdbInterface(
   });
   gdbInterface.on(HTML_STREAM, (html: string) => {
     mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.html, html);
+  });
+  gdbInterface.on("gdb-end", () => {
+    disconnectAndResetApplication(mainWindow, gdbInterface);
   });
   GeneralInfoSender.instance.setRelayTarget(gdbInterface);
 

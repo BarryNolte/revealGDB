@@ -16,6 +16,10 @@ export type ParsedStackFrameData = {
   arch: string;
 };
 
+function grp(groups: RegExpExecArray["groups"], key: string, fallback = ""): string {
+  return groups?.[key] || fallback;
+}
+
 /**
  * Parses input into stack frame from groups data.
  *
@@ -31,14 +35,14 @@ export function parseStackFrameFromGroups(
   defaultArgs = "",
 ): ParsedStackFrameData {
   return {
-    level: groups?.level || "",
-    addr: groups?.addr || "",
-    func: groups?.func || "",
-    args: groups?.args || defaultArgs,
-    file: groups?.file || "",
-    fullName: groups?.fullname || "",
-    line: groups?.line || "",
-    from: groups?.from || "",
-    arch: groups?.arch || "",
+    level: grp(groups, "level"),
+    addr: grp(groups, "addr"),
+    func: grp(groups, "func"),
+    args: grp(groups, "args", defaultArgs),
+    file: grp(groups, "file"),
+    fullName: grp(groups, "fullname"),
+    line: grp(groups, "line"),
+    from: grp(groups, "from"),
+    arch: grp(groups, "arch"),
   };
 }

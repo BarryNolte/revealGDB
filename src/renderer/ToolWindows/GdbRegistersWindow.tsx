@@ -18,7 +18,7 @@ import {
   Reorder,
   Resize,
 } from "@syncfusion/ej2-react-grids";
-import { JSX, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { JSX, useEffect, useId, useRef, useState } from "react";
 import { gdbRegisters } from "../../common/gdb-state-types";
 
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
@@ -28,6 +28,47 @@ import { useGridColumnState } from "../utilities/useGridColumnState";
 import "./GdbRegistersWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
+
+const REGISTERS_EDIT_SETTINGS: EditSettingsModel = {
+  allowEditing: true,
+  allowAdding: false,
+  allowDeleting: false,
+  showConfirmDialog: false,
+  mode: "Batch",
+};
+
+const REGISTERS_EDIT_PARAMS: IEditCell = { params: { showClearButton: true, allowEdit: true } };
+
+function registersHexCheck(e: { element: Element; value: string }): boolean {
+  const regex = /^0[x|X][0-9A-Fa-f]{1,16}$|^[0-9A-Fa-f]{1,16}$/gm;
+  const m = regex.exec(e.value);
+  return !!m;
+}
+
+const REGISTERS_VALIDATION_RULES = {
+  required: true,
+  hexFormat: [registersHexCheck, "Hex value is not valid"],
+};
+
+function registersEmptyTemplate(): JSX.Element {
+  return (
+    <div className="emptyRecordTemplate">
+      <span>No register data available.</span>
+    </div>
+  );
+}
+
+function registersQueryCellInfo(args: QueryCellInfoEventArgs): void {
+  if (args.column?.field === "value" && (args.data as RegisterGridRow).changed === true) {
+    args.cell?.classList.add("register-changed-cell");
+  }
+}
+
+function registersCellSaved(args: CellSaveArgs): void {
+  window.ipcToMain.commands.debugger.sendGdbCommand(
+    `set $${(args.rowData as RegisterGridRow)?.name} = ${args.value}`,
+  );
+}
 
 /**
  * Performs gdb registers window as part of this module's public API.
@@ -43,50 +84,6 @@ export default function GdbRegistersWindow(): JSX.Element {
   const [registerData, setRegisterData] = useState<RegisterGridRow[]>([]);
   useGridColumnState("registers", gridRef);
 
-  /** Edit settings: enable cell editing in batch mode */
-  const editSettings: EditSettingsModel = useMemo(
-    () => ({
-      allowEditing: true,
-      allowAdding: false,
-      allowDeleting: false,
-      showConfirmDialog: false,
-      mode: "Batch",
-    }),
-    [],
-  );
-
-  const editParams: IEditCell = useMemo(
-    () => ({
-      params: {
-        showClearButton: true,
-        allowEdit: true,
-      },
-    }),
-    [],
-  );
-
-  /**
-   * Custom validation function for hexadecimal values.
-   * Accepts 1-8 hex digits with or without 0x prefix.
-   */
-  const hexCheck = useCallback((e: { element: Element; value: string }): boolean => {
-    const regex = /^0[x|X][0-9A-Fa-f]{1,16}$|^[0-9A-Fa-f]{1,16}$/gm;
-
-    const m = regex.exec(e.value);
-
-    if (!m) return false;
-
-    return true;
-  }, []);
-
-  const validationRules = useMemo(
-    () => ({
-      required: true,
-      hexFormat: [hexCheck, "Hex value is not valid"],
-    }),
-    [hexCheck],
-  );
-
   useEffect(() => {
     const unsubscribe = window.ipcToMain.debuggerData.registers(
       (data: gdbRegisters[] | Map<string, gdbRegisters>) => {
@@ -99,26 +96,6 @@ export default function GdbRegistersWindow(): JSX.Element {
     };
   }, []);
 
-  const emptyMessageTemplate = useCallback((): JSX.Element => {
-    return (
-      <div className="emptyRecordTemplate">
-        <span>No register data available.</span>
-      </div>
-    );
-  }, []);
-
-  const queryCellInfo = useCallback((args: QueryCellInfoEventArgs): void => {
-    if (args.column?.field === "value" && (args.data as RegisterGridRow).changed === true) {
-      args.cell?.classList.add("register-changed-cell");
-    }
-  }, []);
-
-  const cellSaved = useCallback((args: CellSaveArgs) => {
-    window.ipcToMain.commands.debugger.sendGdbCommand(
-      `set $${(args.rowData as RegisterGridRow)?.name} = ${args.value}`,
-    );
-  }, []);
-
   return (
     <ToolWindowContent title={TOOL_WINDOW_TITLES.registers}>
       <div className="full-size flex-container">
@@ -126,20 +103,20 @@ export default function GdbRegistersWindow(): JSX.Element {
           ref={gridRef}
           id="registers-grid"
           dataSource={registerData}
-          emptyRecordTemplate={emptyMessageTemplate}
+          emptyRecordTemplate={registersEmptyTemplate}
           height="100%"
           rowHeight={16}
           className="flex-item"
-          queryCellInfo={queryCellInfo}
+          queryCellInfo={registersQueryCellInfo}
           allowResizing={true}
           allowReordering={true}
           allowPaging={false}
           allowSorting={false}
           showColumnMenu={true}
           allowFiltering={false}
-          editSettings={editSettings}
+          editSettings={REGISTERS_EDIT_SETTINGS}
           gridLines="Both"
-          cellSaved={cellSaved}
+          cellSaved={registersCellSaved}
         >
           <ColumnsDirective>
             <ColumnDirective
@@ -158,8 +135,8 @@ export default function GdbRegistersWindow(): JSX.Element {
               width="80%"
               allowEditing={true}
               clipMode="EllipsisWithTooltip"
-              edit={editParams}
-              validationRules={validationRules}
+              edit={REGISTERS_EDIT_PARAMS}
+              validationRules={REGISTERS_VALIDATION_RULES}
             />
           </ColumnsDirective>
           <Inject services={[Resize, Reorder, ColumnMenu, Edit]} />

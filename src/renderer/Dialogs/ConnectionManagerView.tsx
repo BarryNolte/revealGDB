@@ -58,6 +58,235 @@ function header(): ReactElement {
   return <div className="dialogHeader">Connections</div>;
 }
 
+function connectionManagerFooter(onClose: () => void): ReactElement {
+  return (
+    <div>
+      <button type="button" onClick={onClose}>
+        OK
+      </button>
+    </div>
+  );
+}
+
+type ConnectionFormControlsProps = Pick<
+  ConnectionManagerViewProps,
+  | "connectionName"
+  | "connectionNameInputRef"
+  | "connectionNameChangeHandler"
+  | "shellOptions"
+  | "selectedShellLabel"
+  | "shellSelectRef"
+  | "shellChangeHandler"
+  | "wslDistros"
+  | "selectedWslDistro"
+  | "wslDistroChangeHandler"
+  | "isWslShellSelected"
+  | "commandsList"
+  | "commandsListKey"
+  | "handleOnReorder"
+  | "addConnectionButtonRef"
+  | "isAddingConnection"
+>;
+
+type ShellAndCommandsControlsProps = Pick<
+  ConnectionFormControlsProps,
+  | "shellOptions"
+  | "selectedShellLabel"
+  | "shellSelectRef"
+  | "shellChangeHandler"
+  | "wslDistros"
+  | "selectedWslDistro"
+  | "wslDistroChangeHandler"
+  | "isWslShellSelected"
+  | "commandsList"
+  | "commandsListKey"
+  | "handleOnReorder"
+>;
+
+function ShellAndCommandsControls({
+  shellOptions,
+  selectedShellLabel,
+  shellSelectRef,
+  shellChangeHandler,
+  wslDistros,
+  selectedWslDistro,
+  wslDistroChangeHandler,
+  isWslShellSelected,
+  commandsList,
+  commandsListKey,
+  handleOnReorder,
+}: ShellAndCommandsControlsProps): ReactElement {
+  return (
+    <div className="horizontalControls">
+      <div className="controlGroup">
+        <label htmlFor="shellSelect">Shell</label>
+        <select
+          ref={shellSelectRef}
+          className="controlInput"
+          id="shellSelect"
+          value={selectedShellLabel}
+          onChange={shellChangeHandler}
+        >
+          {shellOptions.map((shell) => (
+            <option key={shell.key} value={shell.label}>
+              {shell.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="controlGroup">
+        <label htmlFor="wslDistros">WSL Distros</label>
+        <select
+          className="controlInput"
+          id="wslDistros"
+          value={selectedWslDistro}
+          onChange={wslDistroChangeHandler}
+          disabled={!isWslShellSelected}
+          title={!isWslShellSelected ? "Select WSL in Shell to enable this list" : undefined}
+        >
+          {wslDistros.map((distro) => (
+            <option key={distro} value={distro}>
+              {distro}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="controlGroup">
+        <label htmlFor="commandsTreeView">Startup Commands</label>
+        <DragAndDropList
+          key={commandsListKey}
+          id="commandsTreeView"
+          items={commandsList}
+          onReorder={handleOnReorder}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ConnectionFormControls({
+  connectionName,
+  connectionNameInputRef,
+  connectionNameChangeHandler,
+  shellOptions,
+  selectedShellLabel,
+  shellSelectRef,
+  shellChangeHandler,
+  wslDistros,
+  selectedWslDistro,
+  wslDistroChangeHandler,
+  isWslShellSelected,
+  commandsList,
+  commandsListKey,
+  handleOnReorder,
+  addConnectionButtonRef,
+  isAddingConnection,
+}: ConnectionFormControlsProps): ReactElement {
+  return (
+    <>
+      <div className="controlGroup controlGroupOfOne">
+        <label htmlFor="connectionName">Connection Name</label>
+        <input
+          ref={connectionNameInputRef}
+          className="controlInput"
+          type="text"
+          id="connectionName"
+          value={connectionName}
+          onChange={connectionNameChangeHandler}
+          placeholder="Enter connection name"
+        />
+      </div>
+      <ShellAndCommandsControls
+        shellOptions={shellOptions}
+        selectedShellLabel={selectedShellLabel}
+        shellSelectRef={shellSelectRef}
+        shellChangeHandler={shellChangeHandler}
+        wslDistros={wslDistros}
+        selectedWslDistro={selectedWslDistro}
+        wslDistroChangeHandler={wslDistroChangeHandler}
+        isWslShellSelected={isWslShellSelected}
+        commandsList={commandsList}
+        commandsListKey={commandsListKey}
+        handleOnReorder={handleOnReorder}
+      />
+      <button
+        ref={addConnectionButtonRef}
+        id="addConnectionButton"
+        type="button"
+        className="connectionManagerItem connectionAddButton"
+        disabled={isAddingConnection || !connectionName.trim()}
+      >
+        Add Connection
+      </button>
+    </>
+  );
+}
+
+type ConnectionsDataGridProps = Pick<
+  ConnectionManagerViewProps,
+  "connections" | "connectionsGridRef" | "handleConnectionRowSelected" | "handleDeleteConnection"
+>;
+
+function ConnectionsDataGrid({
+  connections,
+  connectionsGridRef,
+  handleConnectionRowSelected,
+  handleDeleteConnection,
+}: ConnectionsDataGridProps): ReactElement {
+  return (
+    <>
+      <GridComponent
+        ref={connectionsGridRef}
+        id="connectionsGrid"
+        className="connectionManagerItem"
+        dataSource={connections}
+        rowSelected={handleConnectionRowSelected}
+        allowResizing={true}
+        rowHeight={22}
+      >
+        <ColumnsDirective>
+          <ColumnDirective
+            field="name"
+            headerText="Name"
+            width="100"
+            allowResizing={true}
+            clipMode="Ellipsis"
+          />
+          <ColumnDirective
+            field="shell"
+            headerText="Shell"
+            width="60"
+            allowResizing={true}
+            clipMode="Ellipsis"
+          />
+          <ColumnDirective
+            field="commands"
+            headerText="Commands"
+            allowResizing={true}
+            clipMode="Ellipsis"
+          />
+          <ColumnDirective
+            headerText="Action"
+            width="45"
+            allowResizing={false}
+            template={(row: ConnectionGridRow): ReactElement => (
+              <button
+                type="button"
+                className="connection-delete-button"
+                onClick={() => handleDeleteConnection(row.connectionIndex)}
+                title="Delete this connection"
+              >
+                Delete
+              </button>
+            )}
+          />
+        </ColumnsDirective>
+      </GridComponent>
+      <Inject services={[Resize]} />
+    </>
+  );
+}
+
 /**
  * Performs connection manager view as part of this module's public API.
  *
@@ -65,46 +294,7 @@ function header(): ReactElement {
  * @returns The computed result produced by this operation.
  */
 export default function ConnectionManagerView(props: ConnectionManagerViewProps): ReactElement {
-  const {
-    hideDialog,
-    shellOptions,
-    isWslShellSelected,
-    commandsList,
-    commandsListKey,
-    connectionName,
-    selectedShellLabel,
-    wslDistros,
-    selectedWslDistro,
-    isAddingConnection,
-    connections,
-    connectionsGridRef,
-    connectionNameInputRef,
-    shellSelectRef,
-    addConnectionButtonRef,
-    handleOnReorder,
-    shellChangeHandler,
-    wslDistroChangeHandler,
-    connectionNameChangeHandler,
-    handleConnectionRowSelected,
-    handleDeleteConnection,
-    dialogCloseFunc,
-    dialogOpenFunc,
-  } = props;
-
-  /**
-   * Performs footer as part of this module's internal workflow.
-   *
-   * @returns The computed result produced by this operation.
-   */
-  const footer = (): ReactElement => {
-    return (
-      <div>
-        <button type="button" onClick={dialogCloseFunc}>
-          OK
-        </button>
-      </div>
-    );
-  };
+  const { hideDialog, dialogCloseFunc, dialogOpenFunc } = props;
 
   return (
     <div>
@@ -115,7 +305,7 @@ export default function ConnectionManagerView(props: ConnectionManagerViewProps)
         position={{ X: "center", Y: "center" }}
         visible={hideDialog}
         header={header}
-        footerTemplate={footer}
+        footerTemplate={() => connectionManagerFooter(dialogCloseFunc)}
         closeOnEscape={true}
         showCloseIcon={true}
         open={dialogOpenFunc}
@@ -123,119 +313,8 @@ export default function ConnectionManagerView(props: ConnectionManagerViewProps)
         isModal={true}
       >
         <div className="connectionManagerContainer">
-          <div className="controlGroup controlGroupOfOne">
-            <label htmlFor="connectionName">Connection Name</label>
-            <input
-              ref={connectionNameInputRef}
-              className="controlInput"
-              type="text"
-              id="connectionName"
-              value={connectionName}
-              onChange={connectionNameChangeHandler}
-              placeholder="Enter connection name"
-            />
-          </div>
-          <div className="horizontalControls">
-            <div className="controlGroup">
-              <label htmlFor="shellSelect">Shell</label>
-              <select
-                ref={shellSelectRef}
-                className="controlInput"
-                id="shellSelect"
-                value={selectedShellLabel}
-                onChange={shellChangeHandler}
-              >
-                {shellOptions.map((shell) => (
-                  <option key={shell.key} value={shell.label}>
-                    {shell.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="controlGroup">
-              <label htmlFor="wslDistros">WSL Distros</label>
-              <select
-                className="controlInput"
-                id="wslDistros"
-                value={selectedWslDistro}
-                onChange={wslDistroChangeHandler}
-                disabled={!isWslShellSelected}
-                title={!isWslShellSelected ? "Select WSL in Shell to enable this list" : undefined}
-              >
-                {wslDistros.map((distro) => (
-                  <option key={distro} value={distro}>
-                    {distro}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="controlGroup">
-              <label htmlFor="commandsTreeView">Startup Commands</label>
-              <DragAndDropList
-                key={commandsListKey}
-                id="commandsTreeView"
-                items={commandsList}
-                onReorder={handleOnReorder}
-              />
-            </div>
-          </div>
-          <button
-            ref={addConnectionButtonRef}
-            id="addConnectionButton"
-            type="button"
-            className="connectionManagerItem connectionAddButton"
-            disabled={isAddingConnection || !connectionName.trim()}
-          >
-            Add Connection
-          </button>
-          <GridComponent
-            ref={connectionsGridRef}
-            id="connectionsGrid"
-            className="connectionManagerItem"
-            dataSource={connections}
-            rowSelected={handleConnectionRowSelected}
-            allowResizing={true}
-            rowHeight={22}
-          >
-            <ColumnsDirective>
-              <ColumnDirective
-                field="name"
-                headerText="Name"
-                width="100"
-                allowResizing={true}
-                clipMode="Ellipsis"
-              />
-              <ColumnDirective
-                field="shell"
-                headerText="Shell"
-                width="60"
-                allowResizing={true}
-                clipMode="Ellipsis"
-              />
-              <ColumnDirective
-                field="commands"
-                headerText="Commands"
-                allowResizing={true}
-                clipMode="Ellipsis"
-              />
-              <ColumnDirective
-                headerText="Action"
-                width="45"
-                allowResizing={false}
-                template={(row: ConnectionGridRow): ReactElement => (
-                  <button
-                    type="button"
-                    className="connection-delete-button"
-                    onClick={() => handleDeleteConnection(row.connectionIndex)}
-                    title="Delete this connection"
-                  >
-                    Delete
-                  </button>
-                )}
-              />
-            </ColumnsDirective>
-          </GridComponent>
-          <Inject services={[Resize]} />
+          <ConnectionFormControls {...props} />
+          <ConnectionsDataGrid {...props} />
         </div>
       </DialogComponent>
     </div>

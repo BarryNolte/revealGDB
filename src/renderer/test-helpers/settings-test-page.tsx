@@ -7,6 +7,7 @@
 import type { JSX } from "react";
 import { useEffect, useRef } from "react";
 import Settings, { type SettingsHandle } from "../Dialogs/Settings";
+import { initIpcMock, setIpcFullLegacyAliases } from "./ipc-test-setup";
 import "./settings-test-page.css";
 
 type SettingsPayload = {
@@ -57,15 +58,7 @@ const defaultFonts = ["Consolas", "Fira Code", "Cascadia Code"];
  * Performs setup settings test api as part of this module's public API.
  */
 export function setupSettingsTestApi(): void {
-  const ipc = window.ipcToMain ?? ({} as Window["ipcToMain"]);
-  if (!window.ipcToMain) {
-    Object.defineProperty(window, "ipcToMain", {
-      value: ipc,
-      configurable: true,
-      writable: true,
-    });
-  }
-
+  const ipc = initIpcMock();
   const notifyMainCalls: NotifyMainCall[] = [];
   const editorEvents: Array<Record<string, unknown>> = [];
   const applicationEvents: Array<Record<string, unknown>> = [];
@@ -93,68 +86,6 @@ export function setupSettingsTestApi(): void {
   window.addEventListener("changeEditor", handleChangeEditor);
   window.addEventListener("changeApplication", handleChangeApplication);
 
-  ipc.messages = {
-    console: () => () => undefined,
-    log: () => () => undefined,
-    error: () => () => undefined,
-    debug: () => () => undefined,
-    html: () => () => undefined,
-  };
-  ipc.notifications = {
-    connectionStatus: () => () => undefined,
-    render: () => () => undefined,
-    themeChanged: () => () => undefined,
-  };
-  ipc.debuggerData = {
-    registers: () => () => undefined,
-    stackFrames: () => () => undefined,
-    sourceFile: () => () => undefined,
-    locals: () => () => undefined,
-    threads: () => () => undefined,
-    breakpoints: () => () => undefined,
-    memory: () => () => undefined,
-    disassembly: () => () => undefined,
-    functions: () => () => undefined,
-  };
-  ipc.queries = {
-    app: {
-      getSettings: () => Promise.resolve(defaultSettings),
-      getSystemFonts: () => Promise.resolve(defaultFonts),
-      getVersionInfo: () => Promise.resolve(new Map()),
-    },
-    environment: {
-      getWslDistrobutions: () => Promise.resolve([]),
-    },
-    debugger: {
-      getFunctionNames: () => Promise.resolve([]),
-    },
-  };
-  ipc.commands = {
-    debugger: {
-      sendGdbCommand: () => undefined,
-    },
-    app: {
-      notifyMain: () => undefined,
-    },
-  };
-
-  ipc.consoleMessage = ipc.messages.console;
-  ipc.logMessage = ipc.messages.log;
-  ipc.errorMessage = ipc.messages.error;
-  ipc.debugMessage = ipc.messages.debug;
-  ipc.htmlMessage = ipc.messages.html;
-  ipc.connectionStatus = ipc.notifications.connectionStatus;
-  ipc.notifyRender = ipc.notifications.render;
-  ipc.dataRegisters = ipc.debuggerData.registers;
-  ipc.stackFrames = ipc.debuggerData.stackFrames;
-  ipc.sourceFile = ipc.debuggerData.sourceFile;
-  ipc.dataLocals = ipc.debuggerData.locals;
-  ipc.dataThreads = ipc.debuggerData.threads;
-  ipc.dataBrkPts = ipc.debuggerData.breakpoints;
-  ipc.dataMemory = ipc.debuggerData.memory;
-  ipc.dataDisasm = ipc.debuggerData.disassembly;
-  ipc.dataFunctions = ipc.debuggerData.functions;
-
   ipc.queries.app.getSettings = () => {
     const settings = (window as WindowWithSettingsTestApi).__SETTINGS_TEST_SETTINGS__;
     return Promise.resolve(settings?.settings ?? defaultSettings);
@@ -163,20 +94,13 @@ export function setupSettingsTestApi(): void {
     const settings = (window as WindowWithSettingsTestApi).__SETTINGS_TEST_SETTINGS__;
     return Promise.resolve(settings?.fonts ?? defaultFonts);
   };
-  ipc.getSettings = ipc.queries.app.getSettings;
-  ipc.getSystemFonts = ipc.queries.app.getSystemFonts;
-  ipc.getVersionInfo = ipc.queries.app.getVersionInfo;
-  ipc.getWslDistrobutions = ipc.queries.environment.getWslDistrobutions;
-  ipc.getFunctionNames = ipc.queries.debugger.getFunctionNames;
-
   ipc.commands.app.notifyMain = (message) => {
     notifyMainCalls.push({
       command: message?.command,
       data: message?.data,
     });
   };
-  ipc.notifyMain = ipc.commands.app.notifyMain;
-  ipc.sendGdbCommand = ipc.commands.debugger.sendGdbCommand;
+  setIpcFullLegacyAliases(ipc);
 
   (window as WindowWithSettingsTestApi).__SETTINGS_TEST_API__ = {
     getNotifyMainCalls: () => notifyMainCalls.slice(),

@@ -7,15 +7,19 @@
 import { shell } from "electron";
 import { GdbAny, SelectedConnection } from "../../common/gdb-common";
 import { GridColumnState, GridName } from "../../common/grid-column-types";
-import { IPC_CHANNELS, NotifyMainRequest, NotifyRenderMessage } from "../../common/ipc-contracts";
+import {
+  DebuggerCommand,
+  IPC_CHANNELS,
+  NotifyMainRequest,
+  NotifyRenderMessage,
+} from "../../common/ipc-contracts";
 import { mapElectronWindowToWinPos } from "../mappers/window-pos-mapper";
+import { disconnectAndResetApplication } from "../utilities/disconnect-helper";
 import { setNativeThemeFromAppTheme } from "../theme-support";
 import { debugLog } from "../utilities/logger";
-import { onGdbCommand } from "./on-gdb-command";
+import { onGdbCommand, onGdbControlD } from "./on-gdb-command";
 import { IpcRegistrationContext } from "./types";
 export { onGdbCommand } from "./on-gdb-command";
-
-const DEBUGGER_DISCONNECTED_BANNER = "".padStart(51, "*"); //" "***************************************************";
 
 /**
  * Performs send notify render as part of this module's internal workflow.
@@ -91,23 +95,7 @@ function handleCancelConnection(msg: NotifyMainRequest, context: IpcRegistration
   const mainWindow = context.getMainWindow();
   const gdbInterface = context.getGdbInterface();
 
-  gdbInterface.disconnect();
-  sendNotifyRender(context, { command: "cancel-connection" });
-
-  gdbInterface.gdbDB.clearDatabase();
-  gdbInterface.gdbDB.allDataUpdateUI();
-
-  const lines: string[] = [
-    DEBUGGER_DISCONNECTED_BANNER,
-    DEBUGGER_DISCONNECTED_BANNER,
-    "*             Debugger Disconnected               *",
-    DEBUGGER_DISCONNECTED_BANNER,
-    DEBUGGER_DISCONNECTED_BANNER,
-  ];
-
-  lines.forEach((line) =>
-    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.console.debug, line),
-  );
+  disconnectAndResetApplication(mainWindow, gdbInterface);
 }
 
 function resetGridColumns(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
@@ -124,12 +112,11 @@ function handleSaveSettings(msg: NotifyMainRequest, context: IpcRegistrationCont
   const command = msg?.command || "";
 
   switch (command) {
-    case "save-connections":
-      context.appSettings.setSync(
-        "gdb.connections",
-        (msg.data as { connections?: unknown } | undefined)?.connections as never,
-      );
+    case "save-connections": {
+      const connData = msg.data as { connections?: unknown };
+      context.appSettings.setSync("gdb.connections", connData.connections as never);
       break;
+    }
     case "save-last-used-connection":
       context.appSettings.setSync("gdb.lastUsedConnection", msg.data as never);
       break;
@@ -263,8 +250,12 @@ export function registerIpcCommandHandlers(context: IpcRegistrationContext): voi
 
   context.ipcMain.on(
     IPC_CHANNELS.rendererToMain.commands.debugger.send,
-    (_event: GdbAny, command: string) => {
+    (_event: GdbAny, command: DebuggerCommand) => {
       onGdbCommand(command, context);
     },
   );
+
+  context.ipcMain.on(IPC_CHANNELS.rendererToMain.commands.debugger.sendControlD, () => {
+    onGdbControlD(context);
+  });
 }

@@ -92,6 +92,57 @@ function headerTemplate(): JSX.Element {
   );
 }
 
+type ConnectionComboBoxProps = Pick<
+  ConnectionDialogViewProps,
+  "definedConnections" | "selectedConnectionName" | "onSelectedConnectionChange"
+>;
+
+function ConnectionComboBox({
+  definedConnections,
+  selectedConnectionName,
+  onSelectedConnectionChange,
+}: ConnectionComboBoxProps): JSX.Element {
+  return (
+    <div className="connectionItem connectionSelectRow">
+      <div className="connectionComboHost">
+        <ComboBoxComponent
+          id="definedConnections"
+          name="definedConnections"
+          readOnly={true}
+          placeholder="Select a connection..."
+          disabled={false}
+          dataSource={definedConnections}
+          fields={{ text: "name", value: "name" }}
+          value={selectedConnectionName}
+          change={(args) => onSelectedConnectionChange(args.itemData)}
+        />
+      </div>
+    </div>
+  );
+}
+
+function connectionDialogFooter(
+  onConnectClick: () => void,
+  onCancelConnectionClick: () => void,
+  disconnectAvailable: boolean,
+): JSX.Element {
+  return (
+    <div className="connectionDialogFooter">
+      <ButtonComponent id="connectionsButton" type="button">
+        Connections
+      </ButtonComponent>
+      <div className="connectionDialogFooterActions">
+        <ButtonComponent onClick={onConnectClick} disabled={disconnectAvailable}>
+          Connect
+        </ButtonComponent>
+        <ButtonComponent onClick={onCancelConnectionClick} disabled={!disconnectAvailable}>
+          Cancel Connection
+        </ButtonComponent>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Performs connection dialog view as part of this module's public API.
  *
@@ -104,37 +155,11 @@ export default function ConnectionDialogView(props: ConnectionDialogViewProps): 
     gridRef,
     outputRef,
     connectionStateRows,
-    definedConnections,
-    selectedConnectionName,
     disconnectAvailable,
     onDialogClose,
     onConnectClick,
     onCancelConnectionClick,
-    onSelectedConnectionChange,
   } = props;
-
-  /**
-   * Performs footer template as part of this module's internal workflow.
-   *
-   * @returns The computed result produced by this operation.
-   */
-  const footerTemplate = (): JSX.Element => {
-    return (
-      <div className="connectionDialogFooter">
-        <ButtonComponent id="connectionsButton" type="button">
-          Connections
-        </ButtonComponent>
-        <div className="connectionDialogFooterActions">
-          <ButtonComponent onClick={onConnectClick} disabled={disconnectAvailable}>
-            Connect
-          </ButtonComponent>
-          <ButtonComponent onClick={onCancelConnectionClick} disabled={!disconnectAvailable}>
-            Cancel Connection
-          </ButtonComponent>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div>
@@ -149,28 +174,16 @@ export default function ConnectionDialogView(props: ConnectionDialogViewProps): 
         close={onDialogClose}
         closeOnEscape={false}
         header={headerTemplate}
-        footerTemplate={footerTemplate}
+        footerTemplate={() =>
+          connectionDialogFooter(onConnectClick, onCancelConnectionClick, disconnectAvailable)
+        }
         isModal={true}
       >
         <div className="connectionContainer">
           <label className="connectionLabel" htmlFor="definedConnections">
             Select a connection
           </label>
-          <div className="connectionItem connectionSelectRow">
-            <div className="connectionComboHost">
-              <ComboBoxComponent
-                id="definedConnections"
-                name="definedConnections"
-                readOnly={true}
-                placeholder="Select a connection..."
-                disabled={false}
-                dataSource={definedConnections}
-                fields={{ text: "name", value: "name" }}
-                value={selectedConnectionName}
-                change={(args) => onSelectedConnectionChange(args.itemData)}
-              />
-            </div>
-          </div>
+          <ConnectionComboBox {...props} />
           <GridComponent
             ref={gridRef}
             className="connectionItem"

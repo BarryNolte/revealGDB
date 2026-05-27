@@ -1,14 +1,27 @@
 // @vitest-environment jsdom
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import GdbCallStackWindow from "../../../../src/renderer/ToolWindows/GdbCallstackWindow";
 
 const mockAutoFitColumns = vi.fn();
+let capturedRecordDoubleClick: ((args: unknown) => void) | null = null;
 
 vi.mock("@syncfusion/ej2-react-grids", () => ({
   GridComponent: React.forwardRef(
-    ({ id, children }: { id: string; children: React.ReactNode }, ref: React.Ref<unknown>) => {
+    (
+      {
+        id,
+        children,
+        recordDoubleClick,
+      }: {
+        id: string;
+        children: React.ReactNode;
+        recordDoubleClick?: (args: unknown) => void;
+      },
+      ref: React.Ref<unknown>,
+    ) => {
+      capturedRecordDoubleClick = recordDoubleClick ?? null;
       React.useImperativeHandle(ref, () => ({
         autoFitColumns: mockAutoFitColumns,
         copy: vi.fn(),
@@ -48,6 +61,7 @@ type CallstackTestWindow = Window & {
 
 beforeEach(() => {
   mockAutoFitColumns.mockReset();
+  capturedRecordDoubleClick = null;
   mockUnsubscribe.mockReset();
 
   (window as unknown as Record<string, unknown>).ipcToMain = {
@@ -84,14 +98,27 @@ describe("GdbCallstackWindow smoke test", () => {
     unmount();
     expect(mockUnsubscribe).toHaveBeenCalledTimes(1);
   });
-});
 
+  it("double-click forwards the selected stack frame to the debugger bridge", () => {
+    render(<GdbCallStackWindow />);
+    const sendGdbCommand = (window as unknown as CallstackTestWindow).ipcToMain.commands.debugger
+      .sendGdbCommand;
+
+    act(() => {
+      capturedRecordDoubleClick?.({ rowData: { level: "3" } });
+    });
+
+    expect(sendGdbCommand).toHaveBeenCalledWith({
+      kind: "select-stack-frame",
+      frameLevel: "3",
+    });
+  });
+});
 
 /**
  * @file GdbCallstackWindow.test.tsx
  * @description Source module for GdbCallstackWindow.test.
  */
-
 
 /**
  * GdbCallstackWindow.test module.

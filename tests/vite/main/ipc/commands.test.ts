@@ -376,6 +376,16 @@ describe("onGdbCommand", () => {
     expect(gdbInterface.runCommand).toHaveBeenCalledWith("info registers");
   });
 
+  it("selects a stack frame and refreshes debugger data when given a structured frame request", () => {
+    const { context, gdbInterface } = createIpcRegistrationHarness();
+
+    onGdbCommand({ kind: "select-stack-frame", frameLevel: "2" }, context);
+
+    expect(gdbInterface.runCommand).toHaveBeenNthCalledWith(1, "frame 2");
+    expect(gdbInterface.runCommand).toHaveBeenNthCalledWith(2, "-data-list-register-values x");
+    expect(gdbInterface.runCommand).toHaveBeenNthCalledWith(3, "-stack-list-locals 1");
+  });
+
   it("handles dot-commands for db, wsl, and screen", () => {
     const { context } = createIpcRegistrationHarness();
 

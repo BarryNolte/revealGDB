@@ -410,6 +410,7 @@ function couplingCard() {
     <span class="zoom-pct" id="coupling-zoom-pct">100%</span>
     <button class="zoom-btn" onclick="svgZoom(+0.25)" title="Zoom in">+</button>
     <button class="zoom-btn" onclick="svgZoom(0)" title="Reset zoom" style="margin-left:4px">↺ Reset</button>
+    <span class="zoom-hint">Double-click to zoom in · Shift+double-click to zoom out</span>
   </div>` : "";
 
   return `
@@ -417,7 +418,7 @@ function couplingCard() {
   <h2>Coupling ${htmlLink}</h2>
   ${staleLabel(mtime, "npm run metrics:coupling")}
   ${zoomControls}
-  ${svgContent ? `<div class="svg-wrap">${svgContent}</div>` : `<p class="empty">Graph SVG not found.</p>`}
+  ${svgContent ? `<div class="svg-wrap" id="coupling-svg-wrap">${svgContent}</div>` : `<p class="empty">Graph SVG not found.</p>`}
 </div>`;
 }
 
@@ -632,14 +633,20 @@ function buildHtml(cards) {
     min-width: 38px;
     text-align: center;
   }
+  .zoom-hint {
+    font-size: 11px;
+    color: #848d97;
+    margin-left: 6px;
+  }
   .svg-wrap {
     margin-top: 8px;
     overflow: auto;
-    max-height: 600px;
+    max-height: 1200px;
     background: #ffffff;
     border-radius: 4px;
     border: 1px solid #d0d7de;
     padding: 8px;
+    cursor: zoom-in;
   }
   .svg-wrap svg { display: block; }
 
@@ -654,6 +661,7 @@ function buildHtml(cards) {
     .zoom-btn { background: #21262d; border-color: #30363d; color: #c9d1d9; }
     .zoom-btn:hover { background: #2d333b; }
     .zoom-pct { color: #8b949e; }
+    .zoom-hint { color: #6e7681; }
 
     /* SVG viewer canvas */
     .svg-wrap { background: #1c2128; border-color: #21262d; }
@@ -706,19 +714,23 @@ ${cards.join("\n")}
 (function () {
   var _zoom = 1;
   var _baseW = null, _baseH = null;
-  window.svgZoom = function (delta) {
-    var el = document.getElementById('coupling-svg');
-    if (!el) return;
+
+  function ensureBase(el) {
     if (_baseW === null) {
-      // Capture current rendered size as the baseline (handles any CSS sizing)
       var r = el.getBoundingClientRect();
       _baseW = r.width  || el.viewBox.baseVal.width  || 1733;
       _baseH = r.height || el.viewBox.baseVal.height || 6306;
       el.style.maxWidth = 'none';
     }
+  }
+
+  window.svgZoom = function (delta) {
+    var el = document.getElementById('coupling-svg');
+    if (!el) return;
+    ensureBase(el);
     if (delta === 0) {
       _zoom = 1; _baseW = null; _baseH = null;
-      el.style.maxWidth = '100%';
+      el.style.maxWidth = '';
       el.style.width    = '';
       el.style.height   = '';
     } else {
@@ -729,6 +741,44 @@ ${cards.join("\n")}
     var lbl = document.getElementById('coupling-zoom-pct');
     if (lbl) lbl.textContent = Math.round(_zoom * 100) + '%';
   };
+
+  // Double-click: zoom in (or Shift+double-click: zoom out) centered on cursor
+  document.addEventListener('DOMContentLoaded', function () {
+    var wrap = document.getElementById('coupling-svg-wrap');
+    if (!wrap) return;
+    wrap.addEventListener('dblclick', function (e) {
+      var el = document.getElementById('coupling-svg');
+      if (!el) return;
+      ensureBase(el);
+      var delta = e.shiftKey ? -0.5 : 0.5;
+      var oldZoom = _zoom;
+      var newZoom = Math.max(0.1, Math.min(8, oldZoom + delta));
+      if (newZoom === oldZoom) return;
+
+      // Click position relative to the wrap's visible (scrolled) area
+      var wrapRect = wrap.getBoundingClientRect();
+      var clickInWrapX = e.clientX - wrapRect.left;
+      var clickInWrapY = e.clientY - wrapRect.top;
+
+      // Same point expressed in SVG scroll-space coordinates
+      var svgX = clickInWrapX + wrap.scrollLeft;
+      var svgY = clickInWrapY + wrap.scrollTop;
+
+      // Apply new zoom
+      _zoom = newZoom;
+      el.style.width  = (_baseW * _zoom) + 'px';
+      el.style.height = (_baseH * _zoom) + 'px';
+
+      // Scroll so the clicked point stays under the cursor
+      var ratio = newZoom / oldZoom;
+      wrap.scrollLeft = svgX * ratio - clickInWrapX;
+      wrap.scrollTop  = svgY * ratio - clickInWrapY;
+
+      var lbl = document.getElementById('coupling-zoom-pct');
+      if (lbl) lbl.textContent = Math.round(_zoom * 100) + '%';
+      e.preventDefault();
+    });
+  });
 })();
 </script>
 </body>

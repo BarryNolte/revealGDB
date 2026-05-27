@@ -100,6 +100,19 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
   }
 
   /**
+   * Sends raw data to GDB stdin without appending a newline.
+   *
+   * @param data - Raw data to forward directly to the debugger process.
+   */
+  override SendRaw(data: string): void {
+    this.gdbExe?.stdin?.cork();
+    this.gdbExe?.stdin?.write(data, (_error) => {
+      this.emit("gdb-input", data);
+    });
+    this.gdbExe?.stdin?.uncork();
+  }
+
+  /**
    * Performs end as part of this module's public API.
    *
    * @remarks

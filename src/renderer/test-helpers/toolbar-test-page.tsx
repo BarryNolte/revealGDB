@@ -5,9 +5,10 @@ import type { WhileConnectingDialogHandle } from "../Dialogs/ConnectionDialog";
 import type { ConnectionManagerHandle } from "../Dialogs/ConnectionManager";
 import type { SettingsHandle } from "../Dialogs/Settings";
 import { setDockMenuConnector } from "../utilities/dock-menu-state";
-import { UPDATE_WINDOW_LIST } from "../utilities/renderer-events";
-import "./toolbar-test-page.css";
 import { DockMenuConnector } from "../utilities/DockMenuConnector";
+import { UPDATE_WINDOW_LIST } from "../utilities/renderer-events";
+import { initIpcMock, setIpcFullLegacyAliases } from "./ipc-test-setup";
+import "./toolbar-test-page.css";
 
 type ToolbarWindowSettings = {
   displayName: string;
@@ -89,58 +90,7 @@ export function setupToolbarTestApi(): void {
   const toggleWindowEvents: string[] = [];
   const notifyMainCalls: Array<{ command?: string; data?: unknown }> = [];
 
-  const ipc = window.ipcToMain ?? ({} as Window["ipcToMain"]);
-  if (!window.ipcToMain) {
-    Object.defineProperty(window, "ipcToMain", {
-      value: ipc,
-      configurable: true,
-      writable: true,
-    });
-  }
-
-  ipc.messages = {
-    console: () => () => undefined,
-    log: () => () => undefined,
-    error: () => () => undefined,
-    debug: () => () => undefined,
-  };
-  ipc.notifications = {
-    connectionStatus: () => () => undefined,
-    render: () => () => undefined,
-    themeChanged: () => () => undefined,
-  };
-  ipc.debuggerData = {
-    registers: () => () => undefined,
-    stackFrames: () => () => undefined,
-    sourceFile: () => () => undefined,
-    locals: () => () => undefined,
-    threads: () => () => undefined,
-    breakpoints: () => () => undefined,
-    memory: () => () => undefined,
-    disassembly: () => () => undefined,
-    functions: () => () => undefined,
-  };
-  ipc.queries = {
-    app: {
-      getSettings: () => Promise.resolve({}),
-      getSystemFonts: () => Promise.resolve([]),
-      getVersionInfo: () => Promise.resolve(new Map()),
-    },
-    environment: {
-      getWslDistrobutions: () => Promise.resolve([]),
-    },
-    debugger: {
-      getFunctionNames: () => Promise.resolve([]),
-    },
-  };
-  ipc.commands = {
-    debugger: {
-      sendGdbCommand: () => undefined,
-    },
-    app: {
-      notifyMain: () => undefined,
-    },
-  };
+  const ipc = initIpcMock();
 
   ipc.notifications.render = (callback) => {
     notifyRenderHandler = callback;
@@ -158,28 +108,7 @@ export function setupToolbarTestApi(): void {
     });
   };
 
-  ipc.consoleMessage = ipc.messages.console;
-  ipc.logMessage = ipc.messages.log;
-  ipc.errorMessage = ipc.messages.error;
-  ipc.debugMessage = ipc.messages.debug;
-  ipc.connectionStatus = ipc.notifications.connectionStatus;
-  ipc.notifyRender = ipc.notifications.render;
-  ipc.dataRegisters = ipc.debuggerData.registers;
-  ipc.stackFrames = ipc.debuggerData.stackFrames;
-  ipc.sourceFile = ipc.debuggerData.sourceFile;
-  ipc.dataLocals = ipc.debuggerData.locals;
-  ipc.dataThreads = ipc.debuggerData.threads;
-  ipc.dataBrkPts = ipc.debuggerData.breakpoints;
-  ipc.dataMemory = ipc.debuggerData.memory;
-  ipc.dataDisasm = ipc.debuggerData.disassembly;
-  ipc.dataFunctions = ipc.debuggerData.functions;
-  ipc.getSettings = ipc.queries.app.getSettings;
-  ipc.getSystemFonts = ipc.queries.app.getSystemFonts;
-  ipc.getVersionInfo = ipc.queries.app.getVersionInfo;
-  ipc.getWslDistrobutions = ipc.queries.environment.getWslDistrobutions;
-  ipc.getFunctionNames = ipc.queries.debugger.getFunctionNames;
-  ipc.sendGdbCommand = ipc.commands.debugger.sendGdbCommand;
-  ipc.notifyMain = ipc.commands.app.notifyMain;
+  setIpcFullLegacyAliases(ipc);
 
   setDockMenuConnector({
     reconsilePanels: () => {

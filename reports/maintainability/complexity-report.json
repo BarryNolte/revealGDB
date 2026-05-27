@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-21T13:52:36.344Z",
+  "generatedAt": "2026-05-27T17:08:48.410Z",
   "root": "C:\\Users\\barry\\Documents\\Projects\\revealGDB",
   "thresholds": {
     "warn": 15,
@@ -8,12 +8,12 @@
   "buckets": [
     {
       "name": "main",
-      "fileCount": 69,
-      "fnCount": 514,
-      "avgCC": 7.71,
+      "fileCount": 70,
+      "fnCount": 536,
+      "avgCC": 7.47,
       "highCC": 0,
       "mediumCC": 0,
-      "lowCC": 69,
+      "lowCC": 70,
       "fnOver25": 0,
       "fnOver15": 0,
       "files": [
@@ -138,69 +138,75 @@
         },
         {
           "file": "src/main/gdb-lifecycle.ts",
-          "sloc": 61,
-          "totalLines": 84,
+          "sloc": 65,
+          "totalLines": 88,
           "cyclomatic": 3,
           "maxFnCC": 2,
-          "fnCount": 10,
+          "fnCount": 11,
           "functions": [
             {
               "name": "createGdbInterface",
-              "line": 31,
+              "line": 32,
               "cc": 1,
-              "sloc": 46
+              "sloc": 49
             },
             {
               "name": "<anonymous>",
-              "line": 37,
+              "line": 38,
               "cc": 2,
               "sloc": 7
             },
             {
               "name": "<anonymous>",
-              "line": 45,
+              "line": 46,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 48,
+              "line": 49,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 51,
+              "line": 52,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 54,
+              "line": 55,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 57,
+              "line": 58,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 63,
+              "line": 61,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 67,
               "cc": 2,
               "sloc": 15
             },
             {
               "name": "<anonymous>",
-              "line": 67,
+              "line": 71,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 77,
+              "line": 81,
               "cc": 1,
               "sloc": 3
             }
@@ -208,93 +214,93 @@
         },
         {
           "file": "src/main/ipc/commands.ts",
-          "sloc": 204,
-          "totalLines": 271,
+          "sloc": 199,
+          "totalLines": 264,
           "cyclomatic": 29,
           "maxFnCC": 14,
           "fnCount": 14,
           "functions": [
             {
               "name": "sendNotifyRender",
-              "line": 29,
+              "line": 35,
               "cc": 1,
               "sloc": 5
             },
             {
               "name": "isSafeExternalUrl",
-              "line": 35,
+              "line": 41,
               "cc": 5,
               "sloc": 11
             },
             {
               "name": "doConnection",
-              "line": 57,
+              "line": 63,
               "cc": 2,
               "sloc": 11
             },
             {
               "name": "handleConnectSelectedConnection",
-              "line": 76,
+              "line": 82,
               "cc": 2,
               "sloc": 13
             },
             {
               "name": "handleCancelConnection",
-              "line": 90,
+              "line": 96,
               "cc": 1,
-              "sloc": 18
-            },
-            {
-              "name": "<anonymous>",
-              "line": 108,
-              "cc": 1,
-              "sloc": 2
+              "sloc": 5
             },
             {
               "name": "resetGridColumns",
-              "line": 113,
+              "line": 103,
               "cc": 2,
               "sloc": 8
             },
             {
               "name": "handleSaveSettings",
-              "line": 122,
+              "line": 112,
               "cc": 14,
-              "sloc": 64
+              "sloc": 63
             },
             {
               "name": "handleShowSourceAt",
-              "line": 188,
+              "line": 177,
               "cc": 1,
               "sloc": 13
             },
             {
               "name": "<anonymous>",
-              "line": 193,
+              "line": 182,
               "cc": 1,
               "sloc": 8
             },
             {
               "name": "handleNotifyMain",
-              "line": 212,
+              "line": 201,
               "cc": 9,
               "sloc": 35
             },
             {
               "name": "registerIpcCommandHandlers",
-              "line": 256,
+              "line": 245,
               "cc": 1,
-              "sloc": 14
+              "sloc": 17
             },
             {
               "name": "<anonymous>",
-              "line": 259,
+              "line": 248,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 266,
+              "line": 255,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 260,
               "cc": 1,
               "sloc": 3
             }
@@ -318,185 +324,197 @@
         },
         {
           "file": "src/main/ipc/on-gdb-command.ts",
-          "sloc": 304,
-          "totalLines": 343,
-          "cyclomatic": 9,
-          "maxFnCC": 3,
-          "fnCount": 29,
+          "sloc": 324,
+          "totalLines": 375,
+          "cyclomatic": 11,
+          "maxFnCC": 4,
+          "fnCount": 31,
           "functions": [
             {
               "name": "handleHelp",
-              "line": 28,
+              "line": 29,
               "cc": 1,
               "sloc": 25
             },
             {
               "name": "handleDbSource",
-              "line": 56,
+              "line": 57,
               "cc": 1,
               "sloc": 10
             },
             {
               "name": "<anonymous>",
-              "line": 60,
+              "line": 61,
               "cc": 1,
               "sloc": 1
             },
             {
               "name": "handleDbThreadGroups",
-              "line": 67,
+              "line": 68,
               "cc": 1,
               "sloc": 29
             },
             {
               "name": "<anonymous>",
-              "line": 71,
+              "line": 72,
               "cc": 1,
               "sloc": 4
             },
             {
               "name": "<anonymous>",
-              "line": 82,
+              "line": 83,
               "cc": 1,
               "sloc": 9
             },
             {
               "name": "handleDbFeatures",
-              "line": 97,
+              "line": 98,
               "cc": 1,
               "sloc": 13
             },
             {
               "name": "<anonymous>",
-              "line": 101,
+              "line": 102,
               "cc": 2,
               "sloc": 4
             },
             {
               "name": "handleDbParameters",
-              "line": 111,
+              "line": 112,
               "cc": 1,
               "sloc": 13
             },
             {
               "name": "<anonymous>",
-              "line": 115,
+              "line": 116,
               "cc": 1,
               "sloc": 4
             },
             {
               "name": "handleDbStack",
-              "line": 125,
+              "line": 126,
               "cc": 1,
               "sloc": 21
             },
             {
               "name": "<anonymous>",
-              "line": 129,
+              "line": 130,
               "cc": 1,
               "sloc": 12
             },
             {
               "name": "handleDbBreakpoints",
-              "line": 147,
+              "line": 148,
               "cc": 1,
               "sloc": 38
             },
             {
               "name": "<anonymous>",
-              "line": 165,
+              "line": 166,
               "cc": 1,
               "sloc": 15
             },
             {
               "name": "handleDbRegisters",
-              "line": 185,
+              "line": 186,
               "cc": 1,
               "sloc": 14
             },
             {
               "name": "<anonymous>",
-              "line": 189,
+              "line": 190,
               "cc": 1,
               "sloc": 5
             },
             {
               "name": "handleDbSymbols",
-              "line": 200,
+              "line": 201,
               "cc": 1,
               "sloc": 17
             },
             {
               "name": "<anonymous>",
-              "line": 205,
+              "line": 206,
               "cc": 2,
               "sloc": 6
             },
             {
               "name": "handleDbFunctions",
-              "line": 218,
+              "line": 219,
               "cc": 1,
               "sloc": 16
-            },
-            {
-              "name": "<anonymous>",
-              "line": 222,
-              "cc": 1,
-              "sloc": 6
             },
             {
               "name": "<anonymous>",
               "line": 223,
               "cc": 1,
+              "sloc": 6
+            },
+            {
+              "name": "<anonymous>",
+              "line": 224,
+              "cc": 1,
               "sloc": 5
             },
             {
               "name": "handleDbLocals",
-              "line": 235,
+              "line": 236,
               "cc": 1,
               "sloc": 1
             },
             {
               "name": "handleDb",
-              "line": 252,
+              "line": 253,
               "cc": 3,
               "sloc": 12
             },
             {
               "name": "handleDebug",
-              "line": 265,
+              "line": 266,
               "cc": 1,
               "sloc": 5
             },
             {
               "name": "handleWsl",
-              "line": 272,
+              "line": 273,
               "cc": 1,
               "sloc": 24
             },
             {
               "name": "<anonymous>",
-              "line": 277,
+              "line": 278,
               "cc": 2,
               "sloc": 6
             },
             {
               "name": "<anonymous>",
-              "line": 292,
+              "line": 293,
               "cc": 1,
               "sloc": 1
             },
             {
               "name": "handleScreen",
-              "line": 298,
+              "line": 299,
               "cc": 2,
               "sloc": 11
             },
             {
+              "name": "handleSelectStackFrame",
+              "line": 319,
+              "cc": 2,
+              "sloc": 12
+            },
+            {
               "name": "onGdbCommand",
-              "line": 327,
-              "cc": 3,
-              "sloc": 16
+              "line": 342,
+              "cc": 4,
+              "sloc": 20
+            },
+            {
+              "name": "onGdbControlD",
+              "line": 372,
+              "cc": 1,
+              "sloc": 3
             }
           ]
         },
@@ -861,11 +879,11 @@
         },
         {
           "file": "src/main/mi-interface/gdb-connector/gdb-connector-general.ts",
-          "sloc": 65,
-          "totalLines": 126,
+          "sloc": 72,
+          "totalLines": 139,
           "cyclomatic": 5,
           "maxFnCC": 4,
-          "fnCount": 10,
+          "fnCount": 12,
           "functions": [
             {
               "name": "constructor",
@@ -916,14 +934,26 @@
               "sloc": 3
             },
             {
+              "name": "SendRaw",
+              "line": 107,
+              "cc": 1,
+              "sloc": 7
+            },
+            {
+              "name": "<anonymous>",
+              "line": 109,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
               "name": "End",
-              "line": 110,
+              "line": 123,
               "cc": 2,
               "sloc": 3
             },
             {
               "name": "IsRunning",
-              "line": 122,
+              "line": 135,
               "cc": 1,
               "sloc": 3
             }
@@ -931,11 +961,11 @@
         },
         {
           "file": "src/main/mi-interface/gdb-connector/gdb-connector.ts",
-          "sloc": 28,
-          "totalLines": 74,
+          "sloc": 30,
+          "totalLines": 83,
           "cyclomatic": 1,
           "maxFnCC": 1,
-          "fnCount": 6,
+          "fnCount": 7,
           "functions": [
             {
               "name": "constructor",
@@ -970,6 +1000,12 @@
             {
               "name": "Send",
               "line": 70,
+              "cc": 1,
+              "sloc": 2
+            },
+            {
+              "name": "SendRaw",
+              "line": 79,
               "cc": 1,
               "sloc": 2
             }
@@ -2659,237 +2695,255 @@
         },
         {
           "file": "src/main/mi-interface/mi-interface.ts",
-          "sloc": 167,
-          "totalLines": 357,
-          "cyclomatic": 4,
+          "sloc": 180,
+          "totalLines": 381,
+          "cyclomatic": 5,
           "maxFnCC": 2,
-          "fnCount": 38,
+          "fnCount": 41,
           "functions": [
             {
               "name": "<anonymous>",
-              "line": 39,
+              "line": 40,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 42,
+              "line": 43,
               "cc": 1,
               "sloc": 3
-            },
-            {
-              "name": "<anonymous>",
-              "line": 45,
-              "cc": 1,
-              "sloc": 1
             },
             {
               "name": "<anonymous>",
               "line": 46,
               "cc": 1,
-              "sloc": 3
+              "sloc": 1
             },
             {
               "name": "<anonymous>",
               "line": 47,
               "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 48,
+              "cc": 1,
               "sloc": 1
             },
             {
               "name": "constructor",
-              "line": 59,
+              "line": 60,
               "cc": 1,
               "sloc": 9
             },
             {
               "name": "<anonymous>",
-              "line": 61,
+              "line": 62,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 64,
+              "line": 65,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "connect",
-              "line": 78,
+              "line": 79,
               "cc": 1,
-              "sloc": 18
+              "sloc": 21
             },
             {
               "name": "<anonymous>",
-              "line": 82,
+              "line": 83,
               "cc": 1,
               "sloc": 2
             },
             {
               "name": "<anonymous>",
-              "line": 86,
+              "line": 87,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 90,
+              "line": 91,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 94,
+              "line": 95,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 98,
+              "line": 99,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 103,
               "cc": 1,
               "sloc": 2
             },
             {
               "name": "sendOutputToHandler",
-              "line": 113,
+              "line": 118,
               "cc": 2,
               "sloc": 11
             },
             {
               "name": "<anonymous>",
-              "line": 120,
+              "line": 125,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "disconnect",
-              "line": 131,
+              "line": 136,
               "cc": 2,
               "sloc": 8
             },
             {
               "name": "send",
-              "line": 151,
+              "line": 156,
+              "cc": 2,
+              "sloc": 6
+            },
+            {
+              "name": "sendRaw",
+              "line": 168,
               "cc": 2,
               "sloc": 6
             },
             {
               "name": "continueExecution",
-              "line": 164,
+              "line": 181,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "stepOver",
-              "line": 174,
+              "line": 191,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "stepInto",
-              "line": 184,
+              "line": 201,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "stepOut",
-              "line": 194,
+              "line": 211,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "pauseExecution",
-              "line": 204,
+              "line": 221,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "stopDebugging",
-              "line": 214,
+              "line": 231,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "sendControlD",
+              "line": 238,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "runCommand",
-              "line": 226,
+              "line": 250,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "parseRawOutput",
-              "line": 239,
+              "line": 263,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "parseNotifyAsyncRecord",
-              "line": 252,
+              "line": 276,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "parseResultRecord",
-              "line": 265,
+              "line": 289,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "parseExecAsyncRecord",
-              "line": 277,
+              "line": 301,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "parseTargetStream",
-              "line": 290,
+              "line": 314,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "parseLogStream",
-              "line": 303,
+              "line": 327,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "parseConsoleStream",
-              "line": 316,
+              "line": 340,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "evaluateExpression",
-              "line": 326,
+              "line": 350,
               "cc": 1,
               "sloc": 26
             },
             {
               "name": "<anonymous>",
-              "line": 327,
+              "line": 351,
               "cc": 1,
               "sloc": 24
             },
             {
               "name": "cleanup",
-              "line": 328,
+              "line": 352,
               "cc": 1,
               "sloc": 6
             },
             {
               "name": "<anonymous>",
-              "line": 335,
+              "line": 359,
               "cc": 1,
               "sloc": 4
             },
             {
               "name": "valueHandler",
-              "line": 340,
+              "line": 364,
               "cc": 1,
               "sloc": 4
             },
             {
               "name": "errorHandler",
-              "line": 345,
+              "line": 369,
               "cc": 1,
               "sloc": 4
             }
@@ -2897,117 +2951,159 @@
         },
         {
           "file": "src/main/mi-interface/mi-notify-handler.ts",
-          "sloc": 256,
-          "totalLines": 292,
-          "cyclomatic": 58,
+          "sloc": 280,
+          "totalLines": 320,
+          "cyclomatic": 60,
           "maxFnCC": 8,
-          "fnCount": 18,
+          "fnCount": 25,
           "functions": [
             {
               "name": "constructor",
-              "line": 39,
+              "line": 43,
               "cc": 1,
               "sloc": 1
             },
             {
               "name": "parseNotifyAsyncRecord",
-              "line": 50,
+              "line": 54,
               "cc": 5,
               "sloc": 12
             },
             {
               "name": "isThreadCommand",
-              "line": 64,
-              "cc": 1,
-              "sloc": 3
-            },
-            {
-              "name": "isBreakpointCommand",
               "line": 68,
               "cc": 1,
               "sloc": 3
             },
             {
-              "name": "handleThreadGroupCommand",
+              "name": "isBreakpointCommand",
               "line": 72,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "handleThreadGroupCommand",
+              "line": 76,
               "cc": 8,
               "sloc": 34
             },
             {
               "name": "handleThreadCommand",
-              "line": 107,
-              "cc": 7,
-              "sloc": 25
+              "line": 111,
+              "cc": 3,
+              "sloc": 11
+            },
+            {
+              "name": "<anonymous>",
+              "line": 116,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "<anonymous>",
+              "line": 117,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "<anonymous>",
+              "line": 118,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "handleThreadSelected",
+              "line": 123,
+              "cc": 4,
+              "sloc": 18
+            },
+            {
+              "name": "<anonymous>",
+              "line": 131,
+              "cc": 1,
+              "sloc": 8
+            },
+            {
+              "name": "handleThreadCreated",
+              "line": 143,
+              "cc": 3,
+              "sloc": 8
+            },
+            {
+              "name": "handleThreadExited",
+              "line": 152,
+              "cc": 2,
+              "sloc": 8
             },
             {
               "name": "handleBreakpointCommand",
-              "line": 133,
+              "line": 161,
               "cc": 7,
               "sloc": 35
             },
             {
               "name": "handleLibraryCommand",
-              "line": 169,
+              "line": 197,
               "cc": 5,
               "sloc": 11
             },
             {
               "name": "handleTraceframeChanged",
-              "line": 181,
+              "line": 209,
               "cc": 4,
               "sloc": 9
             },
             {
               "name": "handleTsvCreated",
-              "line": 191,
+              "line": 219,
               "cc": 3,
               "sloc": 5
             },
             {
               "name": "handleTsvDeleted",
-              "line": 197,
+              "line": 225,
               "cc": 2,
               "sloc": 5
             },
             {
               "name": "handleTsvModified",
-              "line": 203,
+              "line": 231,
               "cc": 4,
               "sloc": 7
             },
             {
               "name": "handleTsvCommand",
-              "line": 211,
+              "line": 239,
               "cc": 5,
               "sloc": 18
             },
             {
               "name": "handleCmdParamChanged",
-              "line": 230,
+              "line": 258,
               "cc": 3,
               "sloc": 6
             },
             {
               "name": "handleMemoryChanged",
-              "line": 237,
+              "line": 265,
               "cc": 5,
               "sloc": 11
             },
             {
               "name": "handleRecordStarted",
-              "line": 249,
+              "line": 277,
               "cc": 4,
               "sloc": 10
             },
             {
               "name": "handleRecordStopped",
-              "line": 260,
+              "line": 288,
               "cc": 2,
               "sloc": 4
             },
             {
               "name": "handleOtherCommand",
-              "line": 265,
+              "line": 293,
               "cc": 8,
               "sloc": 26
             }
@@ -3371,16 +3467,22 @@
         },
         {
           "file": "src/main/mi-interface/mi-result-strategies/stack-parsing-helpers.ts",
-          "sloc": 27,
-          "totalLines": 45,
-          "cyclomatic": 10,
-          "maxFnCC": 10,
-          "fnCount": 1,
+          "sloc": 30,
+          "totalLines": 49,
+          "cyclomatic": 2,
+          "maxFnCC": 2,
+          "fnCount": 2,
           "functions": [
             {
+              "name": "grp",
+              "line": 19,
+              "cc": 2,
+              "sloc": 3
+            },
+            {
               "name": "parseStackFrameFromGroups",
-              "line": 29,
-              "cc": 10,
+              "line": 33,
+              "cc": 1,
               "sloc": 16
             }
           ]
@@ -3415,16 +3517,22 @@
         },
         {
           "file": "src/main/mi-interface/mi-result-strategies/thread-parsing-helpers.ts",
-          "sloc": 24,
-          "totalLines": 41,
-          "cyclomatic": 9,
-          "maxFnCC": 9,
-          "fnCount": 1,
+          "sloc": 27,
+          "totalLines": 45,
+          "cyclomatic": 2,
+          "maxFnCC": 2,
+          "fnCount": 2,
           "functions": [
             {
+              "name": "grp",
+              "line": 18,
+              "cc": 2,
+              "sloc": 3
+            },
+            {
               "name": "parseThreadFrameFromGroups",
-              "line": 27,
-              "cc": 9,
+              "line": 31,
+              "cc": 1,
               "sloc": 14
             }
           ]
@@ -3459,11 +3567,11 @@
         },
         {
           "file": "src/main/mi-interface/mi-status-handler.ts",
-          "sloc": 39,
-          "totalLines": 63,
+          "sloc": 45,
+          "totalLines": 70,
           "cyclomatic": 9,
-          "maxFnCC": 9,
-          "fnCount": 2,
+          "maxFnCC": 6,
+          "fnCount": 4,
           "functions": [
             {
               "name": "constructor",
@@ -3472,10 +3580,22 @@
               "sloc": 1
             },
             {
+              "name": "getDataGroup",
+              "line": 20,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "handleDownload",
+              "line": 24,
+              "cc": 6,
+              "sloc": 15
+            },
+            {
               "name": "parseStatusAsyncRecord",
-              "line": 29,
-              "cc": 9,
-              "sloc": 28
+              "line": 50,
+              "cc": 4,
+              "sloc": 16
             }
           ]
         },
@@ -3568,6 +3688,28 @@
               "line": 87,
               "cc": 1,
               "sloc": 3
+            }
+          ]
+        },
+        {
+          "file": "src/main/utilities/disconnect-helper.ts",
+          "sloc": 22,
+          "totalLines": 38,
+          "cyclomatic": 1,
+          "maxFnCC": 1,
+          "fnCount": 2,
+          "functions": [
+            {
+              "name": "disconnectAndResetApplication",
+              "line": 19,
+              "cc": 1,
+              "sloc": 18
+            },
+            {
+              "name": "<anonymous>",
+              "line": 37,
+              "cc": 1,
+              "sloc": 1
             }
           ]
         },
@@ -3788,7 +3930,7 @@
     {
       "name": "renderer",
       "fileCount": 60,
-      "fnCount": 625,
+      "fnCount": 650,
       "avgCC": 9.87,
       "highCC": 0,
       "mediumCC": 0,
@@ -4066,155 +4208,203 @@
         },
         {
           "file": "src/renderer/Components/DragAndDropList/DragAndDropList.tsx",
-          "sloc": 236,
-          "totalLines": 354,
+          "sloc": 289,
+          "totalLines": 320,
           "cyclomatic": 28,
           "maxFnCC": 5,
-          "fnCount": 24,
+          "fnCount": 32,
           "functions": [
             {
               "name": "moveItem",
-              "line": 30,
+              "line": 22,
               "cc": 2,
               "sloc": 13
             },
             {
-              "name": "DragAndDropList",
-              "line": 51,
-              "cc": 2,
-              "sloc": 213
+              "name": "nativeDragStart",
+              "line": 37,
+              "cc": 4,
+              "sloc": 22
             },
             {
-              "name": "<anonymous>",
-              "line": 68,
-              "cc": 1,
-              "sloc": 3
+              "name": "nativeDragEnter",
+              "line": 60,
+              "cc": 5,
+              "sloc": 20
             },
             {
-              "name": "<anonymous>",
-              "line": 72,
-              "cc": 2,
-              "sloc": 3
-            },
-            {
-              "name": "<anonymous>",
-              "line": 77,
-              "cc": 1,
-              "sloc": 3
-            },
-            {
-              "name": "<anonymous>",
+              "name": "nativeDragOver",
               "line": 81,
-              "cc": 3,
-              "sloc": 6
-            },
-            {
-              "name": "<anonymous>",
-              "line": 89,
-              "cc": 1,
+              "cc": 2,
               "sloc": 7
             },
             {
-              "name": "<anonymous>",
-              "line": 91,
+              "name": "nativeDrop",
+              "line": 89,
               "cc": 1,
-              "sloc": 1
+              "sloc": 11
             },
             {
-              "name": "<anonymous>",
-              "line": 102,
-              "cc": 2,
-              "sloc": 88
-            },
-            {
-              "name": "handleNativeDragStart",
-              "line": 111,
-              "cc": 4,
-              "sloc": 18
-            },
-            {
-              "name": "handleNativeDragEnter",
-              "line": 138,
-              "cc": 5,
-              "sloc": 15
-            },
-            {
-              "name": "handleNativeDragOver",
-              "line": 164,
-              "cc": 2,
-              "sloc": 9
-            },
-            {
-              "name": "handleNativeDrop",
-              "line": 179,
-              "cc": 1,
-              "sloc": 6
-            },
-            {
-              "name": "handleNativeDragEnd",
-              "line": 193,
-              "cc": 1,
-              "sloc": 4
-            },
-            {
-              "name": "handleNativeDeleteClick",
-              "line": 204,
-              "cc": 5,
-              "sloc": 18
-            },
-            {
-              "name": "<anonymous>",
-              "line": 233,
+              "name": "nativeDragEnd",
+              "line": 101,
               "cc": 1,
               "sloc": 8
             },
             {
-              "name": "<anonymous>",
-              "line": 243,
-              "cc": 2,
-              "sloc": 3
+              "name": "nativeDeleteClick",
+              "line": 110,
+              "cc": 5,
+              "sloc": 16
             },
             {
-              "name": "<anonymous>",
-              "line": 247,
+              "name": "renderListItem",
+              "line": 127,
+              "cc": 4,
+              "sloc": 18
+            },
+            {
+              "name": "useAddItem",
+              "line": 146,
               "cc": 1,
-              "sloc": 1
+              "sloc": 43
             },
             {
               "name": "<anonymous>",
-              "line": 252,
+              "line": 155,
               "cc": 3,
-              "sloc": 14
+              "sloc": 12
             },
             {
               "name": "<anonymous>",
-              "line": 270,
+              "line": 168,
               "cc": 3,
-              "sloc": 23
+              "sloc": 21
             },
             {
               "name": "handleNativeKeyDown",
-              "line": 283,
+              "line": 172,
               "cc": 2,
               "sloc": 6
             },
             {
               "name": "handleNativeClick",
-              "line": 295,
+              "line": 178,
               "cc": 1,
               "sloc": 4
             },
             {
               "name": "<anonymous>",
-              "line": 303,
+              "line": 184,
               "cc": 1,
               "sloc": 4
             },
             {
+              "name": "useDragListeners",
+              "line": 193,
+              "cc": 1,
+              "sloc": 43
+            },
+            {
               "name": "<anonymous>",
-              "line": 329,
-              "cc": 4,
-              "sloc": 20
+              "line": 202,
+              "cc": 2,
+              "sloc": 33
+            },
+            {
+              "name": "onDragStart",
+              "line": 205,
+              "cc": 1,
+              "sloc": 2
+            },
+            {
+              "name": "onDragEnter",
+              "line": 207,
+              "cc": 1,
+              "sloc": 9
+            },
+            {
+              "name": "onDragOver",
+              "line": 216,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "onDrop",
+              "line": 217,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "onDragEnd",
+              "line": 218,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "onDeleteClick",
+              "line": 219,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "<anonymous>",
+              "line": 226,
+              "cc": 1,
+              "sloc": 8
+            },
+            {
+              "name": "DragAndDropList",
+              "line": 237,
+              "cc": 3,
+              "sloc": 78
+            },
+            {
+              "name": "<anonymous>",
+              "line": 250,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 253,
+              "cc": 2,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 256,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 259,
+              "cc": 3,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 264,
+              "cc": 1,
+              "sloc": 7
+            },
+            {
+              "name": "<anonymous>",
+              "line": 265,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "<anonymous>",
+              "line": 286,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "<anonymous>",
+              "line": 315,
+              "cc": 1,
+              "sloc": 1
             }
           ]
         },
@@ -4825,65 +5015,89 @@
         },
         {
           "file": "src/renderer/Dialogs/AboutBox.tsx",
-          "sloc": 171,
-          "totalLines": 224,
+          "sloc": 176,
+          "totalLines": 206,
           "cyclomatic": 2,
           "maxFnCC": 2,
-          "fnCount": 9,
+          "fnCount": 13,
           "functions": [
             {
-              "name": "<anonymous>",
-              "line": 41,
-              "cc": 1,
-              "sloc": 149
-            },
-            {
-              "name": "<anonymous>",
-              "line": 53,
-              "cc": 1,
-              "sloc": 16
-            },
-            {
-              "name": "<anonymous>",
-              "line": 58,
-              "cc": 1,
-              "sloc": 14
-            },
-            {
               "name": "getInfoValue",
-              "line": 65,
+              "line": 37,
               "cc": 2,
               "sloc": 3
             },
             {
-              "name": "dialogCloseFunc",
-              "line": 84,
-              "cc": 1,
-              "sloc": 3
-            },
-            {
               "name": "openIcons8Link",
-              "line": 88,
+              "line": 41,
               "cc": 1,
               "sloc": 6
             },
             {
               "name": "openBMCLink",
-              "line": 95,
+              "line": 48,
               "cc": 1,
               "sloc": 6
             },
             {
-              "name": "header",
-              "line": 107,
+              "name": "aboutBoxHeader",
+              "line": 55,
               "cc": 1,
               "sloc": 3
             },
             {
-              "name": "footer",
-              "line": 116,
+              "name": "aboutBoxFooter",
+              "line": 59,
               "cc": 1,
               "sloc": 7
+            },
+            {
+              "name": "AboutBoxVersionTable",
+              "line": 67,
+              "cc": 1,
+              "sloc": 54
+            },
+            {
+              "name": "AboutBoxCreditsSection",
+              "line": 122,
+              "cc": 1,
+              "sloc": 18
+            },
+            {
+              "name": "<anonymous>",
+              "line": 145,
+              "cc": 1,
+              "sloc": 57
+            },
+            {
+              "name": "<anonymous>",
+              "line": 156,
+              "cc": 1,
+              "sloc": 13
+            },
+            {
+              "name": "<anonymous>",
+              "line": 157,
+              "cc": 1,
+              "sloc": 11
+            },
+            {
+              "name": "<anonymous>",
+              "line": 178,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "<anonymous>",
+              "line": 178,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "<anonymous>",
+              "line": 181,
+              "cc": 1,
+              "sloc": 1
             }
           ]
         },
@@ -4911,11 +5125,11 @@
         },
         {
           "file": "src/renderer/Dialogs/ConnectionDialogView.tsx",
-          "sloc": 161,
-          "totalLines": 208,
+          "sloc": 177,
+          "totalLines": 221,
           "cyclomatic": 5,
           "maxFnCC": 5,
-          "fnCount": 6,
+          "fnCount": 8,
           "functions": [
             {
               "name": "columnHeaderTemplate",
@@ -4936,22 +5150,34 @@
               "sloc": 7
             },
             {
-              "name": "ConnectionDialogView",
-              "line": 101,
+              "name": "ConnectionComboBox",
+              "line": 100,
               "cc": 1,
-              "sloc": 100
-            },
-            {
-              "name": "footerTemplate",
-              "line": 121,
-              "cc": 1,
-              "sloc": 17
+              "sloc": 23
             },
             {
               "name": "<anonymous>",
-              "line": 170,
+              "line": 117,
               "cc": 1,
               "sloc": 1
+            },
+            {
+              "name": "connectionDialogFooter",
+              "line": 124,
+              "cc": 1,
+              "sloc": 21
+            },
+            {
+              "name": "ConnectionDialogView",
+              "line": 152,
+              "cc": 1,
+              "sloc": 68
+            },
+            {
+              "name": "<anonymous>",
+              "line": 177,
+              "cc": 1,
+              "sloc": 2
             }
           ]
         },
@@ -5127,11 +5353,11 @@
         },
         {
           "file": "src/renderer/Dialogs/ConnectionManagerView.tsx",
-          "sloc": 215,
-          "totalLines": 244,
+          "sloc": 293,
+          "totalLines": 323,
           "cyclomatic": 3,
-          "maxFnCC": 3,
-          "fnCount": 7,
+          "maxFnCC": 2,
+          "fnCount": 11,
           "functions": [
             {
               "name": "header",
@@ -5140,38 +5366,62 @@
               "sloc": 3
             },
             {
-              "name": "ConnectionManagerView",
-              "line": 67,
-              "cc": 3,
-              "sloc": 170
-            },
-            {
-              "name": "footer",
-              "line": 99,
+              "name": "connectionManagerFooter",
+              "line": 61,
               "cc": 1,
               "sloc": 9
             },
             {
+              "name": "ShellAndCommandsControls",
+              "line": 106,
+              "cc": 2,
+              "sloc": 60
+            },
+            {
               "name": "<anonymous>",
-              "line": 148,
+              "line": 130,
               "cc": 1,
               "sloc": 5
             },
             {
               "name": "<anonymous>",
-              "line": 165,
+              "line": 147,
               "cc": 1,
               "sloc": 5
             },
             {
+              "name": "ConnectionFormControls",
+              "line": 167,
+              "cc": 2,
+              "sloc": 57
+            },
+            {
+              "name": "ConnectionsDataGrid",
+              "line": 230,
+              "cc": 1,
+              "sloc": 59
+            },
+            {
               "name": "<anonymous>",
-              "line": 225,
+              "line": 272,
               "cc": 1,
               "sloc": 10
             },
             {
               "name": "<anonymous>",
-              "line": 229,
+              "line": 276,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "ConnectionManagerView",
+              "line": 296,
+              "cc": 1,
+              "sloc": 26
+            },
+            {
+              "name": "<anonymous>",
+              "line": 308,
               "cc": 1,
               "sloc": 1
             }
@@ -5379,261 +5629,77 @@
         },
         {
           "file": "src/renderer/Dialogs/Settings.tsx",
-          "sloc": 249,
-          "totalLines": 336,
+          "sloc": 271,
+          "totalLines": 308,
           "cyclomatic": 13,
           "maxFnCC": 9,
-          "fnCount": 15,
+          "fnCount": 20,
           "functions": [
             {
-              "name": "<anonymous>",
-              "line": 37,
-              "cc": 1,
-              "sloc": 231
-            },
-            {
-              "name": "<anonymous>",
-              "line": 49,
-              "cc": 1,
-              "sloc": 5
-            },
-            {
-              "name": "<anonymous>",
-              "line": 50,
+              "name": "settingsHeader",
+              "line": 35,
               "cc": 1,
               "sloc": 3
             },
             {
-              "name": "<anonymous>",
-              "line": 59,
-              "cc": 1,
-              "sloc": 29
-            },
-            {
-              "name": "<anonymous>",
-              "line": 62,
-              "cc": 9,
-              "sloc": 23
-            },
-            {
-              "name": "<anonymous>",
-              "line": 63,
-              "cc": 5,
-              "sloc": 9
-            },
-            {
-              "name": "<anonymous>",
-              "line": 87,
-              "cc": 1,
-              "sloc": 3
-            },
-            {
-              "name": "dialogCloseFunc",
-              "line": 95,
-              "cc": 1,
-              "sloc": 3
-            },
-            {
-              "name": "header",
-              "line": 104,
-              "cc": 1,
-              "sloc": 3
-            },
-            {
-              "name": "footer",
-              "line": 113,
+              "name": "settingsFooter",
+              "line": 39,
               "cc": 1,
               "sloc": 7
             },
             {
               "name": "onSelectEditorTheme",
-              "line": 126,
+              "line": 47,
               "cc": 1,
               "sloc": 9
             },
             {
               "name": "onSelectEditorFont",
-              "line": 142,
+              "line": 57,
               "cc": 1,
-              "sloc": 13
+              "sloc": 10
             },
             {
               "name": "onSelectEditorFontSize",
-              "line": 162,
+              "line": 68,
               "cc": 1,
               "sloc": 13
             },
             {
               "name": "onChangeShowDebugInfo",
-              "line": 182,
+              "line": 82,
               "cc": 1,
-              "sloc": 12
-            },
-            {
-              "name": "onSelectAppTheme",
-              "line": 201,
-              "cc": 1,
-              "sloc": 13
-            }
-          ]
-        },
-        {
-          "file": "src/renderer/Dialogs/useConnectionDialogController.ts",
-          "sloc": 204,
-          "totalLines": 268,
-          "cyclomatic": 25,
-          "maxFnCC": 6,
-          "fnCount": 28,
-          "functions": [
-            {
-              "name": "createPendingStates",
-              "line": 23,
-              "cc": 1,
-              "sloc": 5
-            },
-            {
-              "name": "normalizeConnections",
-              "line": 45,
-              "cc": 2,
-              "sloc": 11
-            },
-            {
-              "name": "<anonymous>",
-              "line": 51,
-              "cc": 2,
-              "sloc": 1
-            },
-            {
-              "name": "<anonymous>",
-              "line": 52,
-              "cc": 2,
-              "sloc": 4
-            },
-            {
-              "name": "useConnectionDialogController",
-              "line": 66,
-              "cc": 1,
-              "sloc": 171
-            },
-            {
-              "name": "<anonymous>",
-              "line": 76,
-              "cc": 2,
-              "sloc": 6
-            },
-            {
-              "name": "<anonymous>",
-              "line": 83,
-              "cc": 5,
-              "sloc": 17
-            },
-            {
-              "name": "<anonymous>",
-              "line": 90,
-              "cc": 1,
-              "sloc": 1
-            },
-            {
-              "name": "<anonymous>",
-              "line": 101,
-              "cc": 1,
-              "sloc": 57
-            },
-            {
-              "name": "<anonymous>",
-              "line": 102,
-              "cc": 1,
-              "sloc": 3
-            },
-            {
-              "name": "<anonymous>",
-              "line": 106,
-              "cc": 5,
-              "sloc": 14
-            },
-            {
-              "name": "<anonymous>",
-              "line": 122,
-              "cc": 6,
-              "sloc": 30
-            },
-            {
-              "name": "<anonymous>",
-              "line": 137,
-              "cc": 1,
-              "sloc": 5
-            },
-            {
-              "name": "<anonymous>",
-              "line": 144,
-              "cc": 1,
-              "sloc": 3
-            },
-            {
-              "name": "<anonymous>",
-              "line": 159,
-              "cc": 1,
-              "sloc": 5
-            },
-            {
-              "name": "<anonymous>",
-              "line": 166,
-              "cc": 2,
-              "sloc": 7
-            },
-            {
-              "name": "<anonymous>",
-              "line": 174,
-              "cc": 2,
               "sloc": 9
             },
             {
-              "name": "<anonymous>",
-              "line": 185,
+              "name": "onSelectAppTheme",
+              "line": 92,
               "cc": 1,
-              "sloc": 6
+              "sloc": 7
             },
             {
-              "name": "<anonymous>",
-              "line": 192,
+              "name": "SettingsTableHeader",
+              "line": 100,
               "cc": 1,
-              "sloc": 13
+              "sloc": 20
             },
             {
-              "name": "<anonymous>",
-              "line": 195,
-              "cc": 2,
-              "sloc": 10
-            },
-            {
-              "name": "<anonymous>",
-              "line": 201,
+              "name": "SettingsApplicationSection",
+              "line": 121,
               "cc": 1,
-              "sloc": 4
+              "sloc": 40
             },
             {
-              "name": "<anonymous>",
-              "line": 208,
+              "name": "SettingsSourceViewSection",
+              "line": 162,
               "cc": 1,
-              "sloc": 17
-            },
-            {
-              "name": "onDocumentClickCapture",
-              "line": 214,
-              "cc": 3,
-              "sloc": 11
+              "sloc": 60
             },
             {
               "name": "<anonymous>",
-              "line": 229,
+              "line": 233,
               "cc": 1,
-              "sloc": 3
-            },
-            {
-              "name": "<anonymous>",
-              "line": 234,
-              "cc": 3,
-              "sloc": 8
+              "sloc": 67
             },
             {
               "name": "<anonymous>",
@@ -5643,13 +5709,245 @@
             },
             {
               "name": "<anonymous>",
-              "line": 249,
+              "line": 244,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 253,
+              "line": 249,
+              "cc": 1,
+              "sloc": 22
+            },
+            {
+              "name": "<anonymous>",
+              "line": 251,
+              "cc": 9,
+              "sloc": 16
+            },
+            {
+              "name": "<anonymous>",
+              "line": 252,
+              "cc": 5,
+              "sloc": 6
+            },
+            {
+              "name": "<anonymous>",
+              "line": 267,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 280,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "<anonymous>",
+              "line": 280,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "<anonymous>",
+              "line": 283,
+              "cc": 1,
+              "sloc": 1
+            }
+          ]
+        },
+        {
+          "file": "src/renderer/Dialogs/useConnectionDialogController.ts",
+          "sloc": 246,
+          "totalLines": 295,
+          "cyclomatic": 25,
+          "maxFnCC": 6,
+          "fnCount": 31,
+          "functions": [
+            {
+              "name": "createPendingStates",
+              "line": 31,
+              "cc": 1,
+              "sloc": 5
+            },
+            {
+              "name": "normalizeConnections",
+              "line": 53,
+              "cc": 2,
+              "sloc": 11
+            },
+            {
+              "name": "<anonymous>",
+              "line": 59,
+              "cc": 2,
+              "sloc": 1
+            },
+            {
+              "name": "<anonymous>",
+              "line": 60,
+              "cc": 2,
+              "sloc": 4
+            },
+            {
+              "name": "fetchConnectionSettings",
+              "line": 66,
+              "cc": 5,
+              "sloc": 20
+            },
+            {
+              "name": "<anonymous>",
+              "line": 76,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "handleConnectionStatusUpdate",
+              "line": 87,
+              "cc": 6,
+              "sloc": 35
+            },
+            {
+              "name": "<anonymous>",
+              "line": 106,
+              "cc": 1,
+              "sloc": 5
+            },
+            {
+              "name": "<anonymous>",
+              "line": 112,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "useConnectionSubscriptions",
+              "line": 123,
+              "cc": 1,
+              "sloc": 71
+            },
+            {
+              "name": "<anonymous>",
+              "line": 131,
+              "cc": 1,
+              "sloc": 13
+            },
+            {
+              "name": "<anonymous>",
+              "line": 133,
+              "cc": 2,
+              "sloc": 10
+            },
+            {
+              "name": "<anonymous>",
+              "line": 138,
+              "cc": 1,
+              "sloc": 4
+            },
+            {
+              "name": "<anonymous>",
+              "line": 145,
+              "cc": 1,
+              "sloc": 30
+            },
+            {
+              "name": "<anonymous>",
+              "line": 146,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 149,
+              "cc": 5,
+              "sloc": 14
+            },
+            {
+              "name": "<anonymous>",
+              "line": 164,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 169,
+              "cc": 1,
+              "sloc": 5
+            },
+            {
+              "name": "<anonymous>",
+              "line": 182,
+              "cc": 1,
+              "sloc": 13
+            },
+            {
+              "name": "onDocumentClickCapture",
+              "line": 183,
+              "cc": 3,
+              "sloc": 7
+            },
+            {
+              "name": "<anonymous>",
+              "line": 191,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "useConnectionDialogController",
+              "line": 205,
+              "cc": 1,
+              "sloc": 79
+            },
+            {
+              "name": "<anonymous>",
+              "line": 215,
+              "cc": 2,
+              "sloc": 6
+            },
+            {
+              "name": "<anonymous>",
+              "line": 223,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "<anonymous>",
+              "line": 236,
+              "cc": 2,
+              "sloc": 7
+            },
+            {
+              "name": "<anonymous>",
+              "line": 244,
+              "cc": 2,
+              "sloc": 9
+            },
+            {
+              "name": "<anonymous>",
+              "line": 255,
+              "cc": 1,
+              "sloc": 6
+            },
+            {
+              "name": "<anonymous>",
+              "line": 262,
+              "cc": 3,
+              "sloc": 8
+            },
+            {
+              "name": "<anonymous>",
+              "line": 271,
+              "cc": 1,
+              "sloc": 5
+            },
+            {
+              "name": "<anonymous>",
+              "line": 277,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 280,
               "cc": 1,
               "sloc": 1
             }
@@ -6382,57 +6680,51 @@
         },
         {
           "file": "src/renderer/ToolWindows/GdbCallstackWindow.tsx",
-          "sloc": 113,
-          "totalLines": 149,
-          "cyclomatic": 1,
-          "maxFnCC": 1,
-          "fnCount": 8,
+          "sloc": 112,
+          "totalLines": 140,
+          "cyclomatic": 2,
+          "maxFnCC": 2,
+          "fnCount": 7,
           "functions": [
             {
+              "name": "callstackEmptyTemplate",
+              "line": 31,
+              "cc": 1,
+              "sloc": 7
+            },
+            {
+              "name": "handleCallstackDoubleClick",
+              "line": 39,
+              "cc": 2,
+              "sloc": 10
+            },
+            {
               "name": "GdbCallStackWindow",
-              "line": 37,
+              "line": 59,
               "cc": 1,
-              "sloc": 93
+              "sloc": 74
             },
             {
               "name": "<anonymous>",
-              "line": 45,
-              "cc": 1,
-              "sloc": 4
-            },
-            {
-              "name": "<anonymous>",
-              "line": 56,
+              "line": 69,
               "cc": 1,
               "sloc": 8
             },
             {
               "name": "<anonymous>",
-              "line": 57,
-              "cc": 1,
-              "sloc": 3
-            },
-            {
-              "name": "<anonymous>",
-              "line": 61,
-              "cc": 1,
-              "sloc": 3
-            },
-            {
-              "name": "<anonymous>",
               "line": 70,
               "cc": 1,
-              "sloc": 7
+              "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 82,
+              "line": 74,
               "cc": 1,
-              "sloc": 5
+              "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 141,
+              "line": 132,
               "cc": 1,
               "sloc": 3
             }
@@ -6922,81 +7214,63 @@
         },
         {
           "file": "src/renderer/ToolWindows/GdbRegistersWindow.tsx",
-          "sloc": 144,
-          "totalLines": 179,
-          "cyclomatic": 4,
+          "sloc": 129,
+          "totalLines": 156,
+          "cyclomatic": 3,
           "maxFnCC": 3,
-          "fnCount": 12,
+          "fnCount": 9,
           "functions": [
             {
-              "name": "GdbRegistersWindow",
-              "line": 40,
+              "name": "registersHexCheck",
+              "line": 42,
               "cc": 1,
-              "sloc": 121
+              "sloc": 5
             },
             {
-              "name": "<anonymous>",
-              "line": 48,
+              "name": "registersEmptyTemplate",
+              "line": 53,
               "cc": 1,
               "sloc": 7
             },
             {
-              "name": "<anonymous>",
-              "line": 59,
+              "name": "registersQueryCellInfo",
+              "line": 61,
+              "cc": 3,
+              "sloc": 5
+            },
+            {
+              "name": "registersCellSaved",
+              "line": 67,
               "cc": 1,
-              "sloc": 6
+              "sloc": 5
             },
             {
-              "name": "<anonymous>",
-              "line": 72,
-              "cc": 2,
-              "sloc": 6
-            },
-            {
-              "name": "<anonymous>",
-              "line": 83,
+              "name": "GdbRegistersWindow",
+              "line": 81,
               "cc": 1,
-              "sloc": 4
+              "sloc": 72
             },
             {
               "name": "<anonymous>",
-              "line": 90,
+              "line": 87,
               "cc": 1,
               "sloc": 10
             },
             {
               "name": "<anonymous>",
-              "line": 92,
+              "line": 89,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 97,
+              "line": 94,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 102,
-              "cc": 1,
-              "sloc": 7
-            },
-            {
-              "name": "<anonymous>",
-              "line": 110,
-              "cc": 3,
-              "sloc": 5
-            },
-            {
-              "name": "<anonymous>",
-              "line": 116,
-              "cc": 1,
-              "sloc": 5
-            },
-            {
-              "name": "<anonymous>",
-              "line": 171,
+              "line": 148,
               "cc": 1,
               "sloc": 3
             }
@@ -7205,75 +7479,99 @@
         },
         {
           "file": "src/renderer/ToolWindows/useGdbCommandController.ts",
-          "sloc": 204,
-          "totalLines": 254,
+          "sloc": 230,
+          "totalLines": 259,
           "cyclomatic": 32,
           "maxFnCC": 6,
-          "fnCount": 24,
+          "fnCount": 27,
           "functions": [
             {
-              "name": "useGdbCommandController",
-              "line": 17,
-              "cc": 1,
-              "sloc": 201
-            },
-            {
-              "name": "<anonymous>",
-              "line": 24,
+              "name": "appendGdbMessage",
+              "line": 5,
               "cc": 4,
-              "sloc": 17
+              "sloc": 22
+            },
+            {
+              "name": "appendGdbHtmlMessage",
+              "line": 32,
+              "cc": 3,
+              "sloc": 14
+            },
+            {
+              "name": "useGdbCommandHistory",
+              "line": 49,
+              "cc": 1,
+              "sloc": 34
             },
             {
               "name": "<anonymous>",
-              "line": 46,
-              "cc": 3,
+              "line": 54,
+              "cc": 2,
               "sloc": 10
             },
             {
               "name": "<anonymous>",
-              "line": 59,
-              "cc": 2,
-              "sloc": 12
-            },
-            {
-              "name": "<anonymous>",
-              "line": 74,
+              "line": 65,
               "cc": 3,
-              "sloc": 9
+              "sloc": 5
             },
             {
               "name": "<anonymous>",
-              "line": 84,
+              "line": 71,
               "cc": 3,
               "sloc": 12
             },
             {
-              "name": "<anonymous>",
-              "line": 100,
-              "cc": 2,
-              "sloc": 54
+              "name": "useGdbSubscriptions",
+              "line": 87,
+              "cc": 1,
+              "sloc": 58
             },
             {
               "name": "<anonymous>",
-              "line": 101,
+              "line": 94,
+              "cc": 2,
+              "sloc": 50
+            },
+            {
+              "name": "<anonymous>",
+              "line": 95,
               "cc": 1,
               "sloc": 6
             },
             {
               "name": "<anonymous>",
-              "line": 103,
+              "line": 97,
               "cc": 1,
               "sloc": 3
             },
             {
               "name": "<anonymous>",
-              "line": 108,
+              "line": 102,
               "cc": 3,
-              "sloc": 9
+              "sloc": 7
             },
             {
               "name": "<anonymous>",
-              "line": 118,
+              "line": 110,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 113,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 116,
+              "cc": 1,
+              "sloc": 3
+            },
+            {
+              "name": "<anonymous>",
+              "line": 119,
               "cc": 1,
               "sloc": 3
             },
@@ -7285,73 +7583,67 @@
             },
             {
               "name": "<anonymous>",
-              "line": 126,
-              "cc": 1,
-              "sloc": 3
-            },
-            {
-              "name": "<anonymous>",
-              "line": 130,
-              "cc": 1,
-              "sloc": 3
-            },
-            {
-              "name": "<anonymous>",
-              "line": 134,
-              "cc": 1,
-              "sloc": 3
-            },
-            {
-              "name": "<anonymous>",
-              "line": 140,
+              "line": 128,
               "cc": 3,
               "sloc": 8
             },
             {
               "name": "<anonymous>",
-              "line": 151,
+              "line": 138,
               "cc": 2,
-              "sloc": 11
+              "sloc": 9
+            },
+            {
+              "name": "useGdbKeyboardHandlers",
+              "line": 150,
+              "cc": 1,
+              "sloc": 48
             },
             {
               "name": "<anonymous>",
-              "line": 164,
+              "line": 157,
               "cc": 6,
-              "sloc": 19
+              "sloc": 16
             },
             {
               "name": "<anonymous>",
-              "line": 184,
+              "line": 174,
               "cc": 2,
               "sloc": 7
             },
             {
               "name": "<anonymous>",
-              "line": 193,
+              "line": 183,
               "cc": 4,
               "sloc": 13
             },
             {
+              "name": "useGdbCommandController",
+              "line": 202,
+              "cc": 1,
+              "sloc": 51
+            },
+            {
               "name": "<anonymous>",
-              "line": 209,
+              "line": 218,
               "cc": 5,
               "sloc": 11
             },
             {
               "name": "<anonymous>",
-              "line": 223,
+              "line": 230,
               "cc": 2,
               "sloc": 7
             },
             {
               "name": "<anonymous>",
-              "line": 231,
+              "line": 238,
               "cc": 1,
-              "sloc": 3
+              "sloc": 1
             },
             {
               "name": "<anonymous>",
-              "line": 235,
+              "line": 240,
               "cc": 2,
               "sloc": 5
             }
@@ -8147,7 +8439,7 @@
     {
       "name": "preload",
       "fileCount": 1,
-      "fnCount": 33,
+      "fnCount": 34,
       "avgCC": 1,
       "highCC": 0,
       "mediumCC": 0,
@@ -8157,11 +8449,11 @@
       "files": [
         {
           "file": "src/preload/preload.ts",
-          "sloc": 119,
-          "totalLines": 170,
+          "sloc": 121,
+          "totalLines": 172,
           "cyclomatic": 1,
           "maxFnCC": 1,
-          "fnCount": 33,
+          "fnCount": 34,
           "functions": [
             {
               "name": "subscribe",
@@ -8357,7 +8649,13 @@
             },
             {
               "name": "<anonymous>",
-              "line": 138,
+              "line": 136,
+              "cc": 1,
+              "sloc": 1
+            },
+            {
+              "name": "<anonymous>",
+              "line": 139,
               "cc": 1,
               "sloc": 2
             }
@@ -8367,8 +8665,8 @@
     }
   ],
   "totals": {
-    "files": 130,
-    "functions": 1172,
+    "files": 131,
+    "functions": 1220,
     "fnOver25": 0,
     "fnOver15": 0
   },
@@ -8376,9 +8674,9 @@
     {
       "fnName": "handleSaveSettings",
       "file": "src/main/ipc/commands.ts",
-      "line": 122,
+      "line": 112,
       "cc": 14,
-      "sloc": 64,
+      "sloc": 63,
       "bucket": "main"
     },
     {
@@ -8430,14 +8728,6 @@
       "bucket": "main"
     },
     {
-      "fnName": "parseStackFrameFromGroups",
-      "file": "src/main/mi-interface/mi-result-strategies/stack-parsing-helpers.ts",
-      "line": 29,
-      "cc": 10,
-      "sloc": 16,
-      "bucket": "main"
-    },
-    {
       "fnName": "normalizeConnectionForStorage",
       "file": "src/renderer/Dialogs/connectionManagerModel.ts",
       "line": 203,
@@ -8456,7 +8746,7 @@
     {
       "fnName": "handleNotifyMain",
       "file": "src/main/ipc/commands.ts",
-      "line": 212,
+      "line": 201,
       "cc": 9,
       "sloc": 35,
       "bucket": "main"
@@ -8470,22 +8760,6 @@
       "bucket": "main"
     },
     {
-      "fnName": "parseThreadFrameFromGroups",
-      "file": "src/main/mi-interface/mi-result-strategies/thread-parsing-helpers.ts",
-      "line": 27,
-      "cc": 9,
-      "sloc": 14,
-      "bucket": "main"
-    },
-    {
-      "fnName": "parseStatusAsyncRecord",
-      "file": "src/main/mi-interface/mi-status-handler.ts",
-      "line": 29,
-      "cc": 9,
-      "sloc": 28,
-      "bucket": "main"
-    },
-    {
       "fnName": "resolveKeyAction",
       "file": "src/renderer/Components/HexEditor/HexEditorKeymap.ts",
       "line": 23,
@@ -8496,9 +8770,9 @@
     {
       "fnName": "<anonymous>",
       "file": "src/renderer/Dialogs/Settings.tsx",
-      "line": 62,
+      "line": 251,
       "cc": 9,
-      "sloc": 23,
+      "sloc": 16,
       "bucket": "renderer"
     },
     {
@@ -8568,15 +8842,39 @@
     {
       "fnName": "handleThreadGroupCommand",
       "file": "src/main/mi-interface/mi-notify-handler.ts",
-      "line": 72,
+      "line": 76,
       "cc": 8,
       "sloc": 34,
+      "bucket": "main"
+    },
+    {
+      "fnName": "handleOtherCommand",
+      "file": "src/main/mi-interface/mi-notify-handler.ts",
+      "line": 293,
+      "cc": 8,
+      "sloc": 26,
+      "bucket": "main"
+    },
+    {
+      "fnName": "parseResultRecord",
+      "file": "src/main/mi-interface/mi-result-handler.ts",
+      "line": 48,
+      "cc": 8,
+      "sloc": 26,
+      "bucket": "main"
+    },
+    {
+      "fnName": "<anonymous>",
+      "file": "src/main/mi-interface/mi-result-strategies/asm-parsing-helpers.ts",
+      "line": 34,
+      "cc": 8,
+      "sloc": 19,
       "bucket": "main"
     }
   ],
   "deltas": {
     "main": {
-      "avgCC": 0.1,
+      "avgCC": -0.14,
       "highCC": -2,
       "fnOver25": -2,
       "fnOver15": -5
@@ -8594,8 +8892,8 @@
       "fnOver15": 0
     },
     "totals": {
-      "files": 16,
-      "functions": 248,
+      "files": 17,
+      "functions": 296,
       "fnOver25": -2,
       "fnOver15": -5
     }

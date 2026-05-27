@@ -34,6 +34,110 @@ export type AboutBoxHandle = {
   ShowDialog: () => void;
 };
 
+function getInfoValue(key: string): string {
+  return (AppMainVersionInfo?.get(key) ?? "") as string;
+}
+
+function openIcons8Link(): void {
+  window.ipcToMain.commands.app.notifyMain({
+    command: "open-external",
+    data: "https://icons8.com/",
+  });
+}
+
+function openBMCLink(): void {
+  window.ipcToMain.commands.app.notifyMain({
+    command: "open-external",
+    data: "https://buymeacoffee.com/barrynolte",
+  });
+}
+
+function aboutBoxHeader(): JSX.Element {
+  return <div className="dialogHeader">About</div>;
+}
+
+function aboutBoxFooter(onClose: () => void): JSX.Element {
+  return (
+    <div>
+      <ButtonComponent onClick={onClose}>OK</ButtonComponent>
+    </div>
+  );
+}
+
+function AboutBoxVersionTable({ info }: { info: AboutInfoState }): JSX.Element {
+  return (
+    <table>
+      <tr>
+        <td>
+          <div className="aboutBoxDetails">Node Version:</div>
+        </td>
+        <td>
+          <div>{info.nodeVersion}</div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div className="aboutBoxDetails">Electron Version:</div>
+        </td>
+        <td>
+          <div>{info.electronVersion}</div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div className="aboutBoxDetails">v8 Version:</div>
+        </td>
+        <td>
+          <div>{info.v8Version}</div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div className="aboutBoxDetails">Architecture:</div>
+        </td>
+        <td>
+          <div>{info.architecture}</div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div className="aboutBoxDetails">Platform:</div>
+        </td>
+        <td>
+          <div>{info.platform}</div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div className="aboutBoxDetails">OS Version:</div>
+        </td>
+        <td>
+          <div>{info.osVersion}</div>
+        </td>
+      </tr>
+    </table>
+  );
+}
+
+function AboutBoxCreditsSection(): JSX.Element {
+  return (
+    <>
+      <div className="aboutBoxGeneral">
+        Icons by{" "}
+        <button className="aboutBoxLink" type="button" onClick={openIcons8Link}>
+          Icons8
+        </button>
+      </div>
+      <div className="aboutBoxGeneral">
+        <button className="aboutBox-buymeacoffee-button" type="button" onClick={openBMCLink}>
+          <img className="aboutBox-buymeacoffee-img" src={iconBMC} alt="Buy Me a Coffee"></img>{" "}
+        </button>
+        <div>Buy me a Coffee</div>
+      </div>
+    </>
+  );
+}
+
 /**
  * About box component with forward ref for imperative control.
  * Uses modal dialog with version information fetched on display.
@@ -49,23 +153,8 @@ export const AboutBox = forwardRef<AboutBoxHandle, AboutProps>((_props, ref): JS
     osVersion: "",
   });
 
-  // Expose ShowDialog method to parent components
   useImperativeHandle(ref, () => ({
-    /**
-     * Shows the dialog and populates version information.
-     * Fetches runtime details from the main process.
-     */
     ShowDialog: () => {
-      /**
-       * Returns info value from current state.
-       *
-       * @param key - Value for `key` consumed by this operation.
-       * @returns The resulting string value produced by this operation.
-       */
-      const getInfoValue = (key: string): string => {
-        return (AppMainVersionInfo?.get(key) ?? "") as string;
-      };
-
       setInfo({
         nodeVersion: getInfoValue("Node Version"),
         electronVersion: getInfoValue("Electron Version"),
@@ -78,49 +167,6 @@ export const AboutBox = forwardRef<AboutBoxHandle, AboutProps>((_props, ref): JS
     },
   }));
 
-  /**
-   * Performs dialog close func as part of this module's internal workflow.
-   */
-  const dialogCloseFunc = () => {
-    setHideDialog(false);
-  };
-
-  const openIcons8Link = () => {
-    window.ipcToMain.commands.app.notifyMain({
-      command: "open-external",
-      data: "https://icons8.com/",
-    });
-  };
-
-  const openBMCLink = () => {
-    window.ipcToMain.commands.app.notifyMain({
-      command: "open-external",
-      data: "https://buymeacoffee.com/barrynolte",
-    });
-  };
-
-  /**
-   * Performs header as part of this module's internal workflow.
-   *
-   * @returns The computed result produced by this operation.
-   */
-  const header = (): JSX.Element => {
-    return <div className="dialogHeader">About</div>;
-  };
-
-  /**
-   * Performs footer as part of this module's internal workflow.
-   *
-   * @returns The computed result produced by this operation.
-   */
-  const footer = (): JSX.Element => {
-    return (
-      <div>
-        <ButtonComponent onClick={dialogCloseFunc}>OK</ButtonComponent>
-      </div>
-    );
-  };
-
   return (
     <div className="AboutBoxTarget">
       <DialogComponent
@@ -128,12 +174,12 @@ export const AboutBox = forwardRef<AboutBoxHandle, AboutProps>((_props, ref): JS
         width="500px"
         target=".AboutBoxTarget"
         visible={hideDialog}
-        header={header}
-        footerTemplate={footer}
+        header={aboutBoxHeader}
+        footerTemplate={() => aboutBoxFooter(() => setHideDialog(false))}
         closeOnEscape={true}
         showCloseIcon={true}
-        close={dialogCloseFunc}
-        isModal={true} // Makes the dialog modal
+        close={() => setHideDialog(false)}
+        isModal={true}
       >
         <div className="aboutBoxContent">
           <div className="aboutBox-background-div"></div>
@@ -146,73 +192,9 @@ export const AboutBox = forwardRef<AboutBoxHandle, AboutProps>((_props, ref): JS
             </div>
             <div className="aboutBoxImportant">{packageInfo.description}</div>
             <hr />
-            <table>
-              <tr>
-                <td>
-                  <div className="aboutBoxDetails">Node Version:</div>
-                </td>
-                <td>
-                  <div>{info.nodeVersion}</div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div className="aboutBoxDetails">Electron Version:</div>
-                </td>
-                <td>
-                  <div>{info.electronVersion}</div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div className="aboutBoxDetails">v8 Version:</div>
-                </td>
-                <td>
-                  <div>{info.v8Version}</div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div className="aboutBoxDetails">Architecture:</div>
-                </td>
-                <td>
-                  <div>{info.architecture}</div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div className="aboutBoxDetails">Platform:</div>
-                </td>
-                <td>
-                  <div>{info.platform}</div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div className="aboutBoxDetails">OS Version:</div>
-                </td>
-                <td>
-                  <div>{info.osVersion}</div>
-                </td>
-              </tr>
-            </table>
+            <AboutBoxVersionTable info={info} />
             <hr />
-            <div className="aboutBoxGeneral">
-              Icons by{" "}
-              <button className="aboutBoxLink" type="button" onClick={openIcons8Link}>
-                Icons8
-              </button>
-            </div>
-            <div className="aboutBoxGeneral">
-              <button className="aboutBox-buymeacoffee-button" type="button" onClick={openBMCLink}>
-                <img
-                  className="aboutBox-buymeacoffee-img"
-                  src={iconBMC}
-                  alt="Buy Me a Coffee"
-                ></img>{" "}
-              </button>
-              <div>Buy me a Coffee</div>
-            </div>
+            <AboutBoxCreditsSection />
           </div>
         </div>
       </DialogComponent>

@@ -5,7 +5,15 @@
  * Exported symbols include `DefinedConnection`, `useConnectionDialogController`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
-import { RefObject, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { GdbAny, Step, StepAndState } from "../../common/gdb-common";
 import type { ConnectionManagerHandle } from "./ConnectionManager";
 
@@ -55,6 +63,137 @@ function normalizeConnections(settingsConnections: unknown): DefinedConnection[]
     }));
 }
 
+async function fetchConnectionSettings(
+  setDefinedConnections: Dispatch<SetStateAction<DefinedConnection[]>>,
+  setSelectedConnection: Dispatch<SetStateAction<DefinedConnection | null>>,
+): Promise<void> {
+  try {
+    const settings = (await window.ipcToMain.queries.app.getSettings()) as GdbAny;
+    const normalizedConnections = normalizeConnections(settings?.connections);
+    const lastUsedConnectionName =
+      typeof settings?.lastUsedConnection === "string" ? settings.lastUsedConnection : undefined;
+    const restoredConnection = lastUsedConnectionName
+      ? (normalizedConnections.find((connection) => connection.name === lastUsedConnectionName) ??
+        null)
+      : null;
+    setDefinedConnections(normalizedConnections);
+    setSelectedConnection(restoredConnection);
+  } catch {
+    setDefinedConnections([]);
+    setSelectedConnection(null);
+  }
+}
+
+function handleConnectionStatusUpdate(
+  status: GdbAny,
+  outputRef: RefObject<HTMLDivElement | null>,
+  connDlgRef: RefObject<DialogComponent | null>,
+  setConnectionState: Dispatch<SetStateAction<Record<Step, StepAndState>>>,
+): void {
+  switch (status[0]) {
+    case "console-capture": {
+      const { error, line } = status[1];
+      const div = document.createElement("div");
+      div.textContent = line;
+      div.className = error ? "consoleError" : "consoleOutput";
+      outputRef.current?.appendChild(div);
+      div.scrollIntoView({ behavior: "smooth", block: "end" });
+      break;
+    }
+    case "gdb-startup": {
+      const step = status[1] as Step;
+      const stepState = status[2] as StepAndState["state"];
+      setConnectionState((prev) => {
+        const newState = { ...prev };
+        newState[step] = { ...newState[step], state: stepState };
+        return newState;
+      });
+      if (step === "target-running" && stepState === "completed") {
+        setTimeout(() => {
+          connDlgRef.current?.hide();
+        }, 500);
+      }
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+function useConnectionSubscriptions(
+  connDlgRef: RefObject<DialogComponent | null>,
+  connectionsRef: RefObject<ConnectionManagerHandle> | undefined,
+  outputRef: RefObject<HTMLDivElement | null>,
+  loadConnectionsFromSettings: () => Promise<void>,
+  setDisconnectAvailable: Dispatch<SetStateAction<boolean>>,
+  setConnectionState: Dispatch<SetStateAction<Record<Step, StepAndState>>>,
+): void {
+  const openConnectionManagerClickHandler = useCallback((): void => {
+    connDlgRef.current?.hide();
+    window.setTimeout(() => {
+      if (!connectionsRef?.current) {
+        connDlgRef.current?.show();
+        return;
+      }
+      connectionsRef.current.ShowDialog(() => {
+        void loadConnectionsFromSettings();
+        connDlgRef.current?.show();
+      });
+    }, 0);
+  }, [connDlgRef, connectionsRef, loadConnectionsFromSettings]);
+
+  useEffect(() => {
+    const initialLoadTimer = window.setTimeout(() => {
+      void loadConnectionsFromSettings();
+    }, 0);
+    const unsubscribeNotify = window.ipcToMain.notifications.render((msg: GdbAny) => {
+      switch (msg.command) {
+        case "connection-started":
+        case "connection-success":
+          setDisconnectAvailable(true);
+          break;
+        case "connection-failed":
+        case "cancel-connection":
+          setDisconnectAvailable(false);
+          break;
+        default:
+          break;
+      }
+    });
+    const unsubscribeConnectionStatus = window.ipcToMain.notifications.connectionStatus(
+      (status: GdbAny) => {
+        handleConnectionStatusUpdate(status, outputRef, connDlgRef, setConnectionState);
+      },
+    );
+    connDlgRef.current?.show();
+    return () => {
+      window.clearTimeout(initialLoadTimer);
+      unsubscribeNotify();
+      unsubscribeConnectionStatus();
+    };
+  }, [
+    connDlgRef,
+    loadConnectionsFromSettings,
+    outputRef,
+    setConnectionState,
+    setDisconnectAvailable,
+  ]);
+
+  useEffect(() => {
+    const onDocumentClickCapture = (event: MouseEvent): void => {
+      const eventTarget = event.target;
+      if (!(eventTarget instanceof Element)) return;
+      if (!eventTarget.closest("#connectionsButton")) return;
+      event.preventDefault();
+      openConnectionManagerClickHandler();
+    };
+    document.addEventListener("click", onDocumentClickCapture, true);
+    return () => {
+      document.removeEventListener("click", onDocumentClickCapture, true);
+    };
+  }, [openConnectionManagerClickHandler]);
+}
+
 /**
  * Creates and returns the `useConnectionDialogController` hook API used by renderer components.
  *
@@ -80,88 +219,19 @@ export function useConnectionDialogController({
     }
   }, [outputRef]);
 
-  const loadConnectionsFromSettings = useCallback(async (): Promise<void> => {
-    try {
-      const settings = (await window.ipcToMain.queries.app.getSettings()) as GdbAny;
-      const normalizedConnections = normalizeConnections(settings?.connections);
-      const lastUsedConnectionName =
-        typeof settings?.lastUsedConnection === "string" ? settings.lastUsedConnection : undefined;
-      const restoredConnection = lastUsedConnectionName
-        ? (normalizedConnections.find((connection) => connection.name === lastUsedConnectionName) ??
-          null)
-        : null;
-      setDefinedConnections(normalizedConnections);
-      setSelectedConnection(restoredConnection);
-    } catch {
-      setDefinedConnections([]);
-      setSelectedConnection(null);
-    }
-  }, []);
+  const loadConnectionsFromSettings = useCallback(
+    () => fetchConnectionSettings(setDefinedConnections, setSelectedConnection),
+    [],
+  );
 
-  useEffect(() => {
-    const initialLoadTimer = window.setTimeout(() => {
-      void loadConnectionsFromSettings();
-    }, 0);
-
-    const unsubscribeNotify = window.ipcToMain.notifications.render((msg: GdbAny) => {
-      switch (msg.command) {
-        case "connection-started":
-        case "connection-success":
-          setDisconnectAvailable(true);
-          break;
-        case "connection-failed":
-        case "cancel-connection":
-          setDisconnectAvailable(false);
-          break;
-        default:
-          break;
-      }
-    });
-
-    const unsubscribeConnectionStatus = window.ipcToMain.notifications.connectionStatus(
-      (status: GdbAny) => {
-        switch (status[0]) {
-          case "console-capture": {
-            const { error, line } = status[1];
-            const div = document.createElement("div");
-            div.textContent = line;
-            div.className = error ? "consoleError" : "consoleOutput";
-            outputRef.current?.appendChild(div);
-            div.scrollIntoView({ behavior: "smooth", block: "end" });
-            break;
-          }
-          case "gdb-startup": {
-            const step = status[1] as Step;
-            const stepState = status[2] as StepAndState["state"];
-
-            setConnectionState((prev) => {
-              const newState = { ...prev };
-              newState[step] = { ...newState[step], state: stepState };
-              return newState;
-            });
-
-            if (step === "target-running" && stepState === "completed") {
-              setTimeout(() => {
-                connDlgRef.current?.hide();
-              }, 500);
-            }
-            break;
-          }
-          default:
-            //console.error(`Unknown status: ${status}`);
-            break;
-        }
-      },
-    );
-
-    connDlgRef.current?.show();
-
-    return () => {
-      window.clearTimeout(initialLoadTimer);
-      unsubscribeNotify();
-      unsubscribeConnectionStatus();
-    };
-  }, [connDlgRef, loadConnectionsFromSettings, outputRef]);
+  useConnectionSubscriptions(
+    connDlgRef,
+    connectionsRef,
+    outputRef,
+    loadConnectionsFromSettings,
+    setDisconnectAvailable,
+    setConnectionState,
+  );
 
   const onDialogClose = useCallback(() => {
     window.ipcToMain.commands.app.notifyMain({
@@ -189,48 +259,6 @@ export function useConnectionDialogController({
     onDialogClose();
   }, [onDialogClose]);
 
-  const openConnectionManagerClickHandler = useCallback((): void => {
-    connDlgRef.current?.hide();
-
-    window.setTimeout(() => {
-      if (!connectionsRef?.current) {
-        connDlgRef.current?.show();
-        return;
-      }
-
-      connectionsRef.current.ShowDialog(() => {
-        void loadConnectionsFromSettings();
-        connDlgRef.current?.show();
-      });
-    }, 0);
-  }, [connDlgRef, connectionsRef, loadConnectionsFromSettings]);
-
-  useEffect(() => {
-    /**
-     * Performs on document click capture as part of this module's internal workflow.
-     *
-     * @param event - Value for `event` consumed by this operation.
-     */
-    const onDocumentClickCapture = (event: MouseEvent): void => {
-      const eventTarget = event.target;
-      if (!(eventTarget instanceof Element)) {
-        return;
-      }
-
-      if (!eventTarget.closest("#connectionsButton")) {
-        return;
-      }
-
-      event.preventDefault();
-      openConnectionManagerClickHandler();
-    };
-
-    document.addEventListener("click", onDocumentClickCapture, true);
-    return () => {
-      document.removeEventListener("click", onDocumentClickCapture, true);
-    };
-  }, [openConnectionManagerClickHandler]);
-
   const onSelectedConnectionChange = useCallback((itemData: unknown): void => {
     const connection = (itemData as DefinedConnection | undefined) ?? null;
     setSelectedConnection(connection);
@@ -249,7 +277,6 @@ export function useConnectionDialogController({
   const hideDialog = useCallback((): void => {
     connDlgRef.current?.hide();
   }, [connDlgRef]);
-
   const connectionStateRows = useMemo(() => Object.values(connectionState), [connectionState]);
 
   return {

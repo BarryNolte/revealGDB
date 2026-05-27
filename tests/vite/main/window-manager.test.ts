@@ -12,8 +12,6 @@
 
 import { BrowserWindow } from "electron";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createEventEmitterHarness } from "../../helpers/event-emitter-test-harness";
-import { createMockAppSettings, createMockBrowserWindow } from "../../helpers/ipc-test-harness";
 import {
   createDebugWindow,
   createMainWindow,
@@ -21,21 +19,18 @@ import {
   restoreWindowBounds,
   wireWindowCloseHandlers,
 } from "../../../src/main/window-manager";
+import { createEventEmitterHarness } from "../../helpers/event-emitter-test-harness";
+import { createMockAppSettings, createMockBrowserWindow } from "../../helpers/ipc-test-harness";
 
 const { browserWindowFactory } = vi.hoisted(() => ({
   browserWindowFactory: vi.fn<(options: unknown) => unknown>((options: unknown) => ({ options })),
 }));
 
-vi.mock("electron", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("electron")>();
-
-  return {
-    ...actual,
-    BrowserWindow: vi.fn(function BrowserWindowMock(options: unknown) {
-      return browserWindowFactory(options);
-    }),
-  };
-});
+vi.mock("electron", () => ({
+  BrowserWindow: vi.fn(function BrowserWindowMock(options: unknown) {
+    return browserWindowFactory(options);
+  }),
+}));
 
 describe("window-manager", () => {
   beforeEach(() => {
