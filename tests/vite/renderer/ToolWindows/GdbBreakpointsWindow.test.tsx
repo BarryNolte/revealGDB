@@ -118,6 +118,9 @@ beforeEach(() => {
         return mockUnsubscribe;
       }),
     },
+    queries: {
+      debugger: { showSourceAt: vi.fn().mockResolvedValue(undefined) },
+    },
     commands: {
       debugger: { sendGdbCommand: vi.fn() },
       app: { notifyMain: vi.fn() },
@@ -219,22 +222,19 @@ describe("GdbBreakpointsWindow onAction callback", () => {
 });
 
 describe("GdbBreakpointsWindow handleRecordDoubleClick callback", () => {
-  it("sends show-source-at notification when row has fullName and line", () => {
+  it("calls showSourceAt when row has fullName and line", () => {
     render(<GdbBreakPointWindow />);
-    const notifyMain = (
+    const showSourceAt = (
       window as unknown as {
-        ipcToMain: { commands: { app: { notifyMain: ReturnType<typeof vi.fn> } } };
+        ipcToMain: { queries: { debugger: { showSourceAt: ReturnType<typeof vi.fn> } } };
       }
-    ).ipcToMain.commands.app.notifyMain;
+    ).ipcToMain.queries.debugger.showSourceAt;
 
     capturedRecordDoubleClick?.({
       rowData: { fullName: "/path/main.c", line: "10" },
     });
 
-    expect(notifyMain).toHaveBeenCalledWith({
-      command: "show-source-at",
-      data: { fileName: "/path/main.c", line: "10" },
-    });
+    expect(showSourceAt).toHaveBeenCalledWith("/path/main.c", "10");
   });
 
   it("does nothing when row has no fullName", () => {

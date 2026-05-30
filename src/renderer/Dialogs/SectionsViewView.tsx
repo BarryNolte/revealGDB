@@ -3,8 +3,8 @@ import { DialogComponent, TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { type MouseEvent as ReactMouseEvent, JSX, useLayoutEffect, useRef, useState } from "react";
 
 import type { gdbSection, gdbSymbolFiles } from "../../common/gdb-state-types";
+import type { SectionsViewOptions } from "../../common/ipc-data-types";
 import "./SectionsView.css";
-import type { SectionsViewOptions } from "./useSectionsViewController";
 
 // Layout constants
 const MIN_ROW_HEIGHT = 40;

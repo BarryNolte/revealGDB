@@ -220,6 +220,29 @@ describe("registerIpcQueryHandlers", () => {
     expect(result).toBe(gdbSymbolFiles);
   });
 
+  it("showSourceAt handler reads file, pushes via sourceFile channel, and returns result", async () => {
+    const getSourceFileContents = vi.fn().mockResolvedValue("int main() {}");
+    const { context, ipcMain, send } = createIpcRegistrationHarness({
+      gdbInterface: { gdbDB: { getSourceFileContents } },
+    });
+
+    registerIpcQueryHandlers(context);
+
+    const handler = ipcMain.handle.mock.calls.find(
+      ([ch]) => ch === IPC_CHANNELS.rendererToMain.queries.debugger.showSourceAt,
+    )?.[1];
+
+    const result = await handler(null, "/src/main.c", "10");
+
+    expect(getSourceFileContents).toHaveBeenCalledWith("/src/main.c");
+    expect(result).toEqual({ fileName: "/src/main.c", line: "10", contents: "int main() {}" });
+    expect(send).toHaveBeenCalledWith(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, {
+      fileName: "/src/main.c",
+      line: "10",
+      contents: "int main() {}",
+    });
+  });
+
   it("getSettings handler throws after exhausting all retries", async () => {
     vi.useFakeTimers();
 

@@ -54,6 +54,13 @@ module.exports = {
     },
   ],
   options: {
+    exclude: {
+      path: [
+        'src/renderer/test-helpers',
+        '__snapshots__',
+        '-test\\.(tsx?|html|css)$',
+      ],
+    },
     doNotFollow: {
       path: 'node_modules',
     },

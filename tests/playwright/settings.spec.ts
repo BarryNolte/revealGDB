@@ -66,7 +66,9 @@ function getMimeType(filePath: string): string {
 
 async function selectDropdownValue(page: Page, row: Locator, optionText: string): Promise<void> {
   await row.getByRole("combobox").last().click();
-  await page.locator("li.e-list-item", { hasText: optionText }).first().click();
+  const item = page.locator("li.e-list-item", { hasText: optionText }).first();
+  await item.waitFor({ state: "visible" });
+  await item.dispatchEvent("click");
 }
 
 function getSettingsDialog(page: Page): Locator {

@@ -6,10 +6,11 @@
  */
 import { BrowserWindow, IpcMain } from "electron";
 import settings from "electron-settings";
-import { GdbAny, SelectedConnection } from "../../common/gdb-common";
+import type { NormalizedConnection } from "../../common/connection-types";
+import { GdbAny } from "../../common/gdb-common";
 import { miInterface } from "../mi-interface/mi-interface";
 
-export type IsSelectedConnection = (value: unknown) => value is SelectedConnection;
+export type IsSelectedConnection = (value: unknown) => value is NormalizedConnection;
 
 export type IpcRegistrationContext = {
   ipcMain: IpcMain;

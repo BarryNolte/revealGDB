@@ -81,6 +81,7 @@ export interface IElectronAPI {
       getVarByName: (sourceFile: string, varName: string) => Promise<gdbVarLocation | undefined>;
       evaluateExpression: (expr: string) => Promise<string | undefined>;
       getSectionData: () => Promise<gdbSymbolFiles>;
+      showSourceAt: (fileName: string, line: string) => Promise<gdbShowSourceInfo>;
     };
   };
 

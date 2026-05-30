@@ -127,6 +127,12 @@ const ipcApi: IpcApiCore = {
       evaluateExpression: (expr: string) =>
         ipcRenderer.invoke(IPC_CHANNELS.rendererToMain.queries.debugger.evaluateExpression, expr),
       getSectionData: () => invoke(IPC_CHANNELS.rendererToMain.queries.debugger.sections),
+      showSourceAt: (fileName: string, line: string) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.queries.debugger.showSourceAt,
+          fileName,
+          line,
+        ),
     },
   },
   commands: {

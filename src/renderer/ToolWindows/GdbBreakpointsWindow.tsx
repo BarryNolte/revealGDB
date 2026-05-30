@@ -96,10 +96,7 @@ function onAction(args: NotifyArgs): void {
 function handleRecordDoubleClick(e: RecordDoubleClickEventArgs): void {
   const row = e.rowData as BreakpointGridRow;
   if (row?.fullName && row?.line) {
-    window.ipcToMain.commands.app.notifyMain({
-      command: "show-source-at",
-      data: { fileName: row.fullName, line: row.line },
-    });
+    void window.ipcToMain.queries.debugger.showSourceAt(row.fullName, row.line);
   }
 }
 

@@ -313,27 +313,6 @@ describe("handleNotifyMain", () => {
     expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.sectionsView.showLegend", false);
   });
 
-  it("handles show-source-at by fetching file contents and sending to the renderer", async () => {
-    const getSourceFileContents = vi.fn().mockResolvedValue("int main() {}");
-    const { context, send } = createIpcRegistrationHarness({
-      gdbInterface: { gdbDB: { getSourceFileContents } },
-    });
-
-    handleNotifyMain(
-      { command: "show-source-at", data: { fileName: "/src/main.c", line: "10" } },
-      context,
-    );
-
-    await vi.waitFor(() =>
-      expect(send).toHaveBeenCalledWith(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, {
-        fileName: "/src/main.c",
-        line: "10",
-        contents: "int main() {}",
-      }),
-    );
-    expect(getSourceFileContents).toHaveBeenCalledWith("/src/main.c");
-  });
-
   it("sends connection-failed when the connection attempt returns false", () => {
     const { context, send } = createIpcRegistrationHarness({
       isSelectedConnection: ((value: unknown) =>

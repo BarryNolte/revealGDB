@@ -4,12 +4,12 @@
  * @remarks
  * Exported symbols include `UseGridColumnStateResult`, `applySavedColumnsToGrid`, `useGridColumnState`, `resetAllGridColumnDefaults`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-import { RefObject, useCallback, useEffect, useRef, useState } from "react";
-import { GridColumnState, GridColumnsSettings, GridName } from "../../common/grid-column-types";
 import { Column } from "@syncfusion/ej2-grids";
 import { GridComponent } from "@syncfusion/ej2-react-grids";
 import { TreeGridComponent } from "@syncfusion/ej2-react-treegrid";
+import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
+import { GridColumnState, GridColumnsSettings, GridName } from "../../common/grid-column-types";
 
 export type UseGridColumnStateResult = {
   /** Saved column states, or undefined if not yet loaded or no saved state. */
@@ -103,7 +103,7 @@ export function applySavedColumnsToGrid(
  */
 function saveColumnsToSettings(gridName: GridName, columns: Column[]): void {
   const state = extractColumnState(columns);
-  window.ipcToMain.notifyMain({
+  window.ipcToMain.commands.app.notifyMain({
     command: "save-grid-columns",
     data: { gridName, columns: state },
   });
@@ -131,7 +131,7 @@ export function useGridColumnState(
   useEffect(() => {
     gridNameRef.current = gridName;
 
-    window.ipcToMain
+    window.ipcToMain.queries.app
       .getSettings()
       .then((settings: Record<string, unknown>) => {
         const gui = settings?.gui as Record<string, unknown> | undefined;
@@ -203,7 +203,7 @@ export function useGridColumnState(
 
   const resetColumnDefaults = useCallback(() => {
     setSavedColumns(undefined);
-    window.ipcToMain.notifyMain({
+    window.ipcToMain.commands.app.notifyMain({
       command: "reset-grid-columns",
       data: gridNameRef.current,
     });
@@ -216,7 +216,7 @@ export function useGridColumnState(
  * Performs reset all grid column defaults as part of this module's public API.
  */
 export function resetAllGridColumnDefaults(): void {
-  window.ipcToMain.notifyMain({
+  window.ipcToMain.commands.app.notifyMain({
     command: "reset-grid-columns",
     data: undefined,
   });

@@ -7,11 +7,8 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type GdbAny = any;
 
-export type SelectedConnection = {
-  name: string;
-  shell: string;
-  commands: string[];
-};
+// SelectedConnection is now an alias for NormalizedConnection — kept for backward compatibility.
+export type { NormalizedConnection as SelectedConnection } from "./connection-types";
 
 /* Debug Only */
 /**

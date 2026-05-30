@@ -5,7 +5,6 @@
  * Exported symbols include `gdbConnectorIdfOnWsl`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { ChildProcess, spawn } from "child_process";
-import { NormalizedConnection } from "../../../common/connection-types";
 import { SelectedConnection } from "../../../common/gdb-common";
 import { ConnectionNotifier } from "../../utilities/ConnectionNotifier";
 import { gdbStateDatabase } from "../gdb-state-database/gdbStateDatabase";
@@ -48,9 +47,7 @@ export class gdbConnectorIdfOnWsl extends GdbConnector {
     ConnectionNotifier.getInstance().notifyGdbStartup("starting-shell", "in-progress");
 
     if (selectedConnection.shell === "wsl") {
-      this.gdbDB.gdbSrcFileCache.setFilePrefix(
-        "//wsl$/" + (selectedConnection as NormalizedConnection).wslDistribution,
-      );
+      this.gdbDB.gdbSrcFileCache.setFilePrefix("//wsl$/" + selectedConnection.wslDistribution);
     }
 
     this.gdbExe = spawn(selectedConnection.shell, undefined, {

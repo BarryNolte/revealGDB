@@ -4,9 +4,8 @@
  * @remarks
  * Exported symbols include `handleNotifyMain`, `registerIpcCommandHandlers`. It is responsible for channel registration, payload marshalling, and returning data to renderer callers.
  */
-import { shell } from "electron";
-import { GdbAny, SelectedConnection } from "../../common/gdb-common";
-import { GridColumnState, GridName } from "../../common/grid-column-types";
+import { IpcMainEvent, shell } from "electron";
+import type { NormalizedConnection } from "../../common/connection-types";
 import {
   DebuggerCommand,
   IPC_CHANNELS,
@@ -14,8 +13,8 @@ import {
   NotifyRenderMessage,
 } from "../../common/ipc-contracts";
 import { mapElectronWindowToWinPos } from "../mappers/window-pos-mapper";
-import { disconnectAndResetApplication } from "../utilities/disconnect-helper";
 import { setNativeThemeFromAppTheme } from "../theme-support";
+import { disconnectAndResetApplication } from "../utilities/disconnect-helper";
 import { debugLog } from "../utilities/logger";
 import { onGdbCommand, onGdbControlD } from "./on-gdb-command";
 import { IpcRegistrationContext } from "./types";
@@ -59,7 +58,7 @@ function isSafeExternalUrl(value: unknown): value is string {
  * @param context - Dependency container used to register handlers and access shared services.
  */
 function doConnection(
-  selectedConnection: SelectedConnection,
+  selectedConnection: NormalizedConnection,
   context: IpcRegistrationContext,
 ): void {
   const gdbInterface = context.getGdbInterface();
@@ -78,66 +77,70 @@ function doConnection(
 const GDB_GUI_PREFIX = "gdb.gui.";
 
 function handleConnectSelectedConnection(
-  msg: NotifyMainRequest,
+  msg: Extract<NotifyMainRequest, { command: "connect-selected-connection" }>,
   context: IpcRegistrationContext,
 ): void {
-  const selectedConnection: unknown = (msg?.data as { connection?: unknown } | undefined)
-    ?.connection;
-  debugLog("Received selected connection from renderer", selectedConnection);
-  if (context.isSelectedConnection(selectedConnection)) {
-    doConnection(selectedConnection, context);
+  const { connection } = msg.data;
+  debugLog("Received selected connection from renderer", connection);
+  if (context.isSelectedConnection(connection)) {
+    doConnection(connection, context);
   } else {
-    console.error("Invalid selected connection payload", selectedConnection);
+    console.error("Invalid selected connection payload", connection);
   }
 }
 
-function handleCancelConnection(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
+function handleCancelConnection(context: IpcRegistrationContext): void {
   const mainWindow = context.getMainWindow();
   const gdbInterface = context.getGdbInterface();
 
   disconnectAndResetApplication(mainWindow, gdbInterface);
 }
 
-function resetGridColumns(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
-  const resetGridName = msg.data as GridName | undefined;
-  if (resetGridName) {
-    context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns.${resetGridName}`);
-  } else {
-    context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns`);
+type SaveSettingsRequest = Extract<
+  NotifyMainRequest,
+  {
+    command:
+      | "save-connections"
+      | "save-last-used-connection"
+      | "save-app-show-debug-info"
+      | "save-app-theme"
+      | "save-cmd-history"
+      | "save-source-viewer-theme"
+      | "save-source-viewer-font-size"
+      | "save-source-viewer-font-name"
+      | "save-dock-layout"
+      | "save-grid-columns"
+      | "reset-grid-columns"
+      | "save-sections-view-options";
   }
-}
+>;
 
-function handleSaveSettings(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
+function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationContext): void {
   const mainWindow = context.getMainWindow();
-  const command = msg?.command || "";
 
-  switch (command) {
-    case "save-connections": {
-      const connData = msg.data as { connections?: unknown };
-      context.appSettings.setSync("gdb.connections", connData.connections as never);
+  switch (msg.command) {
+    case "save-connections":
+      context.appSettings.setSync("gdb.connections", msg.data.connections as never);
       break;
-    }
     case "save-last-used-connection":
       context.appSettings.setSync("gdb.lastUsedConnection", msg.data as never);
       break;
     case "save-app-show-debug-info":
       context.appSettings.setSync(`${GDB_GUI_PREFIX}showDebugInfo`, msg.data as never);
       break;
-    case "save-sections-view-options": {
-      const opts = msg.data as { showEmptySpace: boolean; showLegend: boolean };
+    case "save-sections-view-options":
       context.appSettings.setSync(
         `${GDB_GUI_PREFIX}sectionsView.showEmptySpace`,
-        opts.showEmptySpace as never,
+        msg.data.showEmptySpace as never,
       );
       context.appSettings.setSync(
         `${GDB_GUI_PREFIX}sectionsView.showLegend`,
-        opts.showLegend as never,
+        msg.data.showLegend as never,
       );
       break;
-    }
     case "save-app-theme":
       context.appSettings.setSync(`${GDB_GUI_PREFIX}applicationTheme`, msg.data as never);
-      setNativeThemeFromAppTheme(msg.data as string);
+      setNativeThemeFromAppTheme(msg.data);
       break;
     case "save-cmd-history":
       context.appSettings.setSync("gdb.command.history", msg.data as never);
@@ -158,33 +161,20 @@ function handleSaveSettings(msg: NotifyMainRequest, context: IpcRegistrationCont
         mapElectronWindowToWinPos(mainWindow),
       );
       break;
-    case "save-grid-columns": {
-      const { gridName, columns } = msg.data as {
-        gridName: GridName;
-        columns: GridColumnState[];
-      };
-      context.appSettings.setSync(`${GDB_GUI_PREFIX}gridColumns.${gridName}`, columns as never);
+    case "save-grid-columns":
+      context.appSettings.setSync(
+        `${GDB_GUI_PREFIX}gridColumns.${msg.data.gridName}`,
+        msg.data.columns as never,
+      );
       break;
-    }
     case "reset-grid-columns":
-      resetGridColumns(msg, context);
+      if (msg.data) {
+        context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns.${msg.data}`);
+      } else {
+        context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns`);
+      }
       break;
   }
-}
-
-function handleShowSourceAt(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
-  const mainWindow = context.getMainWindow();
-  const gdbInterface = context.getGdbInterface();
-  const { fileName, line } = msg.data as { fileName: string; line: string };
-
-  void (async () => {
-    const contents = await gdbInterface.gdbDB.getSourceFileContents(fileName);
-    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, {
-      fileName,
-      line,
-      contents,
-    });
-  })();
 }
 
 /**
@@ -202,7 +192,7 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       handleConnectSelectedConnection(msg, context);
       break;
     case "cancel-connection":
-      handleCancelConnection(msg, context);
+      handleCancelConnection(context);
       break;
     case "command-entry":
       sendNotifyRender(context, { command: "command-entry" });
@@ -223,9 +213,6 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       debugLog("Notifying GDB Interface that rendering is complete.");
       sendNotifyRender(context, { command: "command-entry" });
       break;
-    case "show-source-at":
-      handleShowSourceAt(msg, context);
-      break;
     default:
       handleSaveSettings(msg, context);
       break;
@@ -243,14 +230,14 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
 export function registerIpcCommandHandlers(context: IpcRegistrationContext): void {
   context.ipcMain.on(
     IPC_CHANNELS.rendererToMain.commands.app.notify,
-    (_event: GdbAny, msg: NotifyMainRequest) => {
+    (_event: IpcMainEvent, msg: NotifyMainRequest) => {
       handleNotifyMain(msg, context);
     },
   );
 
   context.ipcMain.on(
     IPC_CHANNELS.rendererToMain.commands.debugger.send,
-    (_event: GdbAny, command: DebuggerCommand) => {
+    (_event: IpcMainEvent, command: DebuggerCommand) => {
       onGdbCommand(command, context);
     },
   );

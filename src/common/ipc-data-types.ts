@@ -18,3 +18,8 @@ export type WslDistro = {
   state: string;
   default: boolean;
 };
+
+export type SectionsViewOptions = {
+  showEmptySpace: boolean;
+  showLegend: boolean;
+};

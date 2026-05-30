@@ -1,14 +1,14 @@
 // @vitest-environment jsdom
-import { act, renderHook } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Column } from "@syncfusion/ej2-grids";
 import { GridComponent } from "@syncfusion/ej2-react-grids";
+import { act, renderHook } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { GridColumnState } from "../../../../src/common/grid-column-types";
 import {
   applySavedColumnsToGrid,
   resetAllGridColumnDefaults,
   useGridColumnState,
 } from "../../../../src/renderer/utilities/useGridColumnState";
-import { GridColumnState } from "../../../../src/common/grid-column-types";
 
 function makeCol(field: string, width?: string | number, visible = true): Column {
   return { field, width, visible } as unknown as Column;
@@ -33,9 +33,15 @@ function makeSaved(
 }
 
 beforeEach(() => {
+  const notifyMain = vi.fn();
+  const getSettings = vi.fn(() => Promise.resolve({}));
   (window as unknown as Record<string, unknown>).ipcToMain = {
-    getSettings: vi.fn(() => Promise.resolve({})),
-    notifyMain: vi.fn(),
+    // Flat legacy aliases — kept for test assertion compatibility
+    getSettings,
+    notifyMain,
+    // Structured API — used by updated production code
+    queries: { app: { getSettings } },
+    commands: { app: { notifyMain } },
   };
 });
 

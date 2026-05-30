@@ -6,7 +6,8 @@
  */
 import { app, BrowserWindow, ipcMain, nativeTheme } from "electron";
 // import path from "path";
-import { GdbAny, SelectedConnection } from "../common/gdb-common";
+import type { NormalizedConnection } from "../common/connection-types";
+import { GdbAny } from "../common/gdb-common";
 import { registerAppEvents } from "./app-events";
 import { AppSettings } from "./app-settings";
 import {
@@ -66,17 +67,18 @@ export const gdbAppInfo: Map<string, GdbAny> = new Map<string, GdbAny>();
  * @param value - Value to validate, normalize, or transform before further processing.
  * @returns The computed result produced by this operation.
  */
-function isSelectedConnection(value: unknown): value is SelectedConnection {
+function isSelectedConnection(value: unknown): value is NormalizedConnection {
   if (!value || typeof value !== "object") {
     return false;
   }
 
-  const candidate = value as Partial<SelectedConnection>;
+  const candidate = value as Partial<NormalizedConnection>;
   return (
     typeof candidate.name === "string" &&
     typeof candidate.shell === "string" &&
     Array.isArray(candidate.commands) &&
-    candidate.commands.every((cmd) => typeof cmd === "string")
+    candidate.commands.every((cmd) => typeof cmd === "string") &&
+    (candidate.wslDistribution === undefined || typeof candidate.wslDistribution === "string")
   );
 }
 

@@ -52,20 +52,7 @@ type WindowWithTestApi = Window & {
   __GDB_COMMAND_TEST_API__?: TestApi;
 };
 
-/**
- * Performs setup gdb command test api as part of this module's public API.
- */
-export function setupGdbCommandTestApi(): void {
-  // Skip setup if ipcToMain already exists and is from the real app
-  if (window.ipcToMain) {
-    const descriptor = Object.getOwnPropertyDescriptor(window.ipcToMain, "consoleMessage");
-    if (descriptor && !descriptor.writable && !descriptor.configurable) {
-      console.warn("Test API setup skipped: ipcToMain already exists with read-only properties");
-      return;
-    }
-  }
-
-  // Track commands sent to GDB and saved history
+function buildTestApi(): TestApi {
   const sentCommands: string[] = [];
   let controlDSends = 0;
   let savedHistory: string[] = [];
@@ -113,7 +100,6 @@ export function setupGdbCommandTestApi(): void {
       void sentCommands.push(command);
       return;
     }
-
     const selectFrameCommand = command as DebuggerSelectStackFrameCommand;
     void sentCommands.push(`${selectFrameCommand.kind}:${selectFrameCommand.frameLevel}`);
   };
@@ -128,7 +114,7 @@ export function setupGdbCommandTestApi(): void {
 
   setIpcFullLegacyAliases(ipc);
 
-  (window as WindowWithTestApi).__GDB_COMMAND_TEST_API__ = {
+  return {
     emitConsole: (message) => consoleHandler?.(message),
     emitLog: (message) => logHandler?.(message),
     emitError: (message) => errorHandler?.(message),
@@ -144,6 +130,22 @@ export function setupGdbCommandTestApi(): void {
       savedHistory = [];
     },
   };
+}
+
+/**
+ * Performs setup gdb command test api as part of this module's public API.
+ */
+export function setupGdbCommandTestApi(): void {
+  // Skip setup if ipcToMain already exists and is from the real app
+  if (window.ipcToMain) {
+    const descriptor = Object.getOwnPropertyDescriptor(window.ipcToMain, "consoleMessage");
+    if (descriptor && !descriptor.writable && !descriptor.configurable) {
+      console.warn("Test API setup skipped: ipcToMain already exists with read-only properties");
+      return;
+    }
+  }
+
+  (window as WindowWithTestApi).__GDB_COMMAND_TEST_API__ = buildTestApi();
 }
 
 /**

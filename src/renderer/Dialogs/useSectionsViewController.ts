@@ -1,10 +1,6 @@
 import { useCallback, useState } from "react";
 import type { gdbSymbolFiles } from "../../common/gdb-state-types";
-
-export type SectionsViewOptions = {
-  showEmptySpace: boolean;
-  showLegend: boolean;
-};
+import type { SectionsViewOptions } from "../../common/ipc-data-types";
 
 const DEFAULT_OPTIONS: SectionsViewOptions = { showEmptySpace: false, showLegend: false };
 

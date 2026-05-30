@@ -4,21 +4,13 @@
  * @remarks
  * Exported symbols include `registerIpcQueryHandlers`. It is responsible for channel registration, payload marshalling, and returning data to renderer callers.
  */
-import { gdbSymbolFiles } from "../../common/gdb-state-types";
+import { gdbShowSourceInfo, gdbSymbolFiles } from "../../common/gdb-state-types";
 import { IPC_CHANNELS } from "../../common/ipc-contracts";
 import { gdbFunction, gdbVarLocation } from "../mi-interface/gdb-state-database/gdbStateDatabase";
 import { WslUtilities, type WslDistro } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
 
-/**
- * Registers ipc query handlers for the active runtime context.
- *
- * @remarks
- * Participates in main-process IPC wiring between renderer requests and backend services. Includes explicit error-handling logic for expected failure paths. Performs asynchronous work and should be used with completion ordering in mind.
- *
- * @param context - Dependency container used to register handlers and access shared services.
- */
-export function registerIpcQueryHandlers(context: IpcRegistrationContext): void {
+function registerAppAndEnvironmentQueryHandlers(context: IpcRegistrationContext): void {
   context.ipcMain.handle(
     IPC_CHANNELS.rendererToMain.queries.app.settings,
     (): Promise<string[]> => {
@@ -71,7 +63,9 @@ export function registerIpcQueryHandlers(context: IpcRegistrationContext): void 
       }
     },
   );
+}
 
+function registerDebuggerQueryHandlers(context: IpcRegistrationContext): void {
   context.ipcMain.handle(
     IPC_CHANNELS.rendererToMain.queries.debugger.functionNames,
     (): Promise<gdbFunction[]> => {
@@ -113,4 +107,29 @@ export function registerIpcQueryHandlers(context: IpcRegistrationContext): void 
       return Promise.resolve(context.getGdbInterface().gdbDB.gdbSymbolFiles);
     },
   );
+
+  context.ipcMain.handle(
+    IPC_CHANNELS.rendererToMain.queries.debugger.showSourceAt,
+    async (_: unknown, fileName: string, line: string): Promise<gdbShowSourceInfo> => {
+      const contents = await context.getGdbInterface().gdbDB.getSourceFileContents(fileName);
+      const result: gdbShowSourceInfo = { fileName, line, contents };
+      context
+        .getMainWindow()
+        .webContents.send(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, result);
+      return result;
+    },
+  );
+}
+
+/**
+ * Registers ipc query handlers for the active runtime context.
+ *
+ * @remarks
+ * Participates in main-process IPC wiring between renderer requests and backend services. Includes explicit error-handling logic for expected failure paths. Performs asynchronous work and should be used with completion ordering in mind.
+ *
+ * @param context - Dependency container used to register handlers and access shared services.
+ */
+export function registerIpcQueryHandlers(context: IpcRegistrationContext): void {
+  registerAppAndEnvironmentQueryHandlers(context);
+  registerDebuggerQueryHandlers(context);
 }

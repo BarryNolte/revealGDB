@@ -4,6 +4,10 @@
  * @remarks
  * Exported symbols include `IPC_CHANNELS`, `NotifyRenderCommand`, `NotifyRenderMessage`, `NotifyMainCommand`, `NotifyMainRequest`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
+import type { NormalizedConnection } from "./connection-types";
+import type { GridColumnState, GridName } from "./grid-column-types";
+import type { SectionsViewOptions } from "./ipc-data-types";
+
 const MAIN_TO_RENDERER_CHANNEL_GROUPS = {
   console: {
     message: "console-message",
@@ -47,6 +51,7 @@ const RENDERER_TO_MAIN_CHANNEL_GROUPS = {
       varByName: "getVarByName",
       evaluateExpression: "evaluateExpression",
       sections: "getSectionData",
+      showSourceAt: "showSourceAt",
     },
   },
   commands: {
@@ -92,6 +97,7 @@ export const IPC_CHANNELS = {
     getWslDistrobutions: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.environment.wslDistributions,
     getFunctionNames: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.debugger.functionNames,
     getVarByName: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.debugger.varByName,
+    showSourceAt: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.debugger.showSourceAt,
   },
   rendererSend: {
     gdbCommand: RENDERER_TO_MAIN_CHANNEL_GROUPS.commands.debugger.send,
@@ -128,7 +134,6 @@ export type NotifyRenderMessage = {
 export type NotifyMainCommand =
   | "connect-selected-connection"
   | "cancel-connection"
-  | "show-source-at"
   | "command-entry"
   | "save-connections"
   | "save-last-used-connection"
@@ -146,7 +151,37 @@ export type NotifyMainCommand =
   | "renderStart"
   | "renderEnd";
 
-export type NotifyMainRequest = {
-  command: NotifyMainCommand;
-  data?: unknown;
+/**
+ * Maps each `NotifyMainCommand` to the shape of its `data` payload.
+ * Use this map to derive typed `NotifyMainRequest` variants.
+ */
+export type NotifyMainPayloadMap = {
+  "connect-selected-connection": { connection: NormalizedConnection };
+  "cancel-connection": undefined;
+  "command-entry": undefined;
+  "save-connections": { connections: NormalizedConnection[] };
+  "save-last-used-connection": string | null;
+  "save-app-show-debug-info": boolean;
+  "save-app-theme": string;
+  "save-cmd-history": string[];
+  "save-source-viewer-theme": string;
+  "save-source-viewer-font-size": string | number;
+  "save-source-viewer-font-name": string;
+  "save-dock-layout": unknown;
+  "save-grid-columns": { gridName: GridName; columns: GridColumnState[] };
+  "reset-grid-columns": GridName | undefined;
+  "save-sections-view-options": SectionsViewOptions;
+  "open-external": string;
+  renderStart: undefined;
+  renderEnd: undefined;
 };
+
+/**
+ * Discriminated union of all renderer-to-main notification requests.
+ * Each variant carries a strongly-typed `data` payload derived from `NotifyMainPayloadMap`.
+ */
+export type NotifyMainRequest = {
+  [K in keyof NotifyMainPayloadMap]: NotifyMainPayloadMap[K] extends undefined
+    ? { command: K; data?: undefined }
+    : { command: K; data: NotifyMainPayloadMap[K] };
+}[keyof NotifyMainPayloadMap];
