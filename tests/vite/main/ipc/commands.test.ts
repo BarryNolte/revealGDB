@@ -175,7 +175,7 @@ describe("handleNotifyMain", () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
     handleNotifyMain(
-      { command: "connect-selected-connection", data: { connection: { name: "bad" } } },
+      { command: "connect-selected-connection", data: { connection: { name: "bad" } } } as NotifyMainRequest,
       context,
     );
 
@@ -189,7 +189,7 @@ describe("handleNotifyMain", () => {
     const { context, appSettings } = createIpcRegistrationHarness();
 
     handleNotifyMain(
-      { command: "save-connections", data: { connections: [{ name: "one" }] } },
+      { command: "save-connections", data: { connections: [{ name: "one" }] } } as NotifyMainRequest,
       context,
     );
     handleNotifyMain({ command: "save-cmd-history", data: ["help"] }, context);
@@ -221,7 +221,7 @@ describe("handleNotifyMain", () => {
       { command: "reset-grid-columns", data: "locals" } as NotifyMainRequest,
       context,
     );
-    handleNotifyMain({ command: "reset-grid-columns" }, context);
+    handleNotifyMain({ command: "reset-grid-columns" } as NotifyMainRequest, context);
 
     expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.dockLayout", { nodes: [] });
     expect(appSettings.setSync).toHaveBeenCalledWith(

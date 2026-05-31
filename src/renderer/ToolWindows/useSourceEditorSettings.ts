@@ -6,7 +6,7 @@
  */
 import { useCallback, useEffect, useState } from "react";
 
-import { GdbAny } from "../../common/gdb-common";
+import type { GdbSettings } from "../../common/settings-types";
 import { defaultTheme, editorThemes } from "./GdbSourceEditorConfig";
 
 export type SourceEditorSettings = {
@@ -46,19 +46,19 @@ export function useSourceEditorSettings(): SourceEditorSettings {
   }, []);
 
   useEffect(() => {
-    window.ipcToMain.queries.app.getSettings().then((gdb: GdbAny): void => {
-      if (gdb.gui.sourceViewerTheme) {
+    window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings): void => {
+      if (gdb.gui?.sourceViewerTheme) {
         const savedTheme = editorThemes.get(gdb.gui.sourceViewerTheme) || defaultTheme;
         setTheme(savedTheme);
       }
 
-      if (gdb.gui.sourceViewerFontSize) {
+      if (gdb.gui?.sourceViewerFontSize) {
         const savedFontSize = Number.parseInt(gdb.gui.sourceViewerFontSize, 10);
         setFontSize(savedFontSize);
         setLineHeight(savedFontSize + 1);
       }
 
-      if (gdb.gui.sourceViewerFontName) {
+      if (gdb.gui?.sourceViewerFontName) {
         setFontName(gdb.gui.sourceViewerFontName);
       }
     });

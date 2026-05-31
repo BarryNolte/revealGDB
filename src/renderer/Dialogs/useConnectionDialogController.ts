@@ -14,7 +14,11 @@ import {
   useMemo,
   useState,
 } from "react";
-import { GdbAny, Step, StepAndState } from "../../common/gdb-common";
+import { Step, StepAndState } from "../../common/gdb-common";
+import type { NotifyRenderMessage } from "../../common/ipc-contracts";
+import type { ConnectionStatusPayload } from "../../common/ipc-data-types";
+import type { ConnectionConfig, GdbSettings } from "../../common/settings-types";
+import type { NormalizedConnection } from "../../common/connection-types";
 import type { ConnectionManagerHandle } from "./ConnectionManager";
 
 const states: Record<Step, StepAndState> = {
@@ -34,9 +38,7 @@ const createPendingStates = (): Record<Step, StepAndState> => ({
   "target-running": { ...states["target-running"] },
 });
 
-export type DefinedConnection = {
-  name: string;
-} & GdbAny;
+export type DefinedConnection = ConnectionConfig & { name: string };
 
 export type UseConnectionDialogControllerArgs = {
   connectionsRef?: RefObject<ConnectionManagerHandle>;
@@ -58,8 +60,8 @@ function normalizeConnections(settingsConnections: unknown): DefinedConnection[]
   return settingsConnections
     .filter((connection) => connection && typeof connection === "object")
     .map((connection, index) => ({
-      ...(connection as GdbAny),
-      name: String((connection as GdbAny).name ?? `Connection ${index + 1}`),
+      ...(connection as ConnectionConfig),
+      name: String((connection as ConnectionConfig).name ?? `Connection ${index + 1}`),
     }));
 }
 
@@ -68,7 +70,7 @@ async function fetchConnectionSettings(
   setSelectedConnection: Dispatch<SetStateAction<DefinedConnection | null>>,
 ): Promise<void> {
   try {
-    const settings = (await window.ipcToMain.queries.app.getSettings()) as GdbAny;
+    const settings = (await window.ipcToMain.queries.app.getSettings()) as GdbSettings;
     const normalizedConnections = normalizeConnections(settings?.connections);
     const lastUsedConnectionName =
       typeof settings?.lastUsedConnection === "string" ? settings.lastUsedConnection : undefined;
@@ -85,7 +87,7 @@ async function fetchConnectionSettings(
 }
 
 function handleConnectionStatusUpdate(
-  status: GdbAny,
+  status: ConnectionStatusPayload,
   outputRef: RefObject<HTMLDivElement | null>,
   connDlgRef: RefObject<DialogComponent | null>,
   setConnectionState: Dispatch<SetStateAction<Record<Step, StepAndState>>>,
@@ -146,7 +148,7 @@ function useConnectionSubscriptions(
     const initialLoadTimer = window.setTimeout(() => {
       void loadConnectionsFromSettings();
     }, 0);
-    const unsubscribeNotify = window.ipcToMain.notifications.render((msg: GdbAny) => {
+    const unsubscribeNotify = window.ipcToMain.notifications.render((msg: NotifyRenderMessage) => {
       switch (msg.command) {
         case "connection-started":
         case "connection-success":
@@ -161,7 +163,7 @@ function useConnectionSubscriptions(
       }
     });
     const unsubscribeConnectionStatus = window.ipcToMain.notifications.connectionStatus(
-      (status: GdbAny) => {
+      (status: ConnectionStatusPayload) => {
         handleConnectionStatusUpdate(status, outputRef, connDlgRef, setConnectionState);
       },
     );
@@ -248,7 +250,7 @@ export function useConnectionDialogController({
 
     window.ipcToMain.commands.app.notifyMain({
       command: "connect-selected-connection",
-      data: { connection: selectedConnection },
+      data: { connection: selectedConnection as NormalizedConnection },
     });
   }, [selectedConnection]);
 

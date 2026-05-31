@@ -4,12 +4,13 @@
  * @remarks
  * Exported symbols include `UseGridColumnStateResult`, `applySavedColumnsToGrid`, `useGridColumnState`, `resetAllGridColumnDefaults`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-import { Column } from "@syncfusion/ej2-grids";
+import { Column, GridActionEventArgs } from "@syncfusion/ej2-grids";
+import { MenuEventArgs } from "@syncfusion/ej2-navigations";
 import { GridComponent } from "@syncfusion/ej2-react-grids";
 import { TreeGridComponent } from "@syncfusion/ej2-react-treegrid";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
-import { GdbAny } from "../../common/gdb-common";
 import { GridColumnState, GridColumnsSettings, GridName } from "../../common/grid-column-types";
+import type { GdbSettings } from "../../common/settings-types";
 
 export type UseGridColumnStateResult = {
   /** Saved column states, or undefined if not yet loaded or no saved state. */
@@ -133,9 +134,8 @@ export function useGridColumnState(
 
     window.ipcToMain.queries.app
       .getSettings()
-      .then((settings: Record<string, unknown>) => {
-        const gui = settings?.gui as Record<string, unknown> | undefined;
-        const gridColumns = gui?.gridColumns as GridColumnsSettings | undefined;
+      .then((settings: GdbSettings) => {
+        const gridColumns = settings?.gui?.gridColumns as GridColumnsSettings | undefined;
         const columns = gridColumns?.[gridName];
 
         if (columns && Array.isArray(columns) && columns.length > 0) {
@@ -172,7 +172,7 @@ export function useGridColumnState(
      *
      * @param args - Configuration values that control how this operation executes.
      */
-    const handleActionComplete = (args: GdbAny) => {
+    const handleActionComplete = (args: GridActionEventArgs) => {
       if (args.requestType === "columnstate" || args.requestType === "reorder") {
         saveColumnsToSettings(gridNameRef.current, grid.columns as Column[]);
       }
@@ -183,7 +183,7 @@ export function useGridColumnState(
      *
      * @param args - Configuration values that control how this operation executes.
      */
-    const handleColumnMenuClick = (args: GdbAny) => {
+    const handleColumnMenuClick = (args: MenuEventArgs) => {
       const itemId: string = args?.item?.id ?? "";
       if (itemId.includes("AutoFit")) {
         saveColumnsToSettings(gridNameRef.current, grid.columns as Column[]);

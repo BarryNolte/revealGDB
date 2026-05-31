@@ -1,5 +1,5 @@
 import type { JSX, RefObject } from "react";
-import type { GdbAny } from "../../common/gdb-common";
+import type { NotifyRenderMessage } from "../../common/ipc-contracts";
 import RevealToolbar from "../Components/Toolbar";
 import type { WhileConnectingDialogHandle } from "../Dialogs/ConnectionDialog";
 import type { ConnectionManagerHandle } from "../Dialogs/ConnectionManager";
@@ -83,7 +83,7 @@ function getConfiguredWindows(): ToolbarWindowSettings[] {
 }
 
 export function setupToolbarTestApi(): void {
-  let notifyRenderHandler: ((message: GdbAny) => void) | undefined;
+  let notifyRenderHandler: ((message: NotifyRenderMessage) => void) | undefined;
   let windows = getConfiguredWindows();
   let reconcileCount = 0;
   const sentCommands: string[] = [];
@@ -128,7 +128,7 @@ export function setupToolbarTestApi(): void {
   });
 
   (window as WindowWithToolbarTestApi).__TOOLBAR_TEST_API__ = {
-    emitNotifyRender: (message) => notifyRenderHandler?.(message),
+    emitNotifyRender: (message) => notifyRenderHandler?.(message as NotifyRenderMessage),
     getDialogCalls: () => ({ ...dialogCalls }),
     getNotifyMainCalls: () => notifyMainCalls.slice(),
     getReconcileCount: () => reconcileCount,

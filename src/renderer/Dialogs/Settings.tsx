@@ -17,7 +17,9 @@ import {
   useState,
 } from "react";
 
-import { GdbAny } from "../../common/gdb-common";
+import type { ChangeEventArgs as CheckboxChangeEventArgs } from "@syncfusion/ej2-buttons";
+import type { SelectEventArgs } from "@syncfusion/ej2-dropdowns";
+import type { GdbSettings } from "../../common/settings-types";
 import { editorThemes } from "../ToolWindows/GdbSourceWindow";
 import "./Settings.css";
 
@@ -44,18 +46,18 @@ function settingsFooter(onClose: () => void): JSX.Element {
   );
 }
 
-function onSelectEditorTheme(e: GdbAny): void {
+function onSelectEditorTheme(e: SelectEventArgs): void {
   window.dispatchEvent(
     new CustomEvent("changeEditor", { detail: { theme: e.itemData.value }, bubbles: false }),
   );
   window.ipcToMain.commands.app.notifyMain({
     command: "save-source-viewer-theme",
-    data: e.itemData.value,
+    data: e.itemData.value as string,
   });
 }
 
-function onSelectEditorFont(e: GdbAny): void {
-  const newFontName = e.itemData.value;
+function onSelectEditorFont(e: SelectEventArgs): void {
+  const newFontName = e.itemData.value as string;
   window.dispatchEvent(
     new CustomEvent("changeEditor", { detail: { fontName: newFontName }, bubbles: false }),
   );
@@ -65,8 +67,8 @@ function onSelectEditorFont(e: GdbAny): void {
   });
 }
 
-function onSelectEditorFontSize(e: GdbAny): void {
-  const newFontSize = e.itemData.value;
+function onSelectEditorFontSize(e: SelectEventArgs): void {
+  const newFontSize = e.itemData.value as string;
   window.dispatchEvent(
     new CustomEvent("changeEditor", {
       detail: { fontSize: parseInt(newFontSize) },
@@ -79,25 +81,25 @@ function onSelectEditorFontSize(e: GdbAny): void {
   });
 }
 
-function onChangeShowDebugInfo(e: GdbAny): void {
+function onChangeShowDebugInfo(e: CheckboxChangeEventArgs): void {
   window.dispatchEvent(
     new CustomEvent("changeApplication", { detail: { showDebugInfo: e.checked }, bubbles: false }),
   );
   window.ipcToMain.commands.app.notifyMain({
     command: "save-app-show-debug-info",
-    data: e.checked,
+    data: e.checked as boolean,
   });
 }
 
-function onChangeDisableAutoSymbolLoading(e: GdbAny): void {
+function onChangeDisableAutoSymbolLoading(e: CheckboxChangeEventArgs): void {
   window.ipcToMain.commands.app.notifyMain({
     command: "save-auto-symbol-loading",
-    data: e.checked,
+    data: e.checked as boolean,
   });
 }
 
-function onSelectAppTheme(e: GdbAny): void {
-  const newAppTheme = e.itemData.value;
+function onSelectAppTheme(e: SelectEventArgs): void {
+  const newAppTheme = e.itemData.value as string;
   window.dispatchEvent(
     new CustomEvent("changeApplication", { detail: { theme: newAppTheme }, bubbles: false }),
   );
@@ -189,7 +191,7 @@ function SettingsSourceViewSection({
   editorThemeRef: RefObject<DropDownListComponent | null>;
   editorFontsRef: RefObject<DropDownListComponent | null>;
   editorFontSizeRef: RefObject<DropDownListComponent | null>;
-  fontNames: GdbAny[];
+  fontNames: string[];
 }): JSX.Element {
   return (
     <table className="settingsFullWidth settingsTable">
@@ -253,7 +255,7 @@ export type SettingsHandle = {
  */
 const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.Element => {
   const [hideDialog, setHideDialog] = useState(false);
-  const [fontNames, setFontNames] = useState<GdbAny[]>([]);
+  const [fontNames, setFontNames] = useState<string[]>([]);
 
   const editorThemeRef = useRef<DropDownListComponent>(null);
   const editorFontSizeRef = useRef<DropDownListComponent>(null);
@@ -270,22 +272,22 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
 
   useEffect(() => {
     let isMounted = true;
-    window.ipcToMain.queries.app.getSettings().then((gdb: GdbAny): void => {
-      window.ipcToMain.queries.app.getSystemFonts().then((fontList: GdbAny[]) => {
+    window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings): void => {
+      window.ipcToMain.queries.app.getSystemFonts().then((fontList: string[]) => {
         if (!isMounted) return;
         if (editorFontsRef.current) setFontNames(fontList);
-        if (gdb.gui.sourceViewerFontName && editorFontsRef.current)
+        if (gdb.gui?.sourceViewerFontName && editorFontsRef.current)
           editorFontsRef.current.value = gdb.gui.sourceViewerFontName;
       });
-      if (gdb.gui.sourceViewerTheme && editorThemeRef.current)
+      if (gdb.gui?.sourceViewerTheme && editorThemeRef.current)
         editorThemeRef.current.value = gdb.gui.sourceViewerTheme;
-      if (gdb.gui.sourceViewerFontSize && editorFontSizeRef.current)
+      if (gdb.gui?.sourceViewerFontSize && editorFontSizeRef.current)
         editorFontSizeRef.current.value = gdb.gui.sourceViewerFontSize;
-      if (gdb.gui.showDebugInfo && appShowDebugInfoRef.current)
+      if (gdb.gui?.showDebugInfo && appShowDebugInfoRef.current)
         appShowDebugInfoRef.current.checked = gdb.gui.showDebugInfo;
-      if (gdb.gui.applicationTheme && appThemeRef.current)
+      if (gdb.gui?.applicationTheme && appThemeRef.current)
         appThemeRef.current.value = gdb.gui.applicationTheme;
-      if (gdb.gui.disableAutoSymbolLoading && appDisableAutoSymbolLoadingRef.current)
+      if (gdb.gui?.disableAutoSymbolLoading && appDisableAutoSymbolLoadingRef.current)
         appDisableAutoSymbolLoadingRef.current.checked = gdb.gui.disableAutoSymbolLoading;
     });
     return () => {

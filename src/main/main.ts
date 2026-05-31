@@ -7,7 +7,6 @@
 import { app, BrowserWindow, ipcMain, nativeTheme } from "electron";
 // import path from "path";
 import type { NormalizedConnection } from "../common/connection-types";
-import { GdbAny } from "../common/gdb-common";
 import { registerAppEvents } from "./app-events";
 import { AppSettings } from "./app-settings";
 import {
@@ -60,7 +59,7 @@ let debugWindow: BrowserWindow | undefined;
 
 export let gdbInterface: miInterface;
 
-export const gdbAppInfo: Map<string, GdbAny> = new Map<string, GdbAny>();
+export const gdbAppInfo: Map<string, unknown> = new Map<string, unknown>();
 
 /**
  * Performs is selected connection as part of this module's internal workflow.

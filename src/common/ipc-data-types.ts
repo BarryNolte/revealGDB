@@ -23,3 +23,7 @@ export type SectionsViewOptions = {
   showEmptySpace: boolean;
   showLegend: boolean;
 };
+
+export type ConnectionCapturePayload = ["console-capture", { error: boolean; line: string }];
+export type ConnectionStartupPayload = ["gdb-startup", string, string];
+export type ConnectionStatusPayload = ConnectionCapturePayload | ConnectionStartupPayload;

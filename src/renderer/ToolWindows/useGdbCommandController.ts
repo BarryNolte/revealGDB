@@ -1,6 +1,6 @@
 import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
-import { GdbAny } from "../../common/gdb-common";
-import type { DangerousCommandResponse } from "../../common/ipc-contracts";
+import type { DangerousCommandResponse, NotifyRenderMessage } from "../../common/ipc-contracts";
+import type { GdbSettings } from "../../common/settings-types";
 import { CommandHistory } from "../utilities/CommandHistory";
 
 function appendGdbMessage(
@@ -94,25 +94,27 @@ function useGdbSubscriptions(
   setDangerousPrompt: (prompt: { commandText: string; reason?: string } | null) => void,
 ): void {
   useEffect(() => {
-    window.ipcToMain.queries.app.getSettings().then((gdb: GdbAny) => {
+    window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings) => {
       cmdHistoryRef.current.clearHistory();
-      gdb.command.history.forEach((cmd: string) => {
+      gdb.command?.history?.forEach((cmd: string) => {
         cmdHistoryRef.current.add(cmd);
       });
     });
 
-    const unsubscribeNotify = window.ipcToMain.notifications.render((msg: GdbAny): void => {
-      switch (msg?.command) {
-        case "command-entry":
-          if (inputRef.current) inputRef.current.focus();
-          break;
-        case "confirm-dangerous-command": {
-          const data = msg.data as { commandText: string; reason?: string };
-          setDangerousPrompt({ commandText: data?.commandText ?? "", reason: data?.reason });
-          break;
+    const unsubscribeNotify = window.ipcToMain.notifications.render(
+      (msg: NotifyRenderMessage): void => {
+        switch (msg?.command) {
+          case "command-entry":
+            if (inputRef.current) inputRef.current.focus();
+            break;
+          case "confirm-dangerous-command": {
+            const data = msg.data as { commandText: string; reason?: string };
+            setDangerousPrompt({ commandText: data?.commandText ?? "", reason: data?.reason });
+            break;
+          }
         }
-      }
-    });
+      },
+    );
 
     const unsubscribeConsole = window.ipcToMain.messages.console((message: string) => {
       appendGdbMessage(outputRef, shouldScrollRef, message, "rowConsole");

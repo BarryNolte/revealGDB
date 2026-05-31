@@ -9,7 +9,8 @@ import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns";
 import { ColumnDirective, ColumnsDirective, GridComponent } from "@syncfusion/ej2-react-grids";
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
 import { JSX, RefObject } from "react";
-import { GdbAny, StepAndState } from "../../common/gdb-common";
+import { Column } from "@syncfusion/ej2-grids";
+import { StepAndState } from "../../common/gdb-common";
 
 import completedIcon from "../icons/icons8-complete-48.png";
 import failedIcon from "../icons/icons8-failed-48.png";
@@ -40,7 +41,7 @@ export type ConnectionDialogViewProps = {
  * @param header - Value for `header` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
-function columnHeaderTemplate(header: GdbAny): JSX.Element {
+function columnHeaderTemplate(header: Column): JSX.Element {
   return <div className="column-header-template">{header.headerText}</div>;
 }
 
@@ -50,8 +51,10 @@ function columnHeaderTemplate(header: GdbAny): JSX.Element {
  * @param props - Value for `props` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
-function stateCellTemplate(props: GdbAny): JSX.Element {
-  const state = props.state as StepAndState["state"];
+type StateCellProps = { state: StepAndState["state"] };
+
+function stateCellTemplate(props: StateCellProps): JSX.Element {
+  const state = props.state;
   let src = "";
 
   switch (state) {

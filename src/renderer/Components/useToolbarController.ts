@@ -4,10 +4,11 @@
  * @remarks
  * Extracted from Toolbar.tsx to keep the component under the function-length limit.
  */
+import type { MenuEventArgs } from "@syncfusion/ej2-navigations";
 import type { ItemModel as SplitItemModel } from "@syncfusion/ej2-splitbuttons";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useState } from "react";
-import type { GdbAny } from "../../common/gdb-common";
+import type { NotifyRenderMessage } from "../../common/ipc-contracts";
 import type { WhileConnectingDialogHandle } from "../Dialogs/ConnectionDialog";
 import type { ConnectionManagerHandle } from "../Dialogs/ConnectionManager";
 import type { SettingsHandle } from "../Dialogs/Settings";
@@ -38,7 +39,7 @@ export type ToolbarController = {
   onStepOut: () => void;
   onConnectionManager: () => void;
   onSettings: () => void;
-  onSelectWindow: (args: GdbAny) => void;
+  onSelectWindow: (args: MenuEventArgs) => void;
   onOpenWindow: () => void;
 };
 
@@ -58,8 +59,12 @@ function createToolbarHandlers({
     onStepOut: () => window.ipcToMain.commands.debugger.sendGdbCommand("finish"),
     onConnectionManager: () => connectionsRef?.current?.ShowDialog(),
     onSettings: () => settingsRef?.current?.ShowDialog(),
-    onSelectWindow: (args: GdbAny) =>
-      window.dispatchEvent(new CustomEvent(TOGGLE_WINDOW, { detail: args.item.properties.text })),
+    onSelectWindow: (args: MenuEventArgs) =>
+      window.dispatchEvent(
+        new CustomEvent(TOGGLE_WINDOW, {
+          detail: (args.item as unknown as { properties?: { text?: string } })?.properties?.text,
+        }),
+      ),
     onOpenWindow: () => dockMenuConnector?.reconsilePanels(),
   };
 }
@@ -85,7 +90,7 @@ export function useToolbarController({
   }, []);
 
   useEffect(() => {
-    window.ipcToMain.notifications.render((msg: GdbAny) => {
+    window.ipcToMain.notifications.render((msg: NotifyRenderMessage) => {
       switch (msg.command) {
         case "connection-started":
         case "connection-success":

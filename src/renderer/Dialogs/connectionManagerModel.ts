@@ -5,7 +5,7 @@
  * Exported symbols include `Platform`, `ShellOption`, `ConnectionGridRow`, `NormalizedConnection`, `DEFAULT_WSL_DISTRO`, `shells`, `DEFAULT_COMMANDS_LIST`, `normalizeDistroName`, and others. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import type { NormalizedConnection } from "../../common/connection-types";
-import { GdbAny } from "../../common/gdb-common";
+import type { ConnectionConfig, GdbSettings } from "../../common/settings-types";
 import { DragAndDropListItem } from "../Components/DragAndDropList/DragAndDropList";
 export type { NormalizedConnection };
 
@@ -165,7 +165,10 @@ export function normalizeShellKey(shellValue: string, fallbackKey: string): stri
  * @param fallbackKey - Value for `fallbackKey` consumed by this operation.
  * @returns The resulting string value produced by this operation.
  */
-export function getShellKeyFromConnection(connection: GdbAny, fallbackKey: string): string {
+export function getShellKeyFromConnection(
+  connection: ConnectionConfig,
+  fallbackKey: string,
+): string {
   const shellValue = String(connection.shell ?? connection.connectionType ?? "").toLowerCase();
   if (shellValue in shells) {
     return shellValue;
@@ -201,7 +204,7 @@ export function getShellLabel(shellKey: string): string {
  * @returns The computed result produced by this operation.
  */
 export function normalizeConnectionForStorage(
-  connection: GdbAny,
+  connection: ConnectionConfig,
   fallbackName: string,
   fallbackShellKey: string,
 ): NormalizedConnection {
@@ -236,7 +239,7 @@ export function normalizeConnectionForStorage(
  * @returns The computed result produced by this operation.
  */
 export function mapConnectionToGridRow(
-  connection: GdbAny,
+  connection: ConnectionConfig,
   index: number,
   fallbackShellKey: string,
 ): ConnectionGridRow {
@@ -262,9 +265,8 @@ export function mapConnectionToGridRow(
  * @param settings - Value for `settings` consumed by this operation.
  * @returns The resulting collection produced by this operation.
  */
-export function extractSettingsConnections(settings: GdbAny): GdbAny[] {
-  if (Array.isArray(settings?.connections)) return settings.connections;
-  if (Array.isArray(settings?.gdb?.connections)) return settings.gdb.connections;
+export function extractSettingsConnections(settings: GdbSettings): ConnectionConfig[] {
+  if (Array.isArray(settings?.connections)) return settings.connections!;
   return [];
 }
 

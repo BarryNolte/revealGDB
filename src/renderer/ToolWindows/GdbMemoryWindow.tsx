@@ -5,7 +5,7 @@
  * Exported symbols include `GdbMemoryWindow`. It coordinates live debugger data with user interactions in docked tool-window views.
  */
 import { JSX, RefObject, useEffect, useRef, useState } from "react";
-import { GdbAny } from "../../common/gdb-common";
+import type { MemoryData } from "../../common/ipc-data-types";
 import HexEditor from "../Components/HexEditor/HexEditor";
 import { validateValue, ValueType } from "../utilities/valueValidation";
 import { ToolWindowContent } from "./ToolWindowContent";
@@ -128,7 +128,7 @@ export default function GdbMemoryWindow(): JSX.Element {
   const [datasource, setDatasource] = useState<Uint8Array>(new Uint8Array(0));
 
   useEffect(() => {
-    const unsubscribe = window.ipcToMain.debuggerData.memory((data: GdbAny) => {
+    const unsubscribe = window.ipcToMain.debuggerData.memory((data: MemoryData) => {
       //console.log("Received memory data:", data.toString());
       setDatasource(data.data);
       setAddress(data.begin);

@@ -1,6 +1,4 @@
-import { GdbAny } from "./gdb-common";
-
-export interface TableData<Row extends Record<string, GdbAny>> {
+export interface TableData<Row extends Record<string, unknown>> {
   header: string[];
   content: Row[];
   title?: string;
@@ -21,11 +19,11 @@ export interface TableOptions {
 export interface ConditionalStyle<Row> {
   targetColumn: string;
   dependsOnColumn: string;
-  rule: (value: GdbAny, row: Row) => boolean;
+  rule: (value: unknown, row: Row) => boolean;
   style: string;
 }
 
-export class HTMLTableGenerator<Row extends Record<string, GdbAny> & Record<string, GdbAny>> {
+export class HTMLTableGenerator<Row extends Record<string, unknown>> {
   private data: TableData<Row>;
   private options: TableOptions;
   private conditionalStyles: ConditionalStyle<Row>[];
@@ -130,22 +128,24 @@ export class HTMLTableGenerator<Row extends Record<string, GdbAny> & Record<stri
     }
 
     this.data.content.sort((a, b) => {
+      const av = a[column] as unknown;
+      const bv = b[column] as unknown;
       if (order === "asc") {
-        return a[column] < b[column] ? -1 : a[column] > b[column] ? 1 : 0;
+        return (av as string) < (bv as string) ? -1 : (av as string) > (bv as string) ? 1 : 0;
       } else {
-        return a[column] > b[column] ? -1 : a[column] < b[column] ? 1 : 0;
+        return (av as string) > (bv as string) ? -1 : (av as string) < (bv as string) ? 1 : 0;
       }
     });
   }
 
-  filterRows(column: string, value: GdbAny): void {
+  filterRows(column: string, value: unknown): void {
     if (!this.data.header.includes(column)) {
       throw new Error(`Invalid column name: ${column}`);
     }
     this.data.content = this.data.content.filter((row) => row[column] === value);
   }
 
-  addColumn(columnName: string, valueFunction: (row: Row) => GdbAny): void {
+  addColumn(columnName: string, valueFunction: (row: Row) => unknown): void {
     if (typeof columnName !== "string") {
       throw new Error("Column name must be a string");
     }

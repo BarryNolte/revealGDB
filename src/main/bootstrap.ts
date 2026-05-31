@@ -11,7 +11,7 @@ import getSystemFonts from "get-system-fonts";
 import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import os from "node:os";
-import { GdbAny } from "../common/gdb-common";
+import type { Display } from "electron";
 import { AppSettings } from "./app-settings";
 import { debugLog } from "./utilities/logger";
 
@@ -67,7 +67,7 @@ export function logStartupDiagnostics(appSettings: SettingsLike): void {
   debugLog(`Settings File: ${settingsFile}`);
 
   const displays = screen.getAllDisplays();
-  displays.forEach((display: GdbAny) => {
+  displays.forEach((display: Display) => {
     debugLog(
       `Display: (${Math.floor(
         display.scaleFactor * display.bounds.width,
@@ -120,7 +120,7 @@ export function maybeInstallDevTools(isDebug: boolean): void {
  *
  * @param gdbAppInfo - Map of keyed values consumed or updated by this operation.
  */
-export function collectVersionInfo(gdbAppInfo: Map<string, GdbAny>): void {
+export function collectVersionInfo(gdbAppInfo: Map<string, unknown>): void {
   gdbAppInfo.set("Node Version", process.version);
   gdbAppInfo.set("Architecture", os.arch());
   gdbAppInfo.set("Platform", process.platform);

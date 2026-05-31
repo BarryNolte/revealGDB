@@ -16,8 +16,8 @@ import {
   useState,
   type RefObject,
 } from "react";
-import { GdbAny } from "../../common/gdb-common";
 import { DragAndDropListItem } from "../Components/DragAndDropList/DragAndDropList";
+import type { ConnectionConfig, GdbSettings } from "../../common/settings-types";
 import {
   buildConnectionFromForm,
   DEFAULT_COMMANDS_LIST,
@@ -33,7 +33,6 @@ import {
   type ConnectionGridRow,
   type NormalizedConnection,
 } from "./connectionManagerModel";
-
 // Re-export model surface so existing consumers keep working.
 export {
   DEFAULT_WSL_DISTRO,
@@ -203,11 +202,11 @@ function useNativeDomSetup(
 type FormState = ReturnType<typeof useFormState>;
 
 async function saveConnectionsToSettings(
-  connectionsToSave: GdbAny[],
+  connectionsToSave: NormalizedConnection[],
   fallbackShellKey: string,
 ): Promise<void> {
   try {
-    const normalized = connectionsToSave.map((c: GdbAny, i) =>
+    const normalized = connectionsToSave.map((c: ConnectionConfig, i) =>
       normalizeConnectionForStorage(c, `Connection ${i + 1}`, fallbackShellKey),
     );
     await window.ipcToMain.commands.app.notifyMain({
@@ -223,10 +222,10 @@ function useHandleAddConnection(
   fallbackShellKey: string,
   connectionNameInputRef: RefObject<HTMLInputElement | null>,
   formState: FormState,
-  loadedConnections: GdbAny[],
-  setLoadedConnections: Dispatch<SetStateAction<GdbAny[]>>,
+  loadedConnections: NormalizedConnection[],
+  setLoadedConnections: Dispatch<SetStateAction<NormalizedConnection[]>>,
   setConnections: Dispatch<SetStateAction<ConnectionGridRow[]>>,
-  toGridRows: (conns: GdbAny[]) => ConnectionGridRow[],
+  toGridRows: (conns: NormalizedConnection[]) => ConnectionGridRow[],
 ) {
   const [isAddingConnection, setIsAddingConnection] = useState(false);
   const {
@@ -293,17 +292,17 @@ function useConnectionLoader(
   applyConnectionToForm: (conn: NormalizedConnection | null) => void,
   setWslDistros: Dispatch<SetStateAction<string[]>>,
   setSelectedWslDistro: Dispatch<SetStateAction<string>>,
-  setLoadedConnections: Dispatch<SetStateAction<GdbAny[]>>,
+  setLoadedConnections: Dispatch<SetStateAction<NormalizedConnection[]>>,
   setConnections: Dispatch<SetStateAction<ConnectionGridRow[]>>,
-  toGridRows: (conns: GdbAny[]) => ConnectionGridRow[],
+  toGridRows: (conns: NormalizedConnection[]) => ConnectionGridRow[],
 ) {
   const loadConnectionsFromSettings = useCallback(async (): Promise<NormalizedConnection[]> => {
     try {
-      const settings = (await window.ipcToMain.queries.app.getSettings()) as GdbAny;
+      const settings = (await window.ipcToMain.queries.app.getSettings()) as GdbSettings;
       const raw = extractSettingsConnections(settings);
       const normalized: NormalizedConnection[] = raw
         .filter((c: unknown) => c && typeof c === "object")
-        .map((c: GdbAny, i: number) =>
+        .map((c: ConnectionConfig, i: number) =>
           normalizeConnectionForStorage(c, `Connection ${i + 1}`, fallbackShellKey),
         );
       setLoadedConnections(normalized);
@@ -345,10 +344,10 @@ function useConnectionPersist(
   fallbackShellKey: string,
   connectionNameInputRef: RefObject<HTMLInputElement | null>,
   formState: FormState,
-  loadedConnections: GdbAny[],
-  setLoadedConnections: Dispatch<SetStateAction<GdbAny[]>>,
+  loadedConnections: NormalizedConnection[],
+  setLoadedConnections: Dispatch<SetStateAction<NormalizedConnection[]>>,
   setConnections: Dispatch<SetStateAction<ConnectionGridRow[]>>,
-  toGridRows: (conns: GdbAny[]) => ConnectionGridRow[],
+  toGridRows: (conns: NormalizedConnection[]) => ConnectionGridRow[],
 ) {
   const handleDeleteConnection = useCallback(
     async (index: number): Promise<void> => {
@@ -379,11 +378,12 @@ function useConnectionData(
   formState: FormState,
 ) {
   const [connections, setConnections] = useState<ConnectionGridRow[]>([]);
-  const [loadedConnections, setLoadedConnections] = useState<GdbAny[]>([]);
+  const [loadedConnections, setLoadedConnections] = useState<NormalizedConnection[]>([]);
   const { applyConnectionToForm, setWslDistros, setSelectedWslDistro } = formState;
 
   const toGridRows = useCallback(
-    (conns: GdbAny[]) => conns.map((c, i) => mapConnectionToGridRow(c, i, fallbackShellKey)),
+    (conns: NormalizedConnection[]) =>
+      conns.map((c, i) => mapConnectionToGridRow(c, i, fallbackShellKey)),
     [fallbackShellKey],
   );
 

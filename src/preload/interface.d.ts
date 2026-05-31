@@ -4,7 +4,6 @@
  * @remarks
  * Exported symbols include `IElectronAPI`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-import { GdbAny } from "../common/gdb-common";
 import {
   gdbAsmRow,
   gdbBreakpoint,
@@ -23,16 +22,14 @@ import {
   NotifyMainRequest,
   NotifyRenderMessage,
 } from "../common/ipc-contracts";
-import { MemoryData, WslDistro } from "../common/ipc-data-types";
+import { MemoryData, WslDistro, ConnectionStatusPayload } from "../common/ipc-data-types";
 import { ILocal } from "../common/local-view";
+import { GdbSettings } from "../common/settings-types";
 
 type Unsubscribe = () => void;
 type ValueCallback<T> = (data: T) => void;
 type ConsoleCallback = ValueCallback<string>;
 type ThemeChangedPayload = { shouldUseDarkColors: boolean };
-type ConnectionCapturePayload = ["console-capture", { error: boolean; line: string }];
-type ConnectionStartupPayload = ["gdb-startup", string, string];
-type ConnectionStatusPayload = ConnectionCapturePayload | ConnectionStartupPayload;
 type ThreadsPayload = { th: Map<string, gdbThread>; grp: Map<string, gdbThreadGroup> };
 
 /**
@@ -69,15 +66,15 @@ export interface IElectronAPI {
 
   queries: {
     app: {
-      getSettings: () => Promise<GdbAny>;
+      getSettings: () => Promise<GdbSettings>;
       getSystemFonts: () => Promise<string[]>;
-      getVersionInfo: () => Promise<Map<string, GdbAny>>;
+      getVersionInfo: () => Promise<Map<string, unknown>>;
     };
     environment: {
       getWslDistrobutions: () => Promise<WslDistro[]>;
     };
     debugger: {
-      getFunctionNames: () => Promise<GdbAny>;
+      getFunctionNames: () => Promise<gdbFunction[]>;
       queryVarAtPosition: (
         sourceFile: string,
         line: number,
@@ -223,7 +220,7 @@ export interface IElectronAPI {
    * Retrieves application settings from the main process.
    * @returns Settings object
    */
-  getSettings: () => Promise<GdbAny>;
+  getSettings: () => Promise<GdbSettings>;
 
   /**
    * Retrieves the list of system fonts available for the UI.
@@ -235,7 +232,7 @@ export interface IElectronAPI {
    * Retrieves version information for the application and its components.
    * @returns Promise resolving to a map of version data
    */
-  getVersionInfo: () => Promise<Map<string, GdbAny>>;
+  getVersionInfo: () => Promise<Map<string, unknown>>;
 
   /**
    * Retrieves available WSL distributions from the main process.
@@ -247,7 +244,7 @@ export interface IElectronAPI {
    * Retrieves function symbol names from the main process.
    * @returns Promise resolving to debugger function metadata
    */
-  getFunctionNames: () => Promise<GdbAny>;
+  getFunctionNames: () => Promise<gdbFunction[]>;
 
   /**
    * Sends a GDB MI command to the debugger.

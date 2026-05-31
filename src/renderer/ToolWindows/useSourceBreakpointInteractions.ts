@@ -10,7 +10,6 @@ import AceEditor from "react-ace";
 
 import { MenuEventArgs } from "@syncfusion/ej2-navigations";
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
-import { GdbAny } from "../../common/gdb-common";
 import { gdbBreakpoint } from "../../common/gdb-state-types";
 import { sendTextToClipboard } from "../utilities/Clipboard";
 import { mapBreakpointsToMarkers, SourceBreakpointMarker } from "./GdbSourceWindowModel";
@@ -26,11 +25,19 @@ export type SourceBreakpointInteractions = {
   editorMenuRef: RefObject<ContextMenuComponent | null>;
 };
 
+interface AceGutterEvent {
+  domEvent: MouseEvent & { target: Element };
+  clientX: number;
+  editor: ace.Ace.Editor;
+  getDocumentPosition(): { row: number; column: number };
+  stop(): void;
+}
+
 function useEditorSetup(
   editorRef: RefObject<AceEditor | null>,
   toggleBreakpointAtRow: (editor: ace.Ace.Editor, row: number) => void,
 ): void {
-  const gutterClickListenerRef = useRef<((e: GdbAny) => void) | null>(null);
+  const gutterClickListenerRef = useRef<((e: AceGutterEvent) => void) | null>(null);
 
   useEffect(() => {
     const editor = editorRef.current?.editor;
@@ -59,7 +66,7 @@ function useEditorSetup(
 
     editor.setOption("showFoldWidgets", false);
 
-    gutterClickListenerRef.current = (e: GdbAny) => {
+    gutterClickListenerRef.current = (e: AceGutterEvent) => {
       const target = e.domEvent.target;
       if (
         target.className.indexOf("ace_gutter-cell") === -1 ||

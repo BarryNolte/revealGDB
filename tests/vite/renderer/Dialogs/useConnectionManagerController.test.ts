@@ -149,11 +149,6 @@ describe("useConnectionManagerController model helpers", () => {
     expect(extractSettingsConnections({ connections: conns })).toBe(conns);
   });
 
-  it("extracts connections from settings.gdb.connections", () => {
-    const conns = [{ name: "C" }];
-    expect(extractSettingsConnections({ gdb: { connections: conns } })).toBe(conns);
-  });
-
   it("returns empty array for missing connections", () => {
     expect(extractSettingsConnections({})).toEqual([]);
     expect(extractSettingsConnections(null)).toEqual([]);

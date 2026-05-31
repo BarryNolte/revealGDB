@@ -49,6 +49,11 @@ export function initIpcMock(): Window["ipcToMain"] {
     },
     debugger: {
       getFunctionNames: () => Promise.resolve([]),
+      queryVarAtPosition: () => Promise.resolve(undefined),
+      getVarByName: () => Promise.resolve(undefined),
+      evaluateExpression: () => Promise.resolve(undefined),
+      getSectionData: () => Promise.resolve({ sections: [], mainSym: "" }),
+      showSourceAt: () => Promise.resolve({ fileName: "", line: "", contents: undefined }),
     },
   };
   ipc.commands = {

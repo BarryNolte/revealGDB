@@ -7,13 +7,18 @@
 import { DockManager } from "../../node_modules/dock-spawn-ts/lib/js/DockManager.js";
 
 import { JSX, RefObject, Suspense, lazy, useEffect, useRef } from "react";
-import { GdbAny } from "../common/gdb-common";
+import type { ComponentType, ForwardRefExoticComponent, RefAttributes } from "react";
+import type { NotifyRenderMessage } from "../common/ipc-contracts";
+import type { GdbSettings } from "../common/settings-types";
 import { AppTheme, applyTheme } from "./theme-manager";
 import { setAppMainVersionInfo } from "./utilities/app-version-state";
 
 /* Dialogs */
 import type { AboutBoxHandle } from "./Dialogs/AboutBox";
-import type { WhileConnectingDialogHandle } from "./Dialogs/ConnectionDialog.jsx";
+import type {
+  ConnectionDialogProps,
+  WhileConnectingDialogHandle,
+} from "./Dialogs/ConnectionDialog.jsx";
 import type { ConnectionManagerHandle } from "./Dialogs/ConnectionManager";
 import type { SectionsViewHandle } from "./Dialogs/SectionsView";
 
@@ -33,27 +38,29 @@ const AboutBox = lazy(() =>
   import("./Dialogs/AboutBox.js").then((module) => ({
     default: module.AboutBox as unknown as () => JSX.Element,
   })),
-) as GdbAny;
+) as unknown as ForwardRefExoticComponent<RefAttributes<AboutBoxHandle>>;
 const Settings = lazy(() =>
   import("./Dialogs/Settings.js").then((module) => ({
     default: module.default as unknown as () => JSX.Element,
   })),
-) as GdbAny;
+) as unknown as ForwardRefExoticComponent<RefAttributes<SettingsHandle>>;
 const ConnectionManager = lazy(() =>
   import("./Dialogs/ConnectionManager.js").then((module) => ({
     default: module.ConnectionManager as unknown as () => JSX.Element,
   })),
-) as GdbAny;
+) as unknown as ForwardRefExoticComponent<RefAttributes<ConnectionManagerHandle>>;
 const ConnectionDialog = lazy(() =>
   import("./Dialogs/ConnectionDialog.js").then((module) => ({
     default: module.ConnectionDialog as unknown as () => JSX.Element,
   })),
-) as GdbAny;
+) as unknown as ForwardRefExoticComponent<
+  ConnectionDialogProps & RefAttributes<WhileConnectingDialogHandle>
+>;
 const SectionsView = lazy(() =>
   import("./Dialogs/SectionsView.js").then((module) => ({
     default: module.SectionsView as unknown as () => JSX.Element,
   })),
-) as GdbAny;
+) as unknown as ForwardRefExoticComponent<RefAttributes<SectionsViewHandle>>;
 /**
  * Performs lazy window as part of this module's internal workflow.
  *
@@ -62,12 +69,8 @@ const SectionsView = lazy(() =>
  *
  * @param importer - Callback invoked when the associated event occurs.
  */
-function lazyWindow(importer: () => Promise<GdbAny>) {
-  return lazy(() =>
-    importer().then((module: GdbAny) => ({
-      default: module.default as () => JSX.Element,
-    })),
-  );
+function lazyWindow(importer: () => Promise<{ default: unknown }>) {
+  return lazy(importer as unknown as () => Promise<{ default: ComponentType }>);
 }
 
 const GdbBreakPointWindow = lazyWindow(() => import("./ToolWindows/GdbBreakpointsWindow.js"));
@@ -234,7 +237,7 @@ function createDefaultLayout(dm: DockManager, connector: DockMenuConnector): voi
   dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.disassembly));
 }
 
-async function initializeDockManager(gdb: GdbAny): Promise<void> {
+async function initializeDockManager(gdb: GdbSettings): Promise<void> {
   const dockManagerElement = document.getElementById("revealDockManager")!;
   dockManager = new DockManager(dockManagerElement);
   dockManager.config.dialogRootElement = dockManagerElement;
@@ -248,11 +251,11 @@ async function initializeDockManager(gdb: GdbAny): Promise<void> {
   registerAllPanels(dockMenuConnector);
   setupLayoutListeners(dockManager);
   let loadedFromState = false;
-  if (gdb.gui.dockLayout) {
+  if (gdb.gui?.dockLayout) {
     try {
       // loadState is async in dock-spawn-ts; must await before resizing or
       // all panels stay hidden (resize fires before deserialization completes).
-      await dockManager.loadState(JSON.stringify(gdb.gui.dockLayout));
+      await dockManager.loadState(JSON.stringify(gdb.gui?.dockLayout));
       loadedFromState = true;
     } catch (e) {
       // Saved layout is corrupt or incompatible — fall through to default layout.
@@ -445,7 +448,7 @@ export default function App(): JSX.Element {
     });
 
     // Listen for commands from main process to show dialogs
-    window.ipcToMain.notifications.render((msg: GdbAny) => {
+    window.ipcToMain.notifications.render((msg: NotifyRenderMessage) => {
       switch (msg.command) {
         case "about-box":
           aboutBoxRef.current?.ShowDialog();
@@ -466,9 +469,9 @@ export default function App(): JSX.Element {
     });
 
     // Load settings first so dock initialization can avoid race conditions.
-    window.ipcToMain.queries.app.getSettings().then(async (gdb: GdbAny): Promise<void> => {
+    window.ipcToMain.queries.app.getSettings().then(async (gdb: GdbSettings): Promise<void> => {
       // Apply saved theme before dock layout renders
-      const savedTheme: AppTheme = gdb.gui?.applicationTheme ?? "Auto";
+      const savedTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
       applyTheme(savedTheme);
       await initializeDockManager(gdb);
     });
@@ -476,10 +479,9 @@ export default function App(): JSX.Element {
     window.addEventListener("changeApplication", handleAppChange);
 
     // Handle OS theme changes pushed from the main process (Auto mode)
-    const unsubTheme = window.ipcToMain.notifications.themeChanged?.((data: GdbAny) => {
-      // Re-apply the current user theme so Auto mode picks up the new OS state
-      window.ipcToMain.queries.app.getSettings().then((gdb: GdbAny) => {
-        const currentTheme: AppTheme = gdb.gui?.applicationTheme ?? "Auto";
+    const unsubTheme = window.ipcToMain.notifications.themeChanged?.((data) => {
+      window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings) => {
+        const currentTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
         if (currentTheme === "Auto") {
           applyTheme("Auto", data?.shouldUseDarkColors ?? false);
         }

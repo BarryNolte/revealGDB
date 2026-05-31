@@ -31,7 +31,7 @@ import {
   TreeGridComponent,
 } from "@syncfusion/ej2-react-treegrid";
 import { JSX, RefObject, useCallback, useEffect, useId, useRef, useState } from "react";
-import { GdbAny } from "../../common/gdb-common";
+import type { ILocal } from "../../common/local-view";
 import { menuCopy } from "../utilities/Clipboard";
 import { useGridColumnState } from "../utilities/useGridColumnState";
 import { escapeHtml } from "./gdb-value-formatter";
@@ -64,20 +64,21 @@ const SELECTION_OPTIONS: SelectionSettingsModel = {
 };
 
 function rowDataBound(args: RowDataBoundEventArgs): void {
-  const value = (args.data as GdbAny).value as string | null | undefined;
+  const value = (args.data as ILocal).value as string | null | undefined;
   if (!value) return;
   const lineCount = value.split("\\n").length;
   (args.row as HTMLElement).style.height = `${lineCount * 16}px`;
 }
 
-function valueAccessor(_field: string, data: GdbAny): string {
-  const value = data.value as string | null | undefined;
+function valueAccessor(_field: string, data: object): string {
+  const local = data as ILocal;
+  const value = local.value as string | null | undefined;
   return `<div class="treeGrid-multiline-cell">${escapeHtml(value ?? "").replaceAll("\\n", "<br>")}</div>`;
 }
 
 type LocalsGridProps = {
   treeRef: RefObject<TreeGridComponent | null>;
-  localData: GdbAny[];
+  localData: ILocal[];
   emptyMessageTemplate: () => JSX.Element;
   cellSaved: (args: CellSaveArgs) => void;
   cellEdit: (args: CellEditArgs) => void;
@@ -157,11 +158,11 @@ function LocalsGrid({
 export default function GdbLocalsWindow(): JSX.Element {
   const menuId = useId();
   const treeRef = useRef<TreeGridComponent | null>(null);
-  const [localData, setLocalData] = useState<GdbAny[]>([]);
+  const [localData, setLocalData] = useState<ILocal[]>([]);
   useGridColumnState("locals", treeRef);
 
   useEffect(() => {
-    const unsubscribe = window.ipcToMain.debuggerData.locals((data: GdbAny) => {
+    const unsubscribe = window.ipcToMain.debuggerData.locals((data: ILocal[] | undefined) => {
       setLocalData(data ? data : []);
     });
 
@@ -180,7 +181,7 @@ export default function GdbLocalsWindow(): JSX.Element {
 
   const cellSaved = useCallback((args: CellSaveArgs) => {
     window.ipcToMain.commands.debugger.sendGdbCommand(
-      `set var ${(args.rowData as GdbAny).fullpath} = ${args.value}`,
+      `set var ${(args.rowData as ILocal).fullpath} = ${args.value}`,
     );
   }, []);
 
@@ -188,7 +189,7 @@ export default function GdbLocalsWindow(): JSX.Element {
     if (
       args.type === "edit" &&
       args.columnName === "value" &&
-      (args.rowData as GdbAny).sublocals.length > 0
+      (args.rowData as ILocal).sublocals.length > 0
     ) {
       args.cancel = true;
     }

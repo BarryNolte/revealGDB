@@ -18,7 +18,6 @@ import {
 } from "@syncfusion/ej2-react-grids";
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { JSX, RefObject, useCallback, useEffect, useId, useRef, useState } from "react";
-import { GdbAny } from "../../common/gdb-common";
 import { ThreadGridRow, mapThreadDataToGridRows } from "../mappers/grid-data-mappers";
 import { menuCopy } from "../utilities/Clipboard";
 import "./GdbThreadsWindow.css";
@@ -137,7 +136,7 @@ export default function GdbThreadsWindow(): JSX.Element {
   const [threadData, setThreadData] = useState<ThreadGridRow[]>([]);
 
   useEffect(() => {
-    const unsubscribe = window.ipcToMain.debuggerData.threads((data: GdbAny) => {
+    const unsubscribe = window.ipcToMain.debuggerData.threads((data) => {
       setThreadData(mapThreadDataToGridRows(data.th, data.grp));
     });
 
