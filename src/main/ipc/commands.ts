@@ -4,9 +4,11 @@
  * @remarks
  * Exported symbols include `handleNotifyMain`, `registerIpcCommandHandlers`. It is responsible for channel registration, payload marshalling, and returning data to renderer callers.
  */
-import { IpcMainEvent, shell } from "electron";
+import { IpcMainEvent, IpcMainInvokeEvent, shell } from "electron";
 import type { NormalizedConnection } from "../../common/connection-types";
 import {
+  DangerousCommandEntry,
+  DangerousCommandResponse,
   DebuggerCommand,
   IPC_CHANNELS,
   NotifyMainRequest,
@@ -111,7 +113,8 @@ type SaveSettingsRequest = Extract<
       | "save-dock-layout"
       | "save-grid-columns"
       | "reset-grid-columns"
-      | "save-sections-view-options";
+      | "save-sections-view-options"
+      | "save-auto-symbol-loading";
   }
 >;
 
@@ -127,6 +130,9 @@ function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationCo
       break;
     case "save-app-show-debug-info":
       context.appSettings.setSync(`${GDB_GUI_PREFIX}showDebugInfo`, msg.data as never);
+      break;
+    case "save-auto-symbol-loading":
+      context.appSettings.setSync(`${GDB_GUI_PREFIX}disableAutoSymbolLoading`, msg.data as never);
       break;
     case "save-sections-view-options":
       context.appSettings.setSync(
@@ -219,6 +225,37 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
   }
 }
 
+let _dangerousCommandResolver: ((response: DangerousCommandResponse) => void) | null = null;
+
+function findMatchingDangerousCommand(
+  command: DebuggerCommand,
+  context: IpcRegistrationContext,
+): DangerousCommandEntry | undefined {
+  if (typeof command !== "string") return undefined;
+  const entries = context.appSettings.getSync("gdb.dangerousCommands") as
+    | DangerousCommandEntry[]
+    | undefined;
+  if (!entries) return undefined;
+  return entries.find((e) => command.trimStart().toLowerCase().startsWith(e.command.toLowerCase()));
+}
+
+function saveDangerousCommandDefault(
+  commandPrefix: string,
+  answer: "yes" | "no",
+  context: IpcRegistrationContext,
+): void {
+  const entries =
+    (context.appSettings.getSync("gdb.dangerousCommands") as DangerousCommandEntry[] | undefined) ??
+    [];
+  const idx = entries.findIndex((e) => e.command.toLowerCase() === commandPrefix.toLowerCase());
+  if (idx >= 0) {
+    entries[idx] = { ...entries[idx], defaultAnswer: answer };
+  } else {
+    entries.push({ command: commandPrefix, defaultAnswer: answer });
+  }
+  context.appSettings.setSync("gdb.dangerousCommands", entries as never);
+}
+
 /**
  * Registers ipc command handlers for the active runtime context.
  *
@@ -235,10 +272,48 @@ export function registerIpcCommandHandlers(context: IpcRegistrationContext): voi
     },
   );
 
-  context.ipcMain.on(
+  context.ipcMain.handle(
     IPC_CHANNELS.rendererToMain.commands.debugger.send,
-    (_event: IpcMainEvent, command: DebuggerCommand) => {
-      onGdbCommand(command, context);
+    async (_event: IpcMainInvokeEvent, command: DebuggerCommand) => {
+      const dangerous = findMatchingDangerousCommand(command, context);
+
+      if (!dangerous) {
+        onGdbCommand(command, context);
+        return;
+      }
+
+      if (dangerous.defaultAnswer === "yes") {
+        onGdbCommand(command, context);
+        return;
+      }
+
+      if (dangerous.defaultAnswer === "no") {
+        return;
+      }
+
+      const response = await new Promise<DangerousCommandResponse>((resolve) => {
+        _dangerousCommandResolver = resolve;
+        context.getMainWindow().webContents.send(IPC_CHANNELS.mainToRenderer.notifications.render, {
+          command: "confirm-dangerous-command",
+          data: { commandText: command, reason: dangerous.reason },
+        } satisfies NotifyRenderMessage);
+      });
+
+      if (response.remember) {
+        saveDangerousCommandDefault(dangerous.command, response.answer, context);
+      }
+
+      if (response.allow) {
+        onGdbCommand(command, context);
+      }
+    },
+  );
+
+  context.ipcMain.on(
+    IPC_CHANNELS.rendererSend.dangerousCommandResponse,
+    (_event: IpcMainEvent, response: DangerousCommandResponse) => {
+      _dangerousCommandResolver?.(response);
+      _dangerousCommandResolver = null;
     },
   );
 

@@ -124,5 +124,5 @@ export function wireWindowCloseHandlers(
  * @returns The resulting string value produced by this operation.
  */
 export function resolvePreloadPath(): string {
-  return path.resolve("./out/preload/preload.js");
+  return path.join(__dirname, "..", "preload", "preload.js");
 }

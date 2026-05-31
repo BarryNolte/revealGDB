@@ -98,8 +98,9 @@ export function setupToolbarTestApi(): void {
       notifyRenderHandler = undefined;
     };
   };
-  ipc.commands.debugger.sendGdbCommand = (command: string) => {
-    sentCommands.push(command);
+  ipc.commands.debugger.sendGdbCommand = (command) => {
+    if (typeof command === "string") sentCommands.push(command);
+    return Promise.resolve();
   };
   ipc.commands.app.notifyMain = (message) => {
     notifyMainCalls.push({

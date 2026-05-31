@@ -438,7 +438,7 @@ describe("commands group – send", () => {
   it("sendGdbCommand sends to the correct channel with the command string", async () => {
     const api = await loadPreloadApi(electronHarness);
     api.commands.debugger.sendGdbCommand("next");
-    expect(electronHarness.send).toHaveBeenCalledWith(
+    expect(electronHarness.invoke).toHaveBeenCalledWith(
       IPC_CHANNELS.rendererToMain.commands.debugger.send,
       "next",
     );
@@ -447,7 +447,7 @@ describe("commands group – send", () => {
   it("sendGdbCommand passes the exact command string provided", async () => {
     const api = await loadPreloadApi(electronHarness);
     api.commands.debugger.sendGdbCommand("-exec-continue --all");
-    expect(electronHarness.send).toHaveBeenCalledWith(
+    expect(electronHarness.invoke).toHaveBeenCalledWith(
       IPC_CHANNELS.rendererToMain.commands.debugger.send,
       "-exec-continue --all",
     );
@@ -622,12 +622,12 @@ describe("legacy flat API – command aliases", () => {
     const api = await loadPreloadApi(electronHarness);
     api.sendGdbCommand("step");
     api.commands.debugger.sendGdbCommand("step");
-    expect(electronHarness.send).toHaveBeenNthCalledWith(
+    expect(electronHarness.invoke).toHaveBeenNthCalledWith(
       1,
       IPC_CHANNELS.rendererToMain.commands.debugger.send,
       "step",
     );
-    expect(electronHarness.send).toHaveBeenNthCalledWith(
+    expect(electronHarness.invoke).toHaveBeenNthCalledWith(
       2,
       IPC_CHANNELS.rendererToMain.commands.debugger.send,
       "step",

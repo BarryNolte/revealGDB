@@ -53,8 +53,9 @@ export function initIpcMock(): Window["ipcToMain"] {
   };
   ipc.commands = {
     debugger: {
-      sendGdbCommand: () => undefined,
+      sendGdbCommand: () => Promise.resolve(),
       sendControlD: () => undefined,
+      respondToDangerousCommand: () => undefined,
     },
     app: {
       notifyMain: () => undefined,

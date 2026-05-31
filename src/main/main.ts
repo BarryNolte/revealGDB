@@ -11,6 +11,7 @@ import { GdbAny } from "../common/gdb-common";
 import { registerAppEvents } from "./app-events";
 import { AppSettings } from "./app-settings";
 import {
+  applyDefaultSettings,
   collectVersionInfo,
   configureAppSettings,
   logStartupDiagnostics,
@@ -86,6 +87,7 @@ app.on("ready", () => {
   logStartupMilestone("app.ready");
 
   configureAppSettings(AppSettings);
+  applyDefaultSettings(AppSettings);
   logStartupDiagnostics(AppSettings);
   collectVersionInfo(gdbAppInfo);
 

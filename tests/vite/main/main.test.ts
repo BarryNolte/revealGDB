@@ -32,6 +32,7 @@ const mainMocks = vi.hoisted(() => {
     configureAppSettings: vi.fn(),
     logStartupDiagnostics: vi.fn(),
     collectVersionInfo: vi.fn(),
+    applyDefaultSettings: vi.fn(),
     warmSystemFonts: vi.fn(),
     maybeInstallDevTools: vi.fn(),
     createGdbInterface: vi.fn(() => gdbInterface),
@@ -69,6 +70,7 @@ vi.mock("../../../src/main/app-events", () => ({
 
 vi.mock("../../../src/main/bootstrap", () => ({
   collectVersionInfo: mainMocks.collectVersionInfo,
+  applyDefaultSettings: mainMocks.applyDefaultSettings,
   configureAppSettings: mainMocks.configureAppSettings,
   logStartupDiagnostics: mainMocks.logStartupDiagnostics,
   maybeInstallDevTools: mainMocks.maybeInstallDevTools,

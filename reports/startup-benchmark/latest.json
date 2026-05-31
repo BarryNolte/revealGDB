@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "timestamp": "2026-05-30T05:10:18.936Z",
-  "commit": "cd84bf8b396238194297a59eccc4551294d5bf3e",
-  "shortCommit": "cd84bf8b",
-  "parentCommit": "cd84bf8b396238194297a59eccc4551294d5bf3e",
+  "timestamp": "2026-05-31T03:38:21.093Z",
+  "commit": "09b79f1ff22c6477b506cb452ba0e3e90e3bfef4",
+  "shortCommit": "09b79f1f",
+  "parentCommit": "09b79f1ff22c6477b506cb452ba0e3e90e3bfef4",
   "sampleCount": 1,
   "timeoutMs": 30000,
   "thresholds": {
@@ -12,83 +12,83 @@
   },
   "metrics": {
     "app.ready": {
-      "medianMs": 58,
-      "minMs": 58,
-      "maxMs": 58,
+      "medianMs": 54,
+      "minMs": 54,
+      "maxMs": 54,
       "samples": [
-        58
+        54
       ]
     },
     "main-window-created": {
-      "medianMs": 282,
-      "minMs": 282,
-      "maxMs": 282,
+      "medianMs": 301,
+      "minMs": 301,
+      "maxMs": 301,
       "samples": [
-        282
+        301
       ]
     },
     "main-window-load-started": {
-      "medianMs": 324,
-      "minMs": 324,
-      "maxMs": 324,
+      "medianMs": 327,
+      "minMs": 327,
+      "maxMs": 327,
       "samples": [
-        324
+        327
       ]
     },
     "gdb-interface-created": {
-      "medianMs": 325,
-      "minMs": 325,
-      "maxMs": 325,
+      "medianMs": 328,
+      "minMs": 328,
+      "maxMs": 328,
       "samples": [
-        325
+        328
       ]
     },
     "main-window-ready-to-show": {
-      "medianMs": 2157,
-      "minMs": 2157,
-      "maxMs": 2157,
+      "medianMs": 2170,
+      "minMs": 2170,
+      "maxMs": 2170,
       "samples": [
-        2157
+        2170
       ]
     },
     "main-window-shown": {
-      "medianMs": 2234,
-      "minMs": 2234,
-      "maxMs": 2234,
+      "medianMs": 2257,
+      "minMs": 2257,
+      "maxMs": 2257,
       "samples": [
-        2234
+        2257
       ]
     }
   },
   "samples": [
     {
       "milestones": {
-        "app.ready": 58,
-        "main-window-created": 282,
-        "main-window-load-started": 324,
-        "gdb-interface-created": 325,
-        "main-window-ready-to-show": 2157,
-        "main-window-shown": 2234
+        "app.ready": 54,
+        "main-window-created": 301,
+        "main-window-load-started": 327,
+        "gdb-interface-created": 328,
+        "main-window-ready-to-show": 2170,
+        "main-window-shown": 2257
       },
       "rawLines": [
         "> revealgdb@0.9.2-3fca6d1 start",
         "> electron . --remote-debugging-port=9222",
-        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/3deefd45-0248-4292-8eed-602de448e94f",
-        "[startup] app.ready: 58ms",
+        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/40b2fe82-dd19-4673-9630-3084d9968005",
+        "[startup] app.ready: 54ms",
         "Settings File: C:\\Users\\barry\\AppData\\Roaming\\revealgdb\\settings.json",
         "Display: (2560 x 1600)",
-        "Display: (4096 x 2160)",
-        "[startup] main-window-created: 282ms",
-        "[startup] main-window-load-started: 324ms",
-        "[startup] gdb-interface-created: 325ms",
-        "[37264:0529/221017.142:ERROR:CONSOLE:1] \"Request Autofill.enable failed. {\"code\":-32601,\"message\":\"'Autofill.enable' wasn't found\"}\", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)",
-        "[37264:0529/221017.142:ERROR:CONSOLE:1] \"Request Autofill.setAddresses failed. {\"code\":-32601,\"message\":\"'Autofill.setAddresses' wasn't found\"}\", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)",
+        "Display: (3840 x 2160)",
+        "[startup] main-window-created: 301ms",
+        "[startup] main-window-load-started: 327ms",
+        "[startup] gdb-interface-created: 328ms",
+        "[32200:0530/203819.089:ERROR:CONSOLE:1] \"Request Autofill.enable failed. {\"code\":-32601,\"message\":\"'Autofill.enable' wasn't found\"}\", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)",
+        "[32200:0530/203819.090:ERROR:CONSOLE:1] \"Request Autofill.setAddresses failed. {\"code\":-32601,\"message\":\"'Autofill.setAddresses' wasn't found\"}\", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)",
         "[startup] renderer-start",
         "Notifying GDB Interface that rendering is starting.",
         "[startup] renderer-end",
         "Notifying GDB Interface that rendering is complete.",
-        "[startup] main-window-ready-to-show: 2157ms",
-        "[startup] main-window-shown: 2234ms"
+        "[startup] main-window-ready-to-show: 2170ms",
+        "[startup] main-window-shown: 2257ms"
       ]
     }
   ]

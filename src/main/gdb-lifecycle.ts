@@ -36,7 +36,8 @@ export function createGdbInterface(
   const gdbInterface = new miInterface();
 
   gdbInterface.gdbDB.gdbSrcFileCache.on("first-read", (file: string) => {
-    if (!gdbInterface.gdbDB.hasLineVars(file)) {
+    const disableAutoSymbolLoading = _appSettings.getSync("gdb.gui.disableAutoSymbolLoading");
+    if (!disableAutoSymbolLoading && !gdbInterface.gdbDB.hasLineVars(file)) {
       gdbInterface.runCommand(
         `echo <<<<line-vars>>>>\nmaint print symbols -source ${path.basename(file)}\necho >>>>end-capture<<<<`,
       );

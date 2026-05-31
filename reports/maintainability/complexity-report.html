@@ -73,30 +73,30 @@
 <body>
 <header>
   <h1>Code Complexity Report</h1>
-  <div class="meta">Generated: 5/29/2026, 10:10:26 PM &nbsp;&middot;&nbsp; Thresholds: warn &ge; 15, error &ge; 25 &nbsp;&middot;&nbsp; Test files excluded</div>
+  <div class="meta">Generated: 5/30/2026, 8:38:29 PM &nbsp;&middot;&nbsp; Thresholds: warn &ge; 15, error &ge; 25 &nbsp;&middot;&nbsp; Test files excluded</div>
 </header>
 <div class="summary-grid">
 
     <div class="summary-card">
       <h3>main</h3>
       <div class="stat-row"><span class="stat-label">Files</span><span class="stat-val">70</span></div>
-      <div class="stat-row"><span class="stat-label">Functions</span><span class="stat-val">536</span></div>
-      <div class="stat-row"><span class="stat-label">Avg CC</span><span class="stat-val">7.47</span></div>
+      <div class="stat-row"><span class="stat-label">Functions</span><span class="stat-val">543</span></div>
+      <div class="stat-row"><span class="stat-label">Avg CC</span><span class="stat-val">7.66</span></div>
       <div class="stat-row"><span class="stat-label">CC &ge; 25</span><span class="stat-val ">0</span></div>
-      <div class="stat-row"><span class="stat-label">CC &ge; 15</span><span class="stat-val ">0</span></div>
+      <div class="stat-row"><span class="stat-label">CC &ge; 15</span><span class="stat-val warn">1</span></div>
     </div>
     <div class="summary-card">
       <h3>renderer</h3>
-      <div class="stat-row"><span class="stat-label">Files</span><span class="stat-val">60</span></div>
-      <div class="stat-row"><span class="stat-label">Functions</span><span class="stat-val">650</span></div>
-      <div class="stat-row"><span class="stat-label">Avg CC</span><span class="stat-val">9.87</span></div>
+      <div class="stat-row"><span class="stat-label">Files</span><span class="stat-val">61</span></div>
+      <div class="stat-row"><span class="stat-label">Functions</span><span class="stat-val">659</span></div>
+      <div class="stat-row"><span class="stat-label">Avg CC</span><span class="stat-val">9.85</span></div>
       <div class="stat-row"><span class="stat-label">CC &ge; 25</span><span class="stat-val ">0</span></div>
       <div class="stat-row"><span class="stat-label">CC &ge; 15</span><span class="stat-val ">0</span></div>
     </div>
     <div class="summary-card">
       <h3>preload</h3>
       <div class="stat-row"><span class="stat-label">Files</span><span class="stat-val">1</span></div>
-      <div class="stat-row"><span class="stat-label">Functions</span><span class="stat-val">35</span></div>
+      <div class="stat-row"><span class="stat-label">Functions</span><span class="stat-val">36</span></div>
       <div class="stat-row"><span class="stat-label">Avg CC</span><span class="stat-val">1</span></div>
       <div class="stat-row"><span class="stat-label">CC &ge; 25</span><span class="stat-val ">0</span></div>
       <div class="stat-row"><span class="stat-label">CC &ge; 15</span><span class="stat-val ">0</span></div>
@@ -110,14 +110,14 @@
       <tbody>
         <tr>
           <td>main</td>
-          <td class="num good">-0.14</td>
+          <td class="num warn">+0.05</td>
           <td class="num good">-2</td>
           <td class="num good">-2</td>
-          <td class="num good">-5</td>
+          <td class="num good">-4</td>
         </tr>
         <tr>
           <td>renderer</td>
-          <td class="num warn">+0.97</td>
+          <td class="num warn">+0.95</td>
           <td class="num ">—</td>
           <td class="num ">—</td>
           <td class="num ">—</td>
@@ -134,23 +134,23 @@
           <td class="num">&mdash;</td>
           <td class="num">&mdash;</td>
           <td class="num good">-2</td>
-          <td class="num good">-5</td>
+          <td class="num good">-4</td>
         </tr>
       </tbody>
     </table>
   </section>
 
   <section>
-    <h2>main <span class="badge">70 files &middot; 536 fns &middot; avg CC 7.47</span></h2>
+    <h2>main <span class="badge">70 files &middot; 543 fns &middot; avg CC 7.66</span></h2>
     <table class="file-table">
       <thead><tr><th>File</th><th class="num">File CC</th><th class="num">Max Fn CC</th><th class="num">Fns</th><th class="num">SLOC</th></tr></thead>
       <tbody>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-0', this)">
+          <tr class="file-row row-warn" onclick="toggleDetail('fn-detail-0', this)">
             <td><span class="expand-icon" id="icon-0">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/ipc/commands.ts" onclick="event.stopPropagation()" title="src/main/ipc/commands.ts">ipc/commands.ts</a></td>
-            <td class="num">27</td>
-            <td class="num good">14</td>
-            <td class="num">11</td>
-            <td class="num">187</td>
+            <td class="num">37</td>
+            <td class="num warn">15</td>
+            <td class="num">17</td>
+            <td class="num">258</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-0" style="display:none">
             <td colspan="5">
@@ -159,67 +159,103 @@
                 <tbody>
               <tr>
                 <td class="fn-name">handleSaveSettings</td>
-                <td class="num">line 118</td>
-                <td class="num good">14</td>
-                <td class="num">60</td>
+                <td class="num">line 121</td>
+                <td class="num warn">15</td>
+                <td class="num">63</td>
               </tr>
               <tr>
                 <td class="fn-name">handleNotifyMain</td>
-                <td class="num">line 189</td>
+                <td class="num">line 195</td>
                 <td class="num good">8</td>
                 <td class="num">32</td>
               </tr>
               <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 281</td>
+                <td class="num good">6</td>
+                <td class="num">29</td>
+              </tr>
+              <tr>
                 <td class="fn-name">isSafeExternalUrl</td>
-                <td class="num">line 38</td>
+                <td class="num">line 40</td>
                 <td class="num good">5</td>
                 <td class="num">11</td>
               </tr>
               <tr>
+                <td class="fn-name">findMatchingDangerousCommand</td>
+                <td class="num">line 230</td>
+                <td class="num good">3</td>
+                <td class="num">13</td>
+              </tr>
+              <tr>
+                <td class="fn-name">saveDangerousCommandDefault</td>
+                <td class="num">line 244</td>
+                <td class="num good">3</td>
+                <td class="num">18</td>
+              </tr>
+              <tr>
                 <td class="fn-name">doConnection</td>
-                <td class="num">line 60</td>
+                <td class="num">line 62</td>
                 <td class="num good">2</td>
                 <td class="num">11</td>
               </tr>
               <tr>
                 <td class="fn-name">handleConnectSelectedConnection</td>
-                <td class="num">line 79</td>
+                <td class="num">line 81</td>
                 <td class="num good">2</td>
                 <td class="num">12</td>
               </tr>
               <tr>
                 <td class="fn-name">sendNotifyRender</td>
-                <td class="num">line 32</td>
+                <td class="num">line 34</td>
                 <td class="num good">1</td>
                 <td class="num">5</td>
               </tr>
               <tr>
                 <td class="fn-name">handleCancelConnection</td>
-                <td class="num">line 92</td>
+                <td class="num">line 94</td>
                 <td class="num good">1</td>
                 <td class="num">5</td>
               </tr>
               <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 239</td>
+                <td class="num good">1</td>
+                <td class="num">2</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 253</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+              <tr>
                 <td class="fn-name">registerIpcCommandHandlers</td>
-                <td class="num">line 230</td>
+                <td class="num">line 271</td>
                 <td class="num good">1</td>
-                <td class="num">17</td>
+                <td class="num">50</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 233</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 240</td>
+                <td class="num">line 274</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 245</td>
+                <td class="num">line 298</td>
+                <td class="num good">1</td>
+                <td class="num">9</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 320</td>
+                <td class="num good">1</td>
+                <td class="num">4</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 326</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
@@ -590,7 +626,7 @@
             <td class="num">12</td>
             <td class="num good">8</td>
             <td class="num">9</td>
-            <td class="num">98</td>
+            <td class="num">100</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-5" style="display:none">
             <td colspan="5">
@@ -599,55 +635,55 @@
                 <tbody>
               <tr>
                 <td class="fn-name">isSelectedConnection</td>
-                <td class="num">line 70</td>
+                <td class="num">line 71</td>
                 <td class="num good">8</td>
                 <td class="num">13</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 85</td>
+                <td class="num">line 86</td>
                 <td class="num good">4</td>
-                <td class="num">32</td>
+                <td class="num">33</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 117</td>
+                <td class="num">line 119</td>
                 <td class="num good">2</td>
                 <td class="num">6</td>
               </tr>
               <tr>
                 <td class="fn-name">logStartupMilestone</td>
-                <td class="num">line 52</td>
+                <td class="num">line 53</td>
                 <td class="num good">1</td>
                 <td class="num">4</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 80</td>
+                <td class="num">line 81</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 109</td>
+                <td class="num">line 111</td>
                 <td class="num good">1</td>
                 <td class="num">12</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 134</td>
+                <td class="num">line 136</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 141</td>
+                <td class="num">line 143</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 142</td>
+                <td class="num">line 144</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
@@ -660,7 +696,7 @@
             <td class="num">22</td>
             <td class="num good">8</td>
             <td class="num">17</td>
-            <td class="num">161</td>
+            <td class="num">160</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-6" style="display:none">
             <td colspan="5">
@@ -749,7 +785,7 @@
                 <td class="fn-name">CaptureLineVars</td>
                 <td class="num">line 180</td>
                 <td class="num good">1</td>
-                <td class="num">5</td>
+                <td class="num">4</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
@@ -2244,13 +2280,183 @@
             </td>
           </tr>
           <tr class="file-row " onclick="toggleDetail('fn-detail-22', this)">
-            <td><span class="expand-icon" id="icon-22">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/ipc/queries.ts" onclick="event.stopPropagation()" title="src/main/ipc/queries.ts">ipc/queries.ts</a></td>
+            <td><span class="expand-icon" id="icon-22">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/bootstrap.ts" onclick="event.stopPropagation()" title="src/main/bootstrap.ts">bootstrap.ts</a></td>
+            <td class="num">5</td>
+            <td class="num good">3</td>
+            <td class="num">12</td>
+            <td class="num">87</td>
+          </tr>
+          <tr class="fn-detail" id="fn-detail-22" style="display:none">
+            <td colspan="5">
+              <table class="fn-table">
+                <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
+                <tbody>
+              <tr>
+                <td class="fn-name">applyDefaultSettings</td>
+                <td class="num">line 42</td>
+                <td class="num good">3</td>
+                <td class="num">10</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 80</td>
+                <td class="num good">2</td>
+                <td class="num">8</td>
+              </tr>
+              <tr>
+                <td class="fn-name">maybeInstallDevTools</td>
+                <td class="num">line 97</td>
+                <td class="num good">2</td>
+                <td class="num">12</td>
+              </tr>
+              <tr>
+                <td class="fn-name">configureAppSettings</td>
+                <td class="num">line 33</td>
+                <td class="num good">1</td>
+                <td class="num">8</td>
+              </tr>
+              <tr>
+                <td class="fn-name">logStartupDiagnostics</td>
+                <td class="num">line 58</td>
+                <td class="num good">1</td>
+                <td class="num">12</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 63</td>
+                <td class="num good">1</td>
+                <td class="num">7</td>
+              </tr>
+              <tr>
+                <td class="fn-name">warmSystemFonts</td>
+                <td class="num">line 77</td>
+                <td class="num good">1</td>
+                <td class="num">14</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 78</td>
+                <td class="num good">1</td>
+                <td class="num">12</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 79</td>
+                <td class="num good">1</td>
+                <td class="num">10</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 103</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 106</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">collectVersionInfo</td>
+                <td class="num">line 116</td>
+                <td class="num good">1</td>
+                <td class="num">12</td>
+              </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-23', this)">
+            <td><span class="expand-icon" id="icon-23">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/gdb-lifecycle.ts" onclick="event.stopPropagation()" title="src/main/gdb-lifecycle.ts">gdb-lifecycle.ts</a></td>
+            <td class="num">4</td>
+            <td class="num good">3</td>
+            <td class="num">11</td>
+            <td class="num">66</td>
+          </tr>
+          <tr class="fn-detail" id="fn-detail-23" style="display:none">
+            <td colspan="5">
+              <table class="fn-table">
+                <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
+                <tbody>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 38</td>
+                <td class="num good">3</td>
+                <td class="num">8</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 68</td>
+                <td class="num good">2</td>
+                <td class="num">15</td>
+              </tr>
+              <tr>
+                <td class="fn-name">createGdbInterface</td>
+                <td class="num">line 32</td>
+                <td class="num good">1</td>
+                <td class="num">50</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 47</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 50</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 53</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 56</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 59</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 62</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 72</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 82</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-24', this)">
+            <td><span class="expand-icon" id="icon-24">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/ipc/queries.ts" onclick="event.stopPropagation()" title="src/main/ipc/queries.ts">ipc/queries.ts</a></td>
             <td class="num">4</td>
             <td class="num good">3</td>
             <td class="num">15</td>
             <td class="num">96</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-22" style="display:none">
+          <tr class="fn-detail" id="fn-detail-24" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -2349,14 +2555,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-23', this)">
-            <td><span class="expand-icon" id="icon-23">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/gdb-state-database/stores/StackFrameStore.ts" onclick="event.stopPropagation()" title="src/main/mi-interface/gdb-state-database/stores/StackFrameStore.ts">mi-interface/gdb-state-database/stores/StackFrameStore.ts</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-25', this)">
+            <td><span class="expand-icon" id="icon-25">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/gdb-state-database/stores/StackFrameStore.ts" onclick="event.stopPropagation()" title="src/main/mi-interface/gdb-state-database/stores/StackFrameStore.ts">mi-interface/gdb-state-database/stores/StackFrameStore.ts</a></td>
             <td class="num">4</td>
             <td class="num good">3</td>
             <td class="num">4</td>
             <td class="num">21</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-23" style="display:none">
+          <tr class="fn-detail" id="fn-detail-25" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -2389,14 +2595,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-24', this)">
-            <td><span class="expand-icon" id="icon-24">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/mappers/register-mapper.ts" onclick="event.stopPropagation()" title="src/main/mi-interface/mappers/register-mapper.ts">mi-interface/mappers/register-mapper.ts</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-26', this)">
+            <td><span class="expand-icon" id="icon-26">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/mappers/register-mapper.ts" onclick="event.stopPropagation()" title="src/main/mi-interface/mappers/register-mapper.ts">mi-interface/mappers/register-mapper.ts</a></td>
             <td class="num">3</td>
             <td class="num good">3</td>
             <td class="num">1</td>
             <td class="num">12</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-24" style="display:none">
+          <tr class="fn-detail" id="fn-detail-26" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -2411,14 +2617,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-25', this)">
-            <td><span class="expand-icon" id="icon-25">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/mi-result-strategies/register-parsing-helpers.ts" onclick="event.stopPropagation()" title="src/main/mi-interface/mi-result-strategies/register-parsing-helpers.ts">mi-interface/mi-result-strategies/register-parsing-helpers.ts</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-27', this)">
+            <td><span class="expand-icon" id="icon-27">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/mi-result-strategies/register-parsing-helpers.ts" onclick="event.stopPropagation()" title="src/main/mi-interface/mi-result-strategies/register-parsing-helpers.ts">mi-interface/mi-result-strategies/register-parsing-helpers.ts</a></td>
             <td class="num">6</td>
             <td class="num good">3</td>
             <td class="num">4</td>
             <td class="num">27</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-25" style="display:none">
+          <tr class="fn-detail" id="fn-detail-27" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -2451,14 +2657,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-26', this)">
-            <td><span class="expand-icon" id="icon-26">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/mi-result-strategies/stack-result-strategy.ts" onclick="event.stopPropagation()" title="src/main/mi-interface/mi-result-strategies/stack-result-strategy.ts">mi-interface/mi-result-strategies/stack-result-strategy.ts</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-28', this)">
+            <td><span class="expand-icon" id="icon-28">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/mi-result-strategies/stack-result-strategy.ts" onclick="event.stopPropagation()" title="src/main/mi-interface/mi-result-strategies/stack-result-strategy.ts">mi-interface/mi-result-strategies/stack-result-strategy.ts</a></td>
             <td class="num">3</td>
             <td class="num good">3</td>
             <td class="num">3</td>
             <td class="num">36</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-26" style="display:none">
+          <tr class="fn-detail" id="fn-detail-28" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -2485,14 +2691,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-27', this)">
-            <td><span class="expand-icon" id="icon-27">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/theme-support.ts" onclick="event.stopPropagation()" title="src/main/theme-support.ts">theme-support.ts</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-29', this)">
+            <td><span class="expand-icon" id="icon-29">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/theme-support.ts" onclick="event.stopPropagation()" title="src/main/theme-support.ts">theme-support.ts</a></td>
             <td class="num">3</td>
             <td class="num good">3</td>
             <td class="num">1</td>
             <td class="num">14</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-27" style="display:none">
+          <tr class="fn-detail" id="fn-detail-29" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -2507,14 +2713,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-28', this)">
-            <td><span class="expand-icon" id="icon-28">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/utilities/ConnectionNotifier.ts" onclick="event.stopPropagation()" title="src/main/utilities/ConnectionNotifier.ts">utilities/ConnectionNotifier.ts</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-30', this)">
+            <td><span class="expand-icon" id="icon-30">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/utilities/ConnectionNotifier.ts" onclick="event.stopPropagation()" title="src/main/utilities/ConnectionNotifier.ts">utilities/ConnectionNotifier.ts</a></td>
             <td class="num">6</td>
             <td class="num good">3</td>
             <td class="num">8</td>
             <td class="num">46</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-28" style="display:none">
+          <tr class="fn-detail" id="fn-detail-30" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -2571,14 +2777,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-29', this)">
-            <td><span class="expand-icon" id="icon-29">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/utilities/GeneralInfoSender.ts" onclick="event.stopPropagation()" title="src/main/utilities/GeneralInfoSender.ts">utilities/GeneralInfoSender.ts</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-31', this)">
+            <td><span class="expand-icon" id="icon-31">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/utilities/GeneralInfoSender.ts" onclick="event.stopPropagation()" title="src/main/utilities/GeneralInfoSender.ts">utilities/GeneralInfoSender.ts</a></td>
             <td class="num">6</td>
             <td class="num good">3</td>
             <td class="num">8</td>
             <td class="num">45</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-29" style="display:none">
+          <tr class="fn-detail" id="fn-detail-31" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -2630,170 +2836,6 @@
                 <td class="num">line 46</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
-              </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-30', this)">
-            <td><span class="expand-icon" id="icon-30">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/bootstrap.ts" onclick="event.stopPropagation()" title="src/main/bootstrap.ts">bootstrap.ts</a></td>
-            <td class="num">3</td>
-            <td class="num good">2</td>
-            <td class="num">11</td>
-            <td class="num">75</td>
-          </tr>
-          <tr class="fn-detail" id="fn-detail-30" style="display:none">
-            <td colspan="5">
-              <table class="fn-table">
-                <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
-                <tbody>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 67</td>
-                <td class="num good">2</td>
-                <td class="num">8</td>
-              </tr>
-              <tr>
-                <td class="fn-name">maybeInstallDevTools</td>
-                <td class="num">line 84</td>
-                <td class="num good">2</td>
-                <td class="num">12</td>
-              </tr>
-              <tr>
-                <td class="fn-name">configureAppSettings</td>
-                <td class="num">line 31</td>
-                <td class="num good">1</td>
-                <td class="num">8</td>
-              </tr>
-              <tr>
-                <td class="fn-name">logStartupDiagnostics</td>
-                <td class="num">line 45</td>
-                <td class="num good">1</td>
-                <td class="num">12</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 50</td>
-                <td class="num good">1</td>
-                <td class="num">7</td>
-              </tr>
-              <tr>
-                <td class="fn-name">warmSystemFonts</td>
-                <td class="num">line 64</td>
-                <td class="num good">1</td>
-                <td class="num">14</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 65</td>
-                <td class="num good">1</td>
-                <td class="num">12</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 66</td>
-                <td class="num good">1</td>
-                <td class="num">10</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 90</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 93</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">collectVersionInfo</td>
-                <td class="num">line 103</td>
-                <td class="num good">1</td>
-                <td class="num">12</td>
-              </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-31', this)">
-            <td><span class="expand-icon" id="icon-31">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/gdb-lifecycle.ts" onclick="event.stopPropagation()" title="src/main/gdb-lifecycle.ts">gdb-lifecycle.ts</a></td>
-            <td class="num">3</td>
-            <td class="num good">2</td>
-            <td class="num">11</td>
-            <td class="num">65</td>
-          </tr>
-          <tr class="fn-detail" id="fn-detail-31" style="display:none">
-            <td colspan="5">
-              <table class="fn-table">
-                <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
-                <tbody>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 38</td>
-                <td class="num good">2</td>
-                <td class="num">7</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 67</td>
-                <td class="num good">2</td>
-                <td class="num">15</td>
-              </tr>
-              <tr>
-                <td class="fn-name">createGdbInterface</td>
-                <td class="num">line 32</td>
-                <td class="num good">1</td>
-                <td class="num">49</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 46</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 49</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 52</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 55</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 58</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 61</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 71</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 81</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
               </tr>
                 </tbody>
               </table>
@@ -4485,7 +4527,7 @@
     </table>
   </section>
   <section>
-    <h2>renderer <span class="badge">60 files &middot; 650 fns &middot; avg CC 9.87</span></h2>
+    <h2>renderer <span class="badge">61 files &middot; 659 fns &middot; avg CC 9.85</span></h2>
     <table class="file-table">
       <thead><tr><th>File</th><th class="num">File CC</th><th class="num">Max Fn CC</th><th class="num">Fns</th><th class="num">SLOC</th></tr></thead>
       <tbody>
@@ -4590,13 +4632,155 @@
             </td>
           </tr>
           <tr class="file-row " onclick="toggleDetail('fn-detail-71', this)">
-            <td><span class="expand-icon" id="icon-71">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/connectionManagerModel.ts" onclick="event.stopPropagation()" title="src/renderer/Dialogs/connectionManagerModel.ts">Dialogs/connectionManagerModel.ts</a></td>
+            <td><span class="expand-icon" id="icon-71">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/Settings.tsx" onclick="event.stopPropagation()" title="src/renderer/Dialogs/Settings.tsx">Dialogs/Settings.tsx</a></td>
+            <td class="num">15</td>
+            <td class="num good">11</td>
+            <td class="num">21</td>
+            <td class="num">295</td>
+          </tr>
+          <tr class="fn-detail" id="fn-detail-71" style="display:none">
+            <td colspan="5">
+              <table class="fn-table">
+                <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
+                <tbody>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 273</td>
+                <td class="num good">11</td>
+                <td class="num">18</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 274</td>
+                <td class="num good">5</td>
+                <td class="num">6</td>
+              </tr>
+              <tr>
+                <td class="fn-name">settingsHeader</td>
+                <td class="num">line 35</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">settingsFooter</td>
+                <td class="num">line 39</td>
+                <td class="num good">1</td>
+                <td class="num">7</td>
+              </tr>
+              <tr>
+                <td class="fn-name">onSelectEditorTheme</td>
+                <td class="num">line 47</td>
+                <td class="num good">1</td>
+                <td class="num">9</td>
+              </tr>
+              <tr>
+                <td class="fn-name">onSelectEditorFont</td>
+                <td class="num">line 57</td>
+                <td class="num good">1</td>
+                <td class="num">10</td>
+              </tr>
+              <tr>
+                <td class="fn-name">onSelectEditorFontSize</td>
+                <td class="num">line 68</td>
+                <td class="num good">1</td>
+                <td class="num">13</td>
+              </tr>
+              <tr>
+                <td class="fn-name">onChangeShowDebugInfo</td>
+                <td class="num">line 82</td>
+                <td class="num good">1</td>
+                <td class="num">9</td>
+              </tr>
+              <tr>
+                <td class="fn-name">onChangeDisableAutoSymbolLoading</td>
+                <td class="num">line 92</td>
+                <td class="num good">1</td>
+                <td class="num">6</td>
+              </tr>
+              <tr>
+                <td class="fn-name">onSelectAppTheme</td>
+                <td class="num">line 99</td>
+                <td class="num good">1</td>
+                <td class="num">7</td>
+              </tr>
+              <tr>
+                <td class="fn-name">SettingsTableHeader</td>
+                <td class="num">line 107</td>
+                <td class="num good">1</td>
+                <td class="num">20</td>
+              </tr>
+              <tr>
+                <td class="fn-name">SettingsApplicationSection</td>
+                <td class="num">line 128</td>
+                <td class="num good">1</td>
+                <td class="num">54</td>
+              </tr>
+              <tr>
+                <td class="fn-name">SettingsSourceViewSection</td>
+                <td class="num">line 183</td>
+                <td class="num good">1</td>
+                <td class="num">60</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 254</td>
+                <td class="num good">1</td>
+                <td class="num">71</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 265</td>
+                <td class="num good">1</td>
+                <td class="num">5</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 266</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 271</td>
+                <td class="num good">1</td>
+                <td class="num">24</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 291</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 304</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 304</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 307</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-72', this)">
+            <td><span class="expand-icon" id="icon-72">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/connectionManagerModel.ts" onclick="event.stopPropagation()" title="src/renderer/Dialogs/connectionManagerModel.ts">Dialogs/connectionManagerModel.ts</a></td>
             <td class="num">32</td>
             <td class="num good">10</td>
             <td class="num">21</td>
             <td class="num">150</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-71" style="display:none">
+          <tr class="fn-detail" id="fn-detail-72" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -4731,14 +4915,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-72', this)">
-            <td><span class="expand-icon" id="icon-72">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/gdb-value-formatter.ts" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/gdb-value-formatter.ts">ToolWindows/gdb-value-formatter.ts</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-73', this)">
+            <td><span class="expand-icon" id="icon-73">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/gdb-value-formatter.ts" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/gdb-value-formatter.ts">ToolWindows/gdb-value-formatter.ts</a></td>
             <td class="num">38</td>
             <td class="num good">10</td>
             <td class="num">13</td>
             <td class="num">173</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-72" style="display:none">
+          <tr class="fn-detail" id="fn-detail-73" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -4825,14 +5009,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-73', this)">
-            <td><span class="expand-icon" id="icon-73">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Components/HexEditor/HexEditorKeymap.ts" onclick="event.stopPropagation()" title="src/renderer/Components/HexEditor/HexEditorKeymap.ts">Components/HexEditor/HexEditorKeymap.ts</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-74', this)">
+            <td><span class="expand-icon" id="icon-74">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Components/HexEditor/HexEditorKeymap.ts" onclick="event.stopPropagation()" title="src/renderer/Components/HexEditor/HexEditorKeymap.ts">Components/HexEditor/HexEditorKeymap.ts</a></td>
             <td class="num">9</td>
             <td class="num good">9</td>
             <td class="num">1</td>
             <td class="num">28</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-73" style="display:none">
+          <tr class="fn-detail" id="fn-detail-74" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -4842,142 +5026,6 @@
                 <td class="num">line 23</td>
                 <td class="num good">9</td>
                 <td class="num">23</td>
-              </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-74', this)">
-            <td><span class="expand-icon" id="icon-74">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/Settings.tsx" onclick="event.stopPropagation()" title="src/renderer/Dialogs/Settings.tsx">Dialogs/Settings.tsx</a></td>
-            <td class="num">13</td>
-            <td class="num good">9</td>
-            <td class="num">20</td>
-            <td class="num">271</td>
-          </tr>
-          <tr class="fn-detail" id="fn-detail-74" style="display:none">
-            <td colspan="5">
-              <table class="fn-table">
-                <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
-                <tbody>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 251</td>
-                <td class="num good">9</td>
-                <td class="num">16</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 252</td>
-                <td class="num good">5</td>
-                <td class="num">6</td>
-              </tr>
-              <tr>
-                <td class="fn-name">settingsHeader</td>
-                <td class="num">line 35</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">settingsFooter</td>
-                <td class="num">line 39</td>
-                <td class="num good">1</td>
-                <td class="num">7</td>
-              </tr>
-              <tr>
-                <td class="fn-name">onSelectEditorTheme</td>
-                <td class="num">line 47</td>
-                <td class="num good">1</td>
-                <td class="num">9</td>
-              </tr>
-              <tr>
-                <td class="fn-name">onSelectEditorFont</td>
-                <td class="num">line 57</td>
-                <td class="num good">1</td>
-                <td class="num">10</td>
-              </tr>
-              <tr>
-                <td class="fn-name">onSelectEditorFontSize</td>
-                <td class="num">line 68</td>
-                <td class="num good">1</td>
-                <td class="num">13</td>
-              </tr>
-              <tr>
-                <td class="fn-name">onChangeShowDebugInfo</td>
-                <td class="num">line 82</td>
-                <td class="num good">1</td>
-                <td class="num">9</td>
-              </tr>
-              <tr>
-                <td class="fn-name">onSelectAppTheme</td>
-                <td class="num">line 92</td>
-                <td class="num good">1</td>
-                <td class="num">7</td>
-              </tr>
-              <tr>
-                <td class="fn-name">SettingsTableHeader</td>
-                <td class="num">line 100</td>
-                <td class="num good">1</td>
-                <td class="num">20</td>
-              </tr>
-              <tr>
-                <td class="fn-name">SettingsApplicationSection</td>
-                <td class="num">line 121</td>
-                <td class="num good">1</td>
-                <td class="num">40</td>
-              </tr>
-              <tr>
-                <td class="fn-name">SettingsSourceViewSection</td>
-                <td class="num">line 162</td>
-                <td class="num good">1</td>
-                <td class="num">60</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 233</td>
-                <td class="num good">1</td>
-                <td class="num">67</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 243</td>
-                <td class="num good">1</td>
-                <td class="num">5</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 244</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 249</td>
-                <td class="num good">1</td>
-                <td class="num">22</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 267</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 280</td>
-                <td class="num good">1</td>
-                <td class="num">1</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 280</td>
-                <td class="num good">1</td>
-                <td class="num">1</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 283</td>
-                <td class="num good">1</td>
-                <td class="num">1</td>
               </tr>
                 </tbody>
               </table>
@@ -6365,10 +6413,10 @@
           </tr>
           <tr class="file-row " onclick="toggleDetail('fn-detail-84', this)">
             <td><span class="expand-icon" id="icon-84">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/useGdbCommandController.ts" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/useGdbCommandController.ts">ToolWindows/useGdbCommandController.ts</a></td>
-            <td class="num">32</td>
+            <td class="num">34</td>
             <td class="num good">6</td>
-            <td class="num">27</td>
-            <td class="num">230</td>
+            <td class="num">28</td>
+            <td class="num">244</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-84" style="display:none">
             <td colspan="5">
@@ -6377,165 +6425,171 @@
                 <tbody>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 157</td>
+                <td class="num">line 164</td>
                 <td class="num good">6</td>
                 <td class="num">16</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 218</td>
+                <td class="num">line 104</td>
+                <td class="num good">5</td>
+                <td class="num">12</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 226</td>
                 <td class="num good">5</td>
                 <td class="num">11</td>
               </tr>
               <tr>
                 <td class="fn-name">appendGdbMessage</td>
-                <td class="num">line 5</td>
+                <td class="num">line 6</td>
                 <td class="num good">4</td>
                 <td class="num">22</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 183</td>
+                <td class="num">line 190</td>
                 <td class="num good">4</td>
                 <td class="num">13</td>
               </tr>
               <tr>
                 <td class="fn-name">appendGdbHtmlMessage</td>
-                <td class="num">line 32</td>
+                <td class="num">line 33</td>
                 <td class="num good">3</td>
                 <td class="num">14</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 65</td>
+                <td class="num">line 66</td>
                 <td class="num good">3</td>
                 <td class="num">5</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 71</td>
+                <td class="num">line 72</td>
                 <td class="num good">3</td>
                 <td class="num">12</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 102</td>
-                <td class="num good">3</td>
-                <td class="num">7</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 128</td>
+                <td class="num">line 135</td>
                 <td class="num good">3</td>
                 <td class="num">8</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 54</td>
+                <td class="num">line 55</td>
                 <td class="num good">2</td>
                 <td class="num">10</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 94</td>
+                <td class="num">line 96</td>
                 <td class="num good">2</td>
-                <td class="num">50</td>
+                <td class="num">55</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 138</td>
+                <td class="num">line 145</td>
                 <td class="num good">2</td>
                 <td class="num">9</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 174</td>
+                <td class="num">line 181</td>
                 <td class="num good">2</td>
                 <td class="num">7</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 230</td>
+                <td class="num">line 238</td>
                 <td class="num good">2</td>
                 <td class="num">7</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 240</td>
+                <td class="num">line 248</td>
                 <td class="num good">2</td>
                 <td class="num">5</td>
               </tr>
               <tr>
                 <td class="fn-name">useGdbCommandHistory</td>
-                <td class="num">line 49</td>
+                <td class="num">line 50</td>
                 <td class="num good">1</td>
                 <td class="num">34</td>
               </tr>
               <tr>
                 <td class="fn-name">useGdbSubscriptions</td>
-                <td class="num">line 87</td>
+                <td class="num">line 88</td>
                 <td class="num good">1</td>
-                <td class="num">58</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 95</td>
-                <td class="num good">1</td>
-                <td class="num">6</td>
+                <td class="num">64</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
                 <td class="num">line 97</td>
                 <td class="num good">1</td>
-                <td class="num">3</td>
+                <td class="num">6</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 110</td>
+                <td class="num">line 99</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 113</td>
+                <td class="num">line 117</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 116</td>
+                <td class="num">line 120</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 119</td>
+                <td class="num">line 123</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 122</td>
+                <td class="num">line 126</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 129</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">useGdbKeyboardHandlers</td>
-                <td class="num">line 150</td>
+                <td class="num">line 157</td>
                 <td class="num good">1</td>
                 <td class="num">48</td>
               </tr>
               <tr>
                 <td class="fn-name">useGdbCommandController</td>
-                <td class="num">line 202</td>
+                <td class="num">line 209</td>
                 <td class="num good">1</td>
-                <td class="num">51</td>
+                <td class="num">58</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 238</td>
+                <td class="num">line 246</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 254</td>
+                <td class="num good">1</td>
+                <td class="num">4</td>
               </tr>
                 </tbody>
               </table>
@@ -8752,13 +8806,71 @@
             </td>
           </tr>
           <tr class="file-row " onclick="toggleDetail('fn-detail-111', this)">
-            <td><span class="expand-icon" id="icon-111">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/GdbCallstackWindow.tsx" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/GdbCallstackWindow.tsx">ToolWindows/GdbCallstackWindow.tsx</a></td>
+            <td><span class="expand-icon" id="icon-111">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/DangerousCommandDialog.tsx" onclick="event.stopPropagation()" title="src/renderer/Dialogs/DangerousCommandDialog.tsx">Dialogs/DangerousCommandDialog.tsx</a></td>
+            <td class="num">4</td>
+            <td class="num good">2</td>
+            <td class="num">7</td>
+            <td class="num">49</td>
+          </tr>
+          <tr class="fn-detail" id="fn-detail-111" style="display:none">
+            <td colspan="5">
+              <table class="fn-table">
+                <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
+                <tbody>
+              <tr>
+                <td class="fn-name">DangerousCommandDialog</td>
+                <td class="num">line 19</td>
+                <td class="num good">2</td>
+                <td class="num">40</td>
+              </tr>
+              <tr>
+                <td class="fn-name">respond</td>
+                <td class="num">line 22</td>
+                <td class="num good">2</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 53</td>
+                <td class="num good">2</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 34</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 35</td>
+                <td class="num good">1</td>
+                <td class="num">8</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 37</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 40</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-112', this)">
+            <td><span class="expand-icon" id="icon-112">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/GdbCallstackWindow.tsx" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/GdbCallstackWindow.tsx">ToolWindows/GdbCallstackWindow.tsx</a></td>
             <td class="num">2</td>
             <td class="num good">2</td>
             <td class="num">7</td>
             <td class="num">112</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-111" style="display:none">
+          <tr class="fn-detail" id="fn-detail-112" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -8809,14 +8921,54 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-112', this)">
-            <td><span class="expand-icon" id="icon-112">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/GdbThreadsWindow.tsx" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/GdbThreadsWindow.tsx">ToolWindows/GdbThreadsWindow.tsx</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-113', this)">
+            <td><span class="expand-icon" id="icon-113">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/GdbCommandWindow.tsx" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/GdbCommandWindow.tsx">ToolWindows/GdbCommandWindow.tsx</a></td>
+            <td class="num">2</td>
+            <td class="num good">2</td>
+            <td class="num">4</td>
+            <td class="num">128</td>
+          </tr>
+          <tr class="fn-detail" id="fn-detail-113" style="display:none">
+            <td colspan="5">
+              <table class="fn-table">
+                <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
+                <tbody>
+              <tr>
+                <td class="fn-name">GdbCommandWindow</td>
+                <td class="num">line 90</td>
+                <td class="num good">2</td>
+                <td class="num">57</td>
+              </tr>
+              <tr>
+                <td class="fn-name">CommandInputBar</td>
+                <td class="num">line 25</td>
+                <td class="num good">1</td>
+                <td class="num">55</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 70</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 76</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-114', this)">
+            <td><span class="expand-icon" id="icon-114">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/GdbThreadsWindow.tsx" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/GdbThreadsWindow.tsx">ToolWindows/GdbThreadsWindow.tsx</a></td>
             <td class="num">3</td>
             <td class="num good">2</td>
             <td class="num">9</td>
             <td class="num">157</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-112" style="display:none">
+          <tr class="fn-detail" id="fn-detail-114" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -8879,14 +9031,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-113', this)">
-            <td><span class="expand-icon" id="icon-113">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Components/HexEditor/HexEditor.tsx" onclick="event.stopPropagation()" title="src/renderer/Components/HexEditor/HexEditor.tsx">Components/HexEditor/HexEditor.tsx</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-115', this)">
+            <td><span class="expand-icon" id="icon-115">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Components/HexEditor/HexEditor.tsx" onclick="event.stopPropagation()" title="src/renderer/Components/HexEditor/HexEditor.tsx">Components/HexEditor/HexEditor.tsx</a></td>
             <td class="num">1</td>
             <td class="num good">1</td>
             <td class="num">6</td>
             <td class="num">51</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-113" style="display:none">
+          <tr class="fn-detail" id="fn-detail-115" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -8931,14 +9083,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-114', this)">
-            <td><span class="expand-icon" id="icon-114">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Components/Toolbar.tsx" onclick="event.stopPropagation()" title="src/renderer/Components/Toolbar.tsx">Components/Toolbar.tsx</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-116', this)">
+            <td><span class="expand-icon" id="icon-116">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Components/Toolbar.tsx" onclick="event.stopPropagation()" title="src/renderer/Components/Toolbar.tsx">Components/Toolbar.tsx</a></td>
             <td class="num">1</td>
             <td class="num good">1</td>
             <td class="num">4</td>
             <td class="num">121</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-114" style="display:none">
+          <tr class="fn-detail" id="fn-detail-116" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -8971,14 +9123,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-115', this)">
-            <td><span class="expand-icon" id="icon-115">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/ConnectionDialog.tsx" onclick="event.stopPropagation()" title="src/renderer/Dialogs/ConnectionDialog.tsx">Dialogs/ConnectionDialog.tsx</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-117', this)">
+            <td><span class="expand-icon" id="icon-117">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/ConnectionDialog.tsx" onclick="event.stopPropagation()" title="src/renderer/Dialogs/ConnectionDialog.tsx">Dialogs/ConnectionDialog.tsx</a></td>
             <td class="num">1</td>
             <td class="num good">1</td>
             <td class="num">2</td>
             <td class="num">57</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-115" style="display:none">
+          <tr class="fn-detail" id="fn-detail-117" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -8999,14 +9151,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-116', this)">
-            <td><span class="expand-icon" id="icon-116">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/ConnectionManager.tsx" onclick="event.stopPropagation()" title="src/renderer/Dialogs/ConnectionManager.tsx">Dialogs/ConnectionManager.tsx</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-118', this)">
+            <td><span class="expand-icon" id="icon-118">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/ConnectionManager.tsx" onclick="event.stopPropagation()" title="src/renderer/Dialogs/ConnectionManager.tsx">Dialogs/ConnectionManager.tsx</a></td>
             <td class="num">1</td>
             <td class="num good">1</td>
             <td class="num">4</td>
             <td class="num">54</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-116" style="display:none">
+          <tr class="fn-detail" id="fn-detail-118" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -9039,14 +9191,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-117', this)">
-            <td><span class="expand-icon" id="icon-117">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/SectionsView.tsx" onclick="event.stopPropagation()" title="src/renderer/Dialogs/SectionsView.tsx">Dialogs/SectionsView.tsx</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-119', this)">
+            <td><span class="expand-icon" id="icon-119">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/SectionsView.tsx" onclick="event.stopPropagation()" title="src/renderer/Dialogs/SectionsView.tsx">Dialogs/SectionsView.tsx</a></td>
             <td class="num">1</td>
             <td class="num good">1</td>
             <td class="num">2</td>
             <td class="num">23</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-117" style="display:none">
+          <tr class="fn-detail" id="fn-detail-119" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -9067,54 +9219,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-118', this)">
-            <td><span class="expand-icon" id="icon-118">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/GdbCommandWindow.tsx" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/GdbCommandWindow.tsx">ToolWindows/GdbCommandWindow.tsx</a></td>
-            <td class="num">1</td>
-            <td class="num good">1</td>
-            <td class="num">4</td>
-            <td class="num">116</td>
-          </tr>
-          <tr class="fn-detail" id="fn-detail-118" style="display:none">
-            <td colspan="5">
-              <table class="fn-table">
-                <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
-                <tbody>
-              <tr>
-                <td class="fn-name">CommandInputBar</td>
-                <td class="num">line 24</td>
-                <td class="num good">1</td>
-                <td class="num">55</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 69</td>
-                <td class="num good">1</td>
-                <td class="num">1</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 75</td>
-                <td class="num good">1</td>
-                <td class="num">1</td>
-              </tr>
-              <tr>
-                <td class="fn-name">GdbCommandWindow</td>
-                <td class="num">line 89</td>
-                <td class="num good">1</td>
-                <td class="num">46</td>
-              </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-119', this)">
-            <td><span class="expand-icon" id="icon-119">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/GdbSourceEditorConfig.ts" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/GdbSourceEditorConfig.ts">ToolWindows/GdbSourceEditorConfig.ts</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-120', this)">
+            <td><span class="expand-icon" id="icon-120">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/GdbSourceEditorConfig.ts" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/GdbSourceEditorConfig.ts">ToolWindows/GdbSourceEditorConfig.ts</a></td>
             <td class="num">1</td>
             <td class="num good">1</td>
             <td class="num">1</td>
             <td class="num">129</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-119" style="display:none">
+          <tr class="fn-detail" id="fn-detail-120" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -9129,14 +9241,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-120', this)">
-            <td><span class="expand-icon" id="icon-120">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/GdbSourceWindow.tsx" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/GdbSourceWindow.tsx">ToolWindows/GdbSourceWindow.tsx</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-121', this)">
+            <td><span class="expand-icon" id="icon-121">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/GdbSourceWindow.tsx" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/GdbSourceWindow.tsx">ToolWindows/GdbSourceWindow.tsx</a></td>
             <td class="num">1</td>
             <td class="num good">1</td>
             <td class="num">1</td>
             <td class="num">52</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-120" style="display:none">
+          <tr class="fn-detail" id="fn-detail-121" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -9151,14 +9263,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-121', this)">
-            <td><span class="expand-icon" id="icon-121">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/GdbSourceWindowView.tsx" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/GdbSourceWindowView.tsx">ToolWindows/GdbSourceWindowView.tsx</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-122', this)">
+            <td><span class="expand-icon" id="icon-122">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/GdbSourceWindowView.tsx" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/GdbSourceWindowView.tsx">ToolWindows/GdbSourceWindowView.tsx</a></td>
             <td class="num">1</td>
             <td class="num good">1</td>
             <td class="num">3</td>
             <td class="num">181</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-121" style="display:none">
+          <tr class="fn-detail" id="fn-detail-122" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -9185,14 +9297,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-122', this)">
-            <td><span class="expand-icon" id="icon-122">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/ToolWindowContent.tsx" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/ToolWindowContent.tsx">ToolWindows/ToolWindowContent.tsx</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-123', this)">
+            <td><span class="expand-icon" id="icon-123">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/ToolWindowContent.tsx" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/ToolWindowContent.tsx">ToolWindows/ToolWindowContent.tsx</a></td>
             <td class="num">1</td>
             <td class="num good">1</td>
             <td class="num">1</td>
             <td class="num">9</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-122" style="display:none">
+          <tr class="fn-detail" id="fn-detail-123" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -9207,14 +9319,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-123', this)">
-            <td><span class="expand-icon" id="icon-123">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/useSourceIpcSubscriptions.ts" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/useSourceIpcSubscriptions.ts">ToolWindows/useSourceIpcSubscriptions.ts</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-124', this)">
+            <td><span class="expand-icon" id="icon-124">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/useSourceIpcSubscriptions.ts" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/useSourceIpcSubscriptions.ts">ToolWindows/useSourceIpcSubscriptions.ts</a></td>
             <td class="num">1</td>
             <td class="num good">1</td>
             <td class="num">3</td>
             <td class="num">17</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-123" style="display:none">
+          <tr class="fn-detail" id="fn-detail-124" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -9241,14 +9353,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-124', this)">
-            <td><span class="expand-icon" id="icon-124">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/utilities/app-version-state.ts" onclick="event.stopPropagation()" title="src/renderer/utilities/app-version-state.ts">utilities/app-version-state.ts</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-125', this)">
+            <td><span class="expand-icon" id="icon-125">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/utilities/app-version-state.ts" onclick="event.stopPropagation()" title="src/renderer/utilities/app-version-state.ts">utilities/app-version-state.ts</a></td>
             <td class="num">1</td>
             <td class="num good">1</td>
             <td class="num">1</td>
             <td class="num">5</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-124" style="display:none">
+          <tr class="fn-detail" id="fn-detail-125" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -9263,14 +9375,14 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-125', this)">
-            <td><span class="expand-icon" id="icon-125">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/utilities/dock-menu-state.ts" onclick="event.stopPropagation()" title="src/renderer/utilities/dock-menu-state.ts">utilities/dock-menu-state.ts</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-126', this)">
+            <td><span class="expand-icon" id="icon-126">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/utilities/dock-menu-state.ts" onclick="event.stopPropagation()" title="src/renderer/utilities/dock-menu-state.ts">utilities/dock-menu-state.ts</a></td>
             <td class="num">1</td>
             <td class="num good">1</td>
             <td class="num">1</td>
             <td class="num">5</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-125" style="display:none">
+          <tr class="fn-detail" id="fn-detail-126" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -9285,28 +9397,12 @@
               </table>
             </td>
           </tr>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-126', this)">
-            <td><span class="expand-icon" id="icon-126">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Components/HexEditor/hex-editor-types.ts" onclick="event.stopPropagation()" title="src/renderer/Components/HexEditor/hex-editor-types.ts">Components/HexEditor/hex-editor-types.ts</a></td>
-            <td class="num">1</td>
-            <td class="num good">0</td>
-            <td class="num">0</td>
-            <td class="num">1</td>
-          </tr>
-          <tr class="fn-detail" id="fn-detail-126" style="display:none">
-            <td colspan="5">
-              <table class="fn-table">
-                <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
-                <tbody>
-                </tbody>
-              </table>
-            </td>
-          </tr>
           <tr class="file-row " onclick="toggleDetail('fn-detail-127', this)">
-            <td><span class="expand-icon" id="icon-127">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/main.tsx" onclick="event.stopPropagation()" title="src/renderer/main.tsx">main.tsx</a></td>
+            <td><span class="expand-icon" id="icon-127">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Components/HexEditor/hex-editor-types.ts" onclick="event.stopPropagation()" title="src/renderer/Components/HexEditor/hex-editor-types.ts">Components/HexEditor/hex-editor-types.ts</a></td>
             <td class="num">1</td>
             <td class="num good">0</td>
             <td class="num">0</td>
-            <td class="num">16</td>
+            <td class="num">1</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-127" style="display:none">
             <td colspan="5">
@@ -9318,11 +9414,11 @@
             </td>
           </tr>
           <tr class="file-row " onclick="toggleDetail('fn-detail-128', this)">
-            <td><span class="expand-icon" id="icon-128">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/toolWindowTitles.ts" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/toolWindowTitles.ts">ToolWindows/toolWindowTitles.ts</a></td>
+            <td><span class="expand-icon" id="icon-128">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/main.tsx" onclick="event.stopPropagation()" title="src/renderer/main.tsx">main.tsx</a></td>
             <td class="num">1</td>
             <td class="num good">0</td>
             <td class="num">0</td>
-            <td class="num">11</td>
+            <td class="num">16</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-128" style="display:none">
             <td colspan="5">
@@ -9334,13 +9430,29 @@
             </td>
           </tr>
           <tr class="file-row " onclick="toggleDetail('fn-detail-129', this)">
-            <td><span class="expand-icon" id="icon-129">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/utilities/renderer-events.ts" onclick="event.stopPropagation()" title="src/renderer/utilities/renderer-events.ts">utilities/renderer-events.ts</a></td>
+            <td><span class="expand-icon" id="icon-129">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/toolWindowTitles.ts" onclick="event.stopPropagation()" title="src/renderer/ToolWindows/toolWindowTitles.ts">ToolWindows/toolWindowTitles.ts</a></td>
+            <td class="num">1</td>
+            <td class="num good">0</td>
+            <td class="num">0</td>
+            <td class="num">11</td>
+          </tr>
+          <tr class="fn-detail" id="fn-detail-129" style="display:none">
+            <td colspan="5">
+              <table class="fn-table">
+                <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
+                <tbody>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-130', this)">
+            <td><span class="expand-icon" id="icon-130">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/utilities/renderer-events.ts" onclick="event.stopPropagation()" title="src/renderer/utilities/renderer-events.ts">utilities/renderer-events.ts</a></td>
             <td class="num">1</td>
             <td class="num good">0</td>
             <td class="num">0</td>
             <td class="num">4</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-129" style="display:none">
+          <tr class="fn-detail" id="fn-detail-130" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -9353,18 +9465,18 @@
     </table>
   </section>
   <section>
-    <h2>preload <span class="badge">1 files &middot; 35 fns &middot; avg CC 1</span></h2>
+    <h2>preload <span class="badge">1 files &middot; 36 fns &middot; avg CC 1</span></h2>
     <table class="file-table">
       <thead><tr><th>File</th><th class="num">File CC</th><th class="num">Max Fn CC</th><th class="num">Fns</th><th class="num">SLOC</th></tr></thead>
       <tbody>
-          <tr class="file-row " onclick="toggleDetail('fn-detail-130', this)">
-            <td><span class="expand-icon" id="icon-130">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/preload/preload.ts" onclick="event.stopPropagation()" title="src/preload/preload.ts">preload.ts</a></td>
+          <tr class="file-row " onclick="toggleDetail('fn-detail-131', this)">
+            <td><span class="expand-icon" id="icon-131">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/preload/preload.ts" onclick="event.stopPropagation()" title="src/preload/preload.ts">preload.ts</a></td>
             <td class="num">1</td>
             <td class="num good">1</td>
-            <td class="num">35</td>
-            <td class="num">127</td>
+            <td class="num">36</td>
+            <td class="num">130</td>
           </tr>
-          <tr class="fn-detail" id="fn-detail-130" style="display:none">
+          <tr class="fn-detail" id="fn-detail-131" style="display:none">
             <td colspan="5">
               <table class="fn-table">
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
@@ -9575,7 +9687,13 @@
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 145</td>
+                <td class="num">line 143</td>
+                <td class="num good">1</td>
+                <td class="num">2</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 147</td>
                 <td class="num good">1</td>
                 <td class="num">2</td>
               </tr>
@@ -9594,10 +9712,10 @@
         <tr>
           <td class="num rank">1</td>
           <td class="fn-name">handleSaveSettings</td>
-          <td class="file-cell" title="src/main/ipc/commands.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/ipc/commands.ts:118">ipc/commands.ts</a>:118</td>
+          <td class="file-cell" title="src/main/ipc/commands.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/ipc/commands.ts:121">ipc/commands.ts</a>:121</td>
           <td>main</td>
-          <td class="num good">14</td>
-          <td class="num">60</td>
+          <td class="num warn">15</td>
+          <td class="num">63</td>
         </tr>
         <tr>
           <td class="num rank">2</td>
@@ -9633,6 +9751,14 @@
         </tr>
         <tr>
           <td class="num rank">6</td>
+          <td class="fn-name">&lt;anonymous&gt;</td>
+          <td class="file-cell" title="src/renderer/Dialogs/Settings.tsx"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/Settings.tsx:273">Dialogs/Settings.tsx</a>:273</td>
+          <td>renderer</td>
+          <td class="num good">11</td>
+          <td class="num">18</td>
+        </tr>
+        <tr>
+          <td class="num rank">7</td>
           <td class="fn-name">extractFieldNames</td>
           <td class="file-cell" title="src/main/mi-interface/gdb-parsers/maint-print-symbols-parser.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/gdb-parsers/maint-print-symbols-parser.ts:256">mi-interface/gdb-parsers/maint-print-symbols-parser.ts</a>:256</td>
           <td>main</td>
@@ -9640,7 +9766,7 @@
           <td class="num">22</td>
         </tr>
         <tr>
-          <td class="num rank">7</td>
+          <td class="num rank">8</td>
           <td class="fn-name">handleDone</td>
           <td class="file-cell" title="src/main/mi-interface/mi-result-handler.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/mi-result-handler.ts:76">mi-interface/mi-result-handler.ts</a>:76</td>
           <td>main</td>
@@ -9648,7 +9774,7 @@
           <td class="num">32</td>
         </tr>
         <tr>
-          <td class="num rank">8</td>
+          <td class="num rank">9</td>
           <td class="fn-name">normalizeConnectionForStorage</td>
           <td class="file-cell" title="src/renderer/Dialogs/connectionManagerModel.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/connectionManagerModel.ts:203">Dialogs/connectionManagerModel.ts</a>:203</td>
           <td>renderer</td>
@@ -9656,7 +9782,7 @@
           <td class="num">23</td>
         </tr>
         <tr>
-          <td class="num rank">9</td>
+          <td class="num rank">10</td>
           <td class="fn-name">splitTopLevel</td>
           <td class="file-cell" title="src/renderer/ToolWindows/gdb-value-formatter.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/ToolWindows/gdb-value-formatter.ts:74">ToolWindows/gdb-value-formatter.ts</a>:74</td>
           <td>renderer</td>
@@ -9664,7 +9790,7 @@
           <td class="num">29</td>
         </tr>
         <tr>
-          <td class="num rank">10</td>
+          <td class="num rank">11</td>
           <td class="fn-name">processSemicolonToken</td>
           <td class="file-cell" title="src/main/mi-interface/gdb-parsers/maint-print-symbols-parser.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/gdb-parsers/maint-print-symbols-parser.ts:167">mi-interface/gdb-parsers/maint-print-symbols-parser.ts</a>:167</td>
           <td>main</td>
@@ -9672,20 +9798,12 @@
           <td class="num">20</td>
         </tr>
         <tr>
-          <td class="num rank">11</td>
+          <td class="num rank">12</td>
           <td class="fn-name">resolveKeyAction</td>
           <td class="file-cell" title="src/renderer/Components/HexEditor/HexEditorKeymap.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Components/HexEditor/HexEditorKeymap.ts:23">Components/HexEditor/HexEditorKeymap.ts</a>:23</td>
           <td>renderer</td>
           <td class="num good">9</td>
           <td class="num">23</td>
-        </tr>
-        <tr>
-          <td class="num rank">12</td>
-          <td class="fn-name">&lt;anonymous&gt;</td>
-          <td class="file-cell" title="src/renderer/Dialogs/Settings.tsx"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/Settings.tsx:251">Dialogs/Settings.tsx</a>:251</td>
-          <td>renderer</td>
-          <td class="num good">9</td>
-          <td class="num">16</td>
         </tr>
         <tr>
           <td class="num rank">13</td>
@@ -9714,7 +9832,7 @@
         <tr>
           <td class="num rank">16</td>
           <td class="fn-name">handleNotifyMain</td>
-          <td class="file-cell" title="src/main/ipc/commands.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/ipc/commands.ts:189">ipc/commands.ts</a>:189</td>
+          <td class="file-cell" title="src/main/ipc/commands.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/ipc/commands.ts:195">ipc/commands.ts</a>:195</td>
           <td>main</td>
           <td class="num good">8</td>
           <td class="num">32</td>
@@ -9722,7 +9840,7 @@
         <tr>
           <td class="num rank">17</td>
           <td class="fn-name">isSelectedConnection</td>
-          <td class="file-cell" title="src/main/main.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/main.ts:70">main.ts</a>:70</td>
+          <td class="file-cell" title="src/main/main.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/main.ts:71">main.ts</a>:71</td>
           <td>main</td>
           <td class="num good">8</td>
           <td class="num">13</td>

@@ -179,7 +179,7 @@ export class GdbOutputCapture {
 
   CaptureLineVars(capArray: string[]): void {
     const cleanLines = capArray.map((raw) => GdbOutputCapture.stripMiEscaping(raw));
-    console.warn("Captured line vars: ", cleanLines);
+    //console.warn("Captured line vars: ", cleanLines);
     this.gdbDB.addRawLineVarData(cleanLines);
   }
 

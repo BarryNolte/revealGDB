@@ -89,6 +89,13 @@ function onChangeShowDebugInfo(e: GdbAny): void {
   });
 }
 
+function onChangeDisableAutoSymbolLoading(e: GdbAny): void {
+  window.ipcToMain.commands.app.notifyMain({
+    command: "save-auto-symbol-loading",
+    data: e.checked,
+  });
+}
+
 function onSelectAppTheme(e: GdbAny): void {
   const newAppTheme = e.itemData.value;
   window.dispatchEvent(
@@ -121,9 +128,11 @@ function SettingsTableHeader({
 function SettingsApplicationSection({
   appThemeRef,
   appShowDebugInfoRef,
+  appDisableAutoSymbolLoadingRef,
 }: {
   appThemeRef: RefObject<DropDownListComponent | null>;
   appShowDebugInfoRef: RefObject<CheckBoxComponent | null>;
+  appDisableAutoSymbolLoadingRef: RefObject<CheckBoxComponent | null>;
 }): JSX.Element {
   return (
     <table className="settingsFullWidth settingsTable">
@@ -150,6 +159,18 @@ function SettingsApplicationSection({
                 ref={appShowDebugInfoRef}
                 label="Show debug info in terminal"
                 change={onChangeShowDebugInfo}
+              />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colSpan={2}>
+            <div data-testid="settings-disable-auto-symbol-loading">
+              <CheckBoxComponent
+                id="settings-disable-auto-symbol-loading-input"
+                ref={appDisableAutoSymbolLoadingRef}
+                label="Turn off automatic symbol loading"
+                change={onChangeDisableAutoSymbolLoading}
               />
             </div>
           </td>
@@ -239,6 +260,7 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
   const editorFontsRef = useRef<DropDownListComponent>(null);
   const appThemeRef = useRef<DropDownListComponent>(null);
   const appShowDebugInfoRef = useRef<CheckBoxComponent>(null);
+  const appDisableAutoSymbolLoadingRef = useRef<CheckBoxComponent>(null);
 
   useImperativeHandle(ref, () => ({
     ShowDialog: () => {
@@ -263,6 +285,8 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
         appShowDebugInfoRef.current.checked = gdb.gui.showDebugInfo;
       if (gdb.gui.applicationTheme && appThemeRef.current)
         appThemeRef.current.value = gdb.gui.applicationTheme;
+      if (gdb.gui.disableAutoSymbolLoading && appDisableAutoSymbolLoadingRef.current)
+        appDisableAutoSymbolLoadingRef.current.checked = gdb.gui.disableAutoSymbolLoading;
     });
     return () => {
       isMounted = false;
@@ -288,6 +312,7 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
           <SettingsApplicationSection
             appThemeRef={appThemeRef}
             appShowDebugInfoRef={appShowDebugInfoRef}
+            appDisableAutoSymbolLoadingRef={appDisableAutoSymbolLoadingRef}
           />
           <SettingsTableHeader title="Source View" />
           <SettingsSourceViewSection

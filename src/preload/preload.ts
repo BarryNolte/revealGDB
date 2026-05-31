@@ -5,7 +5,12 @@
  * This file primarily contains internal declarations and implementation details. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { contextBridge, ipcRenderer } from "electron";
-import { DebuggerCommand, IPC_CHANNELS, NotifyMainRequest } from "../common/ipc-contracts";
+import {
+  DangerousCommandResponse,
+  DebuggerCommand,
+  IPC_CHANNELS,
+  NotifyMainRequest,
+} from "../common/ipc-contracts";
 import type { IElectronAPI } from "./interface";
 
 type IpcApiCore = Pick<
@@ -138,8 +143,10 @@ const ipcApi: IpcApiCore = {
   commands: {
     debugger: {
       sendGdbCommand: (command: DebuggerCommand) =>
-        send(IPC_CHANNELS.rendererToMain.commands.debugger.send, command),
+        ipcRenderer.invoke(IPC_CHANNELS.rendererToMain.commands.debugger.send, command),
       sendControlD: () => send(IPC_CHANNELS.rendererToMain.commands.debugger.sendControlD, null),
+      respondToDangerousCommand: (response: DangerousCommandResponse) =>
+        send(IPC_CHANNELS.rendererSend.dangerousCommandResponse, response),
     },
     app: {
       notifyMain: (command: NotifyMainRequest) =>
@@ -173,5 +180,6 @@ contextBridge.exposeInMainWorld("ipcToMain", {
   getFunctionNames: ipcApi.queries.debugger.getFunctionNames,
   sendGdbCommand: ipcApi.commands.debugger.sendGdbCommand,
   sendControlD: ipcApi.commands.debugger.sendControlD,
+  respondToDangerousCommand: ipcApi.commands.debugger.respondToDangerousCommand,
   notifyMain: ipcApi.commands.app.notifyMain,
 });

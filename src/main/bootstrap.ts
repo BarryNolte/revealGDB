@@ -8,9 +8,11 @@ import { screen } from "electron";
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import { fontace } from "fontace";
 import getSystemFonts from "get-system-fonts";
+import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import { GdbAny } from "../common/gdb-common";
+import { AppSettings } from "./app-settings";
 import { debugLog } from "./utilities/logger";
 
 export type SettingsLike = {
@@ -35,6 +37,24 @@ export function configureAppSettings(appSettings: SettingsLike): void {
     numSpaces: 2,
     prettify: true,
   });
+}
+
+export function applyDefaultSettings(appSettings: typeof AppSettings): void {
+  if (!fsSync.existsSync(appSettings.file())) {
+    appSettings.setSync("gdb.gui.disableAutoSymbolLoading", false);
+  }
+  if (!appSettings.hasSync("gdb.dangerousCommands")) {
+    appSettings.setSync("gdb.dangerousCommands", [
+      {
+        command: "python-interactive",
+        reason: "Python Interactive is not implemented yet.  No guarantees expressed or implied.",
+      },
+      {
+        command: "pi",
+        reason: "Python Interactive is not implemented yet.  No guarantees expressed or implied.",
+      },
+    ] as never);
+  }
 }
 
 /**

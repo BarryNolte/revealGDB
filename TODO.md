@@ -1,7 +1,5 @@
 # Priority Items
-- List of "Dangerous" commands, with warnings and choice to continue.
-- Settings to turn off symbol interagation
-- Detect "Backtrace unavailable" or "A fatal error inter to GDB"
+- Add ability to find and edit settings file
 
 # Documentation
 - Quick Start Guide

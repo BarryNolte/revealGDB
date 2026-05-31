@@ -98,10 +98,11 @@ function buildTestApi(): TestApi {
   ipc.commands.debugger.sendGdbCommand = (command: DebuggerCommand) => {
     if (typeof command === "string") {
       void sentCommands.push(command);
-      return;
+      return Promise.resolve();
     }
     const selectFrameCommand = command as DebuggerSelectStackFrameCommand;
     void sentCommands.push(`${selectFrameCommand.kind}:${selectFrameCommand.frameLevel}`);
+    return Promise.resolve();
   };
   ipc.commands.debugger.sendControlD = () => {
     controlDSends += 1;

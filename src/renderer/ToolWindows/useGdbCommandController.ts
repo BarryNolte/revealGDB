@@ -1,5 +1,6 @@
-import { KeyboardEvent, useCallback, useEffect, useRef } from "react";
+import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { GdbAny } from "../../common/gdb-common";
+import type { DangerousCommandResponse } from "../../common/ipc-contracts";
 import { CommandHistory } from "../utilities/CommandHistory";
 
 function appendGdbMessage(
@@ -53,7 +54,7 @@ function useGdbCommandHistory(
 ) {
   const sendCommand = useCallback(() => {
     if (!inputRef.current) return;
-    window.ipcToMain.commands.debugger.sendGdbCommand(inputRef.current.value);
+    void window.ipcToMain.commands.debugger.sendGdbCommand(inputRef.current.value);
     cmdHistoryRef.current.add(inputRef.current.value);
     inputRef.current.value = "";
     window.ipcToMain.commands.app.notifyMain({
@@ -90,6 +91,7 @@ function useGdbSubscriptions(
   inputRef: { current: HTMLInputElement | null },
   historyRef: { current: HTMLSelectElement | null },
   cmdHistoryRef: { current: CommandHistory },
+  setDangerousPrompt: (prompt: { commandText: string; reason?: string } | null) => void,
 ): void {
   useEffect(() => {
     window.ipcToMain.queries.app.getSettings().then((gdb: GdbAny) => {
@@ -104,6 +106,11 @@ function useGdbSubscriptions(
         case "command-entry":
           if (inputRef.current) inputRef.current.focus();
           break;
+        case "confirm-dangerous-command": {
+          const data = msg.data as { commandText: string; reason?: string };
+          setDangerousPrompt({ commandText: data?.commandText ?? "", reason: data?.reason });
+          break;
+        }
       }
     });
 
@@ -205,13 +212,24 @@ export function useGdbCommandController() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const historyRef = useRef<HTMLSelectElement | null>(null);
   const shouldScrollRef = useRef(true);
+  const [dangerousPrompt, setDangerousPrompt] = useState<{
+    commandText: string;
+    reason?: string;
+  } | null>(null);
 
   const { sendCommand, hideHistory, showHistory } = useGdbCommandHistory(
     cmdHistoryRef,
     inputRef,
     historyRef,
   );
-  useGdbSubscriptions(outputRef, shouldScrollRef, inputRef, historyRef, cmdHistoryRef);
+  useGdbSubscriptions(
+    outputRef,
+    shouldScrollRef,
+    inputRef,
+    historyRef,
+    cmdHistoryRef,
+    setDangerousPrompt,
+  );
   const { onSelectKeydownHandler, onInputKeyupHandler, onInputKeydownHandler } =
     useGdbKeyboardHandlers(inputRef, historyRef, sendCommand, hideHistory, showHistory);
 
@@ -243,6 +261,11 @@ export function useGdbCommandController() {
     }
   }, []);
 
+  const onDangerousCommandResponse = useCallback((response: DangerousCommandResponse) => {
+    setDangerousPrompt(null);
+    window.ipcToMain.commands.debugger.respondToDangerousCommand(response);
+  }, []);
+
   return {
     outputRef,
     inputRef,
@@ -254,5 +277,7 @@ export function useGdbCommandController() {
     onShowHistory,
     onSendCommand,
     onClearWindow,
+    dangerousPrompt,
+    onDangerousCommandResponse,
   };
 }

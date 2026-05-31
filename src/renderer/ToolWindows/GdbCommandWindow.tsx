@@ -6,6 +6,7 @@
  */
 import { ContextMenuComponent } from "@syncfusion/ej2-react-navigations";
 import { JSX, KeyboardEventHandler, RefObject, useId } from "react";
+import { DangerousCommandDialog } from "../Dialogs/DangerousCommandDialog";
 import { doCutCopyPaste, menuCopyAll, menuCutCopyPaste } from "../utilities/Clipboard";
 import "./GdbCommandWindow.css";
 import { ToolWindowContent } from "./ToolWindowContent";
@@ -98,38 +99,49 @@ export default function GdbCommandWindow(): JSX.Element {
     onShowHistory,
     onSendCommand,
     onClearWindow,
+    dangerousPrompt,
+    onDangerousCommandResponse,
   } = useGdbCommandController();
 
   return (
-    <ToolWindowContent title={TOOL_WINDOW_TITLES.command}>
-      <div className={"commandWindow full-size"} data-testid="gdb-command-window">
-        <div
-          className={"outputRow"}
-          ref={outputRef}
-          onScroll={onScrollHandler}
-          data-cmd-output="1"
-          data-testid="gdb-command-output"
-        />
-        <div className={"historyRow"}>
-          <select
-            className={"historySelect"}
-            ref={historyRef}
-            title={"Command History"}
-            size={15}
-            hidden={true}
-            onKeyDown={onSelectKeydownHandler}
-            data-testid="gdb-command-history"
+    <>
+      <ToolWindowContent title={TOOL_WINDOW_TITLES.command}>
+        <div className={"commandWindow full-size"} data-testid="gdb-command-window">
+          <div
+            className={"outputRow"}
+            ref={outputRef}
+            onScroll={onScrollHandler}
+            data-cmd-output="1"
+            data-testid="gdb-command-output"
+          />
+          <div className={"historyRow"}>
+            <select
+              className={"historySelect"}
+              ref={historyRef}
+              title={"Command History"}
+              size={15}
+              hidden={true}
+              onKeyDown={onSelectKeydownHandler}
+              data-testid="gdb-command-history"
+            />
+          </div>
+          <CommandInputBar
+            inputRef={inputRef}
+            onKeyDown={onInputKeydownHandler}
+            onKeyUp={onInputKeyupHandler}
+            onSendCommand={onSendCommand}
+            onShowHistory={onShowHistory}
+            onClearWindow={onClearWindow}
           />
         </div>
-        <CommandInputBar
-          inputRef={inputRef}
-          onKeyDown={onInputKeydownHandler}
-          onKeyUp={onInputKeyupHandler}
-          onSendCommand={onSendCommand}
-          onShowHistory={onShowHistory}
-          onClearWindow={onClearWindow}
+      </ToolWindowContent>
+      {dangerousPrompt && (
+        <DangerousCommandDialog
+          commandText={dangerousPrompt.commandText}
+          reason={dangerousPrompt.reason}
+          onResponse={onDangerousCommandResponse}
         />
-      </div>
-    </ToolWindowContent>
+      )}
+    </>
   );
 }

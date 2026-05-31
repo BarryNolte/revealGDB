@@ -58,6 +58,7 @@ const RENDERER_TO_MAIN_CHANNEL_GROUPS = {
     debugger: {
       send: "gdb-command",
       sendControlD: "gdb-control-d",
+      dangerousCommandResponse: "dangerous-command-response",
     },
     app: {
       notify: "notify-main",
@@ -103,6 +104,8 @@ export const IPC_CHANNELS = {
     gdbCommand: RENDERER_TO_MAIN_CHANNEL_GROUPS.commands.debugger.send,
     gdbControlD: RENDERER_TO_MAIN_CHANNEL_GROUPS.commands.debugger.sendControlD,
     notifyMain: RENDERER_TO_MAIN_CHANNEL_GROUPS.commands.app.notify,
+    dangerousCommandResponse:
+      RENDERER_TO_MAIN_CHANNEL_GROUPS.commands.debugger.dangerousCommandResponse,
   },
 } as const;
 
@@ -124,7 +127,8 @@ export type NotifyRenderCommand =
   | "about-box"
   | "settings-dialog"
   | "connections-dialog"
-  | "sections-view";
+  | "sections-view"
+  | "confirm-dangerous-command";
 
 export type NotifyRenderMessage = {
   command: NotifyRenderCommand;
@@ -147,6 +151,7 @@ export type NotifyMainCommand =
   | "save-grid-columns"
   | "reset-grid-columns"
   | "save-sections-view-options"
+  | "save-auto-symbol-loading"
   | "open-external"
   | "renderStart"
   | "renderEnd";
@@ -171,6 +176,7 @@ export type NotifyMainPayloadMap = {
   "save-grid-columns": { gridName: GridName; columns: GridColumnState[] };
   "reset-grid-columns": GridName | undefined;
   "save-sections-view-options": SectionsViewOptions;
+  "save-auto-symbol-loading": boolean;
   "open-external": string;
   renderStart: undefined;
   renderEnd: undefined;
@@ -185,3 +191,15 @@ export type NotifyMainRequest = {
     ? { command: K; data?: undefined }
     : { command: K; data: NotifyMainPayloadMap[K] };
 }[keyof NotifyMainPayloadMap];
+
+export type DangerousCommandEntry = {
+  command: string;
+  reason?: string;
+  defaultAnswer?: "yes" | "no";
+};
+
+export type DangerousCommandResponse = {
+  allow: boolean;
+  remember: boolean;
+  answer: "yes" | "no";
+};

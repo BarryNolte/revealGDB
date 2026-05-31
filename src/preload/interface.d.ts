@@ -17,7 +17,12 @@ import {
   gdbThreadGroup,
   gdbVarLocation,
 } from "../common/gdb-state-types";
-import { DebuggerCommand, NotifyMainRequest, NotifyRenderMessage } from "../common/ipc-contracts";
+import {
+  DangerousCommandResponse,
+  DebuggerCommand,
+  NotifyMainRequest,
+  NotifyRenderMessage,
+} from "../common/ipc-contracts";
 import { MemoryData, WslDistro } from "../common/ipc-data-types";
 import { ILocal } from "../common/local-view";
 
@@ -87,8 +92,9 @@ export interface IElectronAPI {
 
   commands: {
     debugger: {
-      sendGdbCommand: (command: DebuggerCommand) => void;
+      sendGdbCommand: (command: DebuggerCommand) => Promise<void>;
       sendControlD: () => void;
+      respondToDangerousCommand: (response: DangerousCommandResponse) => void;
     };
     app: {
       notifyMain: (command: NotifyMainRequest) => void;
@@ -247,12 +253,18 @@ export interface IElectronAPI {
    * Sends a GDB MI command to the debugger.
    * @param command - The GDB MI command string to execute
    */
-  sendGdbCommand: (command: string) => void;
+  sendGdbCommand: (command: string) => Promise<void>;
 
   /**
    * Sends Ctrl+D (EOT) to GDB.
    */
   sendControlD: () => void;
+
+  /**
+   * Responds to a dangerous command confirmation request from the main process.
+   * @param response - The user's allow/deny decision and whether to remember it
+   */
+  respondToDangerousCommand: (response: DangerousCommandResponse) => void;
 
   /**
    * Sends a general notification/command to the main process.

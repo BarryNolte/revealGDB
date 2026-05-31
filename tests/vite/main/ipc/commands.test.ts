@@ -540,7 +540,7 @@ describe("registerIpcCommandHandlers", () => {
       IPC_CHANNELS.rendererToMain.commands.app.notify,
       expect.any(Function),
     );
-    expect(ipcMain.on).toHaveBeenCalledWith(
+    expect(ipcMain.handle).toHaveBeenCalledWith(
       IPC_CHANNELS.rendererToMain.commands.debugger.send,
       expect.any(Function),
     );
