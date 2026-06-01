@@ -73,23 +73,23 @@
 <body>
 <header>
   <h1>Code Complexity Report</h1>
-  <div class="meta">Generated: 5/30/2026, 10:15:10 PM &nbsp;&middot;&nbsp; Thresholds: warn &ge; 15, error &ge; 25 &nbsp;&middot;&nbsp; Test files excluded</div>
+  <div class="meta">Generated: 5/31/2026, 9:35:40 PM &nbsp;&middot;&nbsp; Thresholds: warn &ge; 15, error &ge; 25 &nbsp;&middot;&nbsp; Test files excluded</div>
 </header>
 <div class="summary-grid">
 
     <div class="summary-card">
       <h3>main</h3>
       <div class="stat-row"><span class="stat-label">Files</span><span class="stat-val">70</span></div>
-      <div class="stat-row"><span class="stat-label">Functions</span><span class="stat-val">543</span></div>
-      <div class="stat-row"><span class="stat-label">Avg CC</span><span class="stat-val">7.66</span></div>
+      <div class="stat-row"><span class="stat-label">Functions</span><span class="stat-val">548</span></div>
+      <div class="stat-row"><span class="stat-label">Avg CC</span><span class="stat-val">7.81</span></div>
       <div class="stat-row"><span class="stat-label">CC &ge; 25</span><span class="stat-val ">0</span></div>
       <div class="stat-row"><span class="stat-label">CC &ge; 15</span><span class="stat-val warn">1</span></div>
     </div>
     <div class="summary-card">
       <h3>renderer</h3>
       <div class="stat-row"><span class="stat-label">Files</span><span class="stat-val">61</span></div>
-      <div class="stat-row"><span class="stat-label">Functions</span><span class="stat-val">657</span></div>
-      <div class="stat-row"><span class="stat-label">Avg CC</span><span class="stat-val">9.84</span></div>
+      <div class="stat-row"><span class="stat-label">Functions</span><span class="stat-val">658</span></div>
+      <div class="stat-row"><span class="stat-label">Avg CC</span><span class="stat-val">9.89</span></div>
       <div class="stat-row"><span class="stat-label">CC &ge; 25</span><span class="stat-val ">0</span></div>
       <div class="stat-row"><span class="stat-label">CC &ge; 15</span><span class="stat-val ">0</span></div>
     </div>
@@ -110,14 +110,14 @@
       <tbody>
         <tr>
           <td>main</td>
-          <td class="num warn">+0.05</td>
+          <td class="num warn">+0.2</td>
           <td class="num good">-2</td>
           <td class="num good">-2</td>
           <td class="num good">-4</td>
         </tr>
         <tr>
           <td>renderer</td>
-          <td class="num warn">+0.94</td>
+          <td class="num warn">+0.99</td>
           <td class="num ">—</td>
           <td class="num ">—</td>
           <td class="num ">—</td>
@@ -141,7 +141,7 @@
   </section>
 
   <section>
-    <h2>main <span class="badge">70 files &middot; 543 fns &middot; avg CC 7.66</span></h2>
+    <h2>main <span class="badge">70 files &middot; 548 fns &middot; avg CC 7.81</span></h2>
     <table class="file-table">
       <thead><tr><th>File</th><th class="num">File CC</th><th class="num">Max Fn CC</th><th class="num">Fns</th><th class="num">SLOC</th></tr></thead>
       <tbody>
@@ -693,10 +693,10 @@
           </tr>
           <tr class="file-row " onclick="toggleDetail('fn-detail-6', this)">
             <td><span class="expand-icon" id="icon-6">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/gdb-parsers/gdb-output-capture.ts" onclick="event.stopPropagation()" title="src/main/mi-interface/gdb-parsers/gdb-output-capture.ts">mi-interface/gdb-parsers/gdb-output-capture.ts</a></td>
-            <td class="num">22</td>
+            <td class="num">32</td>
             <td class="num good">8</td>
-            <td class="num">17</td>
-            <td class="num">160</td>
+            <td class="num">21</td>
+            <td class="num">209</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-6" style="display:none">
             <td colspan="5">
@@ -705,103 +705,127 @@
                 <tbody>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 151</td>
+                <td class="num">line 201</td>
                 <td class="num good">8</td>
                 <td class="num">23</td>
               </tr>
               <tr>
                 <td class="fn-name">CaptureSourceFiles</td>
-                <td class="num">line 78</td>
+                <td class="num">line 79</td>
                 <td class="num good">6</td>
                 <td class="num">16</td>
               </tr>
               <tr>
+                <td class="fn-name">tryAddMaintSectionLine</td>
+                <td class="num">line 121</td>
+                <td class="num good">6</td>
+                <td class="num">24</td>
+              </tr>
+              <tr>
                 <td class="fn-name">CaptureSymbolFiles</td>
-                <td class="num">line 106</td>
-                <td class="num good">4</td>
-                <td class="num">19</td>
+                <td class="num">line 166</td>
+                <td class="num good">5</td>
+                <td class="num">11</td>
               </tr>
               <tr>
                 <td class="fn-name">CaptureLine</td>
-                <td class="num">line 211</td>
+                <td class="num">line 261</td>
                 <td class="num good">4</td>
                 <td class="num">17</td>
               </tr>
               <tr>
+                <td class="fn-name">tryAddSymbolFileLine</td>
+                <td class="num">line 107</td>
+                <td class="num good">3</td>
+                <td class="num">13</td>
+              </tr>
+              <tr>
+                <td class="fn-name">tryAddInfoFileLine</td>
+                <td class="num">line 146</td>
+                <td class="num good">3</td>
+                <td class="num">19</td>
+              </tr>
+              <tr>
                 <td class="fn-name">stripMiEscaping</td>
-                <td class="num">line 43</td>
+                <td class="num">line 44</td>
                 <td class="num good">2</td>
                 <td class="num">9</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 79</td>
+                <td class="num">line 80</td>
                 <td class="num good">2</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">flushCapture</td>
-                <td class="num">line 193</td>
+                <td class="num">line 243</td>
                 <td class="num good">2</td>
                 <td class="num">7</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 28</td>
+                <td class="num">line 29</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 31</td>
+                <td class="num">line 32</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 34</td>
+                <td class="num">line 35</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 37</td>
+                <td class="num">line 38</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">constructor</td>
-                <td class="num">line 54</td>
+                <td class="num">line 55</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 131</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+              <tr>
                 <td class="fn-name">CaptureFunctionNames</td>
-                <td class="num">line 136</td>
+                <td class="num">line 186</td>
                 <td class="num good">1</td>
                 <td class="num">37</td>
               </tr>
               <tr>
                 <td class="fn-name">CaptureLineVars</td>
-                <td class="num">line 180</td>
+                <td class="num">line 230</td>
                 <td class="num good">1</td>
                 <td class="num">4</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 181</td>
+                <td class="num">line 231</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">getStartCaptureType</td>
-                <td class="num">line 186</td>
+                <td class="num">line 236</td>
                 <td class="num good">1</td>
                 <td class="num">6</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 187</td>
+                <td class="num">line 237</td>
                 <td class="num good">1</td>
                 <td class="num">2</td>
               </tr>
@@ -866,7 +890,7 @@
             <td class="num">60</td>
             <td class="num good">8</td>
             <td class="num">25</td>
-            <td class="num">280</td>
+            <td class="num">279</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-8" style="display:none">
             <td colspan="5">
@@ -881,7 +905,7 @@
               </tr>
               <tr>
                 <td class="fn-name">handleOtherCommand</td>
-                <td class="num">line 293</td>
+                <td class="num">line 292</td>
                 <td class="num good">8</td>
                 <td class="num">26</td>
               </tr>
@@ -889,7 +913,7 @@
                 <td class="fn-name">handleBreakpointCommand</td>
                 <td class="num">line 161</td>
                 <td class="num good">7</td>
-                <td class="num">35</td>
+                <td class="num">34</td>
               </tr>
               <tr>
                 <td class="fn-name">parseNotifyAsyncRecord</td>
@@ -899,19 +923,19 @@
               </tr>
               <tr>
                 <td class="fn-name">handleLibraryCommand</td>
-                <td class="num">line 197</td>
+                <td class="num">line 196</td>
                 <td class="num good">5</td>
                 <td class="num">11</td>
               </tr>
               <tr>
                 <td class="fn-name">handleTsvCommand</td>
-                <td class="num">line 239</td>
+                <td class="num">line 238</td>
                 <td class="num good">5</td>
                 <td class="num">18</td>
               </tr>
               <tr>
                 <td class="fn-name">handleMemoryChanged</td>
-                <td class="num">line 265</td>
+                <td class="num">line 264</td>
                 <td class="num good">5</td>
                 <td class="num">11</td>
               </tr>
@@ -923,19 +947,19 @@
               </tr>
               <tr>
                 <td class="fn-name">handleTraceframeChanged</td>
-                <td class="num">line 209</td>
+                <td class="num">line 208</td>
                 <td class="num good">4</td>
                 <td class="num">9</td>
               </tr>
               <tr>
                 <td class="fn-name">handleTsvModified</td>
-                <td class="num">line 231</td>
+                <td class="num">line 230</td>
                 <td class="num good">4</td>
                 <td class="num">7</td>
               </tr>
               <tr>
                 <td class="fn-name">handleRecordStarted</td>
-                <td class="num">line 277</td>
+                <td class="num">line 276</td>
                 <td class="num good">4</td>
                 <td class="num">10</td>
               </tr>
@@ -953,13 +977,13 @@
               </tr>
               <tr>
                 <td class="fn-name">handleTsvCreated</td>
-                <td class="num">line 219</td>
+                <td class="num">line 218</td>
                 <td class="num good">3</td>
                 <td class="num">5</td>
               </tr>
               <tr>
                 <td class="fn-name">handleCmdParamChanged</td>
-                <td class="num">line 258</td>
+                <td class="num">line 257</td>
                 <td class="num good">3</td>
                 <td class="num">6</td>
               </tr>
@@ -971,13 +995,13 @@
               </tr>
               <tr>
                 <td class="fn-name">handleTsvDeleted</td>
-                <td class="num">line 225</td>
+                <td class="num">line 224</td>
                 <td class="num good">2</td>
                 <td class="num">5</td>
               </tr>
               <tr>
                 <td class="fn-name">handleRecordStopped</td>
-                <td class="num">line 288</td>
+                <td class="num">line 287</td>
                 <td class="num good">2</td>
                 <td class="num">4</td>
               </tr>
@@ -1850,7 +1874,7 @@
             <td class="num">9</td>
             <td class="num good">4</td>
             <td class="num">63</td>
-            <td class="num">343</td>
+            <td class="num">342</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-20" style="display:none">
             <td colspan="5">
@@ -1885,7 +1909,7 @@
                 <td class="fn-name">enrichLineVarsFromSource</td>
                 <td class="num">line 738</td>
                 <td class="num good">2</td>
-                <td class="num">11</td>
+                <td class="num">10</td>
               </tr>
               <tr>
                 <td class="fn-name">queryVarAtPosition</td>
@@ -2372,7 +2396,7 @@
             <td class="num">4</td>
             <td class="num good">3</td>
             <td class="num">11</td>
-            <td class="num">66</td>
+            <td class="num">68</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-23" style="display:none">
             <td colspan="5">
@@ -2389,13 +2413,13 @@
                 <td class="fn-name">&lt;anonymous&gt;</td>
                 <td class="num">line 68</td>
                 <td class="num good">2</td>
-                <td class="num">15</td>
+                <td class="num">17</td>
               </tr>
               <tr>
                 <td class="fn-name">createGdbInterface</td>
                 <td class="num">line 32</td>
                 <td class="num good">1</td>
-                <td class="num">50</td>
+                <td class="num">52</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
@@ -2441,7 +2465,7 @@
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 82</td>
+                <td class="num">line 84</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
@@ -2843,10 +2867,10 @@
           </tr>
           <tr class="file-row " onclick="toggleDetail('fn-detail-32', this)">
             <td><span class="expand-icon" id="icon-32">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/menu.ts" onclick="event.stopPropagation()" title="src/main/menu.ts">menu.ts</a></td>
-            <td class="num">3</td>
+            <td class="num">4</td>
             <td class="num good">2</td>
-            <td class="num">26</td>
-            <td class="num">218</td>
+            <td class="num">27</td>
+            <td class="num">232</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-32" style="display:none">
             <td colspan="5">
@@ -2855,87 +2879,81 @@
                 <tbody>
               <tr>
                 <td class="fn-name">buildMacMenu</td>
-                <td class="num">line 15</td>
+                <td class="num">line 16</td>
                 <td class="num good">2</td>
                 <td class="num">29</td>
               </tr>
               <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 96</td>
+                <td class="num good">2</td>
+                <td class="num">10</td>
+              </tr>
+              <tr>
                 <td class="fn-name">buildElectronDebugMenu</td>
-                <td class="num">line 184</td>
+                <td class="num">line 198</td>
                 <td class="num good">2</td>
                 <td class="num">15</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 23</td>
+                <td class="num">line 24</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 36</td>
+                <td class="num">line 37</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">buildFileMenu</td>
-                <td class="num">line 45</td>
+                <td class="num">line 46</td>
                 <td class="num good">1</td>
                 <td class="num">20</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 51</td>
+                <td class="num">line 52</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 58</td>
+                <td class="num">line 59</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">buildEditMenu</td>
-                <td class="num">line 66</td>
+                <td class="num">line 67</td>
                 <td class="num good">1</td>
                 <td class="num">16</td>
               </tr>
               <tr>
                 <td class="fn-name">buildViewMenu</td>
-                <td class="num">line 83</td>
+                <td class="num">line 84</td>
                 <td class="num good">1</td>
-                <td class="num">21</td>
+                <td class="num">34</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 89</td>
+                <td class="num">line 90</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 97</td>
+                <td class="num">line 111</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">buildDebugMenu</td>
-                <td class="num">line 105</td>
-                <td class="num good">1</td>
-                <td class="num">48</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 112</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
                 <td class="num">line 119</td>
                 <td class="num good">1</td>
-                <td class="num">3</td>
+                <td class="num">48</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
@@ -2951,61 +2969,73 @@
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 141</td>
+                <td class="num">line 140</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 148</td>
+                <td class="num">line 147</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 155</td>
+                <td class="num good">1</td>
+                <td class="num">3</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 162</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">buildConnectionsMenu</td>
-                <td class="num">line 154</td>
+                <td class="num">line 168</td>
                 <td class="num good">1</td>
                 <td class="num">29</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 160</td>
+                <td class="num">line 174</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 166</td>
+                <td class="num">line 180</td>
                 <td class="num good">1</td>
                 <td class="num">6</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 176</td>
+                <td class="num">line 190</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">buildHelpMenu</td>
-                <td class="num">line 200</td>
+                <td class="num">line 214</td>
                 <td class="num good">1</td>
                 <td class="num">20</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 206</td>
+                <td class="num">line 220</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 213</td>
+                <td class="num">line 227</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">installMenu</td>
-                <td class="num">line 227</td>
+                <td class="num">line 241</td>
                 <td class="num good">1</td>
                 <td class="num">13</td>
               </tr>
@@ -4527,7 +4557,7 @@
     </table>
   </section>
   <section>
-    <h2>renderer <span class="badge">61 files &middot; 657 fns &middot; avg CC 9.84</span></h2>
+    <h2>renderer <span class="badge">61 files &middot; 658 fns &middot; avg CC 9.89</span></h2>
     <table class="file-table">
       <thead><tr><th>File</th><th class="num">File CC</th><th class="num">Max Fn CC</th><th class="num">Fns</th><th class="num">SLOC</th></tr></thead>
       <tbody>
@@ -4633,10 +4663,10 @@
           </tr>
           <tr class="file-row " onclick="toggleDetail('fn-detail-71', this)">
             <td><span class="expand-icon" id="icon-71">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/Settings.tsx" onclick="event.stopPropagation()" title="src/renderer/Dialogs/Settings.tsx">Dialogs/Settings.tsx</a></td>
-            <td class="num">15</td>
-            <td class="num good">11</td>
-            <td class="num">21</td>
-            <td class="num">297</td>
+            <td class="num">16</td>
+            <td class="num good">12</td>
+            <td class="num">22</td>
+            <td class="num">302</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-71" style="display:none">
             <td colspan="5">
@@ -4644,14 +4674,14 @@
                 <thead><tr><th>Function</th><th class="num">Location</th><th class="num">CC</th><th class="num">SLOC</th></tr></thead>
                 <tbody>
               <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 275</td>
-                <td class="num good">11</td>
-                <td class="num">18</td>
+                <td class="fn-name">applySettingsToRefs</td>
+                <td class="num">line 273</td>
+                <td class="num good">12</td>
+                <td class="num">14</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 276</td>
+                <td class="num">line 291</td>
                 <td class="num good">5</td>
                 <td class="num">6</td>
               </tr>
@@ -4725,7 +4755,7 @@
                 <td class="fn-name">&lt;anonymous&gt;</td>
                 <td class="num">line 256</td>
                 <td class="num good">1</td>
-                <td class="num">71</td>
+                <td class="num">76</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
@@ -4741,31 +4771,37 @@
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 273</td>
+                <td class="num">line 288</td>
                 <td class="num good">1</td>
-                <td class="num">24</td>
+                <td class="num">15</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 293</td>
+                <td class="num">line 290</td>
+                <td class="num good">1</td>
+                <td class="num">9</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 299</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 306</td>
+                <td class="num">line 312</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 306</td>
+                <td class="num">line 312</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 309</td>
+                <td class="num">line 315</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
@@ -4778,7 +4814,7 @@
             <td class="num">31</td>
             <td class="num good">10</td>
             <td class="num">21</td>
-            <td class="num">149</td>
+            <td class="num">152</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-72" style="display:none">
             <td colspan="5">
@@ -4787,7 +4823,7 @@
                 <tbody>
               <tr>
                 <td class="fn-name">normalizeConnectionForStorage</td>
-                <td class="num">line 203</td>
+                <td class="num">line 206</td>
                 <td class="num good">10</td>
                 <td class="num">23</td>
               </tr>
@@ -4801,11 +4837,11 @@
                 <td class="fn-name">getShellKeyFromConnection</td>
                 <td class="num">line 168</td>
                 <td class="num good">5</td>
-                <td class="num">10</td>
+                <td class="num">13</td>
               </tr>
               <tr>
                 <td class="fn-name">mapConnectionToGridRow</td>
-                <td class="num">line 238</td>
+                <td class="num">line 241</td>
                 <td class="num good">4</td>
                 <td class="num">15</td>
               </tr>
@@ -4835,19 +4871,19 @@
               </tr>
               <tr>
                 <td class="fn-name">getShellLabel</td>
-                <td class="num">line 187</td>
+                <td class="num">line 190</td>
                 <td class="num good">2</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">extractSettingsConnections</td>
-                <td class="num">line 265</td>
+                <td class="num">line 268</td>
                 <td class="num good">2</td>
                 <td class="num">4</td>
               </tr>
               <tr>
                 <td class="fn-name">buildConnectionFromForm</td>
-                <td class="num">line 280</td>
+                <td class="num">line 283</td>
                 <td class="num good">2</td>
                 <td class="num">18</td>
               </tr>
@@ -4907,7 +4943,7 @@
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 175</td>
+                <td class="num">line 178</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
@@ -5882,7 +5918,7 @@
             <td class="num">19</td>
             <td class="num good">6</td>
             <td class="num">41</td>
-            <td class="num">443</td>
+            <td class="num">448</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-81" style="display:none">
             <td colspan="5">
@@ -5891,153 +5927,123 @@
                 <tbody>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 446</td>
+                <td class="num">line 451</td>
                 <td class="num good">6</td>
                 <td class="num">19</td>
               </tr>
               <tr>
                 <td class="fn-name">initializeDockManager</td>
-                <td class="num">line 235</td>
+                <td class="num">line 240</td>
                 <td class="num good">5</td>
                 <td class="num">29</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 478</td>
+                <td class="num">line 483</td>
                 <td class="num good">4</td>
                 <td class="num">6</td>
               </tr>
               <tr>
                 <td class="fn-name">handleResize</td>
-                <td class="num">line 125</td>
+                <td class="num">line 130</td>
                 <td class="num good">2</td>
                 <td class="num">11</td>
               </tr>
               <tr>
                 <td class="fn-name">handleAppChange</td>
-                <td class="num">line 137</td>
+                <td class="num">line 142</td>
                 <td class="num good">2</td>
                 <td class="num">6</td>
               </tr>
               <tr>
                 <td class="fn-name">createDefaultLayout</td>
-                <td class="num">line 209</td>
+                <td class="num">line 214</td>
                 <td class="num good">2</td>
                 <td class="num">25</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 467</td>
+                <td class="num">line 472</td>
                 <td class="num good">2</td>
                 <td class="num">5</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 491</td>
+                <td class="num">line 496</td>
                 <td class="num good">2</td>
                 <td class="num">5</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 533</td>
+                <td class="num">line 538</td>
                 <td class="num good">2</td>
                 <td class="num">7</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 34</td>
+                <td class="num">line 37</td>
                 <td class="num good">1</td>
                 <td class="num">4</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 35</td>
+                <td class="num">line 38</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 39</td>
+                <td class="num">line 42</td>
                 <td class="num good">1</td>
                 <td class="num">4</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 40</td>
+                <td class="num">line 43</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 44</td>
+                <td class="num">line 47</td>
                 <td class="num good">1</td>
                 <td class="num">4</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 45</td>
+                <td class="num">line 48</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 49</td>
+                <td class="num">line 52</td>
                 <td class="num good">1</td>
                 <td class="num">4</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 50</td>
+                <td class="num">line 53</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 54</td>
+                <td class="num">line 59</td>
                 <td class="num good">1</td>
                 <td class="num">4</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 55</td>
+                <td class="num">line 60</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">lazyWindow</td>
-                <td class="num">line 67</td>
-                <td class="num good">1</td>
-                <td class="num">3</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 71</td>
-                <td class="num good">1</td>
-                <td class="num">1</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
                 <td class="num">line 72</td>
                 <td class="num good">1</td>
-                <td class="num">1</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 73</td>
-                <td class="num good">1</td>
-                <td class="num">1</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 74</td>
-                <td class="num good">1</td>
-                <td class="num">1</td>
-              </tr>
-              <tr>
-                <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 75</td>
-                <td class="num good">1</td>
-                <td class="num">1</td>
+                <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
@@ -6052,86 +6058,116 @@
                 <td class="num">1</td>
               </tr>
               <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 78</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 79</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 80</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 81</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+              <tr>
+                <td class="fn-name">&lt;anonymous&gt;</td>
+                <td class="num">line 82</td>
+                <td class="num good">1</td>
+                <td class="num">1</td>
+              </tr>
+              <tr>
                 <td class="fn-name">DeferredWindow</td>
-                <td class="num">line 92</td>
+                <td class="num">line 97</td>
                 <td class="num good">1</td>
                 <td class="num">13</td>
               </tr>
               <tr>
                 <td class="fn-name">setupLayoutListeners</td>
-                <td class="num">line 144</td>
+                <td class="num">line 149</td>
                 <td class="num good">1</td>
                 <td class="num">12</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 146</td>
+                <td class="num">line 151</td>
                 <td class="num good">1</td>
                 <td class="num">4</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 150</td>
+                <td class="num">line 155</td>
                 <td class="num good">1</td>
                 <td class="num">4</td>
               </tr>
               <tr>
                 <td class="fn-name">registerAllPanels</td>
-                <td class="num">line 157</td>
+                <td class="num">line 162</td>
                 <td class="num good">1</td>
                 <td class="num">51</td>
               </tr>
               <tr>
                 <td class="fn-name">PrimaryToolWindows</td>
-                <td class="num">line 269</td>
+                <td class="num">line 274</td>
                 <td class="num good">1</td>
                 <td class="num">46</td>
               </tr>
               <tr>
                 <td class="fn-name">SecondaryToolWindows</td>
-                <td class="num">line 316</td>
+                <td class="num">line 321</td>
                 <td class="num good">1</td>
                 <td class="num">56</td>
               </tr>
               <tr>
                 <td class="fn-name">DockLayout</td>
-                <td class="num">line 373</td>
+                <td class="num">line 378</td>
                 <td class="num good">1</td>
                 <td class="num">11</td>
               </tr>
               <tr>
                 <td class="fn-name">AppDialogs</td>
-                <td class="num">line 393</td>
+                <td class="num">line 398</td>
                 <td class="num good">1</td>
                 <td class="num">30</td>
               </tr>
               <tr>
                 <td class="fn-name">App</td>
-                <td class="num">line 432</td>
+                <td class="num">line 437</td>
                 <td class="num good">1</td>
                 <td class="num">70</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 440</td>
+                <td class="num">line 445</td>
                 <td class="num good">1</td>
                 <td class="num">46</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 441</td>
+                <td class="num">line 446</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 477</td>
+                <td class="num">line 482</td>
                 <td class="num good">1</td>
                 <td class="num">8</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 521</td>
+                <td class="num">line 526</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
@@ -6404,7 +6440,7 @@
             <td class="num">34</td>
             <td class="num good">6</td>
             <td class="num">28</td>
-            <td class="num">254</td>
+            <td class="num">256</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-84" style="display:none">
             <td colspan="5">
@@ -6413,19 +6449,19 @@
                 <tbody>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 164</td>
+                <td class="num">line 166</td>
                 <td class="num good">6</td>
                 <td class="num">16</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 104</td>
+                <td class="num">line 105</td>
                 <td class="num good">5</td>
                 <td class="num">12</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 236</td>
+                <td class="num">line 238</td>
                 <td class="num good">5</td>
                 <td class="num">11</td>
               </tr>
@@ -6437,7 +6473,7 @@
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 190</td>
+                <td class="num">line 192</td>
                 <td class="num good">4</td>
                 <td class="num">13</td>
               </tr>
@@ -6461,7 +6497,7 @@
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 135</td>
+                <td class="num">line 137</td>
                 <td class="num good">3</td>
                 <td class="num">8</td>
               </tr>
@@ -6475,29 +6511,29 @@
                 <td class="fn-name">&lt;anonymous&gt;</td>
                 <td class="num">line 96</td>
                 <td class="num good">2</td>
-                <td class="num">55</td>
+                <td class="num">57</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 145</td>
+                <td class="num">line 147</td>
                 <td class="num good">2</td>
                 <td class="num">9</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 181</td>
+                <td class="num">line 183</td>
                 <td class="num good">2</td>
                 <td class="num">7</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 248</td>
+                <td class="num">line 250</td>
                 <td class="num good">2</td>
                 <td class="num">7</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 258</td>
+                <td class="num">line 260</td>
                 <td class="num good">2</td>
                 <td class="num">5</td>
               </tr>
@@ -6511,7 +6547,7 @@
                 <td class="fn-name">useGdbSubscriptions</td>
                 <td class="num">line 88</td>
                 <td class="num good">1</td>
-                <td class="num">64</td>
+                <td class="num">66</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
@@ -6527,55 +6563,55 @@
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 117</td>
+                <td class="num">line 119</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 120</td>
+                <td class="num">line 122</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 123</td>
+                <td class="num">line 125</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 126</td>
+                <td class="num">line 128</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 129</td>
+                <td class="num">line 131</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">useGdbKeyboardHandlers</td>
-                <td class="num">line 157</td>
+                <td class="num">line 159</td>
                 <td class="num good">1</td>
                 <td class="num">48</td>
               </tr>
               <tr>
                 <td class="fn-name">useGdbCommandController</td>
-                <td class="num">line 209</td>
+                <td class="num">line 211</td>
                 <td class="num good">1</td>
                 <td class="num">68</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 256</td>
+                <td class="num">line 258</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 264</td>
+                <td class="num">line 266</td>
                 <td class="num good">1</td>
                 <td class="num">4</td>
               </tr>
@@ -6884,7 +6920,7 @@
             <td class="num">6</td>
             <td class="num good">5</td>
             <td class="num">23</td>
-            <td class="num">103</td>
+            <td class="num">107</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-87" style="display:none">
             <td colspan="5">
@@ -6893,13 +6929,13 @@
                 <tbody>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 89</td>
+                <td class="num">line 93</td>
                 <td class="num good">5</td>
                 <td class="num">12</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 79</td>
+                <td class="num">line 83</td>
                 <td class="num good">2</td>
                 <td class="num">6</td>
               </tr>
@@ -6907,7 +6943,7 @@
                 <td class="fn-name">createToolbarHandlers</td>
                 <td class="num">line 46</td>
                 <td class="num good">1</td>
-                <td class="num">21</td>
+                <td class="num">25</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
@@ -6973,59 +7009,59 @@
                 <td class="fn-name">&lt;anonymous&gt;</td>
                 <td class="num">line 62</td>
                 <td class="num good">1</td>
-                <td class="num">2</td>
+                <td class="num">6</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 64</td>
+                <td class="num">line 68</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">useToolbarController</td>
-                <td class="num">line 68</td>
+                <td class="num">line 72</td>
                 <td class="num good">1</td>
                 <td class="num">51</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 75</td>
+                <td class="num">line 79</td>
                 <td class="num good">1</td>
                 <td class="num">12</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 88</td>
+                <td class="num">line 92</td>
                 <td class="num good">1</td>
                 <td class="num">14</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 103</td>
+                <td class="num">line 107</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 105</td>
+                <td class="num">line 109</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 109</td>
+                <td class="num">line 113</td>
                 <td class="num good">1</td>
                 <td class="num">9</td>
               </tr>
               <tr>
                 <td class="fn-name">handleUpdateWindowList</td>
-                <td class="num">line 110</td>
+                <td class="num">line 114</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 114</td>
+                <td class="num">line 118</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
@@ -7099,10 +7135,10 @@
           </tr>
           <tr class="file-row " onclick="toggleDetail('fn-detail-89', this)">
             <td><span class="expand-icon" id="icon-89">&#9654;</span> <a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/SectionsViewView.tsx" onclick="event.stopPropagation()" title="src/renderer/Dialogs/SectionsViewView.tsx">Dialogs/SectionsViewView.tsx</a></td>
-            <td class="num">25</td>
+            <td class="num">27</td>
             <td class="num good">5</td>
             <td class="num">28</td>
-            <td class="num">480</td>
+            <td class="num">479</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-89" style="display:none">
             <td colspan="5">
@@ -7116,8 +7152,14 @@
                 <td class="num">53</td>
               </tr>
               <tr>
+                <td class="fn-name">SectionsTooltip</td>
+                <td class="num">line 324</td>
+                <td class="num good">5</td>
+                <td class="num">42</td>
+              </tr>
+              <tr>
                 <td class="fn-name">handleGapBeforeRender</td>
-                <td class="num">line 387</td>
+                <td class="num">line 386</td>
                 <td class="num good">4</td>
                 <td class="num">6</td>
               </tr>
@@ -7134,26 +7176,20 @@
                 <td class="num">5</td>
               </tr>
               <tr>
-                <td class="fn-name">SectionsTooltip</td>
-                <td class="num">line 333</td>
-                <td class="num good">3</td>
-                <td class="num">34</td>
-              </tr>
-              <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 335</td>
+                <td class="num">line 326</td>
                 <td class="num good">3</td>
                 <td class="num">6</td>
               </tr>
               <tr>
                 <td class="fn-name">SectionsViewView</td>
-                <td class="num">line 438</td>
+                <td class="num">line 437</td>
                 <td class="num good">3</td>
                 <td class="num">75</td>
               </tr>
               <tr>
                 <td class="fn-name">header</td>
-                <td class="num">line 445</td>
+                <td class="num">line 444</td>
                 <td class="num good">3</td>
                 <td class="num">19</td>
               </tr>
@@ -7165,25 +7201,25 @@
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 383</td>
+                <td class="num">line 382</td>
                 <td class="num good">2</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 410</td>
+                <td class="num">line 409</td>
                 <td class="num good">2</td>
                 <td class="num">12</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 469</td>
+                <td class="num">line 468</td>
                 <td class="num good">2</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 474</td>
+                <td class="num">line 473</td>
                 <td class="num good">2</td>
                 <td class="num">1</td>
               </tr>
@@ -7227,53 +7263,53 @@
                 <td class="fn-name">SectionGapRow</td>
                 <td class="num">line 234</td>
                 <td class="num good">1</td>
-                <td class="num">43</td>
+                <td class="num">34</td>
               </tr>
               <tr>
                 <td class="fn-name">SectionsLegend</td>
-                <td class="num">line 278</td>
+                <td class="num">line 269</td>
                 <td class="num good">1</td>
                 <td class="num">54</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 305</td>
+                <td class="num">line 296</td>
                 <td class="num good">1</td>
                 <td class="num">8</td>
               </tr>
               <tr>
                 <td class="fn-name">SectionsVisualization</td>
-                <td class="num">line 373</td>
+                <td class="num">line 372</td>
                 <td class="num good">1</td>
                 <td class="num">53</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 377</td>
+                <td class="num">line 376</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">handleEnter</td>
-                <td class="num">line 379</td>
+                <td class="num">line 378</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">handleMove</td>
-                <td class="num">line 382</td>
+                <td class="num">line 381</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">handleLeave</td>
-                <td class="num">line 385</td>
+                <td class="num">line 384</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">footer</td>
-                <td class="num">line 464</td>
+                <td class="num">line 463</td>
                 <td class="num good">1</td>
                 <td class="num">17</td>
               </tr>
@@ -7286,7 +7322,7 @@
             <td class="num">34</td>
             <td class="num good">5</td>
             <td class="num">50</td>
-            <td class="num">470</td>
+            <td class="num">471</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-90" style="display:none">
             <td colspan="5">
@@ -7337,7 +7373,7 @@
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 390</td>
+                <td class="num">line 391</td>
                 <td class="num good">3</td>
                 <td class="num">13</td>
               </tr>
@@ -7409,19 +7445,19 @@
               </tr>
               <tr>
                 <td class="fn-name">useConnectionManagerController</td>
-                <td class="num">line 443</td>
+                <td class="num">line 444</td>
                 <td class="num good">2</td>
                 <td class="num">79</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 472</td>
+                <td class="num">line 473</td>
                 <td class="num good">2</td>
                 <td class="num">8</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 496</td>
+                <td class="num">line 497</td>
                 <td class="num good">2</td>
                 <td class="num">4</td>
               </tr>
@@ -7543,53 +7579,53 @@
                 <td class="fn-name">useConnectionData</td>
                 <td class="num">line 375</td>
                 <td class="num good">1</td>
-                <td class="num">54</td>
+                <td class="num">55</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
                 <td class="num">line 385</td>
                 <td class="num good">1</td>
-                <td class="num">1</td>
+                <td class="num">2</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 385</td>
+                <td class="num">line 386</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 447</td>
+                <td class="num">line 448</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 447</td>
+                <td class="num">line 448</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 476</td>
+                <td class="num">line 477</td>
                 <td class="num good">1</td>
                 <td class="num">3</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 481</td>
+                <td class="num">line 482</td>
                 <td class="num good">1</td>
                 <td class="num">5</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 488</td>
+                <td class="num">line 489</td>
                 <td class="num good">1</td>
                 <td class="num">6</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 489</td>
+                <td class="num">line 490</td>
                 <td class="num good">1</td>
                 <td class="num">4</td>
               </tr>
@@ -8622,7 +8658,7 @@
             <td class="num">2</td>
             <td class="num good">2</td>
             <td class="num">13</td>
-            <td class="num">176</td>
+            <td class="num">178</td>
           </tr>
           <tr class="fn-detail" id="fn-detail-109" style="display:none">
             <td colspan="5">
@@ -8663,47 +8699,47 @@
                 <td class="fn-name">AboutBoxVersionTable</td>
                 <td class="num">line 67</td>
                 <td class="num good">1</td>
-                <td class="num">54</td>
+                <td class="num">56</td>
               </tr>
               <tr>
                 <td class="fn-name">AboutBoxCreditsSection</td>
-                <td class="num">line 122</td>
+                <td class="num">line 124</td>
                 <td class="num good">1</td>
                 <td class="num">18</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 145</td>
+                <td class="num">line 147</td>
                 <td class="num good">1</td>
                 <td class="num">57</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 156</td>
+                <td class="num">line 158</td>
                 <td class="num good">1</td>
                 <td class="num">13</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 157</td>
+                <td class="num">line 159</td>
                 <td class="num good">1</td>
                 <td class="num">11</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 178</td>
+                <td class="num">line 180</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 178</td>
+                <td class="num">line 180</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
               <tr>
                 <td class="fn-name">&lt;anonymous&gt;</td>
-                <td class="num">line 181</td>
+                <td class="num">line 183</td>
                 <td class="num good">1</td>
                 <td class="num">1</td>
               </tr>
@@ -9715,6 +9751,14 @@
         </tr>
         <tr>
           <td class="num rank">3</td>
+          <td class="fn-name">applySettingsToRefs</td>
+          <td class="file-cell" title="src/renderer/Dialogs/Settings.tsx"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/Settings.tsx:273">Dialogs/Settings.tsx</a>:273</td>
+          <td>renderer</td>
+          <td class="num good">12</td>
+          <td class="num">14</td>
+        </tr>
+        <tr>
+          <td class="num rank">4</td>
           <td class="fn-name">parseDisasmTokens</td>
           <td class="file-cell" title="src/main/mi-interface/gdb-parsers/disasmParser.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/gdb-parsers/disasmParser.ts:20">mi-interface/gdb-parsers/disasmParser.ts</a>:20</td>
           <td>main</td>
@@ -9722,7 +9766,7 @@
           <td class="num">36</td>
         </tr>
         <tr>
-          <td class="num rank">4</td>
+          <td class="num rank">5</td>
           <td class="fn-name">parseBlockvector</td>
           <td class="file-cell" title="src/main/mi-interface/gdb-parsers/maint-print-symbols-parser.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/gdb-parsers/maint-print-symbols-parser.ts:90">mi-interface/gdb-parsers/maint-print-symbols-parser.ts</a>:90</td>
           <td>main</td>
@@ -9730,20 +9774,12 @@
           <td class="num">50</td>
         </tr>
         <tr>
-          <td class="num rank">5</td>
+          <td class="num rank">6</td>
           <td class="fn-name">parseRawOutput</td>
           <td class="file-cell" title="src/main/mi-interface/mi-output-processor.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/mi-output-processor.ts:147">mi-interface/mi-output-processor.ts</a>:147</td>
           <td>main</td>
           <td class="num good">11</td>
           <td class="num">39</td>
-        </tr>
-        <tr>
-          <td class="num rank">6</td>
-          <td class="fn-name">&lt;anonymous&gt;</td>
-          <td class="file-cell" title="src/renderer/Dialogs/Settings.tsx"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/Settings.tsx:275">Dialogs/Settings.tsx</a>:275</td>
-          <td>renderer</td>
-          <td class="num good">11</td>
-          <td class="num">18</td>
         </tr>
         <tr>
           <td class="num rank">7</td>
@@ -9764,7 +9800,7 @@
         <tr>
           <td class="num rank">9</td>
           <td class="fn-name">normalizeConnectionForStorage</td>
-          <td class="file-cell" title="src/renderer/Dialogs/connectionManagerModel.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/connectionManagerModel.ts:203">Dialogs/connectionManagerModel.ts</a>:203</td>
+          <td class="file-cell" title="src/renderer/Dialogs/connectionManagerModel.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/renderer/Dialogs/connectionManagerModel.ts:206">Dialogs/connectionManagerModel.ts</a>:206</td>
           <td>renderer</td>
           <td class="num good">10</td>
           <td class="num">23</td>
@@ -9836,7 +9872,7 @@
         <tr>
           <td class="num rank">18</td>
           <td class="fn-name">&lt;anonymous&gt;</td>
-          <td class="file-cell" title="src/main/mi-interface/gdb-parsers/gdb-output-capture.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/gdb-parsers/gdb-output-capture.ts:151">mi-interface/gdb-parsers/gdb-output-capture.ts</a>:151</td>
+          <td class="file-cell" title="src/main/mi-interface/gdb-parsers/gdb-output-capture.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/gdb-parsers/gdb-output-capture.ts:201">mi-interface/gdb-parsers/gdb-output-capture.ts</a>:201</td>
           <td>main</td>
           <td class="num good">8</td>
           <td class="num">23</td>
@@ -9884,7 +9920,7 @@
         <tr>
           <td class="num rank">24</td>
           <td class="fn-name">handleOtherCommand</td>
-          <td class="file-cell" title="src/main/mi-interface/mi-notify-handler.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/mi-notify-handler.ts:293">mi-interface/mi-notify-handler.ts</a>:293</td>
+          <td class="file-cell" title="src/main/mi-interface/mi-notify-handler.ts"><a href="vscode://file/C:/Users/barry/Documents/Projects/revealGDB/src/main/mi-interface/mi-notify-handler.ts:292">mi-interface/mi-notify-handler.ts</a>:292</td>
           <td>main</td>
           <td class="num good">8</td>
           <td class="num">26</td>

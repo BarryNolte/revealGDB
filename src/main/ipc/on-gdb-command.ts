@@ -29,7 +29,7 @@ const DEFAULT_TABLE_OPTIONS = {
 function handleHelp(_gdbInterface: miInterface): void {
   const helpData = {
     title: "Available Debug Commands",
-    header: ["Command", "Description"],
+    header: ["command", "description"],
     content: [
       { command: ".help", description: "Show this help message" },
       { command: ".db sources", description: "Dump information about source files" },

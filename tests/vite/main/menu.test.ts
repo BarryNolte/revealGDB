@@ -4,17 +4,25 @@ const buildFromTemplate = vi.fn((template) => template);
 const setApplicationMenu = vi.fn();
 const quit = vi.fn();
 const openExternal = vi.fn();
+const openPath = vi.fn().mockResolvedValue("");
+const showErrorBox = vi.fn();
 const sendToRenderer = vi.fn();
 
 vi.mock("electron", () => ({
   app: { name: "revealGDB", quit },
+  dialog: { showErrorBox },
   Menu: {
     buildFromTemplate,
     setApplicationMenu,
   },
   shell: {
     openExternal,
+    openPath,
   },
+}));
+
+vi.mock("../../../src/main/app-settings", () => ({
+  AppSettings: { file: vi.fn().mockReturnValue("/fake/settings.json") },
 }));
 
 function createMainMocks() {
@@ -72,7 +80,7 @@ describe("GdbMenu", () => {
 
     const preferencesItem = (fileMenu?.submenu as Array<{ click?: () => void }>)[0];
     const fileExitItem = (fileMenu?.submenu as Array<{ click?: () => void }>)[2];
-    const commandEntryItem = (viewMenu?.submenu as Array<{ click?: () => void }>)[2];
+    const commandEntryItem = (viewMenu?.submenu as Array<{ click?: () => void }>)[3];
     const continueItem = (debugMenu?.submenu as Array<{ click?: () => void }>)[0];
     const stepOverItem = (debugMenu?.submenu as Array<{ click?: () => void }>)[1];
     const stepIntoItem = (debugMenu?.submenu as Array<{ click?: () => void }>)[2];

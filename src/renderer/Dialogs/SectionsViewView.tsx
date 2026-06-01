@@ -239,15 +239,6 @@ function SectionGapRow({ processed }: { processed: ProcessedSection }): JSX.Elem
   const rectHeight = rowHeight - ROW_GAP;
   return (
     <g>
-      {/* <line
-        x1={0}
-        y1={cumY}
-        x2={RECT_LEFT}
-        y2={cumY}
-        stroke="#444"
-        strokeWidth={1}
-        strokeDasharray="4,4"
-      /> */}
       <text
         x={0}
         y={midY}
@@ -357,10 +348,18 @@ function SectionsTooltip({ tooltip }: { tooltip: TooltipState }): JSX.Element | 
         <span className="sections-tooltip-label">Size:</span>
         {formatSize(tooltip.size)}
       </div>
-      <div>
-        <span className="sections-tooltip-label">File:</span>
-        {tooltip.section.file ?? "\u2014"}
-      </div>
+      {tooltip.section.flags && tooltip.section.flags.length > 0 && (
+        <div>
+          <span className="sections-tooltip-label">Flags:</span>
+          {tooltip.section.flags.join(" ")}
+        </div>
+      )}
+      {tooltip.section.file && (
+        <div>
+          <span className="sections-tooltip-label">File:</span>
+          {tooltip.section.file}
+        </div>
+      )}
     </div>
   );
 }

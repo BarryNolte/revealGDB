@@ -4,6 +4,7 @@
  * @remarks
  * Exported symbols include `CaptureType`, `GdbOutputCapture`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
+import type { gdbSection } from "../../../common/gdb-state-types";
 import { sendToRenderer } from "../../ipc-sender";
 import { gdbStateDatabase } from "../gdb-state-database/gdbStateDatabase";
 
@@ -103,25 +104,74 @@ export class GdbOutputCapture {
    *
    * @param capArray - Value for `capArray` consumed by this operation.
    */
-  CaptureSymbolFiles(capArray: string[]): void {
-    for (const line of capArray) {
-      const symGroups = line.match(/Symbols from \\"(?<path>[^\\"]*)/)?.groups;
-      if (symGroups) {
-        this.gdbDB.addMainSymbolFile(symGroups.path);
-      }
+  private tryAddSymbolFileLine(line: string): boolean {
+    const execGroups = line.match(/Exec file: `(?<path>[^']+)'/)?.groups;
+    if (execGroups) {
+      this.gdbDB.addMainSymbolFile(execGroups.path);
+      return true;
+    }
+    const symGroups = line.match(/Symbols from \\"(?<path>[^\\"]*)/)?.groups;
+    if (symGroups) {
+      this.gdbDB.addMainSymbolFile(symGroups.path);
+      return true;
+    }
+    return false;
+  }
 
-      const inGroups =
-        /\\t(?<startaddr>[^\s]*) - (?<endaddr>[^\s]*) is (?<section>[^\s]*)( in (?<file>.*))?\\n"$/.exec(
-          line,
-        )?.groups;
-      if (!inGroups) continue;
+  private tryAddMaintSectionLine(line: string, sectionMap: Map<string, gdbSection>): boolean {
+    const maintGroups =
+      /\[(?<index>\d+)\]\s+(?<startaddr>[^\s]+)->(?<endaddr>[^\s]+) at [^\s]+:\s+(?<section>[^\s]+)(?<flags>[\s\w]*)/.exec(
+        line,
+      )?.groups;
+    if (!maintGroups) return false;
+    const key = `${maintGroups.startaddr}|${maintGroups.endaddr}|${maintGroups.section}`;
+    const flags = (maintGroups.flags ?? "")
+      .trim()
+      .split(/\s+/)
+      .filter((f) => f.length > 0);
+    const existing = sectionMap.get(key);
+    if (existing) {
+      existing.flags = flags.length > 0 ? flags : undefined;
+    } else {
+      sectionMap.set(key, {
+        startAddr: maintGroups.startaddr,
+        endAddr: maintGroups.endaddr,
+        section: maintGroups.section,
+        flags: flags.length > 0 ? flags : undefined,
+      });
+    }
+    return true;
+  }
 
-      this.gdbDB.addSection({
+  private tryAddInfoFileLine(line: string, sectionMap: Map<string, gdbSection>): void {
+    const inGroups =
+      /\\t(?<startaddr>[^\s]*) - (?<endaddr>[^\s]*) is (?<section>[^\s]*)( in (?<file>.*))?\\n"$/.exec(
+        line,
+      )?.groups;
+    if (!inGroups) return;
+    const key = `${inGroups.startaddr}|${inGroups.endaddr}|${inGroups.section}`;
+    const existing = sectionMap.get(key);
+    if (existing) {
+      existing.file = inGroups.file;
+    } else {
+      sectionMap.set(key, {
         startAddr: inGroups.startaddr,
         endAddr: inGroups.endaddr,
         section: inGroups.section,
         file: inGroups.file,
       });
+    }
+  }
+
+  CaptureSymbolFiles(capArray: string[]): void {
+    const sectionMap = new Map<string, gdbSection>();
+    for (const line of capArray) {
+      if (this.tryAddSymbolFileLine(line)) continue;
+      if (this.tryAddMaintSectionLine(line, sectionMap)) continue;
+      this.tryAddInfoFileLine(line, sectionMap);
+    }
+    for (const section of sectionMap.values()) {
+      this.gdbDB.addSection(section);
     }
   }
 

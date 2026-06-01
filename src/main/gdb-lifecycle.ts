@@ -73,7 +73,9 @@ export function createGdbInterface(
         gdbInterface.runCommand(cmd);
       });
 
-      gdbInterface.runCommand("echo <<<<file-info>>>>\ninfo files\necho >>>>end-capture<<<<");
+      gdbInterface.runCommand(
+        "echo <<<<file-info>>>>\ninfo files\nmaint info sections\necho >>>>end-capture<<<<",
+      );
       gdbInterface.runCommand(
         "echo <<<<function-names>>>>\ninfo functions\necho >>>>end-capture<<<<",
       );

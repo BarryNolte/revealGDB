@@ -22,28 +22,63 @@ describe("GdbOutputCapture", () => {
     const db = new gdbStateDatabase();
     const capture = new GdbOutputCapture(db);
 
+    // Union of info files (provides 'file') + maint info sections (provides flags)
     const lines = [
       'Symbols from \\"/path/to/app.elf\\"',
       '\\t0x00001000 - 0x00002000 is .text in /path/to/app.elf\\n"',
       '\\t0x00002000 - 0x00003000 is .data\\n"',
+      '\\t0x00003000 - 0x00003500 is .bss\\n"',
+      "\tExec file: `/path/to/app.elf', file type elf32-xtensa-le.",
+      " [0]      0x00001000->0x00002000 at 0x0000e000: .text ALLOC LOAD READONLY CODE HAS_CONTENTS\\n\"",
+      " [1]      0x00002000->0x00003000 at 0x0000f000: .data ALLOC LOAD DATA HAS_CONTENTS\\n\"",
+      " [2]      0x00003000->0x00003500 at 0x00010000: .bss ALLOC\\n\"",
     ];
 
     capture.CaptureSymbolFiles(lines);
 
     const sym = db.getSymbolFiles();
     expect(sym.mainSym).toBe("/path/to/app.elf");
-    expect(sym.sections).toHaveLength(2);
+    expect(sym.sections).toHaveLength(3);
     expect(sym.sections[0]).toEqual({
       startAddr: "0x00001000",
       endAddr: "0x00002000",
       section: ".text",
       file: "/path/to/app.elf",
+      flags: ["ALLOC", "LOAD", "READONLY", "CODE", "HAS_CONTENTS"],
     });
     expect(sym.sections[1]).toEqual({
       startAddr: "0x00002000",
       endAddr: "0x00003000",
       section: ".data",
       file: undefined,
+      flags: ["ALLOC", "LOAD", "DATA", "HAS_CONTENTS"],
+    });
+    expect(sym.sections[2]).toEqual({
+      startAddr: "0x00003000",
+      endAddr: "0x00003500",
+      section: ".bss",
+      file: undefined,
+      flags: ["ALLOC"],
+    });
+  });
+
+  it("merges file and flags for sections only in maint info sections", () => {
+    const db = new gdbStateDatabase();
+    const capture = new GdbOutputCapture(db);
+
+    const lines = [
+      " [0]      0x00000000->0x00004cc8 at 0x0002b028: .debug_aranges READONLY HAS_CONTENTS\\n\"",
+    ];
+
+    capture.CaptureSymbolFiles(lines);
+
+    const sym = db.getSymbolFiles();
+    expect(sym.sections).toHaveLength(1);
+    expect(sym.sections[0]).toEqual({
+      startAddr: "0x00000000",
+      endAddr: "0x00004cc8",
+      section: ".debug_aranges",
+      flags: ["READONLY", "HAS_CONTENTS"],
     });
   });
 
@@ -82,7 +117,7 @@ describe("GdbOutputCapture", () => {
     expect(capture.CaptureLine("no-capture")).toBe(false);
 
     expect(capture.CaptureLine("<<<<file-info>>>>")).toBe(true);
-    expect(capture.CaptureLine('\\t0x00001000 - 0x00002000 is .text\\n"')).toBe(true);
+    expect(capture.CaptureLine(' [0]      0x00001000->0x00002000 at 0x0000e000: .text ALLOC LOAD CODE\\n"')).toBe(true);
     expect(capture.CaptureLine(">>>>end-capture<<<<")).toBe(true);
 
     expect(db.getSymbolFiles().sections).toHaveLength(1);
@@ -111,7 +146,7 @@ describe("GdbOutputCapture", () => {
     const capture = new GdbOutputCapture(db);
 
     expect(capture.CaptureLine("<<<<file-info>>>>")).toBe(true);
-    expect(capture.CaptureLine('\\t0x00001000 - 0x00002000 is .text\\n"')).toBe(true);
+    expect(capture.CaptureLine(' [0]      0x00001000->0x00002000 at 0x0000e000: .text ALLOC LOAD CODE\\n"')).toBe(true);
 
     expect(capture.CaptureLine("<<<<function-names>>>>")).toBe(true);
     expect(capture.CaptureLine('"\\nFile "')).toBe(true);

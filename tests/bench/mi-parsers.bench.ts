@@ -12,7 +12,13 @@ vi.mock("../../src/main/ipc-sender", () => ({
 }));
 
 function makeHost(): MiOutputHost {
-  return { gdbDB: new gdbStateDatabase(), emit: vi.fn(), send: vi.fn() };
+  return {
+    gdbDB: new gdbStateDatabase(),
+    emit: vi.fn(),
+    send: vi.fn(),
+    getEvaluatingExpression: vi.fn().mockReturnValue(false),
+    runOnStopped: vi.fn(),
+  };
 }
 
 // ─── MiNotifyAsyncHandler ────────────────────────────────────────────────────

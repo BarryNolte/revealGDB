@@ -97,6 +97,7 @@ export type gdbSection = {
   endAddr: string;
   section: string;
   file?: string;
+  flags?: string[];
 };
 
 export type gdbSymbolFiles = {

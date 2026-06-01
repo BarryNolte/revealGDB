@@ -4,7 +4,8 @@
  * @remarks
  * Exported symbols include `GdbMenu`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-import { app, Menu, shell } from "electron";
+import { app, dialog, Menu, shell } from "electron";
+import { AppSettings } from "./app-settings";
 import { sendToRenderer } from "./ipc-sender";
 import { miInterface } from "./mi-interface/mi-interface";
 import { isDebug, isMac } from "./platform-info";
@@ -88,6 +89,19 @@ export class GdbMenu {
           label: "Sections...",
           click: () => {
             sendToRenderer(NOTIFY_RENDER, { command: "sections-view" });
+          },
+        },
+        {
+          label: "Open Settings File",
+          click: async () => {
+            const filePath = AppSettings.file();
+            const error = await shell.openPath(filePath);
+            if (error) {
+              dialog.showErrorBox(
+                "Cannot Open Settings File",
+                `No application is registered to open JSON files, or the file could not be opened.\n\n${error}`,
+              );
+            }
           },
         },
         { type: "separator" },

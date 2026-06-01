@@ -340,6 +340,14 @@ describe("handleNotifyMain", () => {
       handleNotifyMain({ command: "unknown-command-xyz" as never }, context),
     ).not.toThrow();
   });
+
+  it("handles save-auto-symbol-loading by persisting the setting", () => {
+    const { context, appSettings } = createIpcRegistrationHarness();
+
+    handleNotifyMain({ command: "save-auto-symbol-loading", data: true }, context);
+
+    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.disableAutoSymbolLoading", true);
+  });
 });
 
 describe("onGdbCommand", () => {
@@ -530,6 +538,17 @@ describe("onGdbCommand", () => {
   });
 });
 
+function getRegisteredHandlers(ipcMain: { on: ReturnType<typeof vi.fn>; handle: ReturnType<typeof vi.fn> }) {
+  const getOn = (ch: string) => ipcMain.on.mock.calls.find(([c]) => c === ch)?.[1] as ((...args: unknown[]) => unknown) | undefined;
+  const getHandle = (ch: string) => ipcMain.handle.mock.calls.find(([c]) => c === ch)?.[1] as ((...args: unknown[]) => unknown) | undefined;
+  return {
+    notifyHandler: getOn(IPC_CHANNELS.rendererToMain.commands.app.notify),
+    sendHandler: getHandle(IPC_CHANNELS.rendererToMain.commands.debugger.send),
+    controlDHandler: getOn(IPC_CHANNELS.rendererToMain.commands.debugger.sendControlD),
+    dangerousResponseHandler: getOn(IPC_CHANNELS.rendererSend.dangerousCommandResponse),
+  };
+}
+
 describe("registerIpcCommandHandlers", () => {
   it("registers app notification and debugger send channels", () => {
     const { context, ipcMain } = createIpcRegistrationHarness();
@@ -544,5 +563,181 @@ describe("registerIpcCommandHandlers", () => {
       IPC_CHANNELS.rendererToMain.commands.debugger.send,
       expect.any(Function),
     );
+  });
+
+  it("notify handler dispatches messages to handleNotifyMain", () => {
+    const { context, ipcMain, send } = createIpcRegistrationHarness();
+    registerIpcCommandHandlers(context);
+    const { notifyHandler } = getRegisteredHandlers(ipcMain);
+
+    notifyHandler!({}, { command: "renderEnd" });
+
+    expect(send).toHaveBeenCalledWith(IPC_CHANNELS.mainToRenderer.notifications.render, {
+      command: "command-entry",
+    });
+  });
+
+  it("send handler routes a non-dangerous command directly to onGdbCommand", async () => {
+    const { context, ipcMain, gdbInterface } = createIpcRegistrationHarness({
+      appSettings: { getSync: vi.fn().mockReturnValue(undefined) },
+    });
+    registerIpcCommandHandlers(context);
+    const { sendHandler } = getRegisteredHandlers(ipcMain);
+
+    await sendHandler!({}, "info registers");
+
+    expect(gdbInterface.runCommand).toHaveBeenCalledWith("info registers");
+  });
+
+  it("send handler routes non-string structured command without checking dangerous entries", async () => {
+    const getSync = vi.fn();
+    const { context, ipcMain, gdbInterface } = createIpcRegistrationHarness({
+      appSettings: { getSync },
+    });
+    registerIpcCommandHandlers(context);
+    const { sendHandler } = getRegisteredHandlers(ipcMain);
+
+    await sendHandler!({}, { kind: "select-stack-frame", frameLevel: "3" });
+
+    expect(getSync).not.toHaveBeenCalled();
+    expect(gdbInterface.runCommand).toHaveBeenCalledWith("frame 3");
+  });
+
+  it("send handler with defaultAnswer=yes executes without prompting", async () => {
+    const { context, ipcMain, gdbInterface, send } = createIpcRegistrationHarness({
+      appSettings: { getSync: vi.fn().mockReturnValue([{ command: "rm", defaultAnswer: "yes" }]) },
+    });
+    registerIpcCommandHandlers(context);
+    const { sendHandler } = getRegisteredHandlers(ipcMain);
+
+    await sendHandler!({}, "rm /tmp");
+
+    expect(gdbInterface.runCommand).toHaveBeenCalledWith("rm /tmp");
+    expect(send).not.toHaveBeenCalledWith(
+      IPC_CHANNELS.mainToRenderer.notifications.render,
+      expect.objectContaining({ command: "confirm-dangerous-command" }),
+    );
+  });
+
+  it("send handler with defaultAnswer=no skips execution silently", async () => {
+    const { context, ipcMain, gdbInterface } = createIpcRegistrationHarness({
+      appSettings: { getSync: vi.fn().mockReturnValue([{ command: "rm", defaultAnswer: "no" }]) },
+    });
+    registerIpcCommandHandlers(context);
+    const { sendHandler } = getRegisteredHandlers(ipcMain);
+
+    await sendHandler!({}, "rm /tmp");
+
+    expect(gdbInterface.runCommand).not.toHaveBeenCalled();
+  });
+
+  it("send handler with no entries matching the command executes without prompting", async () => {
+    const { context, ipcMain, gdbInterface } = createIpcRegistrationHarness({
+      appSettings: { getSync: vi.fn().mockReturnValue([{ command: "kill" }]) },
+    });
+    registerIpcCommandHandlers(context);
+    const { sendHandler } = getRegisteredHandlers(ipcMain);
+
+    await sendHandler!({}, "info registers");
+
+    expect(gdbInterface.runCommand).toHaveBeenCalledWith("info registers");
+  });
+
+  it("send handler without defaultAnswer sends confirm-dangerous-command and executes when allowed", async () => {
+    const { context, ipcMain, send, gdbInterface } = createIpcRegistrationHarness({
+      appSettings: {
+        getSync: vi.fn().mockReturnValue([{ command: "rm", reason: "removes files permanently" }]),
+      },
+    });
+    registerIpcCommandHandlers(context);
+    const { sendHandler, dangerousResponseHandler } = getRegisteredHandlers(ipcMain);
+
+    const pending = sendHandler!({}, "rm /tmp/file");
+    dangerousResponseHandler!({}, { allow: true, remember: false, answer: "yes" });
+    await pending;
+
+    expect(send).toHaveBeenCalledWith(IPC_CHANNELS.mainToRenderer.notifications.render, {
+      command: "confirm-dangerous-command",
+      data: { commandText: "rm /tmp/file", reason: "removes files permanently" },
+    });
+    expect(gdbInterface.runCommand).toHaveBeenCalledWith("rm /tmp/file");
+  });
+
+  it("send handler without defaultAnswer does not execute when user denies", async () => {
+    const { context, ipcMain, gdbInterface } = createIpcRegistrationHarness({
+      appSettings: { getSync: vi.fn().mockReturnValue([{ command: "rm" }]) },
+    });
+    registerIpcCommandHandlers(context);
+    const { sendHandler, dangerousResponseHandler } = getRegisteredHandlers(ipcMain);
+
+    const pending = sendHandler!({}, "rm /tmp");
+    dangerousResponseHandler!({}, { allow: false, remember: false, answer: "no" });
+    await pending;
+
+    expect(gdbInterface.runCommand).not.toHaveBeenCalled();
+  });
+
+  it("dangerous command response with remember=true updates existing entry in settings", async () => {
+    const { context, ipcMain, appSettings } = createIpcRegistrationHarness({
+      appSettings: {
+        getSync: vi.fn().mockReturnValue([{ command: "rm", reason: "dangerous" }]),
+      },
+    });
+    registerIpcCommandHandlers(context);
+    const { sendHandler, dangerousResponseHandler } = getRegisteredHandlers(ipcMain);
+
+    const pending = sendHandler!({}, "rm /tmp");
+    dangerousResponseHandler!({}, { allow: true, remember: true, answer: "yes" });
+    await pending;
+
+    expect(appSettings.setSync).toHaveBeenCalledWith(
+      "gdb.dangerousCommands",
+      expect.arrayContaining([expect.objectContaining({ command: "rm", defaultAnswer: "yes" })]),
+    );
+  });
+
+  it("dangerous command response with remember=true pushes new entry when none exists", async () => {
+    const { context, ipcMain, appSettings } = createIpcRegistrationHarness({
+      appSettings: {
+        getSync: vi
+          .fn()
+          .mockReturnValueOnce([{ command: "rm" }])
+          .mockReturnValueOnce(undefined),
+      },
+    });
+    registerIpcCommandHandlers(context);
+    const { sendHandler, dangerousResponseHandler } = getRegisteredHandlers(ipcMain);
+
+    const pending = sendHandler!({}, "rm /tmp");
+    dangerousResponseHandler!({}, { allow: false, remember: true, answer: "no" });
+    await pending;
+
+    expect(appSettings.setSync).toHaveBeenCalledWith(
+      "gdb.dangerousCommands",
+      expect.arrayContaining([expect.objectContaining({ command: "rm", defaultAnswer: "no" })]),
+    );
+  });
+
+  it("dangerousCommandResponse handler is a no-op when no promise is pending", () => {
+    const { context, ipcMain } = createIpcRegistrationHarness();
+    registerIpcCommandHandlers(context);
+    const { dangerousResponseHandler } = getRegisteredHandlers(ipcMain);
+
+    expect(() =>
+      dangerousResponseHandler!({}, { allow: true, remember: false, answer: "yes" }),
+    ).not.toThrow();
+  });
+
+  it("controlD handler calls sendControlD on the gdb interface", () => {
+    const sendControlD = vi.fn();
+    const { context, ipcMain } = createIpcRegistrationHarness({
+      gdbInterface: { sendControlD } as never,
+    });
+    registerIpcCommandHandlers(context);
+    const { controlDHandler } = getRegisteredHandlers(ipcMain);
+
+    controlDHandler!({});
+
+    expect(sendControlD).toHaveBeenCalledTimes(1);
   });
 });

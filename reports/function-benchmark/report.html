@@ -68,6 +68,16 @@
     overflow-x: auto;
   }
 
+  .chart-wrap {
+    overflow-x: auto;
+  }
+
+  .chart-note {
+    font-size: 12px;
+    color: #8b949e;
+    margin-bottom: 12px;
+  }
+
   table {
     width: 100%;
     border-collapse: collapse;
@@ -113,7 +123,7 @@
 <header>
   <h1>revealGDB — Function Benchmark Report</h1>
   <div class="meta">
-    40 benchmarks &nbsp;·&nbsp; Run at 5/30/2026, 10:14:40 PM &nbsp;·&nbsp; Baseline from 5/3/2026, 6:47:42 PM &nbsp;·&nbsp; Generated 5/30/2026, 10:15:12 PM
+    85 benchmarks &nbsp;·&nbsp; Run at 6/1/2026, 7:46:59 AM &nbsp;·&nbsp; Baseline from 6/1/2026, 7:46:59 AM &nbsp;·&nbsp; Generated 6/1/2026, 7:47:14 AM
   </div>
 </header>
 
@@ -145,70 +155,70 @@
         <tr>
           <td class="rank">1</td>
           <td class="bench-name">empty input</td>
-          <td class="num">14.898M</td>
+          <td class="num">14.709M</td>
           <td class="num">0.07</td>
           <td class="num">0.10</td>
           <td class="num">0.10</td>
           <td class="num">0.10</td>
-          <td class="num">0.10</td>
+          <td class="num">0.20</td>
           <td class="num">0.20</td>
           <td class="num">0.00</td>
-          <td class="num">845.30</td>
-          <td class="num">±0.88%</td>
-          <td class="num">7,449,093</td>
-          <td class="num">+862.35K ↑</td>
-           <td class="num good">+6.1%</td>
+          <td class="num">550.70</td>
+          <td class="num">±0.85%</td>
+          <td class="num">7,354,311</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">2</td>
           <td class="bench-name">plain text (mov a0, a1)</td>
-          <td class="num">4.200M</td>
-          <td class="num">0.24</td>
+          <td class="num">3.794M</td>
+          <td class="num">0.26</td>
           <td class="num">0.20</td>
           <td class="num">0.20</td>
           <td class="num">0.50</td>
           <td class="num">0.50</td>
-          <td class="num">1.60</td>
-          <td class="num">0.10</td>
-          <td class="num">528.20</td>
-          <td class="num">±1.10%</td>
-          <td class="num">2,099,834</td>
-          <td class="num">+313.67K ↑</td>
-           <td class="num good">+8.1%</td>
+          <td class="num">2.70</td>
+          <td class="num">0.20</td>
+          <td class="num">765.70</td>
+          <td class="num">±1.36%</td>
+          <td class="num">1,896,843</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">3</td>
           <td class="bench-name">instruction + address + function</td>
-          <td class="num">2.711M</td>
-          <td class="num">0.37</td>
+          <td class="num">2.358M</td>
+          <td class="num">0.42</td>
           <td class="num">0.30</td>
           <td class="num">0.40</td>
-          <td class="num">0.60</td>
           <td class="num">0.80</td>
-          <td class="num">3.40</td>
+          <td class="num">0.90</td>
+          <td class="num">6.50</td>
           <td class="num">0.30</td>
-          <td class="num">543.50</td>
-          <td class="num">±0.96%</td>
-          <td class="num">1,355,366</td>
-          <td class="num">+213.14K ↑</td>
-           <td class="num good">+8.5%</td>
+          <td class="num">882.80</td>
+          <td class="num">±1.63%</td>
+          <td class="num">1,179,087</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">4</td>
           <td class="bench-name">address + function + paren group</td>
-          <td class="num">1.756M</td>
-          <td class="num">0.57</td>
+          <td class="num">1.731M</td>
+          <td class="num">0.58</td>
           <td class="num">0.50</td>
           <td class="num">0.50</td>
           <td class="num">1.00</td>
-          <td class="num">1.30</td>
-          <td class="num">11.40</td>
+          <td class="num">1.40</td>
+          <td class="num">10.70</td>
           <td class="num">0.40</td>
-          <td class="num">911.30</td>
-          <td class="num">±1.40%</td>
-          <td class="num">878,165</td>
-          <td class="num">139.31K ↓</td>
-           <td class="num ">-7.3%</td>
+          <td class="num">561.00</td>
+          <td class="num">±1.04%</td>
+          <td class="num">865,572</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
     </tbody>
   </table>
@@ -243,53 +253,603 @@
         <tr>
           <td class="rank">1</td>
           <td class="bench-name">5 instructions (one function)</td>
-          <td class="num">218.39K</td>
-          <td class="num">4.58</td>
+          <td class="num">204.09K</td>
+          <td class="num">4.90</td>
           <td class="num">3.90</td>
-          <td class="num">4.00</td>
-          <td class="num">13.40</td>
-          <td class="num">29.40</td>
-          <td class="num">190.10</td>
+          <td class="num">4.10</td>
+          <td class="num">17.20</td>
+          <td class="num">35.80</td>
+          <td class="num">104.00</td>
           <td class="num">3.60</td>
-          <td class="num">816.60</td>
-          <td class="num">±1.45%</td>
-          <td class="num">109,211</td>
-          <td class="num">9.65K ↓</td>
-           <td class="num ">-4.2%</td>
+          <td class="num">2041.50</td>
+          <td class="num">±1.53%</td>
+          <td class="num">102,043</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">2</td>
           <td class="bench-name">20 instructions (two functions)</td>
-          <td class="num">89.93K</td>
-          <td class="num">11.12</td>
+          <td class="num">89.80K</td>
+          <td class="num">11.14</td>
           <td class="num">9.20</td>
           <td class="num">9.60</td>
-          <td class="num">44.60</td>
-          <td class="num">68.30</td>
-          <td class="num">369.70</td>
-          <td class="num">8.50</td>
-          <td class="num">1451.50</td>
-          <td class="num">±1.61%</td>
-          <td class="num">44,967</td>
-          <td class="num">9.54K ↓</td>
-           <td class="num ">-9.6%</td>
+          <td class="num">46.60</td>
+          <td class="num">69.50</td>
+          <td class="num">365.40</td>
+          <td class="num">8.40</td>
+          <td class="num">1355.80</td>
+          <td class="num">±1.67%</td>
+          <td class="num">44,901</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">3</td>
           <td class="bench-name">100 instructions (two functions)</td>
-          <td class="num">21.18K</td>
-          <td class="num">47.22</td>
-          <td class="num">39.70</td>
-          <td class="num">41.10</td>
-          <td class="num">185.70</td>
-          <td class="num">400.00</td>
-          <td class="num">595.70</td>
-          <td class="num">37.40</td>
-          <td class="num">1181.30</td>
-          <td class="num">±1.68%</td>
-          <td class="num">10,590</td>
-          <td class="num">1.38K ↓</td>
-           <td class="num ">-6.1%</td>
+          <td class="num">20.87K</td>
+          <td class="num">47.92</td>
+          <td class="num">40.10</td>
+          <td class="num">42.30</td>
+          <td class="num">219.10</td>
+          <td class="num">439.90</td>
+          <td class="num">752.30</td>
+          <td class="num">37.20</td>
+          <td class="num">1086.90</td>
+          <td class="num">±1.90%</td>
+          <td class="num">10,434</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>GdbCommandWindow — console output <span class="file-badge">gdb-command-window.bench.ts</span></h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Benchmark</th>
+        <th class="num">Ops / sec</th>
+        <th class="num">Mean<br><span class="subhead">(µs)</span></th>
+        <th class="num">Median<br><span class="subhead">(µs)</span></th>
+        <th class="num">p75<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.5<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.9<br><span class="subhead">(µs)</span></th>
+        <th class="num">Min<br><span class="subhead">(µs)</span></th>
+        <th class="num">Max<br><span class="subhead">(µs)</span></th>
+        <th class="num">± Error</th>
+        <th class="num">Samples</th>
+        <th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th>
+         <th class="num">Δ%</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td class="rank">1</td>
+          <td class="bench-name">×100</td>
+          <td class="num">444</td>
+          <td class="num">2253.85</td>
+          <td class="num">1688.05</td>
+          <td class="num">2063.40</td>
+          <td class="num">6306.90</td>
+          <td class="num">8662.10</td>
+          <td class="num">9498.70</td>
+          <td class="num">1461.10</td>
+          <td class="num">9498.70</td>
+          <td class="num">±7.69%</td>
+          <td class="num">222</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="bench-name">×1000</td>
+          <td class="num">49</td>
+          <td class="num">20269.67</td>
+          <td class="num">20202.20</td>
+          <td class="num">21003.90</td>
+          <td class="num">27257.00</td>
+          <td class="num">27257.00</td>
+          <td class="num">27257.00</td>
+          <td class="num">16024.90</td>
+          <td class="num">27257.00</td>
+          <td class="num">±4.92%</td>
+          <td class="num">25</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="bench-name">×10000</td>
+          <td class="num">5</td>
+          <td class="num">218871.07</td>
+          <td class="num">212515.65</td>
+          <td class="num">217102.20</td>
+          <td class="num">261925.20</td>
+          <td class="num">261925.20</td>
+          <td class="num">261925.20</td>
+          <td class="num">202472.10</td>
+          <td class="num">261925.20</td>
+          <td class="num">±5.98%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>GdbCommandWindow — log output <span class="file-badge">gdb-command-window.bench.ts</span></h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Benchmark</th>
+        <th class="num">Ops / sec</th>
+        <th class="num">Mean<br><span class="subhead">(µs)</span></th>
+        <th class="num">Median<br><span class="subhead">(µs)</span></th>
+        <th class="num">p75<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.5<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.9<br><span class="subhead">(µs)</span></th>
+        <th class="num">Min<br><span class="subhead">(µs)</span></th>
+        <th class="num">Max<br><span class="subhead">(µs)</span></th>
+        <th class="num">± Error</th>
+        <th class="num">Samples</th>
+        <th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th>
+         <th class="num">Δ%</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td class="rank">1</td>
+          <td class="bench-name">×100</td>
+          <td class="num">485</td>
+          <td class="num">2060.73</td>
+          <td class="num">1657.30</td>
+          <td class="num">1935.30</td>
+          <td class="num">5792.10</td>
+          <td class="num">6116.10</td>
+          <td class="num">7556.80</td>
+          <td class="num">1467.10</td>
+          <td class="num">7556.80</td>
+          <td class="num">±6.37%</td>
+          <td class="num">243</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="bench-name">×1000</td>
+          <td class="num">46</td>
+          <td class="num">21547.43</td>
+          <td class="num">21501.80</td>
+          <td class="num">22626.60</td>
+          <td class="num">27257.70</td>
+          <td class="num">27257.70</td>
+          <td class="num">27257.70</td>
+          <td class="num">16775.60</td>
+          <td class="num">27257.70</td>
+          <td class="num">±4.47%</td>
+          <td class="num">24</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="bench-name">×10000</td>
+          <td class="num">5</td>
+          <td class="num">204331.79</td>
+          <td class="num">198204.95</td>
+          <td class="num">203831.30</td>
+          <td class="num">256191.90</td>
+          <td class="num">256191.90</td>
+          <td class="num">256191.90</td>
+          <td class="num">191452.40</td>
+          <td class="num">256191.90</td>
+          <td class="num">±6.55%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>GdbCommandWindow — error output <span class="file-badge">gdb-command-window.bench.ts</span></h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Benchmark</th>
+        <th class="num">Ops / sec</th>
+        <th class="num">Mean<br><span class="subhead">(µs)</span></th>
+        <th class="num">Median<br><span class="subhead">(µs)</span></th>
+        <th class="num">p75<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.5<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.9<br><span class="subhead">(µs)</span></th>
+        <th class="num">Min<br><span class="subhead">(µs)</span></th>
+        <th class="num">Max<br><span class="subhead">(µs)</span></th>
+        <th class="num">± Error</th>
+        <th class="num">Samples</th>
+        <th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th>
+         <th class="num">Δ%</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td class="rank">1</td>
+          <td class="bench-name">×100</td>
+          <td class="num">511</td>
+          <td class="num">1958.65</td>
+          <td class="num">1611.00</td>
+          <td class="num">1832.80</td>
+          <td class="num">5840.40</td>
+          <td class="num">6503.60</td>
+          <td class="num">6540.30</td>
+          <td class="num">1425.30</td>
+          <td class="num">6540.30</td>
+          <td class="num">±6.07%</td>
+          <td class="num">256</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="bench-name">×1000</td>
+          <td class="num">51</td>
+          <td class="num">19752.24</td>
+          <td class="num">19735.20</td>
+          <td class="num">20537.30</td>
+          <td class="num">25594.50</td>
+          <td class="num">25594.50</td>
+          <td class="num">25594.50</td>
+          <td class="num">16333.10</td>
+          <td class="num">25594.50</td>
+          <td class="num">±3.62%</td>
+          <td class="num">26</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="bench-name">×10000</td>
+          <td class="num">5</td>
+          <td class="num">205214.02</td>
+          <td class="num">201497.80</td>
+          <td class="num">205519.80</td>
+          <td class="num">236395.00</td>
+          <td class="num">236395.00</td>
+          <td class="num">236395.00</td>
+          <td class="num">197685.20</td>
+          <td class="num">236395.00</td>
+          <td class="num">±3.95%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>GdbCommandWindow — debug output <span class="file-badge">gdb-command-window.bench.ts</span></h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Benchmark</th>
+        <th class="num">Ops / sec</th>
+        <th class="num">Mean<br><span class="subhead">(µs)</span></th>
+        <th class="num">Median<br><span class="subhead">(µs)</span></th>
+        <th class="num">p75<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.5<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.9<br><span class="subhead">(µs)</span></th>
+        <th class="num">Min<br><span class="subhead">(µs)</span></th>
+        <th class="num">Max<br><span class="subhead">(µs)</span></th>
+        <th class="num">± Error</th>
+        <th class="num">Samples</th>
+        <th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th>
+         <th class="num">Δ%</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td class="rank">1</td>
+          <td class="bench-name">×100</td>
+          <td class="num">507</td>
+          <td class="num">1972.16</td>
+          <td class="num">1615.60</td>
+          <td class="num">1801.70</td>
+          <td class="num">5420.40</td>
+          <td class="num">5574.90</td>
+          <td class="num">6788.00</td>
+          <td class="num">1426.80</td>
+          <td class="num">6788.00</td>
+          <td class="num">±5.91%</td>
+          <td class="num">254</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="bench-name">×1000</td>
+          <td class="num">51</td>
+          <td class="num">19589.01</td>
+          <td class="num">19427.85</td>
+          <td class="num">20706.40</td>
+          <td class="num">25234.90</td>
+          <td class="num">25234.90</td>
+          <td class="num">25234.90</td>
+          <td class="num">15631.00</td>
+          <td class="num">25234.90</td>
+          <td class="num">±4.63%</td>
+          <td class="num">26</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="bench-name">×10000</td>
+          <td class="num">5</td>
+          <td class="num">204397.81</td>
+          <td class="num">197172.30</td>
+          <td class="num">209355.40</td>
+          <td class="num">248091.90</td>
+          <td class="num">248091.90</td>
+          <td class="num">248091.90</td>
+          <td class="num">193119.60</td>
+          <td class="num">248091.90</td>
+          <td class="num">±5.75%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>GdbCommandWindow — HTML output <span class="file-badge">gdb-command-window.bench.ts</span></h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Benchmark</th>
+        <th class="num">Ops / sec</th>
+        <th class="num">Mean<br><span class="subhead">(µs)</span></th>
+        <th class="num">Median<br><span class="subhead">(µs)</span></th>
+        <th class="num">p75<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.5<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.9<br><span class="subhead">(µs)</span></th>
+        <th class="num">Min<br><span class="subhead">(µs)</span></th>
+        <th class="num">Max<br><span class="subhead">(µs)</span></th>
+        <th class="num">± Error</th>
+        <th class="num">Samples</th>
+        <th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th>
+         <th class="num">Δ%</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td class="rank">1</td>
+          <td class="bench-name">×100</td>
+          <td class="num">83</td>
+          <td class="num">12084.82</td>
+          <td class="num">11609.65</td>
+          <td class="num">13295.50</td>
+          <td class="num">18660.70</td>
+          <td class="num">18660.70</td>
+          <td class="num">18660.70</td>
+          <td class="num">9911.00</td>
+          <td class="num">18660.70</td>
+          <td class="num">±4.42%</td>
+          <td class="num">42</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="bench-name">×1000</td>
+          <td class="num">7</td>
+          <td class="num">135361.23</td>
+          <td class="num">134124.85</td>
+          <td class="num">140034.80</td>
+          <td class="num">148010.30</td>
+          <td class="num">148010.30</td>
+          <td class="num">148010.30</td>
+          <td class="num">127153.80</td>
+          <td class="num">148010.30</td>
+          <td class="num">±3.31%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="bench-name">×10000</td>
+          <td class="num">1</td>
+          <td class="num">1407737.67</td>
+          <td class="num">1389760.80</td>
+          <td class="num">1425232.50</td>
+          <td class="num">1532663.00</td>
+          <td class="num">1532663.00</td>
+          <td class="num">1532663.00</td>
+          <td class="num">1354366.20</td>
+          <td class="num">1532663.00</td>
+          <td class="num">±2.55%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>GdbCommandWindow — mixed all types <span class="file-badge">gdb-command-window.bench.ts</span></h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Benchmark</th>
+        <th class="num">Ops / sec</th>
+        <th class="num">Mean<br><span class="subhead">(µs)</span></th>
+        <th class="num">Median<br><span class="subhead">(µs)</span></th>
+        <th class="num">p75<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.5<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.9<br><span class="subhead">(µs)</span></th>
+        <th class="num">Min<br><span class="subhead">(µs)</span></th>
+        <th class="num">Max<br><span class="subhead">(µs)</span></th>
+        <th class="num">± Error</th>
+        <th class="num">Samples</th>
+        <th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th>
+         <th class="num">Δ%</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td class="rank">1</td>
+          <td class="bench-name">×100 per type (500 msgs)</td>
+          <td class="num">81</td>
+          <td class="num">12355.31</td>
+          <td class="num">12065.10</td>
+          <td class="num">13386.10</td>
+          <td class="num">25521.90</td>
+          <td class="num">25521.90</td>
+          <td class="num">25521.90</td>
+          <td class="num">9332.10</td>
+          <td class="num">25521.90</td>
+          <td class="num">±8.75%</td>
+          <td class="num">41</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="bench-name">×1000 per type (5000 msgs)</td>
+          <td class="num">8</td>
+          <td class="num">124117.55</td>
+          <td class="num">122676.00</td>
+          <td class="num">127553.30</td>
+          <td class="num">134164.70</td>
+          <td class="num">134164.70</td>
+          <td class="num">134164.70</td>
+          <td class="num">117135.20</td>
+          <td class="num">134164.70</td>
+          <td class="num">±3.47%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="bench-name">×10000 per type (50000 msgs)</td>
+          <td class="num">1</td>
+          <td class="num">1247266.84</td>
+          <td class="num">1247352.55</td>
+          <td class="num">1262778.60</td>
+          <td class="num">1283888.90</td>
+          <td class="num">1283888.90</td>
+          <td class="num">1283888.90</td>
+          <td class="num">1202824.40</td>
+          <td class="num">1283888.90</td>
+          <td class="num">±1.60%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>GdbCommandWindow — clear window <span class="file-badge">gdb-command-window.bench.ts</span></h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Benchmark</th>
+        <th class="num">Ops / sec</th>
+        <th class="num">Mean<br><span class="subhead">(µs)</span></th>
+        <th class="num">Median<br><span class="subhead">(µs)</span></th>
+        <th class="num">p75<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.5<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.9<br><span class="subhead">(µs)</span></th>
+        <th class="num">Min<br><span class="subhead">(µs)</span></th>
+        <th class="num">Max<br><span class="subhead">(µs)</span></th>
+        <th class="num">± Error</th>
+        <th class="num">Samples</th>
+        <th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th>
+         <th class="num">Δ%</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td class="rank">1</td>
+          <td class="bench-name">clear after 1000 mixed messages</td>
+          <td class="num">39</td>
+          <td class="num">25602.33</td>
+          <td class="num">24350.05</td>
+          <td class="num">26259.30</td>
+          <td class="num">37404.30</td>
+          <td class="num">37404.30</td>
+          <td class="num">37404.30</td>
+          <td class="num">19349.90</td>
+          <td class="num">37404.30</td>
+          <td class="num">±8.58%</td>
+          <td class="num">20</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="bench-name">clear after 10000 mixed messages</td>
+          <td class="num">4</td>
+          <td class="num">283441.78</td>
+          <td class="num">282707.95</td>
+          <td class="num">300563.80</td>
+          <td class="num">309738.00</td>
+          <td class="num">309738.00</td>
+          <td class="num">309738.00</td>
+          <td class="num">248026.00</td>
+          <td class="num">309738.00</td>
+          <td class="num">±5.09%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
     </tbody>
   </table>
@@ -324,70 +884,70 @@
         <tr>
           <td class="rank">1</td>
           <td class="bench-name">empty locals</td>
-          <td class="num">1.052M</td>
-          <td class="num">0.95</td>
+          <td class="num">1.004M</td>
+          <td class="num">1.00</td>
           <td class="num">0.80</td>
-          <td class="num">0.80</td>
-          <td class="num">2.30</td>
-          <td class="num">2.70</td>
-          <td class="num">27.70</td>
+          <td class="num">0.90</td>
+          <td class="num">2.40</td>
+          <td class="num">2.80</td>
+          <td class="num">26.90</td>
           <td class="num">0.70</td>
-          <td class="num">777.50</td>
-          <td class="num">±1.28%</td>
-          <td class="num">525,792</td>
-          <td class="num">90.25K ↓</td>
-           <td class="num ">-7.9%</td>
+          <td class="num">550.30</td>
+          <td class="num">±1.26%</td>
+          <td class="num">501,996</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">2</td>
           <td class="bench-name">single simple local</td>
-          <td class="num">702.37K</td>
-          <td class="num">1.42</td>
+          <td class="num">659.01K</td>
+          <td class="num">1.52</td>
           <td class="num">1.30</td>
           <td class="num">1.30</td>
-          <td class="num">2.30</td>
-          <td class="num">3.80</td>
-          <td class="num">28.50</td>
+          <td class="num">3.70</td>
+          <td class="num">5.30</td>
+          <td class="num">39.80</td>
           <td class="num">1.20</td>
-          <td class="num">3504.30</td>
-          <td class="num">±1.70%</td>
-          <td class="num">351,188</td>
-          <td class="num">+49.72K ↑</td>
-           <td class="num good">+7.6%</td>
+          <td class="num">2884.60</td>
+          <td class="num">±1.67%</td>
+          <td class="num">329,507</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">3</td>
           <td class="bench-name">multiple locals with nested Rust enum types</td>
-          <td class="num">59.51K</td>
-          <td class="num">16.80</td>
+          <td class="num">58.16K</td>
+          <td class="num">17.19</td>
           <td class="num">14.30</td>
           <td class="num">14.70</td>
-          <td class="num">68.80</td>
-          <td class="num">97.20</td>
-          <td class="num">310.90</td>
-          <td class="num">13.50</td>
-          <td class="num">992.60</td>
-          <td class="num">±1.50%</td>
-          <td class="num">29,754</td>
-          <td class="num">5.31K ↓</td>
-           <td class="num ">-8.2%</td>
+          <td class="num">70.20</td>
+          <td class="num">120.60</td>
+          <td class="num">368.80</td>
+          <td class="num">13.60</td>
+          <td class="num">2545.70</td>
+          <td class="num">±1.87%</td>
+          <td class="num">29,080</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">4</td>
           <td class="bench-name">deep C struct with bitfields and embedded structs</td>
-          <td class="num">31.66K</td>
-          <td class="num">31.59</td>
-          <td class="num">25.60</td>
-          <td class="num">26.30</td>
-          <td class="num">141.50</td>
-          <td class="num">276.50</td>
-          <td class="num">682.40</td>
-          <td class="num">24.00</td>
-          <td class="num">1064.80</td>
-          <td class="num">±1.90%</td>
-          <td class="num">15,829</td>
-          <td class="num">2.26K ↓</td>
-           <td class="num ">-6.7%</td>
+          <td class="num">28.30K</td>
+          <td class="num">35.34</td>
+          <td class="num">26.40</td>
+          <td class="num">28.40</td>
+          <td class="num">202.40</td>
+          <td class="num">299.70</td>
+          <td class="num">607.30</td>
+          <td class="num">24.60</td>
+          <td class="num">1282.00</td>
+          <td class="num">±2.08%</td>
+          <td class="num">14,150</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
     </tbody>
   </table>
@@ -422,70 +982,70 @@
         <tr>
           <td class="rank">1</td>
           <td class="bench-name">16 bytes</td>
-          <td class="num">1.175M</td>
-          <td class="num">0.85</td>
+          <td class="num">1.153M</td>
+          <td class="num">0.87</td>
           <td class="num">0.70</td>
           <td class="num">0.80</td>
-          <td class="num">1.80</td>
-          <td class="num">2.10</td>
-          <td class="num">20.20</td>
+          <td class="num">1.90</td>
+          <td class="num">2.40</td>
+          <td class="num">21.80</td>
           <td class="num">0.60</td>
-          <td class="num">603.80</td>
-          <td class="num">±1.09%</td>
-          <td class="num">587,661</td>
-          <td class="num">+101.95K ↑</td>
-           <td class="num good">+9.5%</td>
+          <td class="num">723.20</td>
+          <td class="num">±1.17%</td>
+          <td class="num">576,583</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">2</td>
           <td class="bench-name">64 bytes</td>
-          <td class="num">308.15K</td>
-          <td class="num">3.25</td>
+          <td class="num">305.53K</td>
+          <td class="num">3.27</td>
           <td class="num">2.80</td>
           <td class="num">2.90</td>
           <td class="num">7.10</td>
-          <td class="num">13.00</td>
-          <td class="num">62.80</td>
+          <td class="num">17.40</td>
+          <td class="num">65.20</td>
           <td class="num">2.60</td>
-          <td class="num">1348.30</td>
-          <td class="num">±1.26%</td>
-          <td class="num">154,074</td>
-          <td class="num">7.35K ↓</td>
-           <td class="num ">-2.3%</td>
+          <td class="num">3278.90</td>
+          <td class="num">±1.75%</td>
+          <td class="num">152,765</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">3</td>
           <td class="bench-name">256 bytes</td>
-          <td class="num">76.00K</td>
-          <td class="num">13.16</td>
-          <td class="num">11.70</td>
-          <td class="num">12.10</td>
-          <td class="num">43.30</td>
-          <td class="num">60.50</td>
-          <td class="num">254.70</td>
+          <td class="num">73.48K</td>
+          <td class="num">13.61</td>
+          <td class="num">11.60</td>
+          <td class="num">12.00</td>
+          <td class="num">51.10</td>
+          <td class="num">75.40</td>
+          <td class="num">293.50</td>
           <td class="num">10.90</td>
-          <td class="num">709.90</td>
-          <td class="num">±1.02%</td>
-          <td class="num">38,000</td>
-          <td class="num">+12.29K ↑</td>
-           <td class="num good">+19.3%</td>
+          <td class="num">1257.60</td>
+          <td class="num">±1.30%</td>
+          <td class="num">36,739</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">4</td>
           <td class="bench-name">1024 bytes</td>
-          <td class="num">19.78K</td>
-          <td class="num">50.55</td>
-          <td class="num">45.20</td>
-          <td class="num">46.60</td>
-          <td class="num">144.10</td>
-          <td class="num">285.20</td>
-          <td class="num">657.80</td>
+          <td class="num">19.54K</td>
+          <td class="num">51.17</td>
+          <td class="num">45.30</td>
+          <td class="num">46.80</td>
+          <td class="num">156.00</td>
+          <td class="num">303.90</td>
+          <td class="num">608.50</td>
           <td class="num">42.40</td>
-          <td class="num">1353.30</td>
-          <td class="num">±1.46%</td>
-          <td class="num">9,892</td>
-          <td class="num">+1.04K ↑</td>
-           <td class="num good">+5.6%</td>
+          <td class="num">986.00</td>
+          <td class="num">±1.43%</td>
+          <td class="num">9,771</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
     </tbody>
   </table>
@@ -518,9 +1078,9 @@
     <tbody>
       
         <tr>
-          <td class="rank">1</td>
+          <td class="rank">2</td>
           <td class="bench-name">minimal breakpoint</td>
-          <td class="num">14.587M</td>
+          <td class="num">14.124M</td>
           <td class="num">0.07</td>
           <td class="num">0.10</td>
           <td class="num">0.10</td>
@@ -528,28 +1088,28 @@
           <td class="num">0.10</td>
           <td class="num">0.20</td>
           <td class="num">0.00</td>
-          <td class="num">798.90</td>
-          <td class="num">±0.82%</td>
-          <td class="num">7,293,286</td>
-          <td class="num">new</td>
-           <td class="num "></td>
+          <td class="num">683.60</td>
+          <td class="num">±1.08%</td>
+          <td class="num">7,062,162</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
-          <td class="rank">2</td>
+          <td class="rank">1</td>
           <td class="bench-name">fully populated breakpoint</td>
-          <td class="num">14.278M</td>
+          <td class="num">14.425M</td>
           <td class="num">0.07</td>
           <td class="num">0.10</td>
           <td class="num">0.10</td>
           <td class="num">0.10</td>
-          <td class="num">0.10</td>
+          <td class="num">0.20</td>
           <td class="num">0.20</td>
           <td class="num">0.00</td>
-          <td class="num">1062.80</td>
-          <td class="num">±1.22%</td>
-          <td class="num">7,139,225</td>
-          <td class="num">new</td>
-           <td class="num "></td>
+          <td class="num">508.90</td>
+          <td class="num">±0.89%</td>
+          <td class="num">7,212,427</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
     </tbody>
   </table>
@@ -582,9 +1142,9 @@
     <tbody>
       
         <tr>
-          <td class="rank">2</td>
+          <td class="rank">1</td>
           <td class="bench-name">new register (no existing entry)</td>
-          <td class="num">14.284M</td>
+          <td class="num">14.637M</td>
           <td class="num">0.07</td>
           <td class="num">0.10</td>
           <td class="num">0.10</td>
@@ -592,16 +1152,16 @@
           <td class="num">0.10</td>
           <td class="num">0.20</td>
           <td class="num">0.00</td>
-          <td class="num">681.80</td>
-          <td class="num">±1.03%</td>
-          <td class="num">7,142,235</td>
-          <td class="num">new</td>
-           <td class="num "></td>
+          <td class="num">456.00</td>
+          <td class="num">±0.98%</td>
+          <td class="num">7,318,614</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
-          <td class="rank">1</td>
+          <td class="rank">2</td>
           <td class="bench-name">update register — value unchanged</td>
-          <td class="num">14.565M</td>
+          <td class="num">14.600M</td>
           <td class="num">0.07</td>
           <td class="num">0.10</td>
           <td class="num">0.10</td>
@@ -609,28 +1169,28 @@
           <td class="num">0.10</td>
           <td class="num">0.20</td>
           <td class="num">0.00</td>
-          <td class="num">1165.00</td>
-          <td class="num">±1.00%</td>
-          <td class="num">7,282,707</td>
-          <td class="num">new</td>
-           <td class="num "></td>
+          <td class="num">1068.50</td>
+          <td class="num">±1.09%</td>
+          <td class="num">7,299,794</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">3</td>
           <td class="bench-name">update register — value changed</td>
-          <td class="num">13.859M</td>
+          <td class="num">14.481M</td>
           <td class="num">0.07</td>
           <td class="num">0.10</td>
           <td class="num">0.10</td>
-          <td class="num">0.20</td>
-          <td class="num">0.20</td>
+          <td class="num">0.10</td>
+          <td class="num">0.10</td>
           <td class="num">0.20</td>
           <td class="num">0.00</td>
-          <td class="num">833.80</td>
-          <td class="num">±1.07%</td>
-          <td class="num">6,930,376</td>
-          <td class="num">new</td>
-           <td class="num "></td>
+          <td class="num">548.50</td>
+          <td class="num">±0.99%</td>
+          <td class="num">7,240,504</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
     </tbody>
   </table>
@@ -665,70 +1225,70 @@
         <tr>
           <td class="rank">1</td>
           <td class="bench-name">thread-group-added (simple)</td>
-          <td class="num">782.83K</td>
-          <td class="num">1.28</td>
+          <td class="num">784.57K</td>
+          <td class="num">1.27</td>
           <td class="num">0.80</td>
-          <td class="num">0.90</td>
-          <td class="num">4.50</td>
-          <td class="num">8.80</td>
-          <td class="num">36.40</td>
+          <td class="num">0.80</td>
+          <td class="num">4.20</td>
+          <td class="num">8.00</td>
+          <td class="num">38.30</td>
           <td class="num">0.60</td>
-          <td class="num">8207.70</td>
-          <td class="num">±6.71%</td>
-          <td class="num">391,414</td>
-          <td class="num">118.22K ↓</td>
-           <td class="num warn">-13.1%</td>
+          <td class="num">7729.30</td>
+          <td class="num">±6.59%</td>
+          <td class="num">392,283</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
-          <td class="rank">4</td>
+          <td class="rank">3</td>
           <td class="bench-name">library-loaded (with ranges array)</td>
-          <td class="num">527.49K</td>
-          <td class="num">1.90</td>
+          <td class="num">616.23K</td>
+          <td class="num">1.62</td>
           <td class="num">1.00</td>
           <td class="num">1.10</td>
-          <td class="num">6.60</td>
-          <td class="num">11.90</td>
-          <td class="num">53.80</td>
-          <td class="num">0.80</td>
-          <td class="num">18239.90</td>
-          <td class="num">±10.54%</td>
-          <td class="num">263,747</td>
-          <td class="num">120.99K ↓</td>
-           <td class="num warn">-18.7%</td>
+          <td class="num">4.00</td>
+          <td class="num">5.50</td>
+          <td class="num">33.50</td>
+          <td class="num">0.90</td>
+          <td class="num">5346.90</td>
+          <td class="num">±7.88%</td>
+          <td class="num">308,118</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">2</td>
           <td class="bench-name">memory-changed (with type field)</td>
-          <td class="num">661.27K</td>
-          <td class="num">1.51</td>
+          <td class="num">658.03K</td>
+          <td class="num">1.52</td>
           <td class="num">1.00</td>
           <td class="num">1.00</td>
-          <td class="num">2.40</td>
-          <td class="num">4.50</td>
-          <td class="num">30.80</td>
-          <td class="num">0.90</td>
-          <td class="num">17713.50</td>
-          <td class="num">±9.98%</td>
-          <td class="num">330,636</td>
-          <td class="num">+168.98K ↑</td>
-           <td class="num good">+34.3%</td>
+          <td class="num">2.80</td>
+          <td class="num">5.40</td>
+          <td class="num">34.20</td>
+          <td class="num">0.80</td>
+          <td class="num">19299.20</td>
+          <td class="num">±10.00%</td>
+          <td class="num">329,014</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
-          <td class="rank">3</td>
+          <td class="rank">4</td>
           <td class="bench-name">record-started (with method and format)</td>
-          <td class="num">634.79K</td>
-          <td class="num">1.58</td>
-          <td class="num">0.90</td>
-          <td class="num">0.90</td>
-          <td class="num">6.80</td>
-          <td class="num">9.60</td>
-          <td class="num">43.30</td>
-          <td class="num">0.70</td>
-          <td class="num">25779.50</td>
-          <td class="num">±12.28%</td>
-          <td class="num">317,398</td>
-          <td class="num">103.98K ↓</td>
-           <td class="num warn">-14.1%</td>
+          <td class="num">193.82K</td>
+          <td class="num">5.16</td>
+          <td class="num">1.50</td>
+          <td class="num">2.90</td>
+          <td class="num">33.20</td>
+          <td class="num">48.40</td>
+          <td class="num">125.90</td>
+          <td class="num">0.80</td>
+          <td class="num">64227.70</td>
+          <td class="num">±27.61%</td>
+          <td class="num">96,911</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
     </tbody>
   </table>
@@ -763,70 +1323,70 @@
         <tr>
           <td class="rank">1</td>
           <td class="bench-name">running (all threads)</td>
-          <td class="num">1.166M</td>
-          <td class="num">0.86</td>
+          <td class="num">1.186M</td>
+          <td class="num">0.84</td>
           <td class="num">0.50</td>
-          <td class="num">0.70</td>
-          <td class="num">1.70</td>
-          <td class="num">2.50</td>
-          <td class="num">20.90</td>
+          <td class="num">0.50</td>
+          <td class="num">2.00</td>
+          <td class="num">4.00</td>
+          <td class="num">23.90</td>
           <td class="num">0.40</td>
-          <td class="num">25638.50</td>
-          <td class="num">±11.37%</td>
-          <td class="num">585,220</td>
-          <td class="num">62.59K ↓</td>
-           <td class="num ">-5.1%</td>
+          <td class="num">27383.10</td>
+          <td class="num">±14.07%</td>
+          <td class="num">593,093</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">2</td>
           <td class="bench-name">stopped (breakpoint-hit)</td>
-          <td class="num">737.26K</td>
-          <td class="num">1.36</td>
+          <td class="num">768.74K</td>
+          <td class="num">1.30</td>
           <td class="num">0.80</td>
           <td class="num">0.90</td>
-          <td class="num">2.40</td>
-          <td class="num">5.60</td>
-          <td class="num">30.50</td>
+          <td class="num">2.60</td>
+          <td class="num">5.40</td>
+          <td class="num">30.60</td>
           <td class="num">0.70</td>
-          <td class="num">39095.10</td>
-          <td class="num">±17.21%</td>
-          <td class="num">368,632</td>
-          <td class="num">13.97K ↓</td>
-           <td class="num ">-1.9%</td>
+          <td class="num">40369.80</td>
+          <td class="num">±17.73%</td>
+          <td class="num">384,372</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">3</td>
           <td class="bench-name">stopped (signal-received, multiple fields)</td>
-          <td class="num">396.45K</td>
-          <td class="num">2.52</td>
+          <td class="num">379.68K</td>
+          <td class="num">2.63</td>
           <td class="num">1.50</td>
           <td class="num">1.60</td>
-          <td class="num">5.70</td>
-          <td class="num">9.90</td>
-          <td class="num">55.90</td>
+          <td class="num">6.20</td>
+          <td class="num">11.40</td>
+          <td class="num">41.70</td>
           <td class="num">1.40</td>
-          <td class="num">25277.80</td>
-          <td class="num">±14.83%</td>
-          <td class="num">198,223</td>
-          <td class="num">+78.94K ↑</td>
-           <td class="num good">+24.9%</td>
+          <td class="num">30358.60</td>
+          <td class="num">±16.01%</td>
+          <td class="num">189,838</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">4</td>
           <td class="bench-name">stopped (exited-signalled)</td>
-          <td class="num">332.53K</td>
-          <td class="num">3.01</td>
+          <td class="num">315.79K</td>
+          <td class="num">3.17</td>
           <td class="num">1.50</td>
-          <td class="num">1.50</td>
-          <td class="num">5.50</td>
-          <td class="num">12.10</td>
-          <td class="num">49.10</td>
+          <td class="num">1.60</td>
+          <td class="num">6.40</td>
+          <td class="num">11.90</td>
+          <td class="num">41.80</td>
           <td class="num">1.30</td>
-          <td class="num">67112.70</td>
-          <td class="num">±33.95%</td>
-          <td class="num">166,302</td>
-          <td class="num">89.56K ↓</td>
-           <td class="num warn">-21.2%</td>
+          <td class="num">84942.40</td>
+          <td class="num">±40.76%</td>
+          <td class="num">157,894</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
     </tbody>
   </table>
@@ -861,53 +1421,53 @@
         <tr>
           <td class="rank">2</td>
           <td class="bench-name">^done with features list</td>
-          <td class="num">710.12K</td>
-          <td class="num">1.41</td>
+          <td class="num">706.23K</td>
+          <td class="num">1.42</td>
           <td class="num">1.10</td>
           <td class="num">1.10</td>
-          <td class="num">3.00</td>
-          <td class="num">4.80</td>
-          <td class="num">37.80</td>
+          <td class="num">3.10</td>
+          <td class="num">4.70</td>
+          <td class="num">36.40</td>
           <td class="num">0.90</td>
-          <td class="num">2318.70</td>
-          <td class="num">±3.07%</td>
-          <td class="num">355,062</td>
-          <td class="num">88.78K ↓</td>
-           <td class="num warn">-11.1%</td>
+          <td class="num">1586.20</td>
+          <td class="num">±2.99%</td>
+          <td class="num">353,113</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">3</td>
           <td class="bench-name">^done with register names (16 registers)</td>
-          <td class="num">225.72K</td>
-          <td class="num">4.43</td>
+          <td class="num">222.22K</td>
+          <td class="num">4.50</td>
           <td class="num">3.40</td>
-          <td class="num">3.60</td>
-          <td class="num">12.90</td>
-          <td class="num">25.30</td>
-          <td class="num">135.10</td>
+          <td class="num">3.50</td>
+          <td class="num">15.40</td>
+          <td class="num">32.60</td>
+          <td class="num">196.60</td>
           <td class="num">3.20</td>
-          <td class="num">3385.30</td>
-          <td class="num">±3.78%</td>
-          <td class="num">112,859</td>
-          <td class="num">+11.28K ↑</td>
-           <td class="num good">+5.3%</td>
+          <td class="num">3340.80</td>
+          <td class="num">±3.75%</td>
+          <td class="num">111,122</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">1</td>
           <td class="bench-name">^running</td>
-          <td class="num">1.352M</td>
-          <td class="num">0.74</td>
+          <td class="num">1.252M</td>
+          <td class="num">0.80</td>
           <td class="num">0.40</td>
           <td class="num">0.50</td>
-          <td class="num">2.00</td>
+          <td class="num">1.50</td>
           <td class="num">2.50</td>
-          <td class="num">15.80</td>
+          <td class="num">22.30</td>
           <td class="num">0.30</td>
-          <td class="num">20639.00</td>
-          <td class="num">±11.71%</td>
-          <td class="num">675,771</td>
-          <td class="num">33.85K ↓</td>
-           <td class="num ">-2.4%</td>
+          <td class="num">26139.70</td>
+          <td class="num">±14.19%</td>
+          <td class="num">625,829</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr class="bench-error">
           <td class="rank">4</td>
@@ -947,53 +1507,53 @@
         <tr>
           <td class="rank">1</td>
           <td class="bench-name">8 registers</td>
-          <td class="num">697.09K</td>
-          <td class="num">1.43</td>
+          <td class="num">680.18K</td>
+          <td class="num">1.47</td>
           <td class="num">1.20</td>
-          <td class="num">1.30</td>
-          <td class="num">3.10</td>
-          <td class="num">5.30</td>
-          <td class="num">31.80</td>
+          <td class="num">1.20</td>
+          <td class="num">3.20</td>
+          <td class="num">6.00</td>
+          <td class="num">34.60</td>
           <td class="num">1.10</td>
-          <td class="num">770.00</td>
-          <td class="num">±1.15%</td>
-          <td class="num">348,546</td>
-          <td class="num">new</td>
-           <td class="num "></td>
+          <td class="num">799.80</td>
+          <td class="num">±1.35%</td>
+          <td class="num">340,092</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">2</td>
           <td class="bench-name">32 registers</td>
-          <td class="num">244.84K</td>
-          <td class="num">4.08</td>
+          <td class="num">266.20K</td>
+          <td class="num">3.76</td>
+          <td class="num">3.30</td>
           <td class="num">3.40</td>
-          <td class="num">3.50</td>
-          <td class="num">15.70</td>
-          <td class="num">26.60</td>
-          <td class="num">100.00</td>
-          <td class="num">3.10</td>
-          <td class="num">3975.60</td>
-          <td class="num">±1.93%</td>
-          <td class="num">122,420</td>
-          <td class="num">new</td>
-           <td class="num "></td>
+          <td class="num">9.60</td>
+          <td class="num">21.50</td>
+          <td class="num">65.40</td>
+          <td class="num">3.00</td>
+          <td class="num">701.90</td>
+          <td class="num">±0.99%</td>
+          <td class="num">133,099</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">3</td>
           <td class="bench-name">64 registers</td>
-          <td class="num">139.81K</td>
-          <td class="num">7.15</td>
+          <td class="num">147.49K</td>
+          <td class="num">6.78</td>
           <td class="num">6.10</td>
           <td class="num">6.20</td>
-          <td class="num">24.30</td>
-          <td class="num">42.30</td>
-          <td class="num">250.90</td>
-          <td class="num">5.70</td>
-          <td class="num">827.70</td>
-          <td class="num">±1.40%</td>
-          <td class="num">69,907</td>
-          <td class="num">new</td>
-           <td class="num "></td>
+          <td class="num">19.60</td>
+          <td class="num">33.90</td>
+          <td class="num">86.80</td>
+          <td class="num">5.60</td>
+          <td class="num">1154.80</td>
+          <td class="num">±0.95%</td>
+          <td class="num">73,747</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
     </tbody>
   </table>
@@ -1028,36 +1588,36 @@
         <tr>
           <td class="rank">1</td>
           <td class="bench-name">8 register values</td>
-          <td class="num">440.87K</td>
-          <td class="num">2.27</td>
+          <td class="num">448.37K</td>
+          <td class="num">2.23</td>
           <td class="num">1.90</td>
-          <td class="num">1.90</td>
-          <td class="num">5.30</td>
-          <td class="num">12.50</td>
-          <td class="num">61.70</td>
+          <td class="num">2.00</td>
+          <td class="num">5.60</td>
+          <td class="num">10.60</td>
+          <td class="num">45.90</td>
           <td class="num">1.70</td>
-          <td class="num">664.00</td>
-          <td class="num">±1.34%</td>
-          <td class="num">220,435</td>
-          <td class="num">new</td>
-           <td class="num "></td>
+          <td class="num">1047.90</td>
+          <td class="num">±1.11%</td>
+          <td class="num">224,186</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">2</td>
           <td class="bench-name">32 register values</td>
-          <td class="num">178.18K</td>
-          <td class="num">5.61</td>
-          <td class="num">4.70</td>
+          <td class="num">172.18K</td>
+          <td class="num">5.81</td>
+          <td class="num">4.80</td>
           <td class="num">4.90</td>
-          <td class="num">18.40</td>
-          <td class="num">36.70</td>
-          <td class="num">229.20</td>
-          <td class="num">4.40</td>
-          <td class="num">824.30</td>
-          <td class="num">±1.24%</td>
-          <td class="num">89,089</td>
-          <td class="num">new</td>
-           <td class="num "></td>
+          <td class="num">18.90</td>
+          <td class="num">40.10</td>
+          <td class="num">242.20</td>
+          <td class="num">4.30</td>
+          <td class="num">1083.40</td>
+          <td class="num">±1.58%</td>
+          <td class="num">86,091</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
     </tbody>
   </table>
@@ -1092,53 +1652,634 @@
         <tr>
           <td class="rank">1</td>
           <td class="bench-name">1 frame</td>
-          <td class="num">685.27K</td>
-          <td class="num">1.46</td>
+          <td class="num">651.08K</td>
+          <td class="num">1.54</td>
           <td class="num">1.30</td>
           <td class="num">1.30</td>
-          <td class="num">3.20</td>
-          <td class="num">4.40</td>
-          <td class="num">34.20</td>
+          <td class="num">3.60</td>
+          <td class="num">5.20</td>
+          <td class="num">39.80</td>
           <td class="num">1.20</td>
-          <td class="num">864.80</td>
-          <td class="num">±1.13%</td>
-          <td class="num">342,633</td>
-          <td class="num">new</td>
-           <td class="num "></td>
+          <td class="num">2126.80</td>
+          <td class="num">±1.54%</td>
+          <td class="num">325,543</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">2</td>
           <td class="bench-name">5 frames</td>
-          <td class="num">359.11K</td>
-          <td class="num">2.78</td>
+          <td class="num">343.99K</td>
+          <td class="num">2.91</td>
           <td class="num">2.40</td>
           <td class="num">2.40</td>
-          <td class="num">6.20</td>
-          <td class="num">14.70</td>
-          <td class="num">71.30</td>
+          <td class="num">6.80</td>
+          <td class="num">18.30</td>
+          <td class="num">132.60</td>
           <td class="num">2.20</td>
-          <td class="num">896.40</td>
-          <td class="num">±1.41%</td>
-          <td class="num">179,557</td>
-          <td class="num">new</td>
-           <td class="num "></td>
+          <td class="num">784.10</td>
+          <td class="num">±1.50%</td>
+          <td class="num">171,993</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
         <tr>
           <td class="rank">3</td>
           <td class="bench-name">20 frames</td>
-          <td class="num">140.27K</td>
-          <td class="num">7.13</td>
+          <td class="num">138.25K</td>
+          <td class="num">7.23</td>
           <td class="num">6.10</td>
           <td class="num">6.30</td>
-          <td class="num">25.60</td>
-          <td class="num">44.80</td>
-          <td class="num">221.30</td>
-          <td class="num">5.70</td>
-          <td class="num">1022.80</td>
-          <td class="num">±1.31%</td>
-          <td class="num">70,134</td>
-          <td class="num">new</td>
-           <td class="num "></td>
+          <td class="num">27.30</td>
+          <td class="num">44.00</td>
+          <td class="num">218.00</td>
+          <td class="num">5.60</td>
+          <td class="num">4961.10</td>
+          <td class="num">±2.28%</td>
+          <td class="num">69,124</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>GdbCommandWindow — Append Latency vs DOM Size</h2>
+  <p class="chart-note">Mean time to append ×100 messages as the output div pre-fills. Larger DOM → more reflow work per append.</p>
+  <div class="chart-wrap"><svg width="680" height="280" viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg" style="display:block;background:#0d1117;border-radius:6px;border:1px solid #30363d;overflow:visible"><line x1="72" y1="20" x2="72" y2="230" stroke="#30363d" stroke-width="1"/><line x1="72" y1="230" x2="530" y2="230" stroke="#30363d" stroke-width="1"/><line x1="72" y1="230.0" x2="530" y2="230.0" stroke="#21262d" stroke-width="1"/><line x1="72" y1="188.0" x2="530" y2="188.0" stroke="#21262d" stroke-width="1"/><line x1="72" y1="146.0" x2="530" y2="146.0" stroke="#21262d" stroke-width="1"/><line x1="72" y1="104.0" x2="530" y2="104.0" stroke="#21262d" stroke-width="1"/><line x1="72" y1="62.0" x2="530" y2="62.0" stroke="#21262d" stroke-width="1"/><line x1="72" y1="20.0" x2="530" y2="20.0" stroke="#21262d" stroke-width="1"/><text x="66" y="230.0" text-anchor="end" dominant-baseline="middle" fill="#6e7681" font-size="10">0.0μs</text><text x="66" y="188.0" text-anchor="end" dominant-baseline="middle" fill="#6e7681" font-size="10">498.59ms</text><text x="66" y="146.0" text-anchor="end" dominant-baseline="middle" fill="#6e7681" font-size="10">997.17ms</text><text x="66" y="104.0" text-anchor="end" dominant-baseline="middle" fill="#6e7681" font-size="10">1495.76ms</text><text x="66" y="62.0" text-anchor="end" dominant-baseline="middle" fill="#6e7681" font-size="10">1994.34ms</text><text x="66" y="20.0" text-anchor="end" dominant-baseline="middle" fill="#6e7681" font-size="10">2492.93ms</text><text x="72.0" y="246.0" text-anchor="middle" fill="#6e7681" font-size="10">0</text><text x="186.5" y="246.0" text-anchor="middle" fill="#6e7681" font-size="10">500</text><text x="301.0" y="246.0" text-anchor="middle" fill="#6e7681" font-size="10">2,000</text><text x="415.5" y="246.0" text-anchor="middle" fill="#6e7681" font-size="10">5,000</text><text x="530.0" y="246.0" text-anchor="middle" fill="#6e7681" font-size="10">10,000</text><text x="301.0" y="274" text-anchor="middle" fill="#8b949e" font-size="11">Messages pre-filled in DOM</text><text transform="rotate(-90)" x="-125.0" y="14" text-anchor="middle" fill="#8b949e" font-size="11">Mean latency (100 appends)</text><path d="M72.0,229.6 L186.5,227.1 L301.0,217.4 L415.5,190.8 L530.0,58.4" fill="none" stroke="#3fb950" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M72.0,229.6 L186.5,227.3 L301.0,217.5 L415.5,192.1 L530.0,71.2" fill="none" stroke="#58a6ff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M72.0,229.6 L186.5,227.7 L301.0,217.7 L415.5,193.7 L530.0,55.0" fill="none" stroke="#f85149" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M72.0,229.5 L186.5,227.5 L301.0,217.4 L415.5,185.5 L530.0,65.1" fill="none" stroke="#d29922" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M72.0,229.7 L186.5,228.6 L301.0,223.7 L415.5,205.4 L530.0,147.5" fill="none" stroke="#bc8cff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><g><circle cx="72.0" cy="229.6" r="3.5" fill="#3fb950"/><title>console ×100: 4.775ms</title></g><g><circle cx="186.5" cy="227.1" r="3.5" fill="#3fb950"/><title>console ×100: 34.488ms</title></g><g><circle cx="301.0" cy="217.4" r="3.5" fill="#3fb950"/><title>console ×100: 149.661ms</title></g><g><circle cx="415.5" cy="190.8" r="3.5" fill="#3fb950"/><title>console ×100: 465.688ms</title></g><g><circle cx="530.0" cy="58.4" r="3.5" fill="#3fb950"/><title>console ×100: 2037.018ms</title></g><g><circle cx="72.0" cy="229.6" r="3.5" fill="#58a6ff"/><title>log ×100: 4.527ms</title></g><g><circle cx="186.5" cy="227.3" r="3.5" fill="#58a6ff"/><title>log ×100: 31.863ms</title></g><g><circle cx="301.0" cy="217.5" r="3.5" fill="#58a6ff"/><title>log ×100: 148.345ms</title></g><g><circle cx="415.5" cy="192.1" r="3.5" fill="#58a6ff"/><title>log ×100: 449.449ms</title></g><g><circle cx="530.0" cy="71.2" r="3.5" fill="#58a6ff"/><title>log ×100: 1885.683ms</title></g><g><circle cx="72.0" cy="229.6" r="3.5" fill="#f85149"/><title>error ×100: 4.728ms</title></g><g><circle cx="186.5" cy="227.7" r="3.5" fill="#f85149"/><title>error ×100: 27.352ms</title></g><g><circle cx="301.0" cy="217.7" r="3.5" fill="#f85149"/><title>error ×100: 146.510ms</title></g><g><circle cx="415.5" cy="193.7" r="3.5" fill="#f85149"/><title>error ×100: 430.981ms</title></g><g><circle cx="530.0" cy="55.0" r="3.5" fill="#f85149"/><title>error ×100: 2077.439ms</title></g><g><circle cx="72.0" cy="229.5" r="3.5" fill="#d29922"/><title>debug ×100: 5.353ms</title></g><g><circle cx="186.5" cy="227.5" r="3.5" fill="#d29922"/><title>debug ×100: 29.899ms</title></g><g><circle cx="301.0" cy="217.4" r="3.5" fill="#d29922"/><title>debug ×100: 149.907ms</title></g><g><circle cx="415.5" cy="185.5" r="3.5" fill="#d29922"/><title>debug ×100: 527.772ms</title></g><g><circle cx="530.0" cy="65.1" r="3.5" fill="#d29922"/><title>debug ×100: 1957.436ms</title></g><g><circle cx="72.0" cy="229.7" r="3.5" fill="#bc8cff"/><title>html ×100: 3.587ms</title></g><g><circle cx="186.5" cy="228.6" r="3.5" fill="#bc8cff"/><title>html ×100: 16.859ms</title></g><g><circle cx="301.0" cy="223.7" r="3.5" fill="#bc8cff"/><title>html ×100: 75.136ms</title></g><g><circle cx="415.5" cy="205.4" r="3.5" fill="#bc8cff"/><title>html ×100: 291.695ms</title></g><g><circle cx="530.0" cy="147.5" r="3.5" fill="#bc8cff"/><title>html ×100: 979.231ms</title></g><line x1="544" y1="29" x2="560" y2="29" stroke="#3fb950" stroke-width="2.5"/><circle cx="552" cy="29" r="3" fill="#3fb950"/><text x="566" y="29" dominant-baseline="middle" fill="#c9d1d9" font-size="11">console ×100</text><line x1="544" y1="51" x2="560" y2="51" stroke="#58a6ff" stroke-width="2.5"/><circle cx="552" cy="51" r="3" fill="#58a6ff"/><text x="566" y="51" dominant-baseline="middle" fill="#c9d1d9" font-size="11">log ×100</text><line x1="544" y1="73" x2="560" y2="73" stroke="#f85149" stroke-width="2.5"/><circle cx="552" cy="73" r="3" fill="#f85149"/><text x="566" y="73" dominant-baseline="middle" fill="#c9d1d9" font-size="11">error ×100</text><line x1="544" y1="95" x2="560" y2="95" stroke="#d29922" stroke-width="2.5"/><circle cx="552" cy="95" r="3" fill="#d29922"/><text x="566" y="95" dominant-baseline="middle" fill="#c9d1d9" font-size="11">debug ×100</text><line x1="544" y1="117" x2="560" y2="117" stroke="#bc8cff" stroke-width="2.5"/><circle cx="552" cy="117" r="3" fill="#bc8cff"/><text x="566" y="117" dominant-baseline="middle" fill="#c9d1d9" font-size="11">html ×100</text></svg></div>
+</section>
+
+<section>
+  <h2>GdbCommandWindow — append at dom:0 <span class="file-badge">gdb-command-window.bench.ts</span></h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Benchmark</th>
+        <th class="num">Ops / sec</th>
+        <th class="num">Mean<br><span class="subhead">(µs)</span></th>
+        <th class="num">Median<br><span class="subhead">(µs)</span></th>
+        <th class="num">p75<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.5<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.9<br><span class="subhead">(µs)</span></th>
+        <th class="num">Min<br><span class="subhead">(µs)</span></th>
+        <th class="num">Max<br><span class="subhead">(µs)</span></th>
+        <th class="num">± Error</th>
+        <th class="num">Samples</th>
+        <th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th>
+         <th class="num">Δ%</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td class="rank">4</td>
+          <td class="bench-name">console ×100</td>
+          <td class="num">209</td>
+          <td class="num">4775.15</td>
+          <td class="num">4147.70</td>
+          <td class="num">5234.20</td>
+          <td class="num">8432.20</td>
+          <td class="num">8692.40</td>
+          <td class="num">8692.40</td>
+          <td class="num">3466.00</td>
+          <td class="num">8692.40</td>
+          <td class="num">±5.31%</td>
+          <td class="num">105</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="bench-name">log ×100</td>
+          <td class="num">221</td>
+          <td class="num">4526.52</td>
+          <td class="num">4103.80</td>
+          <td class="num">4833.00</td>
+          <td class="num">8833.40</td>
+          <td class="num">9346.30</td>
+          <td class="num">9346.30</td>
+          <td class="num">3431.00</td>
+          <td class="num">9346.30</td>
+          <td class="num">±4.97%</td>
+          <td class="num">111</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="bench-name">error ×100</td>
+          <td class="num">212</td>
+          <td class="num">4727.98</td>
+          <td class="num">4298.95</td>
+          <td class="num">5021.20</td>
+          <td class="num">8702.90</td>
+          <td class="num">8839.30</td>
+          <td class="num">8839.30</td>
+          <td class="num">3447.80</td>
+          <td class="num">8839.30</td>
+          <td class="num">±5.13%</td>
+          <td class="num">106</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">5</td>
+          <td class="bench-name">debug ×100</td>
+          <td class="num">187</td>
+          <td class="num">5352.98</td>
+          <td class="num">4476.30</td>
+          <td class="num">5995.30</td>
+          <td class="num">15188.90</td>
+          <td class="num">15188.90</td>
+          <td class="num">15188.90</td>
+          <td class="num">3343.30</td>
+          <td class="num">15188.90</td>
+          <td class="num">±9.52%</td>
+          <td class="num">94</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">1</td>
+          <td class="bench-name">html ×100</td>
+          <td class="num">279</td>
+          <td class="num">3586.90</td>
+          <td class="num">3192.45</td>
+          <td class="num">3951.00</td>
+          <td class="num">7212.90</td>
+          <td class="num">9522.40</td>
+          <td class="num">9522.40</td>
+          <td class="num">2725.30</td>
+          <td class="num">9522.40</td>
+          <td class="num">±4.38%</td>
+          <td class="num">140</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>GdbCommandWindow — append at dom:500 <span class="file-badge">gdb-command-window.bench.ts</span></h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Benchmark</th>
+        <th class="num">Ops / sec</th>
+        <th class="num">Mean<br><span class="subhead">(µs)</span></th>
+        <th class="num">Median<br><span class="subhead">(µs)</span></th>
+        <th class="num">p75<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.5<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.9<br><span class="subhead">(µs)</span></th>
+        <th class="num">Min<br><span class="subhead">(µs)</span></th>
+        <th class="num">Max<br><span class="subhead">(µs)</span></th>
+        <th class="num">± Error</th>
+        <th class="num">Samples</th>
+        <th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th>
+         <th class="num">Δ%</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td class="rank">5</td>
+          <td class="bench-name">console ×100</td>
+          <td class="num">29</td>
+          <td class="num">34488.05</td>
+          <td class="num">34262.00</td>
+          <td class="num">37126.50</td>
+          <td class="num">46353.30</td>
+          <td class="num">46353.30</td>
+          <td class="num">46353.30</td>
+          <td class="num">22853.70</td>
+          <td class="num">46353.30</td>
+          <td class="num">±9.96%</td>
+          <td class="num">15</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">4</td>
+          <td class="bench-name">log ×100</td>
+          <td class="num">31</td>
+          <td class="num">31863.24</td>
+          <td class="num">30845.95</td>
+          <td class="num">35157.70</td>
+          <td class="num">39153.80</td>
+          <td class="num">39153.80</td>
+          <td class="num">39153.80</td>
+          <td class="num">25235.00</td>
+          <td class="num">39153.80</td>
+          <td class="num">±7.31%</td>
+          <td class="num">16</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="bench-name">error ×100</td>
+          <td class="num">37</td>
+          <td class="num">27351.77</td>
+          <td class="num">26073.40</td>
+          <td class="num">29238.40</td>
+          <td class="num">36078.20</td>
+          <td class="num">36078.20</td>
+          <td class="num">36078.20</td>
+          <td class="num">21540.90</td>
+          <td class="num">36078.20</td>
+          <td class="num">±6.79%</td>
+          <td class="num">19</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="bench-name">debug ×100</td>
+          <td class="num">33</td>
+          <td class="num">29899.03</td>
+          <td class="num">27853.90</td>
+          <td class="num">33589.90</td>
+          <td class="num">44088.10</td>
+          <td class="num">44088.10</td>
+          <td class="num">44088.10</td>
+          <td class="num">23540.50</td>
+          <td class="num">44088.10</td>
+          <td class="num">±8.74%</td>
+          <td class="num">17</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">1</td>
+          <td class="bench-name">html ×100</td>
+          <td class="num">59</td>
+          <td class="num">16858.86</td>
+          <td class="num">15970.55</td>
+          <td class="num">16885.20</td>
+          <td class="num">26511.30</td>
+          <td class="num">26511.30</td>
+          <td class="num">26511.30</td>
+          <td class="num">14783.70</td>
+          <td class="num">26511.30</td>
+          <td class="num">±5.50%</td>
+          <td class="num">30</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>GdbCommandWindow — append at dom:2000 <span class="file-badge">gdb-command-window.bench.ts</span></h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Benchmark</th>
+        <th class="num">Ops / sec</th>
+        <th class="num">Mean<br><span class="subhead">(µs)</span></th>
+        <th class="num">Median<br><span class="subhead">(µs)</span></th>
+        <th class="num">p75<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.5<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.9<br><span class="subhead">(µs)</span></th>
+        <th class="num">Min<br><span class="subhead">(µs)</span></th>
+        <th class="num">Max<br><span class="subhead">(µs)</span></th>
+        <th class="num">± Error</th>
+        <th class="num">Samples</th>
+        <th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th>
+         <th class="num">Δ%</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td class="rank">4</td>
+          <td class="bench-name">console ×100</td>
+          <td class="num">7</td>
+          <td class="num">149660.91</td>
+          <td class="num">148179.55</td>
+          <td class="num">151813.10</td>
+          <td class="num">161654.90</td>
+          <td class="num">161654.90</td>
+          <td class="num">161654.90</td>
+          <td class="num">142624.80</td>
+          <td class="num">161654.90</td>
+          <td class="num">±2.72%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="bench-name">log ×100</td>
+          <td class="num">7</td>
+          <td class="num">148345.03</td>
+          <td class="num">148765.40</td>
+          <td class="num">150743.00</td>
+          <td class="num">157621.50</td>
+          <td class="num">157621.50</td>
+          <td class="num">157621.50</td>
+          <td class="num">136701.60</td>
+          <td class="num">157621.50</td>
+          <td class="num">±3.15%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="bench-name">error ×100</td>
+          <td class="num">7</td>
+          <td class="num">146509.67</td>
+          <td class="num">146205.95</td>
+          <td class="num">150132.20</td>
+          <td class="num">156397.50</td>
+          <td class="num">156397.50</td>
+          <td class="num">156397.50</td>
+          <td class="num">140245.40</td>
+          <td class="num">156397.50</td>
+          <td class="num">±2.56%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">5</td>
+          <td class="bench-name">debug ×100</td>
+          <td class="num">7</td>
+          <td class="num">149906.56</td>
+          <td class="num">150337.00</td>
+          <td class="num">154493.40</td>
+          <td class="num">156641.50</td>
+          <td class="num">156641.50</td>
+          <td class="num">156641.50</td>
+          <td class="num">140275.30</td>
+          <td class="num">156641.50</td>
+          <td class="num">±2.52%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">1</td>
+          <td class="bench-name">html ×100</td>
+          <td class="num">13</td>
+          <td class="num">75136.41</td>
+          <td class="num">73867.30</td>
+          <td class="num">77774.70</td>
+          <td class="num">85548.60</td>
+          <td class="num">85548.60</td>
+          <td class="num">85548.60</td>
+          <td class="num">69864.00</td>
+          <td class="num">85548.60</td>
+          <td class="num">±4.39%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>GdbCommandWindow — append at dom:5000 <span class="file-badge">gdb-command-window.bench.ts</span></h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Benchmark</th>
+        <th class="num">Ops / sec</th>
+        <th class="num">Mean<br><span class="subhead">(µs)</span></th>
+        <th class="num">Median<br><span class="subhead">(µs)</span></th>
+        <th class="num">p75<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.5<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.9<br><span class="subhead">(µs)</span></th>
+        <th class="num">Min<br><span class="subhead">(µs)</span></th>
+        <th class="num">Max<br><span class="subhead">(µs)</span></th>
+        <th class="num">± Error</th>
+        <th class="num">Samples</th>
+        <th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th>
+         <th class="num">Δ%</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td class="rank">4</td>
+          <td class="bench-name">console ×100</td>
+          <td class="num">2</td>
+          <td class="num">465687.63</td>
+          <td class="num">469441.60</td>
+          <td class="num">476175.40</td>
+          <td class="num">539360.80</td>
+          <td class="num">539360.80</td>
+          <td class="num">539360.80</td>
+          <td class="num">418227.50</td>
+          <td class="num">539360.80</td>
+          <td class="num">±5.15%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="bench-name">log ×100</td>
+          <td class="num">2</td>
+          <td class="num">449448.84</td>
+          <td class="num">431666.40</td>
+          <td class="num">447608.50</td>
+          <td class="num">592083.90</td>
+          <td class="num">592083.90</td>
+          <td class="num">592083.90</td>
+          <td class="num">406946.70</td>
+          <td class="num">592083.90</td>
+          <td class="num">±8.54%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="bench-name">error ×100</td>
+          <td class="num">2</td>
+          <td class="num">430980.98</td>
+          <td class="num">433733.45</td>
+          <td class="num">436693.00</td>
+          <td class="num">455797.50</td>
+          <td class="num">455797.50</td>
+          <td class="num">455797.50</td>
+          <td class="num">404864.70</td>
+          <td class="num">455797.50</td>
+          <td class="num">±2.37%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">5</td>
+          <td class="bench-name">debug ×100</td>
+          <td class="num">2</td>
+          <td class="num">527771.53</td>
+          <td class="num">483629.40</td>
+          <td class="num">634215.20</td>
+          <td class="num">727863.00</td>
+          <td class="num">727863.00</td>
+          <td class="num">727863.00</td>
+          <td class="num">407780.10</td>
+          <td class="num">727863.00</td>
+          <td class="num">±16.20%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">1</td>
+          <td class="bench-name">html ×100</td>
+          <td class="num">3</td>
+          <td class="num">291694.84</td>
+          <td class="num">281416.35</td>
+          <td class="num">356940.10</td>
+          <td class="num">369123.20</td>
+          <td class="num">369123.20</td>
+          <td class="num">369123.20</td>
+          <td class="num">203749.00</td>
+          <td class="num">369123.20</td>
+          <td class="num">±14.64%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>GdbCommandWindow — append at dom:10000 <span class="file-badge">gdb-command-window.bench.ts</span></h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Benchmark</th>
+        <th class="num">Ops / sec</th>
+        <th class="num">Mean<br><span class="subhead">(µs)</span></th>
+        <th class="num">Median<br><span class="subhead">(µs)</span></th>
+        <th class="num">p75<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.5<br><span class="subhead">(µs)</span></th>
+        <th class="num">p99.9<br><span class="subhead">(µs)</span></th>
+        <th class="num">Min<br><span class="subhead">(µs)</span></th>
+        <th class="num">Max<br><span class="subhead">(µs)</span></th>
+        <th class="num">± Error</th>
+        <th class="num">Samples</th>
+        <th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th>
+         <th class="num">Δ%</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td class="rank">4</td>
+          <td class="bench-name">console ×100</td>
+          <td class="num">0</td>
+          <td class="num">2037017.87</td>
+          <td class="num">2043299.00</td>
+          <td class="num">2090685.20</td>
+          <td class="num">2375700.20</td>
+          <td class="num">2375700.20</td>
+          <td class="num">2375700.20</td>
+          <td class="num">1733282.10</td>
+          <td class="num">2375700.20</td>
+          <td class="num">±6.57%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="bench-name">log ×100</td>
+          <td class="num">1</td>
+          <td class="num">1885682.52</td>
+          <td class="num">1821825.55</td>
+          <td class="num">2047990.00</td>
+          <td class="num">2222771.30</td>
+          <td class="num">2222771.30</td>
+          <td class="num">2222771.30</td>
+          <td class="num">1713613.00</td>
+          <td class="num">2222771.30</td>
+          <td class="num">±6.41%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">5</td>
+          <td class="bench-name">error ×100</td>
+          <td class="num">0</td>
+          <td class="num">2077438.72</td>
+          <td class="num">2057397.50</td>
+          <td class="num">2117021.10</td>
+          <td class="num">2210715.90</td>
+          <td class="num">2210715.90</td>
+          <td class="num">2210715.90</td>
+          <td class="num">1949526.50</td>
+          <td class="num">2210715.90</td>
+          <td class="num">±2.65%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="bench-name">debug ×100</td>
+          <td class="num">1</td>
+          <td class="num">1957436.23</td>
+          <td class="num">1906388.05</td>
+          <td class="num">2081703.00</td>
+          <td class="num">2471079.50</td>
+          <td class="num">2471079.50</td>
+          <td class="num">2471079.50</td>
+          <td class="num">1733675.00</td>
+          <td class="num">2471079.50</td>
+          <td class="num">±8.07%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
+        </tr>
+        <tr>
+          <td class="rank">1</td>
+          <td class="bench-name">html ×100</td>
+          <td class="num">1</td>
+          <td class="num">979230.50</td>
+          <td class="num">975342.70</td>
+          <td class="num">1027479.00</td>
+          <td class="num">1047038.40</td>
+          <td class="num">1047038.40</td>
+          <td class="num">1047038.40</td>
+          <td class="num">911949.20</td>
+          <td class="num">1047038.40</td>
+          <td class="num">±3.61%</td>
+          <td class="num">10</td>
+          <td class="num">+0 ↑</td>
+           <td class="num ">+0.0%</td>
         </tr>
     </tbody>
   </table>

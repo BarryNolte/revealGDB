@@ -744,7 +744,7 @@ export class gdbStateDatabase extends EventEmitter {
     // Approach C when source is available, Approach B otherwise
     const map = buildLineVarMap(blocks, lineTable, header, sourceLines);
     this.lineVarStore.add(map);
-    console.log("Built line var map", JSON.stringify(map));
+    //console.log("Built line var map", JSON.stringify(map));
     sendToRenderer("data-line-vars", this.serializeLineVarMap(map));
   }
 

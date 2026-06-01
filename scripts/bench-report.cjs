@@ -47,6 +47,97 @@ function deltaClass(pct) {
   return "";
 }
 
+/** Generates an inline SVG multi-line chart from slowdown bench data.
+ *  slowdownGroups: Map<domSize:number, Map<benchName:string, meanMs:number>> */
+function generateSlowdownChart(slowdownGroups) {
+  const domSizes = [...slowdownGroups.keys()].sort((a, b) => a - b);
+  if (domSizes.length < 2) return "";
+
+  // Names must exactly match the bench() name strings in the bench file.
+  const SERIES = [
+    { name: "console \xD7100", color: "#3fb950" },
+    { name: "log \xD7100",     color: "#58a6ff" },
+    { name: "error \xD7100",   color: "#f85149" },
+    { name: "debug \xD7100",   color: "#d29922" },
+    { name: "html \xD7100",    color: "#bc8cff" },
+  ];
+
+  let maxMs = 0;
+  for (const byType of slowdownGroups.values()) {
+    for (const ms of byType.values()) {
+      if (ms > maxMs) maxMs = ms;
+    }
+  }
+  if (maxMs === 0) return "";
+  maxMs *= 1.2;
+
+  const W = 680, H = 280;
+  const PAD = { top: 20, right: 150, bottom: 50, left: 72 };
+  const plotW = W - PAD.left - PAD.right;
+  const plotH = H - PAD.top - PAD.bottom;
+
+  const n = domSizes.length;
+  const xOf = (i) => PAD.left + (n <= 1 ? plotW / 2 : (i / (n - 1)) * plotW);
+  const yOf = (ms) => PAD.top + plotH * (1 - ms / maxMs);
+
+  const Y_TICKS = 5;
+  let grids = "";
+  let yLabels = "";
+  for (let t = 0; t <= Y_TICKS; t++) {
+    const ms = (t / Y_TICKS) * maxMs;
+    const y = yOf(ms).toFixed(1);
+    grids += `<line x1="${PAD.left}" y1="${y}" x2="${PAD.left + plotW}" y2="${y}" stroke="#21262d" stroke-width="1"/>`;
+    const label = ms >= 1 ? `${ms.toFixed(2)}ms` : `${(ms * 1000).toFixed(1)}\u03bcs`;
+    yLabels += `<text x="${PAD.left - 6}" y="${y}" text-anchor="end" dominant-baseline="middle" fill="#6e7681" font-size="10">${esc(label)}</text>`;
+  }
+
+  let xLabels = "";
+  domSizes.forEach((sz, i) => {
+    xLabels += `<text x="${xOf(i).toFixed(1)}" y="${(PAD.top + plotH + 16).toFixed(1)}" text-anchor="middle" fill="#6e7681" font-size="10">${sz.toLocaleString()}</text>`;
+  });
+
+  let paths = "";
+  let dots = "";
+  for (const { name, color } of SERIES) {
+    const pts = domSizes
+      .map((sz, i) => {
+        const ms = slowdownGroups.get(sz)?.get(name);
+        return ms != null ? { x: xOf(i), y: yOf(ms), ms } : null;
+      })
+      .filter(Boolean);
+    if (pts.length < 2) continue;
+
+    const d = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+    paths += `<path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    for (const p of pts) {
+      const tip = p.ms >= 1 ? `${p.ms.toFixed(3)}ms` : `${(p.ms * 1000).toFixed(2)}\u03bcs`;
+      dots += `<g><circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="${color}"/><title>${esc(name)}: ${esc(tip)}</title></g>`;
+    }
+  }
+
+  let legend = "";
+  SERIES.forEach(({ name, color }, i) => {
+    const lx = PAD.left + plotW + 14;
+    const ly = PAD.top + 4 + i * 22;
+    legend += `<line x1="${lx}" y1="${ly + 5}" x2="${lx + 16}" y2="${ly + 5}" stroke="${color}" stroke-width="2.5"/>`;
+    legend += `<circle cx="${lx + 8}" cy="${ly + 5}" r="3" fill="${color}"/>`;
+    legend += `<text x="${lx + 22}" y="${ly + 5}" dominant-baseline="middle" fill="#c9d1d9" font-size="11">${esc(name)}</text>`;
+  });
+
+  const axisLines =
+    `<line x1="${PAD.left}" y1="${PAD.top}" x2="${PAD.left}" y2="${PAD.top + plotH}" stroke="#30363d" stroke-width="1"/>` +
+    `<line x1="${PAD.left}" y1="${PAD.top + plotH}" x2="${PAD.left + plotW}" y2="${PAD.top + plotH}" stroke="#30363d" stroke-width="1"/>`;
+  const xTitle = `<text x="${((2 * PAD.left + plotW) / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" fill="#8b949e" font-size="11">Messages pre-filled in DOM</text>`;
+  const yTitle = `<text transform="rotate(-90)" x="${(-(PAD.top + plotH / 2)).toFixed(1)}" y="14" text-anchor="middle" fill="#8b949e" font-size="11">Mean latency (100 appends)</text>`;
+
+  return (
+    `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg"` +
+    ` style="display:block;background:#0d1117;border-radius:6px;border:1px solid #30363d;overflow:visible">` +
+    axisLines + grids + yLabels + xLabels + xTitle + yTitle + paths + dots + legend +
+    `</svg>`
+  );
+}
+
 const latest = loadJson(LATEST_FILE);
 if (!latest) {
   console.log("  No benchmark data found — skipping bench report.");
@@ -73,14 +164,29 @@ const baselineAt = baseline?.mtime ? new Date(baseline.mtime).toLocaleString() :
 
 // ─── Build sections ────────────────────────────────────────────────────────────
 
+// Suites named "GdbCommandWindow — append at dom:N" feed the slowdown chart.
+const SLOWDOWN_RE = /^GdbCommandWindow \u2014 append at dom:(\d+)$/;
+
 let totalBenches = 0;
 const sections = [];
+const slowdownSections = [];
+const slowdownGroups = new Map(); // domSize → Map<benchName, meanMs>
 
 for (const file of (latest.data.files || [])) {
   const fileName = file.filepath.replace(/\\/g, "/").split("/").slice(-1)[0];
   for (const group of (file.groups || [])) {
     const suiteName = group.fullName.split(" > ").slice(-1)[0];
     totalBenches += (group.benchmarks || []).length;
+
+    const slowdownMatch = SLOWDOWN_RE.exec(suiteName);
+    if (slowdownMatch) {
+      const domSize = parseInt(slowdownMatch[1], 10);
+      const byType = new Map();
+      for (const bench of (group.benchmarks || [])) {
+        if (bench.mean != null) byType.set(bench.name, bench.mean);
+      }
+      slowdownGroups.set(domSize, byType);
+    }
 
     const deltaHead = baseline
       ? `<th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th>
@@ -142,7 +248,7 @@ for (const file of (latest.data.files || [])) {
         </tr>`;
     }).join("");
 
-    sections.push(`
+    const sectionHtml = `
 <section>
   <h2>${esc(suiteName)} <span class="file-badge">${esc(fileName)}</span></h2>
   <div class="table-wrap">
@@ -170,9 +276,26 @@ for (const file of (latest.data.files || [])) {
     </tbody>
   </table>
   </div>
-</section>`);
+</section>`;
+
+    if (slowdownMatch) {
+      slowdownSections.push(sectionHtml);
+    } else {
+      sections.push(sectionHtml);
+    }
   }
 }
+
+// ─── DOM-slowdown chart ────────────────────────────────────────────────────────
+
+const chartHtml = slowdownGroups.size >= 2
+  ? `
+<section>
+  <h2>GdbCommandWindow \u2014 Append Latency vs DOM Size</h2>
+  <p class="chart-note">Mean time to append \xD7100 messages as the output div pre-fills. Larger DOM \u2192 more reflow work per append.</p>
+  <div class="chart-wrap">${generateSlowdownChart(slowdownGroups)}</div>
+</section>`
+  : "";
 
 // ─── HTML ─────────────────────────────────────────────────────────────────────
 
@@ -250,6 +373,16 @@ const html = `<!DOCTYPE html>
     overflow-x: auto;
   }
 
+  .chart-wrap {
+    overflow-x: auto;
+  }
+
+  .chart-note {
+    font-size: 12px;
+    color: #8b949e;
+    margin-bottom: 12px;
+  }
+
   table {
     width: 100%;
     border-collapse: collapse;
@@ -299,6 +432,8 @@ const html = `<!DOCTYPE html>
   </div>
 </header>
 ${sections.join("\n")}
+${chartHtml}
+${slowdownSections.join("\n")}
 </body>
 </html>
 `;

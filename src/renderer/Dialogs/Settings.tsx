@@ -270,6 +270,21 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
     },
   }));
 
+  const applySettingsToRefs = (gdb: GdbSettings): void => {
+    const gui = gdb.gui;
+    if (!gui) return;
+    if (gui.sourceViewerTheme && editorThemeRef.current)
+      editorThemeRef.current.value = gui.sourceViewerTheme;
+    if (gui.sourceViewerFontSize && editorFontSizeRef.current)
+      editorFontSizeRef.current.value = gui.sourceViewerFontSize;
+    if (gui.showDebugInfo && appShowDebugInfoRef.current)
+      appShowDebugInfoRef.current.checked = gui.showDebugInfo;
+    if (gui.applicationTheme && appThemeRef.current)
+      appThemeRef.current.value = gui.applicationTheme;
+    if (gui.disableAutoSymbolLoading && appDisableAutoSymbolLoadingRef.current)
+      appDisableAutoSymbolLoadingRef.current.checked = gui.disableAutoSymbolLoading;
+  };
+
   useEffect(() => {
     let isMounted = true;
     window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings): void => {
@@ -279,16 +294,7 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
         if (gdb.gui?.sourceViewerFontName && editorFontsRef.current)
           editorFontsRef.current.value = gdb.gui.sourceViewerFontName;
       });
-      if (gdb.gui?.sourceViewerTheme && editorThemeRef.current)
-        editorThemeRef.current.value = gdb.gui.sourceViewerTheme;
-      if (gdb.gui?.sourceViewerFontSize && editorFontSizeRef.current)
-        editorFontSizeRef.current.value = gdb.gui.sourceViewerFontSize;
-      if (gdb.gui?.showDebugInfo && appShowDebugInfoRef.current)
-        appShowDebugInfoRef.current.checked = gdb.gui.showDebugInfo;
-      if (gdb.gui?.applicationTheme && appThemeRef.current)
-        appThemeRef.current.value = gdb.gui.applicationTheme;
-      if (gdb.gui?.disableAutoSymbolLoading && appDisableAutoSymbolLoadingRef.current)
-        appDisableAutoSymbolLoadingRef.current.checked = gdb.gui.disableAutoSymbolLoading;
+      applySettingsToRefs(gdb);
     });
     return () => {
       isMounted = false;

@@ -36,6 +36,7 @@ function makeRegisterValues(count: number): string {
 
 const VALUES_8 = makeRegisterValues(8);
 const VALUES_32 = makeRegisterValues(32);
+const VALUES_64 = makeRegisterValues(64);
 
 describe("parseRegisterPayload (names)", () => {
   bench("8 registers", () => {
@@ -58,6 +59,10 @@ describe("parseRegisterPayload (values)", () => {
 
   bench("32 register values", () => {
     parseRegisterPayload(VALUES_32, rgxCleanList, new RegExp(rgxRegisterValues.source, "g"));
+  });
+
+  bench("64 register values", () => {
+    parseRegisterPayload(VALUES_64, rgxCleanList, new RegExp(rgxRegisterValues.source, "g"));
   });
 });
 

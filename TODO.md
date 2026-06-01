@@ -1,5 +1,4 @@
 # Priority Items
-- Add ability to find and edit settings file
 
 # Documentation
 - Quick Start Guide
@@ -23,4 +22,4 @@ If connection fails, stays in connect mode
 - run startup commands after gdb starts up
 
 # Need more info or find support for...
-- Tracepoints - How to insert more automatically (when they are suppoted)
+- Tracepoints - How to insert more automatically (when they are supported)

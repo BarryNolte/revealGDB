@@ -67,54 +67,56 @@ function aboutBoxFooter(onClose: () => void): JSX.Element {
 function AboutBoxVersionTable({ info }: { info: AboutInfoState }): JSX.Element {
   return (
     <table>
-      <tr>
-        <td>
-          <div className="aboutBoxDetails">Node Version:</div>
-        </td>
-        <td>
-          <div>{info.nodeVersion}</div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <div className="aboutBoxDetails">Electron Version:</div>
-        </td>
-        <td>
-          <div>{info.electronVersion}</div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <div className="aboutBoxDetails">v8 Version:</div>
-        </td>
-        <td>
-          <div>{info.v8Version}</div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <div className="aboutBoxDetails">Architecture:</div>
-        </td>
-        <td>
-          <div>{info.architecture}</div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <div className="aboutBoxDetails">Platform:</div>
-        </td>
-        <td>
-          <div>{info.platform}</div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <div className="aboutBoxDetails">OS Version:</div>
-        </td>
-        <td>
-          <div>{info.osVersion}</div>
-        </td>
-      </tr>
+      <tbody>
+        <tr>
+          <td>
+            <div className="aboutBoxDetails">Node Version:</div>
+          </td>
+          <td>
+            <div>{info.nodeVersion}</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div className="aboutBoxDetails">Electron Version:</div>
+          </td>
+          <td>
+            <div>{info.electronVersion}</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div className="aboutBoxDetails">v8 Version:</div>
+          </td>
+          <td>
+            <div>{info.v8Version}</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div className="aboutBoxDetails">Architecture:</div>
+          </td>
+          <td>
+            <div>{info.architecture}</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div className="aboutBoxDetails">Platform:</div>
+          </td>
+          <td>
+            <div>{info.platform}</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div className="aboutBoxDetails">OS Version:</div>
+          </td>
+          <td>
+            <div>{info.osVersion}</div>
+          </td>
+        </tr>
+      </tbody>
     </table>
   );
 }

@@ -166,7 +166,6 @@ export class MiNotifyAsyncHandler {
           return false;
         }
         this.host.gdbDB.createBreakpoint(mapRegexGroupsToBreakpoint(groups));
-        console.log(`Breakpoint created: ${groups.number}`);
         this.host.gdbDB.breakpointsUpdateUI();
         return true;
       }
