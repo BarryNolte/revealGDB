@@ -5,6 +5,7 @@
  * Exported symbols include `MiResultRecordHandler`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { sendToRenderer } from "../ipc-sender";
+import { formatGeneralError } from "../utilities/html-error-formatter";
 import { debugLog } from "../utilities/logger";
 import { mapRegexGroupsToBreakpoint } from "./mappers/breakpoint-mapper";
 import { MiOutputHost } from "./mi-output-types";
@@ -15,7 +16,7 @@ import { RegistersResultStrategy } from "./mi-result-strategies/registers-result
 import { StackResultStrategy } from "./mi-result-strategies/stack-result-strategy";
 import { ThreadsResultStrategy } from "./mi-result-strategies/threads-result-strategy";
 
-import { ERROR_STREAM, LOG_STREAM } from "./mi-stream-events";
+import { ERROR_STREAM, HTML_STREAM, LOG_STREAM } from "./mi-stream-events";
 
 export class MiResultRecordHandler {
   private readonly rgxResultRecord: RegExp = /^\^(?<result>[^,]*),?(?<data>.*)?$/;
@@ -66,7 +67,10 @@ export class MiResultRecordHandler {
         this.host.emit("gdb-exit", data);
         break;
       default: {
-        console.error(`ResultRecord (Unknown): ${result} --> ${data}`);
+        this.host.emit(
+          HTML_STREAM,
+          formatGeneralError("Unknown MI Result Record", `Result: ${result}`, `Data: ${data}`),
+        );
         return false;
       }
     }
@@ -149,7 +153,10 @@ export class MiResultRecordHandler {
       await strategy.handle(this.host, output, resList);
       return true;
     }
-    console.error(`ResultRecord (Unknown): ${resResult} --> ${resList}`);
+    this.host.emit(
+      HTML_STREAM,
+      formatGeneralError("Unknown MI Result Record", `Result: ${resResult}`, `Data: ${resList}`),
+    );
     return false;
   }
 

@@ -6,9 +6,10 @@
  */
 import { IPC_CHANNELS } from "../../common/ipc-contracts";
 import { sendToRenderer } from "../ipc-sender";
+import { formatGeneralError } from "../utilities/html-error-formatter";
 import { mapRegexGroupsToBreakpoint } from "./mappers/breakpoint-mapper";
 import { MiOutputHost /*, gdbShowSourceInfo */ } from "./mi-output-types";
-import { LOG_STREAM } from "./mi-stream-events";
+import { HTML_STREAM, LOG_STREAM } from "./mi-stream-events";
 
 export class MiNotifyAsyncHandler {
   private readonly rgxNotify: RegExp = /^=(?<cmd>.*?),(?<data>.*$)/;
@@ -174,7 +175,7 @@ export class MiNotifyAsyncHandler {
         if (!groups) {
           return false;
         }
-        console.log(`Breakpoint modified: ${groups.number}`);
+        // console.log(`Breakpoint modified: ${groups.number}`);
         this.host.gdbDB.updateBreakpoint(mapRegexGroupsToBreakpoint(groups));
         this.host.gdbDB.breakpointsUpdateUI();
         return true;
@@ -184,7 +185,7 @@ export class MiNotifyAsyncHandler {
         if (id) {
           this.host.gdbDB.deleteBreakpoint(id);
         }
-        console.log(`Breakpoint deleted: ${id}`);
+        // console.log(`Breakpoint deleted: ${id}`);
         this.host.gdbDB.breakpointsUpdateUI();
         return true;
       }
@@ -310,7 +311,10 @@ export class MiNotifyAsyncHandler {
         this.handleRecordStopped(data);
         return true;
       default: {
-        console.error(`NotifyAsyncRecord (Unknown): ${cmd} --> ${data}`);
+        this.host.emit(
+          HTML_STREAM,
+          formatGeneralError("Unknown MI Notify Async Record", `Command: ${cmd}`, `Data: ${data}`),
+        );
         return false;
       }
     }

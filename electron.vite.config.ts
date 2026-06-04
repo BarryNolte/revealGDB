@@ -18,12 +18,15 @@ import { defineConfig } from "electron-vite";
 import { resolve } from "path";
 // @ts-export-error
 import react from "@vitejs/plugin-react";
+// @ts-export-error
+import { visualizer } from "rollup-plugin-visualizer";
 // import fs from "fs";
 
 const buildVariant = process.env.REVEALGDB_BUILD === "debug" ? "debug" : "release";
 const isDebugBuild =
   process.env.REVEALGDB_DEBUG === "true" ||
   (process.env.REVEALGDB_BUILD === undefined && process.env.NODE_ENV === "development");
+const shouldAnalyzeBundle = process.env.REVEALGDB_ANALYZE_BUNDLE === "true";
 
 const buildDefines = {
   __REVEALGDB_BUILD__: JSON.stringify(buildVariant),
@@ -40,14 +43,32 @@ const rendererInputs = {
   settings: resolve(__dirname, "src/renderer/settings-test.html"),
 };
 
+// For bundle analysis, exclude test HTML entries to focus on production code
+const productionInputs = {
+  main: resolve(__dirname, "src/renderer/index.html"),
+};
+
 export default defineConfig({
   preload: {
     root: ".",
     define: buildDefines,
+    plugins: shouldAnalyzeBundle
+      ? [
+          visualizer({
+            open: false,
+            filename: "./reports/bundle-report-preload.html",
+            gzipSize: true,
+            brotliSize: true,
+            template: "treemap",
+          }),
+        ]
+      : [],
     build: {
       outDir: "out/preload",
       emptyOutDir: true,
       sourcemap: true,
+      reportCompressedSize: shouldAnalyzeBundle,
+      rollupOptions: {},
       watch: {
         // Rollup WatcherOptions can be configured here
         // For example, to ignore specific files:
@@ -63,10 +84,23 @@ export default defineConfig({
   main: {
     root: ".",
     define: buildDefines,
+    plugins: shouldAnalyzeBundle
+      ? [
+          visualizer({
+            open: false,
+            filename: "./reports/bundle-report-main.html",
+            gzipSize: true,
+            brotliSize: true,
+            template: "treemap",
+          }),
+        ]
+      : [],
     build: {
       outDir: "out/main",
       emptyOutDir: true,
       sourcemap: true,
+      reportCompressedSize: shouldAnalyzeBundle,
+      rollupOptions: {},
       watch: {
         // Rollup WatcherOptions can be configured here
         // For example, to ignore specific files:
@@ -80,7 +114,18 @@ export default defineConfig({
     },
   },
   renderer: {
-    plugins: [react()],
+    plugins: shouldAnalyzeBundle
+      ? [
+          react(),
+          visualizer({
+            open: false,
+            filename: "./reports/bundle-report-renderer.html",
+            gzipSize: true,
+            brotliSize: true,
+            template: "treemap",
+          }),
+        ]
+      : [react()],
     base: "./",
     define: buildDefines,
     assetsInclude: ["**/*.gif"],
@@ -88,8 +133,9 @@ export default defineConfig({
       outDir: "out/renderer",
       emptyOutDir: true,
       sourcemap: true,
+      reportCompressedSize: shouldAnalyzeBundle,
       rollupOptions: {
-        input: rendererInputs,
+        input: shouldAnalyzeBundle ? productionInputs : rendererInputs,
         output: {
           // Configure manual chunks for better control
           manualChunks(id) {

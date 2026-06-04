@@ -5,12 +5,13 @@
  * Exported symbols include `MiOutputProcessor`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { ConnectionNotifier } from "../utilities/ConnectionNotifier";
+import { formatGeneralError } from "../utilities/html-error-formatter";
 import { MiExecAsyncHandler } from "./mi-exec-handler";
 import { MiNotifyAsyncHandler } from "./mi-notify-handler";
 import { MiOutputHost, gdbShowSourceInfo } from "./mi-output-types";
 import { MiResultRecordHandler } from "./mi-result-handler";
 import { MiStatusAsyncHandler } from "./mi-status-handler";
-import { CONSOLE_STREAM, ERROR_STREAM, LOG_STREAM } from "./mi-stream-events";
+import { CONSOLE_STREAM, ERROR_STREAM, HTML_STREAM, LOG_STREAM } from "./mi-stream-events";
 
 export type { MiOutputHost, gdbShowSourceInfo };
 
@@ -178,8 +179,7 @@ export class MiOutputProcessor {
         break;
       }
       default: {
-        // console.error(`Raw Output Type Unknown: ${output}`);
-        this.host.emit(ERROR_STREAM, output);
+        this.host.emit(HTML_STREAM, formatGeneralError("Unknown MI Output", output));
         return false;
       }
     }

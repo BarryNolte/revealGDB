@@ -43,6 +43,26 @@ function loadFile(filePath) {
   }
 }
 
+function loadRuns(dirPath) {
+  try {
+    const files = fs.readdirSync(dirPath).filter((f) => f.endsWith('.json'));
+    const runs = files.map((f) => {
+      const p = path.join(dirPath, f);
+      try {
+        const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+        return { path: p, data, mtime: fs.statSync(p).mtimeMs };
+      } catch {
+        return null;
+      }
+    }).filter(Boolean);
+    // Sort by mtime desc
+    runs.sort((a, b) => b.mtime - a.mtime);
+    return runs;
+  } catch {
+    return [];
+  }
+}
+
 function relativeAge(mtimeMs) {
   if (!mtimeMs) return null;
   const diffMs = Date.now() - mtimeMs;
@@ -141,7 +161,25 @@ function startupCard() {
   const latestFile = path.join(ROOT, "reports", "startup-benchmark", "latest.json");
   const baselineFile = path.join(ROOT, "reports", "startup-benchmark", "baseline.json");
 
-  const latest = loadJson(latestFile);
+  let latest = loadJson(latestFile);
+  // If latest.json exists but lacks environment info, prefer newest latest-<env>.json
+  if (!latest) {
+    try {
+      const benchDir = path.join(ROOT, 'reports', 'function-benchmark');
+      const items = fs.readdirSync(benchDir).filter((f) => f.startsWith('latest-') && f.endsWith('.json'));
+      let newest = null;
+      for (const f of items) {
+        const p = path.join(benchDir, f);
+        const j = loadJson(p);
+        if (!j) continue;
+        if (!newest || j.mtime > newest.mtime) newest = { j, p };
+      }
+      if (newest) {
+        latest = newest.j;
+        console.log(`  Using per-platform latest file for dashboard: ${path.basename(newest.p)}`);
+      }
+    } catch (e) {}
+  }
   const baseline = loadJson(baselineFile);
 
   if (!latest) {
@@ -154,6 +192,16 @@ function startupCard() {
   }
 
   const milestones = Object.keys(latest.data.metrics || {});
+
+  // Load historical runs to allow environment comparisons (e.g., windows vs wsl)
+  const runsDir = path.join(ROOT, 'reports', 'startup-benchmark', 'runs');
+  const runs = loadRuns(runsDir);
+  // Build a simple environment summary: latest per env
+  const latestByEnv = new Map();
+  for (const r of runs) {
+    const env = r.data.environment?.name || r.data.environment?.env?.name || 'unknown';
+    if (!latestByEnv.has(env)) latestByEnv.set(env, r);
+  }
 
   const rows = milestones.map((key) => {
     const lMetric = latest.data.metrics?.[key];
@@ -183,13 +231,40 @@ function startupCard() {
       </tr>`;
   }).join("");
 
-  const meta = `${latest.data.sampleCount} sample${latest.data.sampleCount !== 1 ? "s" : ""}, commit ${esc(latest.data.shortCommit ?? "?")}`;
+  const envMeta = latest.data.environment ? ` · env: ${esc(latest.data.environment.name)} (${esc(latest.data.environment.platform)})` : "";
+  const meta = `${latest.data.sampleCount} sample${latest.data.sampleCount !== 1 ? "s" : ""}, commit ${esc(latest.data.shortCommit ?? "?")}${envMeta}`;
+
+  // Build a compact environment comparison table (one row per detected env)
+  let envSummaryHtml = "";
+  if (latestByEnv.size > 0) {
+    const envRows = [...latestByEnv.entries()].map(([env, r]) => {
+      const shown = r.data.metrics?.['main-window-shown']?.medianMs ?? (r.data.data && r.data.data.metrics && r.data.data.metrics['main-window-shown']?.medianMs) ?? null;
+      const samples = r.data.sampleCount ?? (r.data.data && r.data.data.sampleCount) ?? 'n/a';
+      const host = r.data.environment?.host ?? r.data.environment?.platform ?? '';
+      return `
+        <tr>
+          <td>${esc(env)}</td>
+          <td class="num">${shown !== null ? esc(String(shown) + 'ms') : '—'}</td>
+          <td class="num">${esc(String(samples))}</td>
+          <td>${esc(host)}</td>
+        </tr>`;
+    }).join('');
+
+    envSummaryHtml = `
+      <h3>Environment Runs</h3>
+      <table class="env-table">
+        <thead><tr><th>Environment</th><th class="num">main-window-shown</th><th class="num">samples</th><th>host</th></tr></thead>
+        <tbody>${envRows}
+        </tbody>
+      </table>`;
+  }
 
   return `
 <div class="card">
   <h2>Startup Benchmark</h2>
   ${staleLabel(latest.mtime, "npm run metrics:benchmark")}
   <p class="card-meta">${meta}</p>
+  ${envSummaryHtml}
   <table>
     <thead><tr><th>Milestone</th><th>Current</th><th>Baseline</th><th>Delta</th></tr></thead>
     <tbody>${rows}
@@ -263,28 +338,47 @@ function maintainabilityCard() {
 }
 
 function benchCard() {
-  const latestFile = path.join(ROOT, "reports", "function-benchmark", "latest.json");
-  const baselineFile = path.join(ROOT, "reports", "function-benchmark", "baseline.json");
+  const benchDir = path.join(ROOT, 'reports', 'function-benchmark');
+  
+  // Load Windows and WSL data
+  const windowsFile = path.join(benchDir, "latest-windows.json");
+  const wslFile = path.join(benchDir, "latest-wsl.json");
+  
+  const windowsData = loadJson(windowsFile);
+  const wslData = loadJson(wslFile);
 
-  const latest = loadJson(latestFile);
-  const baseline = loadJson(baselineFile);
-
-  if (!latest) {
+  if (!windowsData && !wslData) {
     return `
 <div class="card">
   <h2>Function Benchmarks</h2>
-  ${staleLabel(null, "npm run metrics:bench")}
+  ${staleLabel(null, "npm run metrics:benchmark")}
   <p class="empty">No benchmark data found.</p>
 </div>`;
   }
-
-  // Build lookup: `${groupFullName}::${name}` → mean (ms per operation)
-  const baselineMean = new Map();
-  if (baseline) {
-    for (const file of (baseline.data.files || [])) {
+  
+  // Extract file structure from whichever platform has data
+  const primaryData = windowsData || wslData;
+  const mtime = Math.max(windowsData?.mtime || 0, wslData?.mtime || 0);
+  
+  // Build maps for quick lookup: fullName::benchName -> bench data
+  const windowsMap = new Map();
+  const wslMap = new Map();
+  
+  if (windowsData && windowsData.data && windowsData.data.files) {
+    for (const file of windowsData.data.files) {
       for (const group of (file.groups || [])) {
         for (const bench of (group.benchmarks || [])) {
-          baselineMean.set(`${group.fullName}::${bench.name}`, bench.mean);
+          windowsMap.set(`${group.fullName}::${bench.name}`, bench);
+        }
+      }
+    }
+  }
+  
+  if (wslData && wslData.data && wslData.data.files) {
+    for (const file of wslData.data.files) {
+      for (const group of (file.groups || [])) {
+        for (const bench of (group.benchmarks || [])) {
+          wslMap.set(`${group.fullName}::${bench.name}`, bench);
         }
       }
     }
@@ -292,82 +386,178 @@ function benchCard() {
 
   function formatHz(hz) {
     if (hz >= 1_000_000) return `${(hz / 1_000_000).toFixed(2)}M`;
-    if (hz >= 1_000) return `${(hz / 1_000).toFixed(1)}K`;
+    if (hz >= 1_000) return `${(hz / 1_000).toFixed(2)}K`;
     return String(Math.round(hz));
   }
 
-  function benchDeltaColor(pct) {
-    // pct is mean-time % change: negative = less time = good (green)
-    if (pct <= -5) return "good";
-    if (pct >= 25) return "bad";
-    if (pct >= 10) return "warn";
+  function formatMean(mean) {
+    // mean is in milliseconds, convert to microseconds
+    return (mean * 1000).toFixed(2);
+  }
+
+  function deltaClass(pct) {
+    if (pct <= -25) return "bad";
+    if (pct <= -10) return "warn";
+    if (pct >= 5) return "good";
     return "";
   }
 
   let totalBenches = 0;
   const sections = [];
-  for (const file of (latest.data.files || [])) {
+
+  // Iterate through file structure and build cross-platform comparison tables
+  for (const file of (primaryData.data.files || [])) {
+    const fileName = (file.filepath || file.file || '').replace(/\\/g, "/").split("/").slice(-1)[0];
+    
     for (const group of (file.groups || [])) {
       const suiteName = group.fullName.split(" > ").slice(-1)[0];
       totalBenches += (group.benchmarks || []).length;
 
       const rows = (group.benchmarks || []).map((bench) => {
-        const hzStr = formatHz(bench.hz);
-        const p99us = (bench.p99 * 1000).toFixed(1);
-        const rmeStr = `±${bench.rme.toFixed(1)}%`;
+        const key = `${group.fullName}::${bench.name}`;
+        const winBench = windowsMap.get(key);
+        const wslBench = wslMap.get(key);
 
-        let deltaCell;
-        if (!baseline) {
-          deltaCell = `<td class="num">—</td>`;
-        } else {
-          const baseMean = baselineMean.get(`${group.fullName}::${bench.name}`);
-          if (baseMean != null && bench.mean != null) {
-            const pct = ((bench.mean - baseMean) / baseMean) * 100;
-            const sign = pct >= 0 ? "+" : "";
-            const cls = benchDeltaColor(pct);
-            const arrow = pct <= 0 ? "↓" : "↑"; // ↓ = less time = better
-            deltaCell = `<td class="num ${cls}">${sign}${pct.toFixed(1)}% ${arrow}</td>`;
-          } else {
-            deltaCell = `<td class="num">new</td>`;
-          }
+        // Windows columns
+        const winHz = winBench?.hz != null ? formatHz(winBench.hz) : "—";
+        const winMean = winBench?.mean != null ? formatMean(winBench.mean) : "—";
+        const winRme = winBench?.rme != null ? `±${winBench.rme.toFixed(1)}%` : "—";
+
+        // WSL columns
+        const wslHz = wslBench?.hz != null ? formatHz(wslBench.hz) : "—";
+        const wslMean = wslBench?.mean != null ? formatMean(wslBench.mean) : "—";
+        const wslRme = wslBench?.rme != null ? `±${wslBench.rme.toFixed(1)}%` : "—";
+
+        // Difference calculation (Windows as baseline)
+        let diffStr = "—";
+        let diffCls = "";
+        if (winBench?.hz != null && wslBench?.hz != null) {
+          const pct = ((winBench.hz - wslBench.hz) / wslBench.hz) * 100;
+          const sign = pct >= 0 ? "+" : "";
+          const arrow = pct >= 0 ? "↑" : "↓";
+          diffStr = `${sign}${pct.toFixed(1)}% ${arrow}`;
+          diffCls = deltaClass(pct);
         }
 
         return `
       <tr>
-        <td>${esc(bench.name)}</td>
-        <td class="num">${esc(hzStr)}</td>
-        <td class="num">${esc(p99us)}</td>
-        <td class="num">${esc(rmeStr)}</td>
-        ${deltaCell}
+        <td class="bench-name-compact">${esc(bench.name)}</td>
+        <td class="num col-group-win">${esc(winHz)}</td>
+        <td class="num col-group-win">${esc(winMean)}</td>
+        <td class="num col-group-win">${esc(winRme)}</td>
+        <td class="num col-group-wsl">${esc(wslHz)}</td>
+        <td class="num col-group-wsl">${esc(wslMean)}</td>
+        <td class="num col-group-wsl">${esc(wslRme)}</td>
+        <td class="num col-group-delta ${diffCls}">${esc(diffStr)}</td>
       </tr>`;
       }).join("");
 
-      const deltaHeader = baseline ? `<th class="num">Δ Baseline</th>` : "";
-      const colgroup = baseline
-        ? `<colgroup><col style="width:40%"><col style="width:15%"><col style="width:15%"><col style="width:15%"><col style="width:15%"></colgroup>`
-        : `<colgroup><col style="width:40%"><col style="width:20%"><col style="width:20%"><col style="width:20%"></colgroup>`;
+      const colgroup = `<colgroup>
+        <col style="width:28%">
+        <col style="width:11%"><col style="width:9%"><col style="width:8%">
+        <col style="width:11%"><col style="width:9%"><col style="width:8%">
+        <col style="width:10%">
+      </colgroup>`;
+      
       sections.push(`
-  <h3>${esc(suiteName)}</h3>
-  <table class="bench-table">
+  <h3>${esc(suiteName)} <span class="file-badge">${esc(fileName)}</span></h3>
+  <table class="bench-table bench-table-compact">
     ${colgroup}
-    <thead><tr><th>Benchmark</th><th class="num">Ops / sec</th><th class="num">p99 (µs)</th><th class="num">± Error</th>${deltaHeader}</tr></thead>
+    <thead>
+      <tr>
+        <th rowspan="2">Benchmark</th>
+        <th class="num col-group-header col-group-win" colspan="3">Windows</th>
+        <th class="num col-group-header col-group-wsl" colspan="3">WSL</th>
+        <th class="num col-group-header col-group-delta" rowspan="2">Win vs WSL</th>
+      </tr>
+      <tr>
+        <th class="num col-group-win">Ops/sec</th><th class="num col-group-win">Mean (µs)</th><th class="num col-group-win">± Error</th>
+        <th class="num col-group-wsl">Ops/sec</th><th class="num col-group-wsl">Mean (µs)</th><th class="num col-group-wsl">± Error</th>
+      </tr>
+    </thead>
     <tbody>${rows}
     </tbody>
   </table>`);
     }
   }
 
-  const meta = `${totalBenches} benchmark${totalBenches !== 1 ? "s" : ""}${baseline ? " · comparing vs baseline" : " · no baseline (run metrics:bench:set-baseline)"
-    }`;
-
+  const meta = `${totalBenches} benchmark${totalBenches !== 1 ? "s" : ""} · cross-platform comparison`;
   const reportLink = `<a class="card-link" href="${fileUrl('reports/function-benchmark/report.html')}">full report →</a>`;
 
   return `
 <div class="card card-wide">
   <h2>Function Benchmarks ${reportLink}</h2>
-  ${staleLabel(latest.mtime, "npm run metrics:bench")}
+  ${staleLabel(mtime, "npm run metrics:benchmark")}
   <p class="card-meta">${meta}</p>
   ${sections.join("\n")}
+</div>`;
+}
+
+function bundleReportCard() {
+  const mainFile = path.join(ROOT, "reports", "bundle-report-main.html");
+  const preloadFile = path.join(ROOT, "reports", "bundle-report-preload.html");
+  const rendererFile = path.join(ROOT, "reports", "bundle-report-renderer.html");
+
+  const mainResult = loadFile(mainFile);
+  const preloadResult = loadFile(preloadFile);
+  const rendererResult = loadFile(rendererFile);
+
+  if (!mainResult && !preloadResult && !rendererResult) {
+    return `
+<div class="card card-wide">
+  <h2>Bundle Reports</h2>
+  ${staleLabel(null, "npm run build:analyze")}
+  <p class="empty">No bundle reports found.</p>
+</div>`;
+  }
+
+  const latestMtime = Math.max(
+    mainResult?.mtime || 0,
+    preloadResult?.mtime || 0,
+    rendererResult?.mtime || 0
+  );
+
+  const tabs = [];
+  const panels = [];
+
+  if (mainResult) {
+    tabs.push(`<button class="bundle-tab" onclick="showBundleTab('main')">Main Process</button>`);
+    panels.push(`
+      <div id="bundle-panel-main" class="bundle-panel">
+        <div class="bundle-iframe-wrap">
+          <iframe src="${fileUrl('reports/bundle-report-main.html')}" title="Main Process Bundle" class="bundle-iframe"></iframe>
+        </div>
+      </div>`);
+  }
+
+  if (preloadResult) {
+    tabs.push(`<button class="bundle-tab" onclick="showBundleTab('preload')">Preload</button>`);
+    panels.push(`
+      <div id="bundle-panel-preload" class="bundle-panel" style="display:none;">
+        <div class="bundle-iframe-wrap">
+          <iframe src="${fileUrl('reports/bundle-report-preload.html')}" title="Preload Bundle" class="bundle-iframe"></iframe>
+        </div>
+      </div>`);
+  }
+
+  if (rendererResult) {
+    tabs.push(`<button class="bundle-tab" onclick="showBundleTab('renderer')">Renderer Process</button>`);
+    panels.push(`
+      <div id="bundle-panel-renderer" class="bundle-panel" style="display:none;">
+        <div class="bundle-iframe-wrap">
+          <iframe src="${fileUrl('reports/bundle-report-renderer.html')}" title="Renderer Process Bundle" class="bundle-iframe"></iframe>
+        </div>
+      </div>`);
+  }
+
+  return `
+<div class="card card-wide">
+  <h2>Bundle Reports</h2>
+  ${staleLabel(latestMtime, "npm run build:analyze")}
+  <div class="bundle-tabs">
+    ${tabs.join('\n    ')}
+  </div>
+  ${panels.join('\n  ')}
 </div>`;
 }
 
@@ -597,6 +787,21 @@ function buildHtml(cards) {
      Column widths are set via inline style on <col> in the JS; these rules
      just enforce the fixed layout on the table itself. */
   table.bench-table { table-layout: fixed; }
+  table.bench-table thead tr:first-child th { border-bottom: 1px solid #30363d; padding-bottom: 3px; }
+  table.bench-table-compact tbody tr { line-height: 1.3; }
+  table.bench-table-compact td { padding-top: 3px; padding-bottom: 3px; }
+  .bench-name-compact { 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .col-group-header { text-align: center !important; font-size: 11px; letter-spacing: 0.03em; }
+  .col-group-current { border-left: 2px solid #1f6feb; }
+  .col-group-baseline { border-left: 2px solid #388bfd44; color: #8b949e; }
+  .col-group-win { border-left: 2px solid #1f6feb; }
+  .col-group-wsl { border-left: 2px solid #58a6ff; }
+  .col-group-delta { border-left: 2px solid #30363d; }
+  td.col-group-current, td.col-group-baseline, td.col-group-win, td.col-group-wsl, td.col-group-delta { border-left: 1px solid #21262d; }
 
   /* Status colours */
   .good { color: #3fb950; }
@@ -650,6 +855,50 @@ function buildHtml(cards) {
   }
   .svg-wrap svg { display: block; }
 
+  /* Bundle report iframe wrapper */
+  .bundle-iframe-wrap {
+    margin-top: 12px;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #ffffff;
+  }
+  .bundle-iframe {
+    width: 100%;
+    height: 800px;
+    border: none;
+    display: block;
+  }
+  .bundle-tabs {
+    display: flex;
+    gap: 4px;
+    margin-top: 12px;
+    border-bottom: 1px solid #30363d;
+  }
+  .bundle-tab {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #848d97;
+    cursor: pointer;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .bundle-tab:hover {
+    color: #c9d1d9;
+    background: #21262d;
+  }
+  .bundle-tab.active {
+    color: #58a6ff;
+    border-bottom-color: #58a6ff;
+  }
+  .bundle-panel {
+    margin-top: 0;
+  }
+
   /* ── Dark-mode — full palette remap ──────────────────────────────────────────
      Depth:      viewer #1c2128 → outer cluster #21262d → inner cluster #142030
      Nodes:      hue preserved from the original, shifted to a dark variant
@@ -665,6 +914,9 @@ function buildHtml(cards) {
 
     /* SVG viewer canvas */
     .svg-wrap { background: #1c2128; border-color: #21262d; }
+
+    /* Bundle iframe wrapper dark mode */
+    .bundle-iframe-wrap { background: #0d1117; border-color: #30363d; }
 
     /* Node/cluster labels: only target text with NO explicit fill attribute.
        This avoids overriding violation edge labels (fill="red", fill="#c40b0a")
@@ -742,6 +994,29 @@ ${cards.join("\n")}
     if (lbl) lbl.textContent = Math.round(_zoom * 100) + '%';
   };
 
+  // Bundle tab switcher
+  window.showBundleTab = function (tabName) {
+    // Hide all panels
+    var panels = document.querySelectorAll('.bundle-panel');
+    for (var i = 0; i < panels.length; i++) {
+      panels[i].style.display = 'none';
+    }
+    
+    // Remove active class from all tabs
+    var tabs = document.querySelectorAll('.bundle-tab');
+    for (var i = 0; i < tabs.length; i++) {
+      tabs[i].classList.remove('active');
+    }
+    
+    // Show selected panel
+    var panel = document.getElementById('bundle-panel-' + tabName);
+    if (panel) panel.style.display = 'block';
+    
+    // Mark selected tab as active
+    var clickedTab = event.target;
+    if (clickedTab) clickedTab.classList.add('active');
+  };
+
   // Double-click: zoom in (or Shift+double-click: zoom out) centered on cursor
   document.addEventListener('DOMContentLoaded', function () {
     var wrap = document.getElementById('coupling-svg-wrap');
@@ -778,6 +1053,14 @@ ${cards.join("\n")}
       if (lbl) lbl.textContent = Math.round(_zoom * 100) + '%';
       e.preventDefault();
     });
+    
+    // Activate first bundle tab by default
+    var firstTab = document.querySelector('.bundle-tab');
+    if (firstTab) {
+      firstTab.classList.add('active');
+      var firstPanel = document.querySelector('.bundle-panel');
+      if (firstPanel) firstPanel.style.display = 'block';
+    }
   });
 })();
 </script>
@@ -793,6 +1076,7 @@ const cards = [
   startupCard(),
   maintainabilityCard(),
   benchCard(),
+  bundleReportCard(),
   couplingCard(),
 ];
 

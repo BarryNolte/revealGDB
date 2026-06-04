@@ -16,6 +16,7 @@
   overflow: scroll;
   background-color: var(--console-background-color);
   font-weight: bolder;
+  contain: layout style;
 }
 
 .historyRow {
@@ -52,7 +53,6 @@
 }
 
 .defaultRow {
-  position: relative;
   line-height: normal;
   white-space: pre;
   padding-left: 10px;

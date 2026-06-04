@@ -314,7 +314,7 @@ export class LocalsContainer {
     const vars = value.matchAll(varsRegx);
     const retValue: Local = new Local(name, "");
 
-    const arr = vars.toArray();
+    const arr = Array.from(vars);
 
     if (arr.length === 0) {
       retValue.value = value;

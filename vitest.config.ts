@@ -52,6 +52,12 @@ export default defineConfig({
   define: buildDefines,
   benchmark: {
     include: ["tests/bench/**/*.bench.ts"],
+    pool: "forks",
+    poolOptions: {
+      forks: {
+        timeout: 200000,
+      },
+    },
   },
   test: {
     globals: true,

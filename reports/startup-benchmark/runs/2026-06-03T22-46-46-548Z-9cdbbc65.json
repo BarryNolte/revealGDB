@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 1,
+  "timestamp": "2026-06-03T22:46:46.548Z",
+  "commit": "9cdbbc651a8bc9e838d0c727ae01e8c922bbbf40",
+  "shortCommit": "9cdbbc65",
+  "parentCommit": "9cdbbc651a8bc9e838d0c727ae01e8c922bbbf40",
+  "sampleCount": 5,
+  "timeoutMs": 30000,
+  "thresholds": {
+    "maxRegressionMs": 200,
+    "maxRegressionPct": 10
+  },
+  "metrics": {
+    "app.ready": {
+      "medianMs": 59,
+      "minMs": 54,
+      "maxMs": 65,
+      "samples": [
+        54,
+        56,
+        59,
+        60,
+        65
+      ]
+    },
+    "main-window-created": {
+      "medianMs": 295,
+      "minMs": 269,
+      "maxMs": 316,
+      "samples": [
+        269,
+        276,
+        295,
+        298,
+        316
+      ]
+    },
+    "main-window-load-started": {
+      "medianMs": 317,
+      "minMs": 288,
+      "maxMs": 345,
+      "samples": [
+        288,
+        295,
+        317,
+        325,
+        345
+      ]
+    },
+    "gdb-interface-created": {
+      "medianMs": 318,
+      "minMs": 290,
+      "maxMs": 346,
+      "samples": [
+        290,
+        296,
+        318,
+        326,
+        346
+      ]
+    },
+    "main-window-ready-to-show": {
+      "medianMs": 724,
+      "minMs": 706,
+      "maxMs": 4342,
+      "samples": [
+        706,
+        715,
+        724,
+        746,
+        4342
+      ]
+    },
+    "main-window-shown": {
+      "medianMs": 800,
+      "minMs": 785,
+      "maxMs": 4442,
+      "samples": [
+        785,
+        786,
+        800,
+        837,
+        4442
+      ]
+    }
+  },
+  "samples": [
+    {
+      "milestones": {
+        "app.ready": 65,
+        "main-window-created": 295,
+        "main-window-load-started": 325,
+        "gdb-interface-created": 326,
+        "main-window-ready-to-show": 4342,
+        "main-window-shown": 4442
+      },
+      "rawLines": [
+        "> revealgdb@0.9.2-3fca6d1 start",
+        "> electron . --remote-debugging-port=9222",
+        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/091978e5-da37-4ab7-a65a-1241bfba23d3",
+        "[startup] app.ready: 65ms",
+        "Settings File: C:\\Users\\barry\\AppData\\Roaming\\revealgdb\\settings.json",
+        "Display: (4096 x 2160)",
+        "Display: (2560 x 1600)",
+        "[startup] main-window-created: 295ms",
+        "[startup] main-window-load-started: 325ms",
+        "[startup] gdb-interface-created: 326ms",
+        "[67452:0603/154632.985:ERROR:CONSOLE:1] \"Request Autofill.enable failed. {\"code\":-32601,\"message\":\"'Autofill.enable' wasn't found\"}\", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)",
+        "[67452:0603/154632.985:ERROR:CONSOLE:1] \"Request Autofill.setAddresses failed. {\"code\":-32601,\"message\":\"'Autofill.setAddresses' wasn't found\"}\", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)",
+        "[startup] renderer-start",
+        "Notifying GDB Interface that rendering is starting.",
+        "[startup] renderer-end",
+        "Notifying GDB Interface that rendering is complete.",
+        "[startup] main-window-ready-to-show: 4342ms",
+        "[startup] main-window-shown: 4442ms",
+        "(electron) 'session.getAllExtensions' is deprecated and will be removed. Please use 'session.extensions.getAllExtensions' instead.",
+        "(electron) 'session.loadExtension' is deprecated and will be removed. Please use 'session.extensions.loadExtension' instead.",
+        "Installed DevTools extension: [object Object]"
+      ]
+    },
+    {
+      "milestones": {
+        "app.ready": 60,
+        "main-window-created": 298,
+        "main-window-load-started": 317,
+        "gdb-interface-created": 318,
+        "main-window-ready-to-show": 715,
+        "main-window-shown": 786
+      },
+      "rawLines": [
+        "> revealgdb@0.9.2-3fca6d1 start",
+        "> electron . --remote-debugging-port=9222",
+        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/b064af99-5e04-4089-8ed0-a214a44b8692",
+        "[startup] app.ready: 60ms",
+        "Settings File: C:\\Users\\barry\\AppData\\Roaming\\revealgdb\\settings.json",
+        "Display: (4096 x 2160)",
+        "Display: (2560 x 1600)",
+        "[startup] main-window-created: 298ms",
+        "[startup] main-window-load-started: 317ms",
+        "[startup] gdb-interface-created: 318ms",
+        "[startup] renderer-start",
+        "Notifying GDB Interface that rendering is starting.",
+        "[startup] renderer-end",
+        "Notifying GDB Interface that rendering is complete.",
+        "[startup] main-window-ready-to-show: 715ms",
+        "[startup] main-window-shown: 786ms",
+        "(electron) 'session.getAllExtensions' is deprecated and will be removed. Please use 'session.extensions.getAllExtensions' instead.",
+        "(electron) 'session.loadExtension' is deprecated and will be removed. Please use 'session.extensions.loadExtension' instead.",
+        "Installed DevTools extension: [object Object]"
+      ]
+    },
+    {
+      "milestones": {
+        "app.ready": 56,
+        "main-window-created": 276,
+        "main-window-load-started": 295,
+        "gdb-interface-created": 296,
+        "main-window-ready-to-show": 706,
+        "main-window-shown": 785
+      },
+      "rawLines": [
+        "> revealgdb@0.9.2-3fca6d1 start",
+        "> electron . --remote-debugging-port=9222",
+        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/bf16497e-99e4-4c82-9e54-fbcb59d2d36b",
+        "[startup] app.ready: 56ms",
+        "Settings File: C:\\Users\\barry\\AppData\\Roaming\\revealgdb\\settings.json",
+        "Display: (4096 x 2160)",
+        "Display: (2560 x 1600)",
+        "[startup] main-window-created: 276ms",
+        "[startup] main-window-load-started: 295ms",
+        "[startup] gdb-interface-created: 296ms",
+        "[startup] renderer-start",
+        "Notifying GDB Interface that rendering is starting.",
+        "[startup] renderer-end",
+        "Notifying GDB Interface that rendering is complete.",
+        "[startup] main-window-ready-to-show: 706ms",
+        "[startup] main-window-shown: 785ms",
+        "(electron) 'session.getAllExtensions' is deprecated and will be removed. Please use 'session.extensions.getAllExtensions' instead.",
+        "(electron) 'session.loadExtension' is deprecated and will be removed. Please use 'session.extensions.loadExtension' instead.",
+        "Installed DevTools extension: [object Object]"
+      ]
+    },
+    {
+      "milestones": {
+        "app.ready": 59,
+        "main-window-created": 316,
+        "main-window-load-started": 345,
+        "gdb-interface-created": 346,
+        "main-window-ready-to-show": 746,
+        "main-window-shown": 837
+      },
+      "rawLines": [
+        "> revealgdb@0.9.2-3fca6d1 start",
+        "> electron . --remote-debugging-port=9222",
+        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/c2ac65ef-4202-479b-a73a-7f978451014b",
+        "[startup] app.ready: 59ms",
+        "Settings File: C:\\Users\\barry\\AppData\\Roaming\\revealgdb\\settings.json",
+        "Display: (4096 x 2160)",
+        "Display: (2560 x 1600)",
+        "[startup] main-window-created: 316ms",
+        "[startup] main-window-load-started: 345ms",
+        "[startup] gdb-interface-created: 346ms",
+        "[startup] renderer-start",
+        "Notifying GDB Interface that rendering is starting.",
+        "[startup] renderer-end",
+        "Notifying GDB Interface that rendering is complete.",
+        "[startup] main-window-ready-to-show: 746ms",
+        "[startup] main-window-shown: 837ms",
+        "(electron) 'session.getAllExtensions' is deprecated and will be removed. Please use 'session.extensions.getAllExtensions' instead.",
+        "(electron) 'session.loadExtension' is deprecated and will be removed. Please use 'session.extensions.loadExtension' instead.",
+        "Installed DevTools extension: [object Object]"
+      ]
+    },
+    {
+      "milestones": {
+        "app.ready": 54,
+        "main-window-created": 269,
+        "main-window-load-started": 288,
+        "gdb-interface-created": 290,
+        "main-window-ready-to-show": 724,
+        "main-window-shown": 800
+      },
+      "rawLines": [
+        "> revealgdb@0.9.2-3fca6d1 start",
+        "> electron . --remote-debugging-port=9222",
+        "DevTools listening on ws://127.0.0.1:9222/devtools/browser/07d7302d-e0d0-4d3f-8b58-7c8c5c214884",
+        "[startup] app.ready: 54ms",
+        "Settings File: C:\\Users\\barry\\AppData\\Roaming\\revealgdb\\settings.json",
+        "Display: (4096 x 2160)",
+        "Display: (2560 x 1600)",
+        "[startup] main-window-created: 269ms",
+        "[startup] main-window-load-started: 288ms",
+        "[startup] gdb-interface-created: 290ms",
+        "[startup] renderer-start",
+        "Notifying GDB Interface that rendering is starting.",
+        "[startup] renderer-end",
+        "Notifying GDB Interface that rendering is complete.",
+        "[startup] main-window-ready-to-show: 724ms",
+        "[startup] main-window-shown: 800ms"
+      ]
+    }
+  ],
+  "environment": {
+    "name": "wsl",
+    "host": null,
+    "platform": "win32",
+    "arch": "x64",
+    "cpuModel": "13th Gen Intel(R) Core(TM) i7-13700H",
+    "numCpus": 20,
+    "hostname": "barry-dell"
+  }
+}

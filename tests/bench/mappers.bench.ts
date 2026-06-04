@@ -33,11 +33,16 @@ const HEX_16 = makeHex(16); // 16 bytes  — typical register value read
 const HEX_64 = makeHex(64); // 64 bytes  — small memory window
 const HEX_256 = makeHex(256); // 256 bytes — default memory view row
 const HEX_1024 = makeHex(1024); // 1 KiB     — large memory read
-
+const HEX_2048 = makeHex(2048); // 2 KiB     — very large memory read
+const HEX_4096 = makeHex(4096); // 4 KiB     — huge memory read
+const HEX_8192 = makeHex(8192); // 8 KiB     — huge memory read (exceeds typical page size)
 const groups16 = makeGroups(HEX_16);
 const groups64 = makeGroups(HEX_64);
 const groups256 = makeGroups(HEX_256);
 const groups1024 = makeGroups(HEX_1024);
+const groups2048 = makeGroups(HEX_2048);
+const groups4096 = makeGroups(HEX_4096);
+const groups8192 = makeGroups(HEX_8192);
 
 describe("mapRegexGroupsToMemoryData", () => {
   bench("16 bytes", () => {
@@ -54,6 +59,18 @@ describe("mapRegexGroupsToMemoryData", () => {
 
   bench("1024 bytes", () => {
     mapRegexGroupsToMemoryData(groups1024);
+  });
+
+  bench("2048 bytes", () => {
+    mapRegexGroupsToMemoryData(groups2048);
+  });
+
+  bench("4096 bytes", () => {
+    mapRegexGroupsToMemoryData(groups4096);
+  });
+
+  bench("8192 bytes", () => {
+    mapRegexGroupsToMemoryData(groups8192);
   });
 });
 

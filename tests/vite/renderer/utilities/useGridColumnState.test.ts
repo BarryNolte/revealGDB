@@ -121,11 +121,12 @@ describe("resetAllGridColumnDefaults", () => {
 });
 
 describe("useGridColumnState hook", () => {
-  it("starts with loaded=false and savedColumns=undefined", () => {
+  it("starts with loaded=false and savedColumns=undefined", async () => {
     const gridRef = { current: null };
     const { result } = renderHook(() => useGridColumnState("locals", gridRef as never));
     expect(result.current.loaded).toBe(false);
     expect(result.current.savedColumns).toBeUndefined();
+    await act(async () => {}); // drain pending async state updates
   });
 
   it("sets loaded=true when getSettings resolves with no saved columns", async () => {

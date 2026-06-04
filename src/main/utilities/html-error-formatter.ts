@@ -32,3 +32,20 @@ export function formatFileReadError(filePath: string, error: unknown): string {
     `</div>`,
   ].join("\n");
 }
+
+export function formatGeneralError(error: string, info: string, info2?: string): string {
+  return [
+    `<div style="border: 2px solid #800000; border-radius: 4px; background-color: #fff0f0;`,
+    `     padding: 0; margin: 4px 0; font-family: monospace; max-width: 800px; overflow: hidden;">`,
+    `  <div style="background-color: #800000; color: #ffffff; font-weight: bold; font-size: 1.1em; padding: 1px 8px;">`,
+    `    &#9888; ${escapeHtml(error)}`,
+    `  </div>`,
+    `  <div style="color: #800000; padding: 4px 8px;">`,
+    `    <div style="margin-top: 3px;"><span style="font-weight: bold;">Error:</span>&nbsp;${escapeHtml(error)}</div>`,
+    `    <div><span style="font-weight: bold;">${escapeHtml(info)}</span></div>`,
+    `    <div><span style="font-weight: bold;">${escapeHtml(info2 || "")}</span></div>`,
+    `    <div style="margin-top: 3px;"><span style="font-weight: bold;">What to do:</span>&nbsp;<button onclick="window.ipcToMain?.commands?.app?.notifyMain({command:'open-external',data:'https://github.com/BarryNolte/revealGDB/issues'})" style="cursor: pointer; padding: 4px 8px; border-radius: 3px; border: 1px solid #800000; background-color: #ffffff; color: #800000; font-weight: bold;">Report this issue</button></div>`,
+    `  </div>`,
+    `</div>`,
+  ].join("\n");
+}

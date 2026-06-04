@@ -20,6 +20,8 @@ import { disconnectAndResetApplication } from "../utilities/disconnect-helper";
 import { debugLog } from "../utilities/logger";
 import { onGdbCommand, onGdbControlD } from "./on-gdb-command";
 import { IpcRegistrationContext } from "./types";
+import { formatGeneralError } from "../utilities/html-error-formatter";
+import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
 export { onGdbCommand } from "./on-gdb-command";
 
 /**
@@ -87,7 +89,22 @@ function handleConnectSelectedConnection(
   if (context.isSelectedConnection(connection)) {
     doConnection(connection, context);
   } else {
-    console.error("Invalid selected connection payload", connection);
+    GeneralInfoSender.instance.sendHtmlBlock(
+      formatGeneralError(
+        "Invalid selected connection payload",
+        "Malformed or unrecognized connection object provided.",
+      ),
+    );
+  }
+}
+
+function handleOpenExternal(msg: Extract<NotifyMainRequest, { command: "open-external" }>): void {
+  if (isSafeExternalUrl(msg.data)) {
+    void shell.openExternal(msg.data);
+  } else {
+    GeneralInfoSender.instance.sendHtmlBlock(
+      formatGeneralError("Open External File", "Invalid Path Provided"),
+    );
   }
 }
 
@@ -204,11 +221,7 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       sendNotifyRender(context, { command: "command-entry" });
       break;
     case "open-external":
-      if (isSafeExternalUrl(msg.data)) {
-        void shell.openExternal(msg.data);
-      } else {
-        console.error("Invalid external URL payload", msg.data);
-      }
+      handleOpenExternal(msg);
       break;
     case "renderStart":
       debugLog("[startup] renderer-start");

@@ -627,7 +627,7 @@ describe("useConnectionDialogController", () => {
     });
 
     // showDialog calls resetDialogState which has the if(outputRef.current) check
-    act(() => {
+    await act(async () => {
       result.current.showDialog();
     });
 

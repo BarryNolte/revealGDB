@@ -47,7 +47,7 @@ export default defineConfig(async () => {
     plugins.push(
       visualizer({
         open: false,
-        filename: "./bundle-report.html",
+        filename: "./reports/bundle-report.html",
       }),
     );
   }

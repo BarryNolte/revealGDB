@@ -138,13 +138,84 @@ function generateSlowdownChart(slowdownGroups) {
   );
 }
 
-const latest = loadJson(LATEST_FILE);
+let latest = loadJson(LATEST_FILE);
+if (!latest) {
+  // If latest.json isn't present, attempt to pick the newest per-env latest-*.json
+  try {
+    const benchDir = path.join(ROOT, 'reports', 'function-benchmark');
+    const items = fs.readdirSync(benchDir).filter((f) => f.startsWith('latest-') && f.endsWith('.json'));
+    let newest = null;
+    for (const f of items) {
+      const p = path.join(benchDir, f);
+      const j = loadJson(p);
+      if (!j) continue;
+      if (!newest || j.mtime > newest.mtime) newest = { j, p };
+    }
+    if (newest) {
+      latest = newest.j;
+      console.log(`  Using per-platform latest file: ${path.basename(newest.p)}`);
+    }
+  } catch (e) {
+    // ignore
+  }
+}
 if (!latest) {
   console.log("  No benchmark data found — skipping bench report.");
   process.exit(0);
 }
 
-const baseline = loadJson(BASELINE_FILE);
+// If latest exists but contains no environment metadata, prefer the newest
+// `latest-<env>.json` file (this supports dividing results by platform).
+try {
+  let hasEnv = false;
+  if (latest && latest.data) {
+    if (latest.data.environment) hasEnv = true;
+    else if (latest.data.data && latest.data.data.environment) hasEnv = true;
+  }
+  if (!hasEnv) {
+    const benchDir = path.join(ROOT, 'reports', 'function-benchmark');
+    const items = fs.readdirSync(benchDir).filter((f) => f.startsWith('latest-') && f.endsWith('.json'));
+    let newest = null;
+    for (const f of items) {
+      const p = path.join(benchDir, f);
+      const j = loadJson(p);
+      if (!j) continue;
+      if (!newest || j.mtime > newest.mtime) newest = { j, p };
+    }
+    if (newest) {
+      latest = newest.j;
+      console.log(`  Switched to per-platform latest file: ${path.basename(newest.p)}`);
+    }
+  }
+} catch (e) {}
+
+// Determine which baseline to use. Priority:
+// 1) explicit baseline path passed as first arg
+// 2) env-specific baseline (baseline-<env>.json) if latest run contains env info
+// 3) default baseline.json
+const argv = process.argv.slice(2);
+let baseline = null;
+if (argv.length > 0 && argv[0] && !argv[0].startsWith('-')) {
+  const explicit = path.resolve(ROOT, argv[0]);
+  if (fs.existsSync(explicit)) baseline = loadJson(explicit);
+}
+
+if (!baseline) {
+  let runEnvName = null;
+  try {
+    if (latest.data && latest.data.environment) runEnvName = latest.data.environment.name;
+    else if (latest.data && latest.data.data && latest.data.data.environment) runEnvName = latest.data.data.environment.name;
+  } catch (e) {}
+
+  if (runEnvName) {
+    const envBaselinePath = path.join(ROOT, 'reports', 'function-benchmark', `baseline-${runEnvName}.json`);
+    if (fs.existsSync(envBaselinePath)) baseline = loadJson(envBaselinePath);
+  }
+}
+
+// Do NOT fall back to a shared/common baseline. Prefer per-env baseline
+// (baseline-<env>.json). If none exists for the run's environment, show
+// the report without a baseline.
 
 // Build baseline lookup: `${groupFullName}::${name}` → {hz, p99, mean}
 const baselineMap = new Map();
@@ -160,7 +231,43 @@ if (baseline) {
 
 const generatedAt = new Date().toLocaleString();
 const runAt = latest.mtime ? new Date(latest.mtime).toLocaleString() : "unknown";
+// Extract environment metadata if present in an annotated run file or payload
+let runEnv = null;
+try {
+  if (latest.data && latest.data.environment) runEnv = latest.data.environment;
+  else if (latest.data && latest.data.data && latest.data.data.environment) runEnv = latest.data.data.environment;
+} catch (e) {}
+
+// Normalize payload: accept either raw vitest JSON or annotated run (where payload is in latest.data.data)
+const payload = (latest && latest.data && latest.data.files)
+  ? latest.data
+  : (latest && latest.data && latest.data.data && latest.data.data.files)
+    ? latest.data.data
+    : (latest && latest.data) ? latest.data : {};
 const baselineAt = baseline?.mtime ? new Date(baseline.mtime).toLocaleString() : null;
+
+// Discover other platform latest runs (latest-<env>.json) so we can
+// highlight platform differences (current run vs other platforms).
+let otherLatestPayloads = [];
+try {
+  const benchDir = path.join(ROOT, 'reports', 'function-benchmark');
+  const items = fs.readdirSync(benchDir).filter((f) => f.startsWith('latest-') && f.endsWith('.json'));
+  for (const f of items) {
+    const p = path.join(benchDir, f);
+    if (path.resolve(p) === path.resolve(LATEST_FILE)) continue;
+    const j = loadJson(p);
+    if (!j) continue;
+    const otherData = (j && j.data && j.data.files)
+      ? j.data
+      : (j && j.data && j.data.data && j.data.data.files)
+        ? j.data.data
+        : (j && j.data) ? j.data : {};
+    const envName = (otherData && otherData.environment && otherData.environment.name) || f.replace(/^latest-/, '').replace(/\.json$/, '');
+    otherLatestPayloads.push({ path: p, env: envName, data: otherData, mtime: j.mtime });
+  }
+} catch (e) {
+  otherLatestPayloads = [];
+}
 
 // ─── Build sections ────────────────────────────────────────────────────────────
 
@@ -172,85 +279,120 @@ const sections = [];
 const slowdownSections = [];
 const slowdownGroups = new Map(); // domSize → Map<benchName, meanMs>
 
-for (const file of (latest.data.files || [])) {
-  const fileName = file.filepath.replace(/\\/g, "/").split("/").slice(-1)[0];
-  for (const group of (file.groups || [])) {
-    const suiteName = group.fullName.split(" > ").slice(-1)[0];
-    totalBenches += (group.benchmarks || []).length;
+// Platforms ordered: canonical latest first, then any latest-<env>.json files
+const benchDir = path.join(ROOT, 'reports', 'function-benchmark');
+const platforms = [];
+const primaryEnvName = runEnv?.name || 'unknown';
+platforms.push({ env: primaryEnvName, data: payload, mtime: latest.mtime, path: LATEST_FILE });
+for (const o of otherLatestPayloads) platforms.push({ env: o.env, data: o.data, mtime: o.mtime, path: o.path });
 
-    const slowdownMatch = SLOWDOWN_RE.exec(suiteName);
-    if (slowdownMatch) {
-      const domSize = parseInt(slowdownMatch[1], 10);
-      const byType = new Map();
-      for (const bench of (group.benchmarks || [])) {
-        if (bench.mean != null) byType.set(bench.name, bench.mean);
+for (let pIdx = 0; pIdx < platforms.length; pIdx++) {
+  const plat = platforms[pIdx];
+  const envName = plat.env;
+  const data = plat.data || {};
+
+  // Load per-env baseline if present (no shared fallback)
+  const envBaselinePath = path.join(benchDir, `baseline-${envName}.json`);
+  const envBaseline = fs.existsSync(envBaselinePath) ? loadJson(envBaselinePath) : null;
+  const envBaselineMap = new Map();
+  if (envBaseline) {
+    for (const f of (envBaseline.data.files || [])) {
+      for (const g of (f.groups || [])) {
+        for (const b of (g.benchmarks || [])) {
+          envBaselineMap.set(`${g.fullName}::${b.name}`, b);
+        }
       }
-      slowdownGroups.set(domSize, byType);
     }
+  }
 
-    const deltaHead = baseline
-      ? `<th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th>
-         <th class="num">Δ%</th>`
-      : "";
+  for (const file of (data.files || [])) {
+    const fileName = (file.filepath || file.file || '').replace(/\\/g, "/").split("/").slice(-1)[0];
+    for (const group of (file.groups || [])) {
+      const suiteName = group.fullName.split(" > ").slice(-1)[0];
+      if (pIdx === 0) totalBenches += (group.benchmarks || []).length;
 
-    const rows = (group.benchmarks || []).map((bench) => {
-      // Benchmarks that errored out have no hz/timing fields — render a placeholder row.
-      if (bench.hz == null) {
-        const colspan = baseline ? 13 : 11;
-        return `
-        <tr class="bench-error">
-          <td class="rank">${bench.rank}</td>
-          <td class="bench-name">${esc(bench.name)}</td>
-          <td class="num error-label" colspan="${colspan}">⚠ benchmark errored</td>
-        </tr>`;
+      const slowdownMatch = SLOWDOWN_RE.exec(suiteName);
+      if (slowdownMatch && pIdx === 0) {
+        const domSize = parseInt(slowdownMatch[1], 10);
+        const byType = new Map();
+        for (const bench of (group.benchmarks || [])) {
+          if (bench.mean != null) byType.set(bench.name, bench.mean);
+        }
+        slowdownGroups.set(domSize, byType);
       }
 
-      const key = `${group.fullName}::${bench.name}`;
-      const base = baselineMap.get(key);
-
-      let deltaOps = "—";
-      let deltaPct = "—";
-      let deltaPctClass = "";
-      if (base != null) {
-        const diffHz = bench.hz - base.hz;
-        const pct = (diffHz / base.hz) * 100;
-        const sign = diffHz >= 0 ? "+" : "";
-        const arrow = diffHz >= 0 ? "↑" : "↓";
-        deltaOps = `${sign}${formatHz(Math.abs(diffHz))} ${arrow}`;
-        deltaPct = `${sign}${pct.toFixed(1)}%`;
-        deltaPctClass = deltaClass(pct);
-      } else if (baseline) {
-        deltaOps = "new";
-        deltaPct = "";
-      }
-
-      const deltaRow = baseline
-        ? `<td class="num">${esc(deltaOps)}</td>
-           <td class="num ${deltaPctClass}">${esc(deltaPct)}</td>`
+      const envBaselineHead = envBaseline
+        ? `<th class="num">Baseline<br><span class="subhead">ops/sec</span></th><th class="num">Baseline<br><span class="subhead">± Error</span></th>`
+        : "";
+      const envDeltaHead = envBaseline
+        ? `<th class="num">Δ Baseline<br><span class="subhead">ops/sec</span></th><th class="num">Δ%</th>`
         : "";
 
-      return `
+      const rows = (group.benchmarks || []).map((bench) => {
+        if (bench.hz == null) {
+          const colspan = envBaseline ? 8 : 7;
+          return `
+        <tr class="bench-error">
+          <td class="rank">${bench.rank}</td>
+          <td class="bench-name">${esc(bench.name)}: ${esc(envName)}</td>
+          <td class="num error-label" colspan="${colspan}">⚠ benchmark errored</td>
+        </tr>`;
+        }
+
+        const key = `${group.fullName}::${bench.name}`;
+        const base = envBaselineMap.get(key);
+
+        let baseHzStr = "—";
+        let baseRmeStr = "—";
+        if (base != null && base.hz != null) {
+          baseHzStr = formatHz(base.hz);
+          baseRmeStr = `±${base.rme.toFixed(2)}%`;
+        }
+
+        let deltaOps = "—";
+        let deltaPct = "—";
+        let deltaPctClass = "";
+        if (base != null && base.hz != null) {
+          const diffHz = bench.hz - base.hz;
+          const pct = (diffHz / base.hz) * 100;
+          const sign = diffHz >= 0 ? "+" : "";
+          const arrow = diffHz >= 0 ? "↑" : "↓";
+          deltaOps = `${sign}${formatHz(Math.abs(diffHz))} ${arrow}`;
+          deltaPct = `${sign}${pct.toFixed(1)}%`;
+          deltaPctClass = deltaClass(pct);
+        } else if (envBaseline) {
+          deltaOps = "new";
+          deltaPct = "";
+        }
+
+        const baselineCells = envBaseline
+          ? `<td class="num">${esc(baseHzStr)}</td><td class="num">${esc(baseRmeStr)}</td>`
+          : "";
+
+        const deltaRow = envBaseline
+          ? `<td class="num">${esc(deltaOps)}</td>
+           <td class="num ${deltaPctClass}">${esc(deltaPct)}</td>`
+          : "";
+
+        return `
         <tr>
           <td class="rank">${bench.rank}</td>
-          <td class="bench-name">${esc(bench.name)}</td>
+          <td class="bench-name">${esc(bench.name)}: ${esc(envName)}</td>
           <td class="num">${esc(formatHz(bench.hz))}</td>
           <td class="num">${esc(usStr(bench.mean))}</td>
           <td class="num">${esc(usStr(bench.median))}</td>
-          <td class="num">${esc(usStr(bench.p75))}</td>
-          <td class="num">${esc(usStr(bench.p99))}</td>
-          <td class="num">${esc(usStr(bench.p995))}</td>
-          <td class="num">${esc(usStr(bench.p999))}</td>
           <td class="num">${esc(usStr(bench.min))}</td>
           <td class="num">${esc(usStr(bench.max))}</td>
           <td class="num">${esc(`±${bench.rme.toFixed(2)}%`)}</td>
           <td class="num">${esc(bench.sampleCount.toLocaleString())}</td>
+          ${baselineCells}
           ${deltaRow}
         </tr>`;
-    }).join("");
+      }).join("");
 
-    const sectionHtml = `
+      const sectionHtml = `
 <section>
-  <h2>${esc(suiteName)} <span class="file-badge">${esc(fileName)}</span></h2>
+  <h2>${esc(suiteName)} <span class="file-badge">${esc(fileName)}</span> · ${esc(envName)}</h2>
   <div class="table-wrap">
   <table>
     <thead>
@@ -260,15 +402,12 @@ for (const file of (latest.data.files || [])) {
         <th class="num">Ops / sec</th>
         <th class="num">Mean<br><span class="subhead">(µs)</span></th>
         <th class="num">Median<br><span class="subhead">(µs)</span></th>
-        <th class="num">p75<br><span class="subhead">(µs)</span></th>
-        <th class="num">p99<br><span class="subhead">(µs)</span></th>
-        <th class="num">p99.5<br><span class="subhead">(µs)</span></th>
-        <th class="num">p99.9<br><span class="subhead">(µs)</span></th>
         <th class="num">Min<br><span class="subhead">(µs)</span></th>
         <th class="num">Max<br><span class="subhead">(µs)</span></th>
         <th class="num">± Error</th>
         <th class="num">Samples</th>
-        ${deltaHead}
+        ${envBaselineHead}
+        ${envDeltaHead}
       </tr>
     </thead>
     <tbody>
@@ -278,15 +417,104 @@ for (const file of (latest.data.files || [])) {
   </div>
 </section>`;
 
-    if (slowdownMatch) {
-      slowdownSections.push(sectionHtml);
-    } else {
-      sections.push(sectionHtml);
+      if (slowdownMatch && pIdx === 0) {
+        slowdownSections.push(sectionHtml);
+      } else {
+        sections.push(sectionHtml);
+      }
     }
   }
 }
 
 // ─── DOM-slowdown chart ────────────────────────────────────────────────────────
+
+// Build platform-differences HTML: produce pairwise comparisons for all
+// detected latest runs (including the canonical latest). Each table will
+// label columns with platform names and show bench cells as
+// "<benchName>: <platform> — <ops>".
+let platformDiffHtml = "";
+try {
+  const allLatest = [];
+  const currentEnvName = runEnv?.name || 'current';
+  allLatest.push({ env: currentEnvName, data: payload, mtime: latest.mtime });
+  for (const o of otherLatestPayloads) allLatest.push({ env: o.env, data: o.data, mtime: o.mtime });
+
+  const pdOuter = [];
+  for (let i = 0; i < allLatest.length; i++) {
+    for (let j = i + 1; j < allLatest.length; j++) {
+      const A = allLatest[i];
+      const B = allLatest[j];
+
+      // Build lookup maps for both platforms
+      const mapB = new Map();
+      for (const f of (B.data.files || [])) {
+        for (const g of (f.groups || [])) {
+          for (const b of (g.benchmarks || [])) {
+            mapB.set(`${g.fullName}::${b.name}`, b);
+          }
+        }
+      }
+
+      const groupHtml = [];
+      for (const file of (A.data.files || [])) {
+        const fileName = (file.filepath || file.file || '').replace(/\\/g, "/").split("/").slice(-1)[0];
+        for (const group of (file.groups || [])) {
+          const suiteName = group.fullName.split(" > ").slice(-1)[0];
+          const rows = (group.benchmarks || []).map((bench) => {
+            const key = `${group.fullName}::${bench.name}`;
+            const otherBench = mapB.get(key);
+
+            const aLabel = `${bench.name}: ${A.env}`;
+            const aVal = bench.hz != null ? formatHz(bench.hz) : "—";
+
+            let bLabel = `${bench.name}: ${B.env}`;
+            let bVal = otherBench && otherBench.hz != null ? formatHz(otherBench.hz) : "—";
+
+            let diffStr = '—';
+            let diffCls = '';
+            if (otherBench && otherBench.hz != null && bench.hz != null) {
+              const diffHz = bench.hz - otherBench.hz;
+              const pct = (diffHz / otherBench.hz) * 100;
+              const sign = diffHz >= 0 ? '+' : '';
+              const arrow = diffHz >= 0 ? '↑' : '↓';
+              diffStr = `${sign}${pct.toFixed(1)}% ${arrow}`;
+              diffCls = deltaClass(pct);
+            }
+
+            return `<tr><td class="rank">${bench.rank}</td><td class="bench-name">${esc(bench.name)}</td><td class="num"><div class=\"bench-cell\"><span class=\"bench-label\">${esc(aLabel)}</span><br/><span class=\"bench-val\">${esc(aVal)}</span></div></td><td class="num"><div class=\"bench-cell\"><span class=\"bench-label\">${esc(bLabel)}</span><br/><span class=\"bench-val\">${esc(bVal)}</span></div></td><td class="num ${diffCls}">${esc(diffStr)}</td></tr>`;
+          }).join('');
+
+          groupHtml.push(`
+  <h3>${esc(suiteName)} <span class="file-badge">${esc(fileName)}</span></h3>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Benchmark</th>
+        <th class="num">${esc(A.env)}</th>
+        <th class="num">${esc(B.env)}</th>
+        <th class="num">Δ%</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows}
+    </tbody>
+  </table>
+  </div>`);
+        }
+      }
+
+      if (groupHtml.length > 0) {
+        pdOuter.push(`<section><h2>Platform differences — ${esc(A.env)} vs ${esc(B.env)}</h2>${groupHtml.join('\n')}</section>`);
+      }
+    }
+  }
+
+  platformDiffHtml = pdOuter.join('\n');
+} catch (e) {
+  platformDiffHtml = '';
+}
 
 const chartHtml = slowdownGroups.size >= 2
   ? `
@@ -428,12 +656,13 @@ const html = `<!DOCTYPE html>
 <header>
   <h1>revealGDB — Function Benchmark Report</h1>
   <div class="meta">
-    ${totalBenches} benchmarks &nbsp;·&nbsp; Run at ${esc(runAt)} &nbsp;·&nbsp; ${baselineMeta}Generated ${esc(generatedAt)}
+    ${totalBenches} benchmarks &nbsp;·&nbsp; Run at ${esc(runAt)} ${runEnv ? `&nbsp;·&nbsp; Env: ${esc(runEnv.name)} (${esc(runEnv.platform)})` : ''} &nbsp;·&nbsp; ${baselineMeta}Generated ${esc(generatedAt)}
   </div>
 </header>
 ${sections.join("\n")}
 ${chartHtml}
 ${slowdownSections.join("\n")}
+${platformDiffHtml}
 </body>
 </html>
 `;

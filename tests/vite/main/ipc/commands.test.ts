@@ -172,7 +172,6 @@ describe("handleNotifyMain", () => {
       isSelectedConnection: ((value: unknown) =>
         Boolean(value && (value as { valid?: boolean }).valid)) as never,
     });
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
     handleNotifyMain(
       { command: "connect-selected-connection", data: { connection: { name: "bad" } } } as NotifyMainRequest,
@@ -180,9 +179,7 @@ describe("handleNotifyMain", () => {
     );
 
     expect(gdbInterface.connect).not.toHaveBeenCalled();
-    expect(errorSpy).toHaveBeenCalled();
-
-    errorSpy.mockRestore();
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("Invalid selected connection payload"));
   });
 
   it("persists command history, source viewer settings, and connection list", () => {
@@ -264,7 +261,6 @@ describe("handleNotifyMain", () => {
 
   it("rejects ftp:// URLs in open-external as unsafe and logs an error", () => {
     const { context } = createIpcRegistrationHarness();
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
     handleNotifyMain(
       { command: "open-external", data: "ftp://files.example.com/file.txt" },
@@ -272,30 +268,25 @@ describe("handleNotifyMain", () => {
     );
 
     expect(vi.mocked(shell.openExternal)).not.toHaveBeenCalled();
-    expect(errorSpy).toHaveBeenCalled();
-    errorSpy.mockRestore();
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("Invalid Path Provided"));
   });
 
   it("rejects empty string in open-external as an invalid URL", () => {
     const { context } = createIpcRegistrationHarness();
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
     handleNotifyMain({ command: "open-external", data: "" }, context);
 
     expect(vi.mocked(shell.openExternal)).not.toHaveBeenCalled();
-    expect(errorSpy).toHaveBeenCalled();
-    errorSpy.mockRestore();
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("Invalid Path Provided"));
   });
 
   it("rejects non-string data in open-external as an invalid URL", () => {
     const { context } = createIpcRegistrationHarness();
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
     handleNotifyMain({ command: "open-external", data: 42 as never }, context);
 
     expect(vi.mocked(shell.openExternal)).not.toHaveBeenCalled();
-    expect(errorSpy).toHaveBeenCalled();
-    errorSpy.mockRestore();
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("Invalid Path Provided"));
   });
 
   it("handles save-sections-view-options by persisting both view settings", () => {

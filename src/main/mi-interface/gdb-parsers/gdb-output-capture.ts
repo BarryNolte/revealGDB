@@ -74,6 +74,8 @@ export class GdbOutputCapture {
      Options:
        -all-objects
          Display information from all loaded object files.
+
+      TODO: MIGHT WANT TO DO SOMETHING WITH THIS
    */
 
   CaptureSourceFiles(capArray: string[]): void {

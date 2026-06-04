@@ -3,48 +3,83 @@ import type { DangerousCommandResponse, NotifyRenderMessage } from "../../common
 import type { GdbSettings } from "../../common/settings-types";
 import { CommandHistory } from "../utilities/CommandHistory";
 
+const MAX_OUTPUT_ROWS = 2000;
+const EVICT_BATCH = 200;
+
+function scheduleScroll(
+  outputRef: { current: HTMLDivElement | null },
+  pendingScrollRef: { current: boolean },
+): void {
+  if (pendingScrollRef.current) return;
+  pendingScrollRef.current = true;
+  requestAnimationFrame(() => {
+    pendingScrollRef.current = false;
+    if (!outputRef.current) return;
+    outputRef.current.scrollTop = outputRef.current.scrollHeight;
+    outputRef.current.scrollLeft = 0;
+  });
+}
+
+function evictRows(
+  outputRef: { current: HTMLDivElement | null },
+  rowCountRef: { current: number },
+): void {
+  const el = outputRef.current;
+  if (!el) return;
+  let toRemove = EVICT_BATCH;
+  while (toRemove > 0 && el.firstChild) {
+    el.removeChild(el.firstChild);
+    toRemove--;
+  }
+  rowCountRef.current = Math.max(0, rowCountRef.current - EVICT_BATCH);
+}
+
 function appendGdbMessage(
   outputRef: { current: HTMLDivElement | null },
   shouldScrollRef: { current: boolean },
+  pendingScrollRef: { current: boolean },
+  rowCountRef: { current: number },
   message: string,
   type: string,
 ): void {
+  if (!outputRef.current) return;
+
   const sp = document.createElement("span");
-  sp.classList.add("defaultRow");
+  sp.className = `defaultRow ${type}`;
+  sp.textContent = message === "" ? "\u00A0" : message;
+
   const br = document.createElement("br");
-  outputRef.current?.appendChild(sp);
-
-  if (message === "") {
-    message = "\u00A0";
+  const frag = document.createDocumentFragment();
+  frag.appendChild(sp);
+  frag.appendChild(br);
+  outputRef.current.appendChild(frag);
+  rowCountRef.current++;
+  if (rowCountRef.current > MAX_OUTPUT_ROWS + EVICT_BATCH) {
+    evictRows(outputRef, rowCountRef);
   }
-
-  sp.classList.add(type);
-  sp.appendChild(document.createTextNode(message));
-  outputRef.current?.appendChild(br);
 
   if (!shouldScrollRef.current) return;
-
-  br.scrollIntoView();
-  if (outputRef.current) {
-    outputRef.current.scrollLeft = 0;
-  }
+  scheduleScroll(outputRef, pendingScrollRef);
 }
 
 function appendGdbHtmlMessage(
   outputRef: { current: HTMLDivElement | null },
   shouldScrollRef: { current: boolean },
+  pendingScrollRef: { current: boolean },
+  rowCountRef: { current: number },
   html: string,
 ): void {
+  if (!outputRef.current) return;
   const div = document.createElement("div");
   div.innerHTML = html;
-  outputRef.current?.appendChild(div);
+  outputRef.current.appendChild(div);
+  rowCountRef.current++;
+  if (rowCountRef.current > MAX_OUTPUT_ROWS + EVICT_BATCH) {
+    evictRows(outputRef, rowCountRef);
+  }
 
   if (!shouldScrollRef.current) return;
-
-  div.scrollIntoView();
-  if (outputRef.current) {
-    outputRef.current.scrollLeft = 0;
-  }
+  scheduleScroll(outputRef, pendingScrollRef);
 }
 
 function useGdbCommandHistory(
@@ -85,9 +120,65 @@ function useGdbCommandHistory(
   return { sendCommand, hideHistory, showHistory };
 }
 
+type AppendRefs = {
+  outputRef: { current: HTMLDivElement | null };
+  shouldScrollRef: { current: boolean };
+  pendingScrollRef: { current: boolean };
+  rowCountRef: { current: number };
+};
+
+function subscribeMessageChannels(refs: AppendRefs): () => void {
+  const { outputRef, shouldScrollRef, pendingScrollRef, rowCountRef } = refs;
+  const unsubscribeConsole = window.ipcToMain.messages.console((message: string) => {
+    appendGdbMessage(
+      outputRef,
+      shouldScrollRef,
+      pendingScrollRef,
+      rowCountRef,
+      message,
+      "rowConsole",
+    );
+  });
+  const unsubscribeLog = window.ipcToMain.messages.log((message: string) => {
+    appendGdbMessage(outputRef, shouldScrollRef, pendingScrollRef, rowCountRef, message, "rowLog");
+  });
+  const unsubscribeError = window.ipcToMain.messages.error((message: string) => {
+    appendGdbMessage(
+      outputRef,
+      shouldScrollRef,
+      pendingScrollRef,
+      rowCountRef,
+      message,
+      "rowError",
+    );
+  });
+  const unsubscribeDebug = window.ipcToMain.messages.debug((message: string) => {
+    appendGdbMessage(
+      outputRef,
+      shouldScrollRef,
+      pendingScrollRef,
+      rowCountRef,
+      message,
+      "rowDebug",
+    );
+  });
+  const unsubscribeHtml = window.ipcToMain.messages.html((html: string) => {
+    appendGdbHtmlMessage(outputRef, shouldScrollRef, pendingScrollRef, rowCountRef, html);
+  });
+  return () => {
+    unsubscribeConsole();
+    unsubscribeLog();
+    unsubscribeError();
+    unsubscribeDebug();
+    unsubscribeHtml();
+  };
+}
+
 function useGdbSubscriptions(
   outputRef: { current: HTMLDivElement | null },
   shouldScrollRef: { current: boolean },
+  pendingScrollRef: { current: boolean },
+  rowCountRef: { current: number },
   inputRef: { current: HTMLInputElement | null },
   historyRef: { current: HTMLSelectElement | null },
   cmdHistoryRef: { current: CommandHistory },
@@ -116,20 +207,11 @@ function useGdbSubscriptions(
       },
     );
 
-    const unsubscribeConsole = window.ipcToMain.messages.console((message: string) => {
-      appendGdbMessage(outputRef, shouldScrollRef, message, "rowConsole");
-    });
-    const unsubscribeLog = window.ipcToMain.messages.log((message: string) => {
-      appendGdbMessage(outputRef, shouldScrollRef, message, "rowLog");
-    });
-    const unsubscribeError = window.ipcToMain.messages.error((message: string) => {
-      appendGdbMessage(outputRef, shouldScrollRef, message, "rowError");
-    });
-    const unsubscribeDebug = window.ipcToMain.messages.debug((message: string) => {
-      appendGdbMessage(outputRef, shouldScrollRef, message, "rowDebug");
-    });
-    const unsubscribeHtml = window.ipcToMain.messages.html((html: string) => {
-      appendGdbHtmlMessage(outputRef, shouldScrollRef, html);
+    const unsubscribeMessages = subscribeMessageChannels({
+      outputRef,
+      shouldScrollRef,
+      pendingScrollRef,
+      rowCountRef,
     });
 
     const historyElement = historyRef.current;
@@ -146,11 +228,7 @@ function useGdbSubscriptions(
 
     return () => {
       unsubscribeNotify();
-      unsubscribeConsole();
-      unsubscribeLog();
-      unsubscribeError();
-      unsubscribeDebug();
-      unsubscribeHtml();
+      unsubscribeMessages();
       if (historyElement) historyElement.ondblclick = null;
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -214,6 +292,8 @@ export function useGdbCommandController() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const historyRef = useRef<HTMLSelectElement | null>(null);
   const shouldScrollRef = useRef(true);
+  const pendingScrollRef = useRef(false);
+  const rowCountRef = useRef(0);
   const [dangerousPrompt, setDangerousPrompt] = useState<{
     commandText: string;
     reason?: string;
@@ -227,6 +307,8 @@ export function useGdbCommandController() {
   useGdbSubscriptions(
     outputRef,
     shouldScrollRef,
+    pendingScrollRef,
+    rowCountRef,
     inputRef,
     historyRef,
     cmdHistoryRef,
@@ -236,6 +318,7 @@ export function useGdbCommandController() {
     useGdbKeyboardHandlers(inputRef, historyRef, sendCommand, hideHistory, showHistory);
 
   const onScrollHandler = useCallback(() => {
+    if (pendingScrollRef.current) return;
     const cr = outputRef.current?.getBoundingClientRect();
     const scrollHeight = outputRef.current?.scrollHeight ?? 0;
     const scrollTop = outputRef.current?.scrollTop ?? 0;
@@ -261,6 +344,8 @@ export function useGdbCommandController() {
     if (outputRef.current) {
       outputRef.current.innerHTML = "";
     }
+    pendingScrollRef.current = false;
+    rowCountRef.current = 0;
   }, []);
 
   const onDangerousCommandResponse = useCallback((response: DangerousCommandResponse) => {

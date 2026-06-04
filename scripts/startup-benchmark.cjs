@@ -27,10 +27,11 @@ const runsDir = path.join(reportsDir, "runs");
 const latestFile = path.join(reportsDir, "latest.json");
 const baselineFile = path.join(reportsDir, "baseline.json");
 
+const os = require("node:os");
 const maxRegressionMs = Number(args["max-regression-ms"] ?? 200);
 const maxRegressionPct = Number(args["max-regression-pct"] ?? 10);
 const timeoutMs = Number(args.timeout ?? 30000);
-const samples = Math.max(1, Number(args.samples ?? 1));
+const samples = Math.max(1, Number(args.samples ?? 5));
 const shouldBuild = !args["no-build"];
 const setBaseline = Boolean(args["set-baseline"]);
 
@@ -87,6 +88,20 @@ async function main() {
     metrics: aggregate,
     samples: sampleResults,
   };
+
+  // Environment metadata for later grouping/comparison (windows, wsl, docker, mac, etc.)
+  try {
+    report.environment = {
+      name: "windows",
+      platform: process.platform,
+      arch: process.arch,
+      cpuModel: os.cpus()[0]?.model ?? null,
+      numCpus: os.cpus().length,
+      hostname: os.hostname(),
+    };
+  } catch (e) {
+    // best-effort metadata; ignore failures
+  }
 
   const runFile = path.join(runsDir, `${runId}.json`);
   const commitFile = path.join(commitsDir, `${commit}.json`);

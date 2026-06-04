@@ -5,8 +5,9 @@
  * Exported symbols include `MiExecAsyncHandler`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { sendToRenderer } from "../ipc-sender";
+import { formatGeneralError } from "../utilities/html-error-formatter";
 import { MiOutputHost } from "./mi-output-types";
-import { LOG_STREAM } from "./mi-stream-events";
+import { HTML_STREAM, LOG_STREAM } from "./mi-stream-events";
 
 export class MiExecAsyncHandler {
   private readonly rgxExecAsyncRecord: RegExp = /^\*(?<result>[^,]*),?(?<data>.*)?$/;
@@ -45,7 +46,10 @@ export class MiExecAsyncHandler {
         this.handleStopped(data);
         break;
       default:
-        // console.error(`ExecAsyncRecord (Unknown): ${result} --> ${data}`);
+        this.host.emit(
+          HTML_STREAM,
+          formatGeneralError("Unknown MI Exec Async Record", `Result: ${result}`, `Data: ${data}`),
+        );
         return false;
     }
 

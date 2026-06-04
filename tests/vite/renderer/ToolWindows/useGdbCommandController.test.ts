@@ -493,3 +493,159 @@ describe("useGdbCommandController", () => {
     expect(input.value).toBe("my-command");
   });
 });
+
+describe("scheduleScroll and auto-scroll race condition", () => {
+  let rafCallbacks: FrameRequestCallback[];
+
+  beforeEach(() => {
+    rafCallbacks = [];
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation((fn: FrameRequestCallback) => {
+      rafCallbacks.push(fn);
+      return rafCallbacks.length;
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  function flushRaf(): void {
+    const cbs = rafCallbacks.splice(0);
+    cbs.forEach((fn) => fn(0));
+  }
+
+  function makeScrollDiv(scrollHeight: number): { div: HTMLDivElement; scrollTopRef: { val: number } } {
+    const div = document.createElement("div");
+    const scrollTopRef = { val: 0 };
+    Object.defineProperty(div, "scrollHeight", { configurable: true, get: () => scrollHeight });
+    Object.defineProperty(div, "scrollTop", {
+      configurable: true,
+      get: () => scrollTopRef.val,
+      set: (v: number) => { scrollTopRef.val = v; },
+    });
+    div.getBoundingClientRect = () => ({ height: 100 }) as DOMRect;
+    return { div, scrollTopRef };
+  }
+
+  it("queues only one rAF for a burst of messages", async () => {
+    const { result } = renderHook(() => useGdbCommandController());
+    const div = document.createElement("div");
+    result.current.outputRef.current = div;
+    await act(async () => {});
+
+    act(() => {
+      consoleCallback?.("a");
+      consoleCallback?.("b");
+      consoleCallback?.("c");
+    });
+
+    expect(rafCallbacks.length).toBe(1);
+  });
+
+  it("onScrollHandler does not disable auto-scroll while rAF is pending", async () => {
+    const { result } = renderHook(() => useGdbCommandController());
+    const { div, scrollTopRef } = makeScrollDiv(1000);
+    result.current.outputRef.current = div;
+    await act(async () => {});
+
+    // Append → scheduleScroll queues rAF (pendingScrollRef = true)
+    act(() => { consoleCallback?.("msg1"); });
+    expect(rafCallbacks.length).toBe(1);
+
+    // Simulated scroll event fires before rAF: div is "scrolled up"
+    // (scrollHeight=1000, scrollTop=0, crHeight=100 → gap=900 > 20)
+    // Without the fix, this would set shouldScroll=false and break auto-scroll
+    act(() => { result.current.onScrollHandler(); });
+
+    // Flush the rAF → sets scrollTop = scrollHeight
+    act(() => { flushRaf(); });
+    expect(scrollTopRef.val).toBe(1000);
+
+    // Append another message: if shouldScroll was not disabled, a new rAF is queued
+    act(() => { consoleCallback?.("msg2"); });
+    expect(rafCallbacks.length).toBe(1);
+
+    act(() => { flushRaf(); });
+    expect(scrollTopRef.val).toBe(1000);
+  });
+
+  it("onScrollHandler disables auto-scroll when no rAF is pending and user scrolled up", async () => {
+    const { result } = renderHook(() => useGdbCommandController());
+    const { div } = makeScrollDiv(1000);
+    // scrollTop=0, scrollHeight=1000, crHeight=100 → gap=900 > 20 → "scrolled up"
+    result.current.outputRef.current = div;
+    await act(async () => {});
+
+    // No rAF pending → handler should update shouldScroll
+    act(() => { result.current.onScrollHandler(); });
+
+    // shouldScroll is now false → appending does NOT queue a rAF
+    act(() => { consoleCallback?.("msg"); });
+    expect(rafCallbacks.length).toBe(0);
+  });
+
+  it("onScrollHandler re-enables auto-scroll when user scrolls back to bottom", async () => {
+    const { result } = renderHook(() => useGdbCommandController());
+    const { div, scrollTopRef } = makeScrollDiv(1000);
+    result.current.outputRef.current = div;
+    await act(async () => {});
+
+    // Disable auto-scroll: scrolled up, no pending rAF
+    act(() => { result.current.onScrollHandler(); });
+    act(() => { consoleCallback?.("msg1"); });
+    expect(rafCallbacks.length).toBe(0);
+
+    // User scrolls to bottom: 1000 - 900 - 100 = 0 ≤ 20 → shouldScroll=true
+    scrollTopRef.val = 900;
+    act(() => { result.current.onScrollHandler(); });
+
+    act(() => { consoleCallback?.("msg2"); });
+    expect(rafCallbacks.length).toBe(1);
+  });
+
+  it("after rAF fires, onScrollHandler can correctly disable auto-scroll", async () => {
+    const { result } = renderHook(() => useGdbCommandController());
+    const { div, scrollTopRef } = makeScrollDiv(1000);
+    result.current.outputRef.current = div;
+    await act(async () => {});
+
+    // Append → rAF queued
+    act(() => { consoleCallback?.("msg1"); });
+    expect(rafCallbacks.length).toBe(1);
+
+    // Flush rAF → scrollTop=1000, pendingScrollRef=false
+    act(() => { flushRaf(); });
+    expect(scrollTopRef.val).toBe(1000);
+
+    // User scrolls up after rAF settled (pendingScrollRef=false)
+    scrollTopRef.val = 0;
+    act(() => { result.current.onScrollHandler(); });
+    // 1000 - 0 - 100 = 900 > 20 → shouldScroll=false
+
+    // Append → no rAF queued (auto-scroll off)
+    act(() => { consoleCallback?.("msg2"); });
+    expect(rafCallbacks.length).toBe(0);
+  });
+
+  it("onClearWindow resets pendingScrollRef so a new rAF can be queued", async () => {
+    const { result } = renderHook(() => useGdbCommandController());
+    const div = document.createElement("div");
+    result.current.outputRef.current = div;
+    await act(async () => {});
+
+    // Append → rAF queued, pendingScrollRef=true
+    act(() => { consoleCallback?.("msg1"); });
+    expect(rafCallbacks.length).toBe(1);
+
+    // Second append is deduplicated (pending rAF already queued)
+    act(() => { consoleCallback?.("msg2"); });
+    expect(rafCallbacks.length).toBe(1);
+
+    // Clear window → resets pendingScrollRef=false
+    act(() => { result.current.onClearWindow(); });
+
+    // Append → new rAF queued
+    act(() => { consoleCallback?.("msg3"); });
+    expect(rafCallbacks.length).toBe(2);
+  });
+});

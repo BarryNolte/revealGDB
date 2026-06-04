@@ -61,11 +61,7 @@ vi.mock("@syncfusion/ej2-react-grids", () => ({
     capturedRecordDoubleClick = recordDoubleClick ?? null;
     capturedOnGridCreated = created ?? null;
     void ref;
-    return (
-      <div id={id} data-refresh={mockRefresh as unknown as string}>
-        {children}
-      </div>
-    );
+    return <div id={id}>{children}</div>;
   },
   ColumnsDirective: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   ColumnDirective: ({ template }: { template?: (row: unknown) => JSX.Element }) => {
