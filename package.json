@@ -74,7 +74,8 @@
     "docs": "npm run docs:api",
     "test:playwright": "npm run build:renderer && playwright test",
     "build:renderer:coverage": "cross-env REVEALGDB_COVERAGE=true VITE_COVERAGE=true vite build",
-    "test": "vitest --run && npm run test:playwright"
+    "test": "vitest --run && npm run test:playwright",
+    "test:fuzz": "vitest run tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts"
   },
   "build": {
     "appId": "com.example.revealgdb",
