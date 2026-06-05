@@ -33,6 +33,12 @@ export type CallstackGridRow = {
  * @param frame - Value for `frame` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs mapStackFrameToGridRow as part of this module's internal workflow.
+ *
+ * @param frame - frame parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function mapStackFrameToGridRow(frame: gdbStackFrame): CallstackGridRow {
   return {
     active: frame.active ? "*" : "",
@@ -53,6 +59,12 @@ export function mapStackFrameToGridRow(frame: gdbStackFrame): CallstackGridRow {
  *
  * @param frames - Value for `frames` consumed by this operation.
  * @returns The resulting collection produced by this operation.
+ */
+/**
+ * Performs mapStackFramesToGridRows as part of this module's internal workflow.
+ *
+ * @param frames - frames parameter.
+ * @returns The computed result produced by this operation.
  */
 export function mapStackFramesToGridRows(frames: gdbStackFrame[]): CallstackGridRow[] {
   return frames.map(mapStackFrameToGridRow);
@@ -78,6 +90,13 @@ export type ThreadGridRow = {
  * @param groupId - Unique identifier used to look up the target entity.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs mapThreadToGridRow as part of this module's internal workflow.
+ *
+ * @param thread - thread parameter.
+ * @param groupId - groupId parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function mapThreadToGridRow(thread: gdbThread, groupId: string): ThreadGridRow {
   return {
     groupId,
@@ -97,6 +116,15 @@ export function mapThreadToGridRow(thread: gdbThread, groupId: string): ThreadGr
  * @param threads - Map of keyed values consumed or updated by this operation.
  * @param groups - Map of keyed values consumed or updated by this operation.
  * @returns The resulting collection produced by this operation.
+ */
+/**
+ * Performs mapThreadDataToGridRows as part of this module's internal workflow.
+ *
+ * @param threads - threads parameter.
+ * @param gdbThread> | gdbThread[] - gdbThread> | gdbThread[] parameter.
+ * @param groups - groups parameter.
+ * @param gdbThreadGroup> | gdbThreadGroup[] - gdbThreadGroup> | gdbThreadGroup[] parameter.
+ * @returns The computed result produced by this operation.
  */
 export function mapThreadDataToGridRows(
   threads: Map<string, gdbThread> | gdbThread[],
@@ -128,6 +156,12 @@ export type RegisterGridRow = {
  * @param reg - Value for `reg` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs mapRegisterToGridRow as part of this module's internal workflow.
+ *
+ * @param reg - reg parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function mapRegisterToGridRow(reg: gdbRegisters): RegisterGridRow {
   return {
     name: reg.name,
@@ -141,6 +175,13 @@ export function mapRegisterToGridRow(reg: gdbRegisters): RegisterGridRow {
  *
  * @param registers - Map of keyed values consumed or updated by this operation.
  * @returns The resulting collection produced by this operation.
+ */
+/**
+ * Performs mapRegistersToGridRows as part of this module's internal workflow.
+ *
+ * @param registers - registers parameter.
+ * @param gdbRegisters> - gdbRegisters> parameter.
+ * @returns The computed result produced by this operation.
  */
 export function mapRegistersToGridRows(
   registers: gdbRegisters[] | Map<string, gdbRegisters>,
@@ -173,6 +214,12 @@ export type BreakpointGridRow = {
  * @param bp - Value for `bp` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs mapBreakpointToGridRow as part of this module's internal workflow.
+ *
+ * @param bp - bp parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function mapBreakpointToGridRow(bp: gdbBreakpoint): BreakpointGridRow {
   return {
     number: bp.number,
@@ -196,6 +243,13 @@ export function mapBreakpointToGridRow(bp: gdbBreakpoint): BreakpointGridRow {
  *
  * @param breakpoints - Map of keyed values consumed or updated by this operation.
  * @returns The resulting collection produced by this operation.
+ */
+/**
+ * Performs mapBreakpointsToGridRows as part of this module's internal workflow.
+ *
+ * @param breakpoints - breakpoints parameter.
+ * @param gdbBreakpoint> - gdbBreakpoint> parameter.
+ * @returns The computed result produced by this operation.
  */
 export function mapBreakpointsToGridRows(
   breakpoints: Map<string, gdbBreakpoint>,

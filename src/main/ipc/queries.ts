@@ -9,6 +9,12 @@ import { IPC_CHANNELS } from "../../common/ipc-contracts";
 import { gdbFunction, gdbVarLocation } from "../mi-interface/gdb-state-database/gdbStateDatabase";
 import { WslUtilities, type WslDistro } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
+/**
+ * Performs registerAppAndEnvironmentQueryHandlers as part of this module's internal workflow.
+ *
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function registerAppAndEnvironmentQueryHandlers(context: IpcRegistrationContext): void {
   context.ipcMain.handle(
@@ -64,6 +70,12 @@ function registerAppAndEnvironmentQueryHandlers(context: IpcRegistrationContext)
     },
   );
 }
+/**
+ * Performs registerDebuggerQueryHandlers as part of this module's internal workflow.
+ *
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function registerDebuggerQueryHandlers(context: IpcRegistrationContext): void {
   context.ipcMain.handle(
@@ -128,6 +140,12 @@ function registerDebuggerQueryHandlers(context: IpcRegistrationContext): void {
  * Participates in main-process IPC wiring between renderer requests and backend services. Includes explicit error-handling logic for expected failure paths. Performs asynchronous work and should be used with completion ordering in mind.
  *
  * @param context - Dependency container used to register handlers and access shared services.
+ */
+/**
+ * Performs registerIpcQueryHandlers as part of this module's internal workflow.
+ *
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
  */
 export function registerIpcQueryHandlers(context: IpcRegistrationContext): void {
   registerAppAndEnvironmentQueryHandlers(context);

@@ -21,6 +21,13 @@ export type ToolWindowContentProps = {
  * @param param1 - Value for `param1` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs ToolWindowContent as part of this module's internal workflow.
+ *
+ * @param { title - { title parameter.
+ * @param children } - children } parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function ToolWindowContent({ title, children }: ToolWindowContentProps): JSX.Element {
   return <ToolWindowErrorBoundary title={title}>{children}</ToolWindowErrorBoundary>;
 }

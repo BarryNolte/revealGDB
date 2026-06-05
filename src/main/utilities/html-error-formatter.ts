@@ -17,6 +17,13 @@ function escapeHtml(text: string): string {
  * @param error - The caught exception.
  * @returns An HTML string containing the styled error box.
  */
+/**
+ * Performs formatFileReadError as part of this module's internal workflow.
+ *
+ * @param filePath - filePath parameter.
+ * @param error - error parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function formatFileReadError(filePath: string, error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
   return [
@@ -32,6 +39,14 @@ export function formatFileReadError(filePath: string, error: unknown): string {
     `</div>`,
   ].join("\n");
 }
+/**
+ * Performs formatGeneralError as part of this module's internal workflow.
+ *
+ * @param error - error parameter.
+ * @param info - info parameter.
+ * @param info2? - info2? parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 export function formatGeneralError(error: string, info: string, info2?: string): string {
   return [

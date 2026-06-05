@@ -1,3 +1,9 @@
+/**
+ * Implements HtmlTableGenerator for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 export interface TableData<Row extends Record<string, unknown>> {
   header: string[];
   content: Row[];

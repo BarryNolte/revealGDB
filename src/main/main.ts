@@ -67,6 +67,12 @@ export const gdbAppInfo: Map<string, unknown> = new Map<string, unknown>();
  * @param value - Value to validate, normalize, or transform before further processing.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs isSelectedConnection as part of this module's internal workflow.
+ *
+ * @param value - value parameter.
+ * @returns The computed result produced by this operation.
+ */
 function isSelectedConnection(value: unknown): value is NormalizedConnection {
   if (!value || typeof value !== "object") {
     return false;

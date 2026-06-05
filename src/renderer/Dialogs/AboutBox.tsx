@@ -37,6 +37,11 @@ export type AboutBoxHandle = {
 function getInfoValue(key: string): string {
   return (AppMainVersionInfo?.get(key) ?? "") as string;
 }
+/**
+ * Performs openIcons8Link as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function openIcons8Link(): void {
   window.ipcToMain.commands.app.notifyMain({
@@ -44,6 +49,11 @@ function openIcons8Link(): void {
     data: "https://icons8.com/",
   });
 }
+/**
+ * Performs openBMCLink as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function openBMCLink(): void {
   window.ipcToMain.commands.app.notifyMain({
@@ -51,10 +61,21 @@ function openBMCLink(): void {
     data: "https://buymeacoffee.com/barrynolte",
   });
 }
+/**
+ * Performs aboutBoxHeader as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function aboutBoxHeader(): JSX.Element {
   return <div className="dialogHeader">About</div>;
 }
+/**
+ * Performs aboutBoxFooter as part of this module's internal workflow.
+ *
+ * @param onClose - onClose parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function aboutBoxFooter(onClose: () => void): JSX.Element {
   return (
@@ -63,6 +84,12 @@ function aboutBoxFooter(onClose: () => void): JSX.Element {
     </div>
   );
 }
+/**
+ * Performs AboutBoxVersionTable as part of this module's internal workflow.
+ *
+ * @param { info } - { info } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function AboutBoxVersionTable({ info }: { info: AboutInfoState }): JSX.Element {
   return (
@@ -120,6 +147,11 @@ function AboutBoxVersionTable({ info }: { info: AboutInfoState }): JSX.Element {
     </table>
   );
 }
+/**
+ * Performs AboutBoxCreditsSection as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function AboutBoxCreditsSection(): JSX.Element {
   return (

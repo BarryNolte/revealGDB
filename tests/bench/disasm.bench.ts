@@ -1,3 +1,9 @@
+/**
+ * Implements disasm.bench for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment node
 
 import { bench, describe } from "vitest";
@@ -41,6 +47,12 @@ const rgxAsmRow =
 const ASM_SMALL = `^done,asm_insns=[address="0x4008000c",func-name="main",offset="0",opcodes="entry\ta1, 48",inst="entry\\ta1, 48",address="0x4008000f",func-name="main",offset="3",opcodes="movi\ta2, 0",inst="movi\\ta2, 0",address="0x40080011",func-name="main",offset="5",opcodes="call0\t0x40080aec",inst="call0\\t0x40080aec <bootloader_random_enable>",address="0x40080014",func-name="main",offset="8",opcodes="mov.n\ta2, a10",inst="mov.n\\ta2, a10",address="0x40080016",func-name="main",offset="10",opcodes="retw.n\t",inst="retw.n"]`;
 
 // Larger block: 20 instructions across two functions
+/**
+ * Performs makeAsmRows as part of this module's internal workflow.
+ *
+ * @param count - count parameter.
+ * @returns The computed result produced by this operation.
+ */
 function makeAsmRows(count: number): string {
   const rows: string[] = [];
   for (let i = 0; i < count; i++) {

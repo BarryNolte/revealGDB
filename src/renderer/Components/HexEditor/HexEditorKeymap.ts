@@ -20,6 +20,13 @@ export type KeyAction =
  * @param validChars - Value for `validChars` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs resolveKeyAction as part of this module's internal workflow.
+ *
+ * @param key - key parameter.
+ * @param validChars - validChars parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function resolveKeyAction(key: string, validChars: RegExp): KeyAction {
   switch (key) {
     case "ArrowUp":

@@ -1,3 +1,9 @@
+/**
+ * Implements SectionsView.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { render } from "@testing-library/react";
 import { act, createRef } from "react";

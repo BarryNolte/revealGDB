@@ -1,3 +1,9 @@
+/**
+ * Implements toolbar.spec for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { expect, test } from "@playwright/test";
 import fs from "node:fs";
 import http from "node:http";
@@ -52,6 +58,12 @@ async function clickWithJavaScript(
     (element as HTMLButtonElement).click();
   });
 }
+/**
+ * Performs getMimeType as part of this module's internal workflow.
+ *
+ * @param filePath - filePath parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function getMimeType(filePath: string): string {
   const ext = path.extname(filePath).toLowerCase();

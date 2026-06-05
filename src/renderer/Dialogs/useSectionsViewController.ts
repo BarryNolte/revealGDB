@@ -1,3 +1,9 @@
+/**
+ * Implements useSectionsViewController for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { useCallback, useState } from "react";
 import type { gdbSymbolFiles } from "../../common/gdb-state-types";
 import type { SectionsViewOptions } from "../../common/ipc-data-types";
@@ -12,6 +18,11 @@ export type SectionsViewControllerState = {
   hideDialog: () => void;
   onOptionsChange: (opts: SectionsViewOptions) => void;
 };
+/**
+ * Performs useSectionsViewController as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 export function useSectionsViewController(): SectionsViewControllerState {
   const [visible, setVisible] = useState(false);

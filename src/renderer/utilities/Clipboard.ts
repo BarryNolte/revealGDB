@@ -46,6 +46,13 @@ export function sendTextToClipboard(text: string): void {
  * @param command - Debugger command text or command descriptor to execute.
  * @param element - Value for `element` consumed by this operation.
  */
+/**
+ * Performs doCutCopyPaste as part of this module's internal workflow.
+ *
+ * @param command - command parameter.
+ * @param element - element parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function doCutCopyPaste(command: string, element: HTMLInputElement): void {
   const selection = window.getSelection();
   const selectedText = selection?.toString() ?? "";

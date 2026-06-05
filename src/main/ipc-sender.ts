@@ -24,6 +24,13 @@ export function setIpcWindow(w: BrowserWindow): void {
  * @param channel - IPC channel name.
  * @param args - Data payload.
  */
+/**
+ * Performs sendToRenderer as part of this module's internal workflow.
+ *
+ * @param channel - channel parameter.
+ * @param ...args - ...args parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function sendToRenderer(channel: string, ...args: unknown[]): void {
   browserWindow?.webContents.send(channel, ...args);
 }

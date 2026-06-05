@@ -27,19 +27,42 @@ const OUTPUT_DIR = path.resolve(process.cwd(), "out", "renderer");
 const OUTPUT_HTML = path.join(OUTPUT_DIR, "hexeditor-test.html");
 const MAX_BYTES = 256;
 const OFFSET = 0x40000;
+/**
+ * Performs readFixtureBytes as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function readFixtureBytes(): number[] {
   const buffer = fs.readFileSync(FIXTURE_PATH);
   return Array.from(buffer).slice(0, MAX_BYTES);
 }
+/**
+ * Performs byteToHex as part of this module's internal workflow.
+ *
+ * @param byte - byte parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function byteToHex(byte: number): string {
   return byte.toString(16).toUpperCase().padStart(2, "0");
 }
+/**
+ * Performs byteToText as part of this module's internal workflow.
+ *
+ * @param byte - byte parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function byteToText(byte: number): string {
   return byte >= 32 && byte < 0x80 ? String.fromCharCode(byte) : ".";
 }
+/**
+ * Performs getMimeType as part of this module's internal workflow.
+ *
+ * @param filePath - filePath parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function getMimeType(filePath: string): string {
   const ext = path.extname(filePath).toLowerCase();

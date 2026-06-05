@@ -19,6 +19,11 @@ import { StackFrameStore } from "../../../../../../src/main/mi-interface/gdb-sta
 import { ThreadGroupStore } from "../../../../../../src/main/mi-interface/gdb-state-database/stores/ThreadGroupStore";
 import { ThreadStore } from "../../../../../../src/main/mi-interface/gdb-state-database/stores/ThreadStore";
 import { StateUpdateBroadcaster } from "../../../../../../src/main/mi-interface/gdb-state-database/orchestration/StateUpdateBroadcaster";
+/**
+ * Performs createNotifierMock as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function createNotifierMock(): UINotifier {
   return {
@@ -32,6 +37,11 @@ function createNotifierMock(): UINotifier {
 }
 
 describe("StateUpdateBroadcaster", () => {
+/**
+ * Performs createSubject as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
   function createSubject() {
     const notifier = createNotifierMock();
     const localsStore = new LocalsStore();

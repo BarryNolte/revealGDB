@@ -1,6 +1,18 @@
+/**
+ * Implements LineVarStore.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { beforeEach, describe, expect, it } from "vitest";
 import { LineVarStore } from "../../../../../../src/main/mi-interface/gdb-state-database/stores/LineVarStore";
 import type { gdbLineVarMap } from "../../../../../../src/main/mi-interface/gdb-state-database/types/gdbStateTypes";
+/**
+ * Performs makeLineVarMap as part of this module's internal workflow.
+ *
+ * @param sourceFile - sourceFile parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeLineVarMap(sourceFile: string): gdbLineVarMap {
   return {

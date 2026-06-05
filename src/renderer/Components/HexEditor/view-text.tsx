@@ -27,6 +27,11 @@ const idPrefix = "tIdx-";
  *
  * @returns The resulting collection produced by this operation.
  */
+/**
+ * Performs TextHeader as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 function TextHeader(): JSX.Element[] {
   const textHeader: JSX.Element[] = [];
   const textHeaderItems: JSX.Element[] = [];
@@ -51,6 +56,12 @@ function TextHeader(): JSX.Element[] {
  *
  * @param param1 - Value for `param1` consumed by this operation.
  * @returns The resulting collection produced by this operation.
+ */
+/**
+ * Performs TextValues as part of this module's internal workflow.
+ *
+ * @param { datasource } - { datasource } parameter.
+ * @returns The computed result produced by this operation.
  */
 function TextValues({ datasource }: { datasource: Uint8Array }): JSX.Element[] {
   const valueRows: JSX.Element[] = [];

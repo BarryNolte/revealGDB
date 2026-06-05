@@ -17,6 +17,13 @@ const SYNCFUSION_DARK_STYLE_ID = "syncfusion-dark-style";
  * @param systemDark - Value for `systemDark` consumed by this operation.
  * @returns True when the operation succeeds; otherwise false.
  */
+/**
+ * Performs shouldUseDark as part of this module's internal workflow.
+ *
+ * @param theme - theme parameter.
+ * @param systemDark? - systemDark? parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function shouldUseDark(theme: AppTheme, systemDark?: boolean): boolean {
   if (theme === "Dark") return true;
   if (theme === "Light") return false;
@@ -29,6 +36,13 @@ export function shouldUseDark(theme: AppTheme, systemDark?: boolean): boolean {
  *
  * @param theme - Value for `theme` consumed by this operation.
  * @param systemDark - Value for `systemDark` consumed by this operation.
+ */
+/**
+ * Performs applyTheme as part of this module's internal workflow.
+ *
+ * @param theme - theme parameter.
+ * @param systemDark? - systemDark? parameter.
+ * @returns The computed result produced by this operation.
  */
 export function applyTheme(theme: AppTheme, systemDark?: boolean): void {
   const dark = shouldUseDark(theme, systemDark);
@@ -76,6 +90,12 @@ export function getSystemDarkMode(): boolean {
  * Performs to native theme source as part of this module's public API.
  *
  * @param theme - Value for `theme` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs toNativeThemeSource as part of this module's internal workflow.
+ *
+ * @param theme - theme parameter.
  * @returns The computed result produced by this operation.
  */
 export function toNativeThemeSource(theme: AppTheme): "light" | "dark" | "system" {

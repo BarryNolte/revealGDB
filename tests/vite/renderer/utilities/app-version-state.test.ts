@@ -1,3 +1,9 @@
+/**
+ * Implements app-version-state.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   AppMainVersionInfo,

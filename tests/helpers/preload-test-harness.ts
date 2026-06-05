@@ -11,6 +11,11 @@
  */
 
 import { vi } from "vitest";
+/**
+ * Performs createPreloadElectronHarness as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 export function createPreloadElectronHarness() {
   const exposeInMainWorld = vi.fn();

@@ -1,7 +1,18 @@
+/**
+ * Implements DragAndDropList.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import DragAndDropList from "../../../../../src/renderer/Components/DragAndDropList/DragAndDropList";
+/**
+ * Performs createDataTransfer as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 function createDataTransfer(): DataTransfer {
   const data: Record<string, string> = {};
   return {
@@ -25,6 +36,11 @@ function createDataTransfer(): DataTransfer {
     setDragImage: () => undefined,
   } as DataTransfer;
 }
+/**
+ * Performs getOptionLabels as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function getOptionLabels(): string[] {
   const listItems = document.querySelectorAll(".drag-drop-list-item");
@@ -33,6 +49,11 @@ function getOptionLabels(): string[] {
     return label?.textContent ?? "";
   });
 }
+/**
+ * Performs getListItems as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function getListItems(): HTMLElement[] {
   const listItems = document.querySelectorAll(".drag-drop-list-item");

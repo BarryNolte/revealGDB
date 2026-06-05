@@ -528,9 +528,27 @@ describe("onGdbCommand", () => {
     expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("<table"));
   });
 });
+/**
+ * Performs getRegisteredHandlers as part of this module's internal workflow.
+ *
+ * @param ipcMain - ipcMain parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function getRegisteredHandlers(ipcMain: { on: ReturnType<typeof vi.fn>; handle: ReturnType<typeof vi.fn> }) {
+/**
+ * Performs getOn as part of this module's internal workflow.
+ *
+ * @param ch - ch parameter.
+ * @returns The computed result produced by this operation.
+ */
   const getOn = (ch: string) => ipcMain.on.mock.calls.find(([c]) => c === ch)?.[1] as ((...args: unknown[]) => unknown) | undefined;
+/**
+ * Performs getHandle as part of this module's internal workflow.
+ *
+ * @param ch - ch parameter.
+ * @returns The computed result produced by this operation.
+ */
   const getHandle = (ch: string) => ipcMain.handle.mock.calls.find(([c]) => c === ch)?.[1] as ((...args: unknown[]) => unknown) | undefined;
   return {
     notifyHandler: getOn(IPC_CHANNELS.rendererToMain.commands.app.notify),

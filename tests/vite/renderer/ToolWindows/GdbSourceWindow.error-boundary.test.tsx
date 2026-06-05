@@ -1,3 +1,9 @@
+/**
+ * Implements GdbSourceWindow.error-boundary.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";

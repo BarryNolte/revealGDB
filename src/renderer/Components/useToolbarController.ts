@@ -42,6 +42,17 @@ export type ToolbarController = {
   onSelectWindow: (args: MenuEventArgs) => void;
   onOpenWindow: () => void;
 };
+/**
+ * Performs createToolbarHandlers as part of this module's internal workflow.
+ *
+ * @param {
+  connectionsRef - {
+  connectionsRef parameter.
+ * @param whileConnectingRef - whileConnectingRef parameter.
+ * @param settingsRef - settingsRef parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function createToolbarHandlers({
   connectionsRef,
@@ -68,6 +79,17 @@ function createToolbarHandlers({
     onOpenWindow: () => dockMenuConnector?.reconsilePanels(),
   };
 }
+/**
+ * Performs useToolbarController as part of this module's internal workflow.
+ *
+ * @param {
+  connectionsRef - {
+  connectionsRef parameter.
+ * @param whileConnectingRef - whileConnectingRef parameter.
+ * @param settingsRef - settingsRef parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 export function useToolbarController({
   connectionsRef,
@@ -111,6 +133,11 @@ export function useToolbarController({
   }, [buildWindowItems]);
 
   useEffect(() => {
+    /**
+     * Performs handleUpdateWindowList as part of this module's internal workflow.
+     *
+     * @returns The computed result produced by this operation.
+     */
     const handleUpdateWindowList = () => {
       fillWindowList();
     };

@@ -41,6 +41,12 @@ declare global {
 
 const OUTPUT_DIR = path.resolve(process.cwd(), "out", "renderer");
 const OUTPUT_HTML = path.join(OUTPUT_DIR, "settings-test.html");
+/**
+ * Performs getMimeType as part of this module's internal workflow.
+ *
+ * @param filePath - filePath parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function getMimeType(filePath: string): string {
   const ext = path.extname(filePath).toLowerCase();
@@ -70,6 +76,12 @@ async function selectDropdownValue(page: Page, row: Locator, optionText: string)
   await item.waitFor({ state: "visible" });
   await item.dispatchEvent("click");
 }
+/**
+ * Performs getSettingsDialog as part of this module's internal workflow.
+ *
+ * @param page - page parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function getSettingsDialog(page: Page): Locator {
   return page.getByRole("dialog", { name: /Settings/ });

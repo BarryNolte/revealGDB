@@ -1,14 +1,3 @@
-{
-  "extends": "./tsconfig.json",
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
-  "exclude": [
-    "src/**/*.test.ts",
-    "src/**/*.test.tsx",
-    "src/**/test-helpers/**",
-    "src/**/*-test.tsx",
-    "src/**/*-test.ts"
-  ]
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:2d47a893a9a5b44b15069ae4d4ef5e7d85ac23dcf9f54a3fc2e853e1d60cf994
+size 239

@@ -1,3 +1,9 @@
+/**
+ * Implements useGdbCommandController for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import type { DangerousCommandResponse, NotifyRenderMessage } from "../../common/ipc-contracts";
 import type { GdbSettings } from "../../common/settings-types";
@@ -5,6 +11,13 @@ import { CommandHistory } from "../utilities/CommandHistory";
 
 const MAX_OUTPUT_ROWS = 2000;
 const EVICT_BATCH = 200;
+/**
+ * Performs scheduleScroll as part of this module's internal workflow.
+ *
+ * @param outputRef - outputRef parameter.
+ * @param pendingScrollRef - pendingScrollRef parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function scheduleScroll(
   outputRef: { current: HTMLDivElement | null },
@@ -19,6 +32,13 @@ function scheduleScroll(
     outputRef.current.scrollLeft = 0;
   });
 }
+/**
+ * Performs evictRows as part of this module's internal workflow.
+ *
+ * @param outputRef - outputRef parameter.
+ * @param rowCountRef - rowCountRef parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function evictRows(
   outputRef: { current: HTMLDivElement | null },
@@ -33,6 +53,17 @@ function evictRows(
   }
   rowCountRef.current = Math.max(0, rowCountRef.current - EVICT_BATCH);
 }
+/**
+ * Performs appendGdbMessage as part of this module's internal workflow.
+ *
+ * @param outputRef - outputRef parameter.
+ * @param shouldScrollRef - shouldScrollRef parameter.
+ * @param pendingScrollRef - pendingScrollRef parameter.
+ * @param rowCountRef - rowCountRef parameter.
+ * @param message - message parameter.
+ * @param type - type parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function appendGdbMessage(
   outputRef: { current: HTMLDivElement | null },
@@ -61,6 +92,16 @@ function appendGdbMessage(
   if (!shouldScrollRef.current) return;
   scheduleScroll(outputRef, pendingScrollRef);
 }
+/**
+ * Performs appendGdbHtmlMessage as part of this module's internal workflow.
+ *
+ * @param outputRef - outputRef parameter.
+ * @param shouldScrollRef - shouldScrollRef parameter.
+ * @param pendingScrollRef - pendingScrollRef parameter.
+ * @param rowCountRef - rowCountRef parameter.
+ * @param html - html parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function appendGdbHtmlMessage(
   outputRef: { current: HTMLDivElement | null },
@@ -81,6 +122,14 @@ function appendGdbHtmlMessage(
   if (!shouldScrollRef.current) return;
   scheduleScroll(outputRef, pendingScrollRef);
 }
+/**
+ * Performs useGdbCommandHistory as part of this module's internal workflow.
+ *
+ * @param cmdHistoryRef - cmdHistoryRef parameter.
+ * @param inputRef - inputRef parameter.
+ * @param historyRef - historyRef parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useGdbCommandHistory(
   cmdHistoryRef: { current: CommandHistory },
@@ -126,6 +175,12 @@ type AppendRefs = {
   pendingScrollRef: { current: boolean };
   rowCountRef: { current: number };
 };
+/**
+ * Performs subscribeMessageChannels as part of this module's internal workflow.
+ *
+ * @param refs - refs parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function subscribeMessageChannels(refs: AppendRefs): () => void {
   const { outputRef, shouldScrollRef, pendingScrollRef, rowCountRef } = refs;
@@ -173,6 +228,19 @@ function subscribeMessageChannels(refs: AppendRefs): () => void {
     unsubscribeHtml();
   };
 }
+/**
+ * Performs useGdbSubscriptions as part of this module's internal workflow.
+ *
+ * @param outputRef - outputRef parameter.
+ * @param shouldScrollRef - shouldScrollRef parameter.
+ * @param pendingScrollRef - pendingScrollRef parameter.
+ * @param rowCountRef - rowCountRef parameter.
+ * @param inputRef - inputRef parameter.
+ * @param historyRef - historyRef parameter.
+ * @param cmdHistoryRef - cmdHistoryRef parameter.
+ * @param setDangerousPrompt - setDangerousPrompt parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useGdbSubscriptions(
   outputRef: { current: HTMLDivElement | null },
@@ -233,6 +301,14 @@ function useGdbSubscriptions(
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 }
+/**
+ * Performs useGdbKeyboardHandlers as part of this module's internal workflow.
+ *
+ * @param inputRef - inputRef parameter.
+ * @param historyRef - historyRef parameter.
+ * @param sendCommand - sendCommand parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useGdbKeyboardHandlers(
   inputRef: { current: HTMLInputElement | null },
@@ -285,6 +361,11 @@ function useGdbKeyboardHandlers(
 
   return { onSelectKeydownHandler, onInputKeyupHandler, onInputKeydownHandler };
 }
+/**
+ * Performs useGdbCommandController as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 export function useGdbCommandController() {
   const cmdHistoryRef = useRef<CommandHistory>(new CommandHistory());

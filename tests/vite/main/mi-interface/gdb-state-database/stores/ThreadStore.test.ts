@@ -15,6 +15,13 @@ import { ThreadGroupStore } from "../../../../../../src/main/mi-interface/gdb-st
 import { ThreadStore } from "../../../../../../src/main/mi-interface/gdb-state-database/stores/ThreadStore";
 
 describe("ThreadStore", () => {
+/**
+ * Performs createThread as part of this module's internal workflow.
+ *
+ * @param id - id parameter.
+ * @param groupId - groupId parameter.
+ * @returns The computed result produced by this operation.
+ */
   function createThread(id: string, groupId: string) {
     return {
       id,
@@ -35,6 +42,11 @@ describe("ThreadStore", () => {
       },
     };
   }
+/**
+ * Performs createThreadGroups as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
   function createThreadGroups() {
     const groups = new ThreadGroupStore();

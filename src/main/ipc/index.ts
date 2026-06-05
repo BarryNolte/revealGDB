@@ -18,6 +18,12 @@ export type { IpcRegistrationContext } from "./types";
  *
  * @param context - Dependency container used to register handlers and access shared services.
  */
+/**
+ * Performs registerIpcHandlers as part of this module's internal workflow.
+ *
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function registerIpcHandlers(context: IpcRegistrationContext): void {
   registerIpcQueryHandlers(context);
   registerIpcCommandHandlers(context);

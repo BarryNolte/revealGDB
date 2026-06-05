@@ -16,6 +16,13 @@ export const HEX_EDITOR_ROW_WIDTH = 16;
  * @param datasourceLength - Value for `datasourceLength` consumed by this operation.
  * @returns The resulting numeric value produced by this operation.
  */
+/**
+ * Performs clampIndex as part of this module's internal workflow.
+ *
+ * @param index - index parameter.
+ * @param datasourceLength - datasourceLength parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function clampIndex(index: number, datasourceLength: number): number {
   if (index < 0) {
     return 0;
@@ -37,6 +44,12 @@ export function clampIndex(index: number, datasourceLength: number): number {
  * @param id - Unique identifier used to look up the target entity.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs parseIndexFromId as part of this module's internal workflow.
+ *
+ * @param id - id parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function parseIndexFromId(id: string): number | null {
   const parts = id.split("-");
   if (parts.length < 2) {
@@ -56,6 +69,12 @@ export function parseIndexFromId(id: string): number | null {
  * @param index - Zero-based index used to address a specific item.
  * @returns The resulting numeric value produced by this operation.
  */
+/**
+ * Performs getRowFromIndex as part of this module's internal workflow.
+ *
+ * @param index - index parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function getRowFromIndex(index: number): number {
   return Math.floor(index / HEX_EDITOR_ROW_WIDTH);
 }
@@ -68,6 +87,12 @@ export function getRowFromIndex(index: number): number {
  *
  * @param index - Zero-based index used to address a specific item.
  * @returns The resulting numeric value produced by this operation.
+ */
+/**
+ * Performs getColumnFromIndex as part of this module's internal workflow.
+ *
+ * @param index - index parameter.
+ * @returns The computed result produced by this operation.
  */
 export function getColumnFromIndex(index: number): number {
   return index % HEX_EDITOR_ROW_WIDTH;

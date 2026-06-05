@@ -58,6 +58,12 @@ type IpcHarnessOptions = {
   gdbAppInfo?: Map<string, GdbAny>;
   isSelectedConnection?: IpcRegistrationContext["isSelectedConnection"];
 };
+/**
+ * Performs createMockAppSettings as part of this module's internal workflow.
+ *
+ * @param overrides - overrides parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 export function createMockAppSettings(
   overrides: {
@@ -73,6 +79,12 @@ export function createMockAppSettings(
     ...overrides,
   };
 }
+/**
+ * Performs createMockBrowserWindow as part of this module's internal workflow.
+ *
+ * @param overrides - overrides parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 export function createMockBrowserWindow(
   overrides: BrowserWindowMockOverrides = {},
@@ -109,6 +121,12 @@ export function createMockBrowserWindow(
     ...windowOverrides,
   };
 }
+/**
+ * Performs createIpcRegistrationHarness as part of this module's internal workflow.
+ *
+ * @param options - options parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 export function createIpcRegistrationHarness(options: IpcHarnessOptions = {}) {
   const mainWindow = createMockBrowserWindow(options.mainWindow);

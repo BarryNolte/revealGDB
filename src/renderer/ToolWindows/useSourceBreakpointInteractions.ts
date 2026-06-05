@@ -32,6 +32,14 @@ interface AceGutterEvent {
   getDocumentPosition(): { row: number; column: number };
   stop(): void;
 }
+/**
+ * Performs useEditorSetup as part of this module's internal workflow.
+ *
+ * @param editorRef - editorRef parameter.
+ * @param toggleBreakpointAtRow - toggleBreakpointAtRow parameter.
+ * @param row - row parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useEditorSetup(
   editorRef: RefObject<AceEditor | null>,
@@ -90,6 +98,14 @@ function useEditorSetup(
     };
   }, [editorRef, toggleBreakpointAtRow]);
 }
+/**
+ * Performs useMenuSelect as part of this module's internal workflow.
+ *
+ * @param editorRef - editorRef parameter.
+ * @param fullFilePathRef - fullFilePathRef parameter.
+ * @param rightClickedRowRef - rightClickedRowRef parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useMenuSelect(
   editorRef: RefObject<AceEditor | null>,
@@ -147,6 +163,16 @@ function useMenuSelect(
     [editorRef, fullFilePathRef, rightClickedRowRef],
   );
 }
+/**
+ * Performs useGutterMenuSelect as part of this module's internal workflow.
+ *
+ * @param editorRef - editorRef parameter.
+ * @param fullFilePathRef - fullFilePathRef parameter.
+ * @param rightClickedRowRef - rightClickedRowRef parameter.
+ * @param toggleBreakpointAtRow - toggleBreakpointAtRow parameter.
+ * @param row - row parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useGutterMenuSelect(
   editorRef: RefObject<AceEditor | null>,
@@ -207,6 +233,13 @@ function useGutterMenuSelect(
  *
  * @param editorRef - Value for `editorRef` consumed by this operation.
  * @param fullFilePathRef - Filesystem or source path used to locate the target resource.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs useSourceBreakpointInteractions as part of this module's internal workflow.
+ *
+ * @param editorRef - editorRef parameter.
+ * @param fullFilePathRef - fullFilePathRef parameter.
  * @returns The computed result produced by this operation.
  */
 export function useSourceBreakpointInteractions(

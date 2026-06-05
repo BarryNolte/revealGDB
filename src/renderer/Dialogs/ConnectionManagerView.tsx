@@ -57,6 +57,12 @@ export type ConnectionManagerViewProps = {
 function header(): ReactElement {
   return <div className="dialogHeader">Connections</div>;
 }
+/**
+ * Performs connectionManagerFooter as part of this module's internal workflow.
+ *
+ * @param onClose - onClose parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function connectionManagerFooter(onClose: () => void): ReactElement {
   return (
@@ -102,6 +108,25 @@ type ShellAndCommandsControlsProps = Pick<
   | "commandsListKey"
   | "handleOnReorder"
 >;
+/**
+ * Performs ShellAndCommandsControls as part of this module's internal workflow.
+ *
+ * @param {
+  shellOptions - {
+  shellOptions parameter.
+ * @param selectedShellLabel - selectedShellLabel parameter.
+ * @param shellSelectRef - shellSelectRef parameter.
+ * @param shellChangeHandler - shellChangeHandler parameter.
+ * @param wslDistros - wslDistros parameter.
+ * @param selectedWslDistro - selectedWslDistro parameter.
+ * @param wslDistroChangeHandler - wslDistroChangeHandler parameter.
+ * @param isWslShellSelected - isWslShellSelected parameter.
+ * @param commandsList - commandsList parameter.
+ * @param commandsListKey - commandsListKey parameter.
+ * @param handleOnReorder - handleOnReorder parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function ShellAndCommandsControls({
   shellOptions,
@@ -163,6 +188,30 @@ function ShellAndCommandsControls({
     </div>
   );
 }
+/**
+ * Performs ConnectionFormControls as part of this module's internal workflow.
+ *
+ * @param {
+  connectionName - {
+  connectionName parameter.
+ * @param connectionNameInputRef - connectionNameInputRef parameter.
+ * @param connectionNameChangeHandler - connectionNameChangeHandler parameter.
+ * @param shellOptions - shellOptions parameter.
+ * @param selectedShellLabel - selectedShellLabel parameter.
+ * @param shellSelectRef - shellSelectRef parameter.
+ * @param shellChangeHandler - shellChangeHandler parameter.
+ * @param wslDistros - wslDistros parameter.
+ * @param selectedWslDistro - selectedWslDistro parameter.
+ * @param wslDistroChangeHandler - wslDistroChangeHandler parameter.
+ * @param isWslShellSelected - isWslShellSelected parameter.
+ * @param commandsList - commandsList parameter.
+ * @param commandsListKey - commandsListKey parameter.
+ * @param handleOnReorder - handleOnReorder parameter.
+ * @param addConnectionButtonRef - addConnectionButtonRef parameter.
+ * @param isAddingConnection - isAddingConnection parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function ConnectionFormControls({
   connectionName,
@@ -226,6 +275,18 @@ type ConnectionsDataGridProps = Pick<
   ConnectionManagerViewProps,
   "connections" | "connectionsGridRef" | "handleConnectionRowSelected" | "handleDeleteConnection"
 >;
+/**
+ * Performs ConnectionsDataGrid as part of this module's internal workflow.
+ *
+ * @param {
+  connections - {
+  connections parameter.
+ * @param connectionsGridRef - connectionsGridRef parameter.
+ * @param handleConnectionRowSelected - handleConnectionRowSelected parameter.
+ * @param handleDeleteConnection - handleDeleteConnection parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function ConnectionsDataGrid({
   connections,

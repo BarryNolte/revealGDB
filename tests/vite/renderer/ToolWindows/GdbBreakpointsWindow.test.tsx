@@ -1,3 +1,9 @@
+/**
+ * Implements GdbBreakpointsWindow.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -327,6 +333,11 @@ describe("GdbBreakpointsWindow onAction with empty data", () => {
 });
 
 describe("GdbBreakpointsWindow BreakpointActionCell", () => {
+/**
+ * Performs getSendGdbCommand as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
   const getSendGdbCommand = () =>
     (
       window as unknown as {

@@ -1,3 +1,9 @@
+/**
+ * Implements useSourceEditorSettings.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -19,6 +25,13 @@ type QueryWindow = Window & {
     };
   };
 };
+/**
+ * Performs makeSettings as part of this module's internal workflow.
+ *
+ * @param overrides - overrides parameter.
+ * @param unknown> - unknown> parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeSettings(overrides: Record<string, unknown> = {}) {
   return {

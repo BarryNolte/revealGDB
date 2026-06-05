@@ -1,5 +1,16 @@
+/**
+ * Implements StateLifecycleCoordinator.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { describe, expect, it, vi } from "vitest";
 import { StateLifecycleCoordinator } from "../../../../../../src/main/mi-interface/gdb-state-database/orchestration/StateLifecycleCoordinator";
+/**
+ * Performs createCoordinator as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function createCoordinator() {
   const notifier = {

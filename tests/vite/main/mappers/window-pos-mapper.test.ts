@@ -1,3 +1,9 @@
+/**
+ * Implements window-pos-mapper.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { describe, expect, it } from "vitest";
 import { mapElectronWindowToWinPos } from "../../../../src/main/mappers/window-pos-mapper";
 

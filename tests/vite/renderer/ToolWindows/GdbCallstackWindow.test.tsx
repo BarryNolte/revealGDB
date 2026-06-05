@@ -1,3 +1,9 @@
+/**
+ * Implements GdbCallstackWindow.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { act, render, screen } from "@testing-library/react";
 import React from "react";

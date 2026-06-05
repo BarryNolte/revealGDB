@@ -501,6 +501,12 @@ describe("legacy flat API – message aliases", () => {
 
   it.each(legacyMessageCases)("api.%s unsubscribe removes listener", async (method, channel) => {
     const api = await loadPreloadApi(electronHarness);
+/**
+ * Performs unsub as part of this module's internal workflow.
+ *
+ * @param api[method] as (cb - api[method] as (cb parameter.
+ * @returns The computed result produced by this operation.
+ */
     const unsub = (api[method] as (cb: (v: string) => void) => () => void)(vi.fn());
     const listener = captureListener(electronHarness, 0);
     unsub();

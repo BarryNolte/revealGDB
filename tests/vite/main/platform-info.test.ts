@@ -1,3 +1,9 @@
+/**
+ * Implements platform-info.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { describe, expect, it } from "vitest";
 import { isDebug, isLinux, isMac, isWin } from "../../../src/main/platform-info";
 

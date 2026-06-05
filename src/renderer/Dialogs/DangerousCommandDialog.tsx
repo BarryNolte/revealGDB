@@ -15,9 +15,23 @@ type Props = {
   reason?: string;
   onResponse: (response: DangerousCommandResponse) => void;
 };
+/**
+ * Performs DangerousCommandDialog as part of this module's internal workflow.
+ *
+ * @param { commandText - { commandText parameter.
+ * @param reason - reason parameter.
+ * @param onResponse } - onResponse } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 export function DangerousCommandDialog({ commandText, reason, onResponse }: Props): JSX.Element {
   const rememberRef = useRef(false);
+  /**
+   * Performs respond as part of this module's internal workflow.
+   *
+   * @param allow - allow parameter.
+   * @returns The computed result produced by this operation.
+   */
 
   const respond = (allow: boolean) => {
     onResponse({ allow, remember: rememberRef.current, answer: allow ? "yes" : "no" });

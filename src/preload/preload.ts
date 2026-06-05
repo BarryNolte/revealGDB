@@ -33,6 +33,13 @@ function subscribe<T>(channel: string, callback: (data: T) => void): () => void 
    * @param _event - Value for `_event` consumed by this operation.
    * @param value - Value to validate, normalize, or transform before further processing.
    */
+  /**
+   * Performs listener as part of this module's internal workflow.
+   *
+   * @param _event - _event parameter.
+   * @param value - value parameter.
+   * @returns The computed result produced by this operation.
+   */
   const listener = (_event: Electron.IpcRendererEvent, value: T) => callback(value);
   ipcRenderer.on(channel, listener);
   return () => {
@@ -54,6 +61,13 @@ function invoke(channel: string) {
  *
  * @param channel - Value for `channel` consumed by this operation.
  * @param value - Value to validate, normalize, or transform before further processing.
+ */
+/**
+ * Performs send as part of this module's internal workflow.
+ *
+ * @param channel - channel parameter.
+ * @param value - value parameter.
+ * @returns The computed result produced by this operation.
  */
 function send(channel: string, value: unknown) {
   ipcRenderer.send(channel, value);

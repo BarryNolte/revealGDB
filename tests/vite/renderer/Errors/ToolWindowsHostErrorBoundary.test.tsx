@@ -1,10 +1,27 @@
+/**
+ * Implements ToolWindowsHostErrorBoundary.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { ToolWindowsHostErrorBoundary } from "../../../../src/renderer/Errors/ToolWindowsHostErrorBoundary";
 
 // Suppress React's expected console.error output for error boundary tests
+/**
+ * Performs suppressErrorOutput as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 const suppressErrorOutput = () => vi.spyOn(console, "error").mockImplementation(() => undefined);
+/**
+ * Performs ThrowingChild as part of this module's internal workflow.
+ *
+ * @param { shouldThrow } - { shouldThrow } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function ThrowingChild({ shouldThrow }: { shouldThrow: boolean }) {
   if (shouldThrow) {
@@ -68,6 +85,11 @@ describe("ToolWindowsHostErrorBoundary", () => {
 
     // We need a component whose error state we can toggle
     let forceThrow = true;
+/**
+ * Performs ConditionalChild as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
     function ConditionalChild() {
       if (forceThrow) throw new Error("recoverable error");
       return <div data-testid="recovered">recovered</div>;
@@ -98,6 +120,11 @@ describe("ToolWindowsHostErrorBoundary", () => {
 
   it("shows fallback with unknown error message when error has no message", () => {
     suppressErrorOutput();
+/**
+ * Performs NoMessageThrow as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
     function NoMessageThrow() {
       const err = new Error();

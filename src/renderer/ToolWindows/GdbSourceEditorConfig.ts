@@ -140,6 +140,11 @@ export const editorModes: Map<string, string> = new Map<string, string>([
  * @remarks
  * Supports debugger tool-window rendering, interaction handling, or data synchronization.
  */
+/**
+ * Performs configureAceBasePath as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 export function configureAceBasePath(): void {
   ace.config.setModuleUrl("../../node_modules", "ace-builds");
 }

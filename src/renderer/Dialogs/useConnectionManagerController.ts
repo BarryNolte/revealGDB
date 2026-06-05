@@ -53,6 +53,13 @@ export {
 export type UseConnectionManagerControllerArgs = {
   onCloseCallbackRef: RefObject<(() => void) | null>;
 };
+/**
+ * Performs useFormState as part of this module's internal workflow.
+ *
+ * @param shellOptions - shellOptions parameter.
+ * @param fallbackShellKey - fallbackShellKey parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useFormState(shellOptions: { key: string; label: string }[], fallbackShellKey: string) {
   const [connectionName, setConnectionName] = useState<string>("");
@@ -135,6 +142,17 @@ function useFormState(shellOptions: { key: string; label: string }[], fallbackSh
     applyConnectionToForm,
   };
 }
+/**
+ * Performs useNativeDomSetup as part of this module's internal workflow.
+ *
+ * @param shellSelectRef - shellSelectRef parameter.
+ * @param connectionNameInputRef - connectionNameInputRef parameter.
+ * @param addConnectionButtonRef - addConnectionButtonRef parameter.
+ * @param fallbackShellKey - fallbackShellKey parameter.
+ * @param hideDialog - hideDialog parameter.
+ * @param setSelectedShellKey - setSelectedShellKey parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useNativeDomSetup(
   shellSelectRef: RefObject<HTMLSelectElement | null>,
@@ -217,6 +235,18 @@ async function saveConnectionsToSettings(
     // ignore
   }
 }
+/**
+ * Performs useHandleAddConnection as part of this module's internal workflow.
+ *
+ * @param fallbackShellKey - fallbackShellKey parameter.
+ * @param connectionNameInputRef - connectionNameInputRef parameter.
+ * @param formState - formState parameter.
+ * @param loadedConnections - loadedConnections parameter.
+ * @param setLoadedConnections - setLoadedConnections parameter.
+ * @param setConnections - setConnections parameter.
+ * @param toGridRows - toGridRows parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useHandleAddConnection(
   fallbackShellKey: string,
@@ -286,6 +316,13 @@ function useHandleAddConnection(
 
   return { isAddingConnection, handleAddConnection };
 }
+/**
+ * Performs useConnectionLoader as part of this module's internal workflow.
+ *
+ * @param fallbackShellKey - fallbackShellKey parameter.
+ * @param applyConnectionToForm - applyConnectionToForm parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useConnectionLoader(
   fallbackShellKey: string,
@@ -339,6 +376,18 @@ function useConnectionLoader(
 
   return { loadConnectionsFromSettings, loadWslDistrosFromSystem };
 }
+/**
+ * Performs useConnectionPersist as part of this module's internal workflow.
+ *
+ * @param fallbackShellKey - fallbackShellKey parameter.
+ * @param connectionNameInputRef - connectionNameInputRef parameter.
+ * @param formState - formState parameter.
+ * @param loadedConnections - loadedConnections parameter.
+ * @param setLoadedConnections - setLoadedConnections parameter.
+ * @param setConnections - setConnections parameter.
+ * @param toGridRows - toGridRows parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useConnectionPersist(
   fallbackShellKey: string,
@@ -371,6 +420,14 @@ function useConnectionPersist(
 
   return { handleDeleteConnection, ...addOps };
 }
+/**
+ * Performs useConnectionData as part of this module's internal workflow.
+ *
+ * @param fallbackShellKey - fallbackShellKey parameter.
+ * @param connectionNameInputRef - connectionNameInputRef parameter.
+ * @param formState - formState parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useConnectionData(
   fallbackShellKey: string,
@@ -440,6 +497,15 @@ function useConnectionData(
  * Encapsulates stateful React logic and returns values/callbacks consumed by UI components. Includes explicit error-handling logic for expected failure paths. Performs asynchronous work and should be used with completion ordering in mind.
  *
  * @param param1 - Value for `param1` consumed by this operation.
+ */
+/**
+ * Performs useConnectionManagerController as part of this module's internal workflow.
+ *
+ * @param {
+  onCloseCallbackRef - {
+  onCloseCallbackRef parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
  */
 export function useConnectionManagerController({
   onCloseCallbackRef,

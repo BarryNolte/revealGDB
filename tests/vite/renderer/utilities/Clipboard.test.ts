@@ -1,3 +1,9 @@
+/**
+ * Implements Clipboard.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -94,6 +100,14 @@ describe("doCutCopyPaste", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
+/**
+ * Performs makeInput as part of this module's internal workflow.
+ *
+ * @param value - value parameter.
+ * @param selStart - selStart parameter.
+ * @param selEnd - selEnd parameter.
+ * @returns The computed result produced by this operation.
+ */
 
   function makeInput(value = "", selStart = 0, selEnd = 0): HTMLInputElement {
     const input = document.createElement("input");

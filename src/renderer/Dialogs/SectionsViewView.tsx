@@ -1,3 +1,9 @@
+/**
+ * Implements SectionsViewView for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { ButtonComponent, CheckBoxComponent } from "@syncfusion/ej2-react-buttons";
 import { DialogComponent, TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { type MouseEvent as ReactMouseEvent, JSX, useLayoutEffect, useRef, useState } from "react";
@@ -30,6 +36,12 @@ const SECTION_COLORS: Record<string, string> = {
 };
 
 const DEFAULT_COLOR = "#6c757d";
+/**
+ * Performs getSectionColor as part of this module's internal workflow.
+ *
+ * @param sectionName - sectionName parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function getSectionColor(sectionName: string): string {
   for (const key of Object.keys(SECTION_COLORS)) {
@@ -37,6 +49,12 @@ function getSectionColor(sectionName: string): string {
   }
   return DEFAULT_COLOR;
 }
+/**
+ * Performs formatSize as part of this module's internal workflow.
+ *
+ * @param bytes - bytes parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -52,6 +70,13 @@ type ProcessedSection = {
   color: string;
   isGap: boolean;
 };
+/**
+ * Performs processSections as part of this module's internal workflow.
+ *
+ * @param sections - sections parameter.
+ * @param showEmptySpace - showEmptySpace parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function processSections(sections: gdbSection[], showEmptySpace: boolean): ProcessedSection[] {
   const seen = new Set<string>();
@@ -132,6 +157,14 @@ type SectionBracketProps = {
   rectTop: number;
   rectBottom: number;
 };
+/**
+ * Performs SectionBracket as part of this module's internal workflow.
+ *
+ * @param { textY - { textY parameter.
+ * @param rectTop - rectTop parameter.
+ * @param rectBottom } - rectBottom } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function SectionBracket({ textY, rectTop, rectBottom }: SectionBracketProps): JSX.Element {
   const color = "#888888";
@@ -172,6 +205,15 @@ function SectionBracket({ textY, rectTop, rectBottom }: SectionBracketProps): JS
     </>
   );
 }
+/**
+ * Performs SectionRow as part of this module's internal workflow.
+ *
+ * @param { processed - { processed parameter.
+ * @param onEnter - onEnter parameter.
+ * @param onMove - onMove parameter.
+ * @param onLeave } - onLeave } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function SectionRow({ processed, onEnter, onMove, onLeave }: SectionRowProps): JSX.Element {
   const { section, size, rowHeight, cumY, color } = processed;
@@ -230,6 +272,12 @@ function SectionRow({ processed, onEnter, onMove, onLeave }: SectionRowProps): J
     </g>
   );
 }
+/**
+ * Performs SectionGapRow as part of this module's internal workflow.
+ *
+ * @param { processed } - { processed } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function SectionGapRow({ processed }: { processed: ProcessedSection }): JSX.Element {
   const { section, size, rowHeight, cumY } = processed;
@@ -265,6 +313,11 @@ function SectionGapRow({ processed }: { processed: ProcessedSection }): JSX.Elem
     </g>
   );
 }
+/**
+ * Performs SectionsLegend as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function SectionsLegend(): JSX.Element {
   const colorEntries = [
@@ -320,6 +373,12 @@ function SectionsLegend(): JSX.Element {
     </div>
   );
 }
+/**
+ * Performs SectionsTooltip as part of this module's internal workflow.
+ *
+ * @param { tooltip } - { tooltip } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function SectionsTooltip({ tooltip }: { tooltip: TooltipState }): JSX.Element | null {
   const divRef = useRef<HTMLDivElement>(null);
@@ -368,20 +427,52 @@ type SectionsVisualizationProps = {
   symbolFiles: gdbSymbolFiles;
   options: SectionsViewOptions;
 };
+/**
+ * Performs SectionsVisualization as part of this module's internal workflow.
+ *
+ * @param { symbolFiles - { symbolFiles parameter.
+ * @param options } - options } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function SectionsVisualization({ symbolFiles, options }: SectionsVisualizationProps): JSX.Element {
   const [tooltip, setTooltip] = useState<TooltipState>(null);
   const gapTooltipRef = useRef<TooltipComponent>(null);
   const processed = processSections(symbolFiles.sections, options.showEmptySpace);
   const totalHeight = processed.reduce((sum, s) => sum + s.rowHeight + ROW_GAP, 0) + 8;
+  /**
+   * Performs handleEnter as part of this module's internal workflow.
+   *
+   * @param e - e parameter.
+   * @param section - section parameter.
+   * @param size - size parameter.
+   * @returns The computed result produced by this operation.
+   */
 
   const handleEnter = (e: ReactMouseEvent, section: gdbSection, size: number) => {
     setTooltip({ x: e.clientX + 14, y: e.clientY - 8, section, size });
   };
+  /**
+   * Performs handleMove as part of this module's internal workflow.
+   *
+   * @param e - e parameter.
+   * @returns The computed result produced by this operation.
+   */
   const handleMove = (e: ReactMouseEvent) => {
     setTooltip((prev) => (prev ? { ...prev, x: e.clientX + 14, y: e.clientY - 8 } : null));
   };
+  /**
+   * Performs handleLeave as part of this module's internal workflow.
+   *
+   * @returns The computed result produced by this operation.
+   */
   const handleLeave = () => setTooltip(null);
+  /**
+   * Performs handleGapBeforeRender as part of this module's internal workflow.
+   *
+   * @param args - args parameter.
+   * @returns The computed result produced by this operation.
+   */
 
   const handleGapBeforeRender = (args: unknown) => {
     const target = (args as { target: HTMLElement }).target;
@@ -433,6 +524,19 @@ export type SectionsViewViewProps = {
   options: SectionsViewOptions;
   onOptionsChange: (opts: SectionsViewOptions) => void;
 };
+/**
+ * Performs SectionsViewView as part of this module's internal workflow.
+ *
+ * @param {
+  visible - {
+  visible parameter.
+ * @param symbolFiles - symbolFiles parameter.
+ * @param hideDialog - hideDialog parameter.
+ * @param options - options parameter.
+ * @param onOptionsChange - onOptionsChange parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 export function SectionsViewView({
   visible,

@@ -17,6 +17,12 @@ export type WindowSizeSettings = {
  * @param preloadPath - Filesystem or source path used to locate the target resource.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs createMainWindow as part of this module's internal workflow.
+ *
+ * @param preloadPath - preloadPath parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function createMainWindow(preloadPath: string): BrowserWindow {
   return new BrowserWindow({
     webPreferences: {
@@ -30,6 +36,12 @@ export function createMainWindow(preloadPath: string): BrowserWindow {
  * Creates debug window for downstream use.
  *
  * @param mainWindow - Value for `mainWindow` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs createDebugWindow as part of this module's internal workflow.
+ *
+ * @param mainWindow - mainWindow parameter.
  * @returns The computed result produced by this operation.
  */
 export function createDebugWindow(mainWindow: BrowserWindow): BrowserWindow {
@@ -73,6 +85,13 @@ export function loadMainWindow(mainWindow: BrowserWindow): void {
  * @param mainWindow - Value for `mainWindow` consumed by this operation.
  * @param appSettings - Value for `appSettings` consumed by this operation.
  */
+/**
+ * Performs restoreWindowBounds as part of this module's internal workflow.
+ *
+ * @param mainWindow - mainWindow parameter.
+ * @param appSettings - appSettings parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function restoreWindowBounds(
   mainWindow: BrowserWindow,
   appSettings: WindowSizeSettings,
@@ -98,6 +117,13 @@ export function restoreWindowBounds(
  *
  * @param mainWindow - Value for `mainWindow` consumed by this operation.
  * @param debugWindow - Value for `debugWindow` consumed by this operation.
+ */
+/**
+ * Performs wireWindowCloseHandlers as part of this module's internal workflow.
+ *
+ * @param mainWindow - mainWindow parameter.
+ * @param debugWindow - debugWindow parameter.
+ * @returns The computed result produced by this operation.
  */
 export function wireWindowCloseHandlers(
   mainWindow: BrowserWindow,

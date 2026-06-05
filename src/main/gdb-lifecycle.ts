@@ -29,6 +29,13 @@ export type SettingsLike = {
  * @param _appSettings - Value for `appSettings` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs createGdbInterface as part of this module's internal workflow.
+ *
+ * @param mainWindow - mainWindow parameter.
+ * @param _appSettings - _appSettings parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function createGdbInterface(
   mainWindow: BrowserWindow,
   _appSettings: SettingsLike,

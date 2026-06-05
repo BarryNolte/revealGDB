@@ -18,6 +18,14 @@ export type DragAndDropListProps = {
   ariaLabel?: string;
   className?: string;
 };
+/**
+ * Performs moveItem as part of this module's internal workflow.
+ *
+ * @param items - items parameter.
+ * @param fromIndex - fromIndex parameter.
+ * @param toIndex - toIndex parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function moveItem(
   items: DragAndDropListItem[],
@@ -33,6 +41,15 @@ function moveItem(
   next.splice(toIndex, 0, moved);
   return next;
 }
+/**
+ * Performs nativeDragStart as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @param listElement - listElement parameter.
+ * @param internalItemsRef - internalItemsRef parameter.
+ * @param setInternalItems - setInternalItems parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function nativeDragStart(
   e: Event,
@@ -56,6 +73,16 @@ function nativeDragStart(
   transfer.setData("text/html", "");
   transfer.setDragImage(li, 0, 0);
 }
+/**
+ * Performs nativeDragEnter as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @param listElement - listElement parameter.
+ * @param internalItemsRef - internalItemsRef parameter.
+ * @param draggedIndexRef - draggedIndexRef parameter.
+ * @param setInternalItems - setInternalItems parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function nativeDragEnter(
   e: Event,
@@ -77,6 +104,12 @@ function nativeDragEnter(
   setInternalItems(nextItems);
   setDraggedIndex(index);
 }
+/**
+ * Performs nativeDragOver as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function nativeDragOver(e: Event): void {
   const dragEvent = e as globalThis.DragEvent;
@@ -85,6 +118,14 @@ function nativeDragOver(e: Event): void {
   if (!transfer) return;
   transfer.dropEffect = "move";
 }
+/**
+ * Performs nativeDrop as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @param internalItemsRef - internalItemsRef parameter.
+ * @param setDraggedIndex - setDraggedIndex parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function nativeDrop(
   e: Event,
@@ -97,6 +138,13 @@ function nativeDrop(
   setDraggedIndex(null);
   onReorder?.(internalItemsRef.current);
 }
+/**
+ * Performs nativeDragEnd as part of this module's internal workflow.
+ *
+ * @param internalItemsRef - internalItemsRef parameter.
+ * @param setDraggedIndex - setDraggedIndex parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function nativeDragEnd(
   internalItemsRef: { current: DragAndDropListItem[] },
@@ -106,6 +154,14 @@ function nativeDragEnd(
   setDraggedIndex(null);
   onReorder?.(internalItemsRef.current);
 }
+/**
+ * Performs nativeDeleteClick as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @param listElement - listElement parameter.
+ * @param handleDeleteItem - handleDeleteItem parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function nativeDeleteClick(
   e: Event,
@@ -123,6 +179,14 @@ function nativeDeleteClick(
   e.stopPropagation();
   handleDeleteItem(index);
 }
+/**
+ * Performs renderListItem as part of this module's internal workflow.
+ *
+ * @param item - item parameter.
+ * @param index - index parameter.
+ * @param draggedIndex - draggedIndex parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function renderListItem(
   item: DragAndDropListItem,
@@ -142,6 +206,13 @@ function renderListItem(
     </li>
   );
 }
+/**
+ * Performs useAddItem as part of this module's internal workflow.
+ *
+ * @param internalItemsRef - internalItemsRef parameter.
+ * @param setInternalItems - setInternalItems parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useAddItem(
   internalItemsRef: { current: DragAndDropListItem[] },
@@ -169,12 +240,24 @@ function useAddItem(
     const inputElement = inputRef.current;
     const buttonElement = addButtonRef.current;
     if (!inputElement || !buttonElement) return;
+    /**
+     * Performs handleNativeKeyDown as part of this module's internal workflow.
+     *
+     * @param event - event parameter.
+     * @returns The computed result produced by this operation.
+     */
     const handleNativeKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter") {
         event.preventDefault();
         handleAddItem();
       }
     };
+    /**
+     * Performs handleNativeClick as part of this module's internal workflow.
+     *
+     * @param event - event parameter.
+     * @returns The computed result produced by this operation.
+     */
     const handleNativeClick = (event: Event) => {
       event.preventDefault();
       handleAddItem();
@@ -189,6 +272,15 @@ function useAddItem(
 
   return { inputRef, addButtonRef };
 }
+/**
+ * Performs useDragListeners as part of this module's internal workflow.
+ *
+ * @param listRef - listRef parameter.
+ * @param internalItemsRef - internalItemsRef parameter.
+ * @param draggedIndexRef - draggedIndexRef parameter.
+ * @param setInternalItems - setInternalItems parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useDragListeners(
   listRef: { current: HTMLUListElement | null },
@@ -202,8 +294,20 @@ function useDragListeners(
   useEffect(() => {
     const listElement = listRef.current;
     if (!listElement) return;
+    /**
+     * Performs onDragStart as part of this module's internal workflow.
+     *
+     * @param e - e parameter.
+     * @returns The computed result produced by this operation.
+     */
     const onDragStart = (e: Event) =>
       nativeDragStart(e, listElement, internalItemsRef, setInternalItems, setDraggedIndex);
+    /**
+     * Performs onDragEnter as part of this module's internal workflow.
+     *
+     * @param e - e parameter.
+     * @returns The computed result produced by this operation.
+     */
     const onDragEnter = (e: Event) =>
       nativeDragEnter(
         e,
@@ -213,9 +317,32 @@ function useDragListeners(
         setInternalItems,
         setDraggedIndex,
       );
+    /**
+     * Performs onDragOver as part of this module's internal workflow.
+     *
+     * @param e - e parameter.
+     * @returns The computed result produced by this operation.
+     */
     const onDragOver = (e: Event) => nativeDragOver(e);
+    /**
+     * Performs onDrop as part of this module's internal workflow.
+     *
+     * @param e - e parameter.
+     * @returns The computed result produced by this operation.
+     */
     const onDrop = (e: Event) => nativeDrop(e, internalItemsRef, setDraggedIndex, onReorder);
+    /**
+     * Performs onDragEnd as part of this module's internal workflow.
+     *
+     * @returns The computed result produced by this operation.
+     */
     const onDragEnd = () => nativeDragEnd(internalItemsRef, setDraggedIndex, onReorder);
+    /**
+     * Performs onDeleteClick as part of this module's internal workflow.
+     *
+     * @param e - e parameter.
+     * @returns The computed result produced by this operation.
+     */
     const onDeleteClick = (e: Event) => nativeDeleteClick(e, listElement, handleDeleteItem);
     listElement.addEventListener("dragstart", onDragStart);
     listElement.addEventListener("dragenter", onDragEnter);

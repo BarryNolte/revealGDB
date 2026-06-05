@@ -14,6 +14,12 @@ import { describe, expect, it } from "vitest";
 import { BreakpointStore } from "../../../../../../src/main/mi-interface/gdb-state-database/stores/BreakpointStore";
 
 describe("BreakpointStore", () => {
+/**
+ * Performs createBreakpoint as part of this module's internal workflow.
+ *
+ * @param number - number parameter.
+ * @returns The computed result produced by this operation.
+ */
   function createBreakpoint(number: string) {
     return {
       number,

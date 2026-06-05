@@ -37,6 +37,12 @@ export interface GdbValueFormatOptions {
  * start with `{` but have content after the closing brace.  Those return `false`
  * so they are displayed as plain scalars rather than broken trees.
  */
+/**
+ * Performs isComplexValue as part of this module's internal workflow.
+ *
+ * @param raw - raw parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function isComplexValue(raw: string): boolean {
   const s = raw.trim();
   return s.startsWith("{") && s.endsWith("}");
@@ -142,10 +148,26 @@ export function parseGdbValue(raw: string): GdbValueNode {
   // Otherwise treat the block as a positional array.
   return { kind: "array", items: parts.map((p) => parseGdbValue(p)) };
 }
+/**
+ * Performs escapeHtml as part of this module's internal workflow.
+ *
+ * @param s - s parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 export function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
+/**
+ * Performs renderField as part of this module's internal workflow.
+ *
+ * @param key - key parameter.
+ * @param value - value parameter.
+ * @param depth - depth parameter.
+ * @param maxDepth - maxDepth parameter.
+ * @param maxArrayItems - maxArrayItems parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function renderField(
   key: string,
@@ -191,6 +213,15 @@ function renderField(
     `</details>`
   );
 }
+/**
+ * Performs renderNode as part of this module's internal workflow.
+ *
+ * @param node - node parameter.
+ * @param depth - depth parameter.
+ * @param maxDepth - maxDepth parameter.
+ * @param maxArrayItems - maxArrayItems parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function renderNode(
   node: GdbValueNode,
@@ -235,6 +266,12 @@ function renderNode(
  * Other `\x` sequences (e.g. `\n`, `\374`) are left as-is so that char
  * and string literal text is preserved for display.
  */
+/**
+ * Performs unescapeGdbMiValue as part of this module's internal workflow.
+ *
+ * @param s - s parameter.
+ * @returns The computed result produced by this operation.
+ */
 function unescapeGdbMiValue(s: string): string {
   let result = "";
   for (let i = 0; i < s.length; i++) {
@@ -262,6 +299,13 @@ function unescapeGdbMiValue(s: string): string {
  *
  * @param raw - Raw GDB MI value string.
  * @param opts - Formatting options (array truncation length, max depth).
+ */
+/**
+ * Performs formatGdbValueHtml as part of this module's internal workflow.
+ *
+ * @param raw - raw parameter.
+ * @param opts? - opts? parameter.
+ * @returns The computed result produced by this operation.
  */
 export function formatGdbValueHtml(raw: string, opts?: GdbValueFormatOptions): string {
   const maxArrayItems = opts?.maxArrayItems ?? 10;

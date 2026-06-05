@@ -15,6 +15,14 @@ export type ParsedStackFrameData = {
   from: string;
   arch: string;
 };
+/**
+ * Performs grp as part of this module's internal workflow.
+ *
+ * @param groups - groups parameter.
+ * @param key - key parameter.
+ * @param fallback - fallback parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function grp(groups: RegExpExecArray["groups"], key: string, fallback = ""): string {
   return groups?.[key] || fallback;
@@ -28,6 +36,13 @@ function grp(groups: RegExpExecArray["groups"], key: string, fallback = ""): str
  *
  * @param groups - Value for `groups` consumed by this operation.
  * @param defaultArgs - Value for `defaultArgs` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs parseStackFrameFromGroups as part of this module's internal workflow.
+ *
+ * @param groups - groups parameter.
+ * @param defaultArgs - defaultArgs parameter.
  * @returns The computed result produced by this operation.
  */
 export function parseStackFrameFromGroups(

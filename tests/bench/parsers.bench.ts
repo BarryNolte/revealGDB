@@ -1,3 +1,9 @@
+/**
+ * Implements parsers.bench for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment node
 
 import { bench, describe } from "vitest";
@@ -15,6 +21,12 @@ const rgxCleanList = /\[(?<list>.*)\]/;
 const rgxRegisterValues = /{number="(?<number>[^"]*)",value="(?<value>[^"]*)"}/g;
 
 // Build MI-style register names list: ["r0","r1",...]
+/**
+ * Performs makeNamesList as part of this module's internal workflow.
+ *
+ * @param count - count parameter.
+ * @returns The computed result produced by this operation.
+ */
 const makeNamesList = (count: number) =>
   `[${Array.from({ length: count }, (_, i) => `"r${i}"`).join(",")}]`;
 
@@ -26,6 +38,12 @@ const NAMES_64 = makeNamesList(64);
 
 // GDB sends register values as a list of {number="N",value="0x..."} records
 // on every stop event.  Values are hex strings of varying length.
+/**
+ * Performs makeRegisterValues as part of this module's internal workflow.
+ *
+ * @param count - count parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeRegisterValues(count: number): string {
   return Array.from(
@@ -74,6 +92,12 @@ describe("parseRegisterPayload (values)", () => {
 
 const rgxFrame =
   /frame={level="(?<level>[^"]*)",addr="(?<addr>[^"]*)",func="(?<func>[^"]*)"(?:,file="(?<file>[^"]*)")?(?:,fullname="(?<fullname>[^"]*)")?(?:,line="(?<line>[^"]*)")?(?:,arch="(?<arch>[^"]*)")?}/g;
+/**
+ * Performs makeStackPayload as part of this module's internal workflow.
+ *
+ * @param frameCount - frameCount parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeStackPayload(frameCount: number): string {
   const frames = Array.from({ length: frameCount }, (_, i) => {

@@ -54,6 +54,12 @@ export const DEFAULT_COMMANDS_LIST: DragAndDropListItem[] = [{ text: "gdb", id: 
  * @param value - Value to validate, normalize, or transform before further processing.
  * @returns The resulting string value produced by this operation.
  */
+/**
+ * Performs normalizeDistroName as part of this module's internal workflow.
+ *
+ * @param value - value parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function normalizeDistroName(value: string): string {
   return value.trim().replace(/\s+/g, " ");
 }
@@ -63,6 +69,12 @@ export function normalizeDistroName(value: string): string {
  *
  * @param lists - Value for `lists` consumed by this operation.
  * @returns The resulting collection produced by this operation.
+ */
+/**
+ * Performs mergeUniqueDistros as part of this module's internal workflow.
+ *
+ * @param ...lists - ...lists parameter.
+ * @returns The computed result produced by this operation.
  */
 export function mergeUniqueDistros(...lists: string[][]): string[] {
   const uniqueMap = new Map<string, string>();
@@ -92,6 +104,12 @@ export function mergeUniqueDistros(...lists: string[][]): string[] {
  * @param commandsValue - Debugger command text or command descriptor to execute.
  * @returns The resulting collection produced by this operation.
  */
+/**
+ * Performs toCommandStrings as part of this module's internal workflow.
+ *
+ * @param commandsValue - commandsValue parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function toCommandStrings(commandsValue: unknown): string[] {
   if (Array.isArray(commandsValue)) {
     return commandsValue.map((value) => String(value).trim()).filter((value) => value.length > 0);
@@ -108,6 +126,12 @@ export function toCommandStrings(commandsValue: unknown): string[] {
  *
  * @param commandsValue - Debugger command text or command descriptor to execute.
  * @returns The resulting collection produced by this operation.
+ */
+/**
+ * Performs toDragAndDropItems as part of this module's internal workflow.
+ *
+ * @param commandsValue - commandsValue parameter.
+ * @returns The computed result produced by this operation.
  */
 export function toDragAndDropItems(commandsValue: unknown): DragAndDropListItem[] {
   const commandStrings = toCommandStrings(commandsValue);
@@ -128,6 +152,12 @@ export function toDragAndDropItems(commandsValue: unknown): DragAndDropListItem[
  * @param items - Value for `items` consumed by this operation.
  * @returns The resulting collection produced by this operation.
  */
+/**
+ * Performs dragAndDropItemsToCommandStrings as part of this module's internal workflow.
+ *
+ * @param items - items parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function dragAndDropItemsToCommandStrings(items: DragAndDropListItem[]): string[] {
   return items
     .map((item) => String(typeof item === "string" ? item : item.text).trim())
@@ -144,6 +174,13 @@ export function dragAndDropItemsToCommandStrings(items: DragAndDropListItem[]): 
  * @param shellValue - Value for `shellValue` consumed by this operation.
  * @param fallbackKey - Value for `fallbackKey` consumed by this operation.
  * @returns The resulting string value produced by this operation.
+ */
+/**
+ * Performs normalizeShellKey as part of this module's internal workflow.
+ *
+ * @param shellValue - shellValue parameter.
+ * @param fallbackKey - fallbackKey parameter.
+ * @returns The computed result produced by this operation.
  */
 export function normalizeShellKey(shellValue: string, fallbackKey: string): string {
   const normalizedValue = shellValue.trim().toLocaleLowerCase();
@@ -164,6 +201,13 @@ export function normalizeShellKey(shellValue: string, fallbackKey: string): stri
  * @param connection - Value for `connection` consumed by this operation.
  * @param fallbackKey - Value for `fallbackKey` consumed by this operation.
  * @returns The resulting string value produced by this operation.
+ */
+/**
+ * Performs getShellKeyFromConnection as part of this module's internal workflow.
+ *
+ * @param connection - connection parameter.
+ * @param fallbackKey - fallbackKey parameter.
+ * @returns The computed result produced by this operation.
  */
 export function getShellKeyFromConnection(
   connection: ConnectionConfig,
@@ -187,6 +231,12 @@ export function getShellKeyFromConnection(
  * @param shellKey - Value for `shellKey` consumed by this operation.
  * @returns The resulting string value produced by this operation.
  */
+/**
+ * Performs getShellLabel as part of this module's internal workflow.
+ *
+ * @param shellKey - shellKey parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function getShellLabel(shellKey: string): string {
   return shells[shellKey]?.type ?? shellKey;
 }
@@ -201,6 +251,14 @@ export function getShellLabel(shellKey: string): string {
  * @param connection - Value for `connection` consumed by this operation.
  * @param fallbackName - Value for `fallbackName` consumed by this operation.
  * @param fallbackShellKey - Value for `fallbackShellKey` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs normalizeConnectionForStorage as part of this module's internal workflow.
+ *
+ * @param connection - connection parameter.
+ * @param fallbackName - fallbackName parameter.
+ * @param fallbackShellKey - fallbackShellKey parameter.
  * @returns The computed result produced by this operation.
  */
 export function normalizeConnectionForStorage(
@@ -238,6 +296,14 @@ export function normalizeConnectionForStorage(
  * @param fallbackShellKey - Value for `fallbackShellKey` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs mapConnectionToGridRow as part of this module's internal workflow.
+ *
+ * @param connection - connection parameter.
+ * @param index - index parameter.
+ * @param fallbackShellKey - fallbackShellKey parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function mapConnectionToGridRow(
   connection: ConnectionConfig,
   index: number,
@@ -265,6 +331,12 @@ export function mapConnectionToGridRow(
  * @param settings - Value for `settings` consumed by this operation.
  * @returns The resulting collection produced by this operation.
  */
+/**
+ * Performs extractSettingsConnections as part of this module's internal workflow.
+ *
+ * @param settings - settings parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function extractSettingsConnections(settings: GdbSettings): ConnectionConfig[] {
   if (Array.isArray(settings?.connections)) return settings.connections!;
   return [];
@@ -278,6 +350,16 @@ export function extractSettingsConnections(settings: GdbSettings): ConnectionCon
  * @param commands - Debugger command text or command descriptor to execute.
  * @param wslDistribution - Value for `wslDistribution` consumed by this operation.
  * @param fallbackShellKey - Value for `fallbackShellKey` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs buildConnectionFromForm as part of this module's internal workflow.
+ *
+ * @param name - name parameter.
+ * @param shellKey - shellKey parameter.
+ * @param commands - commands parameter.
+ * @param wslDistribution - wslDistribution parameter.
+ * @param fallbackShellKey - fallbackShellKey parameter.
  * @returns The computed result produced by this operation.
  */
 export function buildConnectionFromForm(

@@ -1,3 +1,9 @@
+/**
+ * Implements locals.bench for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment node
 
 import { readFileSync } from "node:fs";
@@ -6,6 +12,12 @@ import { bench, describe } from "vitest";
 import { LocalsContainer } from "../../src/main/mi-interface/gdb-parsers/gdb-locals";
 
 // ─── Corpus loading (mirrors gdb-locals.corpus.test.ts) ──────────────────────
+/**
+ * Performs extractLocalsPayload as part of this module's internal workflow.
+ *
+ * @param line - line parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function extractLocalsPayload(line: string): string {
   const trimmed = line.trim();
