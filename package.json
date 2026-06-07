@@ -1,3 +1,193 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e9ca43222cb7ff27498d4d83f52998f7344de0e340124b8bee621b63b7c75069
-size 8911
+{
+  "name": "revealgdb",
+  "version": "0.9.2-3fca6d1",
+  "copyright": "© 2025",
+  "license": "MIT",
+  "private": true,
+  "description": "A GDB debugger interface",
+  "categories": [
+    "Debuggers",
+    "Visualization"
+  ],
+  "keywords": [
+    "Debugger",
+    "GDB",
+    "Graphical"
+  ],
+  "author": "Barry Nolte (barry@barrynolte.com)",
+  "company": "Open Road Electronics, LLC",
+  "maintainers": [
+    "Barry Nolte (barry@barrynolte.com"
+  ],
+  "contributors": [],
+  "homepage": "https://github.com/barrynolte/revealGDB",
+  "main": "out/main/main.js",
+  "scripts": {
+    "dev": "cross-env REVEALGDB_BUILD=debug REVEALGDB_DEBUG=true concurrently \"electron-vite build\" \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "build:renderer": "vite build",
+    "build:renderer:analyze": "cross-env REVEALGDB_ANALYZE_BUNDLE=true vite build",
+    "build:main": "tsgo -p tsconfig.main.json",
+    "build": "npm run build:release",
+    "build:release": "cross-env REVEALGDB_BUILD=release REVEALGDB_DEBUG=false electron-vite build",
+    "build:debug": "cross-env REVEALGDB_BUILD=debug REVEALGDB_DEBUG=true electron-vite build",
+    "build:analyze": "cross-env REVEALGDB_BUILD=release REVEALGDB_DEBUG=false REVEALGDB_ANALYZE_BUNDLE=true electron-vite build && npm run metrics:dashboard",
+    "start": "electron . --remote-debugging-port=9222",
+    "lint": "eslint \"src/**/*.{ts,tsx,js,jsx,cjs}\" \"./vite.config.ts\"  --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md,cjs}\"",
+    "format-build-tools": "prettier --write \"./vite.config.ts\"",
+    "prepare": "husky",
+    "postinstall": "node scripts/fix-electron.cjs",
+    "dist": "npm run dist:release",
+    "dist:release": "npm run build:release && electron-builder --publish never",
+    "dist:debug": "npm run build:debug && electron-builder --publish never",
+    "dist:all:release": "npm run build:release && electron-builder --publish never --mac --win --linux --x64 --arm64",
+    "dist:all:debug": "npm run build:debug && electron-builder --publish never --mac --win --linux --x64 --arm64",
+    "publish": "electron-builder --publish always",
+    "endqemu": "wsl -e pkill qemu",
+    "vite-build": "cross-env REVEALGDB_BUILD=debug REVEALGDB_DEBUG=true electron-vite build",
+    "vite-build:release": "cross-env REVEALGDB_BUILD=release REVEALGDB_DEBUG=false electron-vite build",
+    "vite-watch": "cross-env REVEALGDB_BUILD=debug REVEALGDB_DEBUG=true electron-vite dev --watch",
+    "vite-build:benchmark": "cross-env REVEALGDB_BUILD=release REVEALGDB_DEBUG=true electron-vite build",
+    "vite-watch:release": "cross-env REVEALGDB_BUILD=release REVEALGDB_DEBUG=false electron-vite dev --watch",
+    "playwright:install": "playwright install",
+    "metrics:maintainability": "node scripts/maintainability-metrics.cjs && npm run metrics:dashboard",
+    "metrics:maintainability:snapshot": "node scripts/maintainability-metrics.cjs --snapshot && npm run metrics:dashboard",
+    "metrics:coupling": "node scripts/coupling-report.cjs && npm run metrics:dashboard",
+    "metrics:dashboard": "node scripts/aggregate-latest-bench.cjs && node scripts/bench-report.cjs && node scripts/dashboard.cjs",
+    "metrics:aggregate": "node scripts/aggregate-latest-bench.cjs",
+    "metrics:all": "npm run metrics:coverage && npm run metrics:benchmark && npm run metrics:coupling && npm run metrics:maintainability && npm run build:renderer:analyze && npm run metrics:dashboard",
+    "metrics:coverage": "npm run metrics:coverage:clean && npm run metrics:coverage:vitest && npm run metrics:coverage:playwright && npm run metrics:coverage:report && npm run metrics:dashboard",
+    "metrics:coverage:clean": "node scripts/coverage-report.cjs --clean",
+    "metrics:coverage:report": "node scripts/coverage-report.cjs",
+    "metrics:coverage:vitest": "vitest run --coverage --maxWorkers=1",
+    "metrics:coverage:playwright": "npm run build:renderer:coverage && cross-env PLAYWRIGHT_COLLECT_COVERAGE=true playwright test",
+    "metrics:benchmark:functions:windows": "node scripts/run-bench-wrapper.cjs reports/function-benchmark/latest-windows.json && node scripts/performance-report.cjs && npm run metrics:dashboard",
+    "metrics:benchmark:functions:wsl": "node scripts/run-bench-in-wsl.cjs && node scripts/performance-report.cjs && npm run metrics:dashboard",
+    "metrics:benchmark:functions": "npm run metrics:benchmark:functions:windows && npm run metrics:benchmark:functions:wsl && node scripts/performance-report.cjs && npm run metrics:dashboard",
+    "metrics:benchmark:functions:set-baseline": "node scripts/bench-set-baseline.cjs && npm run metrics:dashboard",
+    "metrics:benchmark:ui:windows": "node scripts/startup-benchmark.cjs && node scripts/performance-report.cjs && npm run metrics:dashboard",
+    "metrics:benchmark:ui:wsl": "node scripts/startup-benchmark-wsl.cjs && node scripts/performance-report.cjs && npm run metrics:dashboard",
+    "metrics:benchmark:ui": "npm run metrics:benchmark:ui:windows && npm run metrics:benchmark:ui:wsl && node scripts/performance-report.cjs && npm run metrics:dashboard",
+    "metrics:benchmark:ui:set-baseline": "node scripts/startup-benchmark.cjs --set-baseline && npm run metrics:dashboard",
+    "metrics:benchmark": "npm run metrics:benchmark:functions && npm run metrics:benchmark:ui && node scripts/performance-report.cjs && npm run metrics:dashboard",
+    "docs:api": "typedoc --options typedoc.json",
+    "docs": "npm run docs:api",
+    "test:playwright": "npm run build:renderer && playwright test",
+    "build:renderer:coverage": "cross-env REVEALGDB_COVERAGE=true VITE_COVERAGE=true vite build",
+    "test": "vitest --run && npm run test:playwright",
+    "test:fuzz": "vitest run tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts"
+  },
+  "build": {
+    "appId": "com.example.revealgdb",
+    "productName": "revealGDB",
+    "icon": "build/icon.png",
+    "directories": {
+      "output": "dist_electron",
+      "buildResources": "build"
+    },
+    "files": [
+      "out/**",
+      "package.json"
+    ],
+    "extraResources": [
+      "assets/**"
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "identity": null,
+      "hardenedRuntime": true
+    }
+  },
+  "devDependencies": {
+    "@hpcc-js/wasm-graphviz": "^1.21.7",
+    "@playwright/test": "^1.60.0",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/babel__core": "^7.20.5",
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.60.0",
+    "@typescript-eslint/parser": "^8.60.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260505.1",
+    "@vitejs/plugin-react": "^5.2.0",
+    "@vitest/coverage-istanbul": "^4.1.2",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "dependency-cruiser": "^17.4.2",
+    "electron": "^41.7.1",
+    "electron-builder": "^26.8.1",
+    "electron-devtools-installer": "^4.0.0",
+    "electron-vite": "^5.0.0",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^9.1.2",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-sonarjs": "^4.0.3",
+    "husky": "^9.1.7",
+    "istanbul-lib-coverage": "^3.2.2",
+    "istanbul-lib-report": "^3.0.1",
+    "istanbul-reports": "^3.2.0",
+    "jsdom": "^29.1.1",
+    "lint-staged": "^16.4.0",
+    "prettier": "3.8.1",
+    "rollup-plugin-visualizer": "^6.0.11",
+    "tslib": "^2.8.1",
+    "typedoc": "^0.28.19",
+    "typescript": "^6.0.3",
+    "vite": "^7.3.3",
+    "vite-plugin-istanbul": "^8.0.0",
+    "vitest": "^4.1.2",
+    "wait-on": "^9.0.10"
+  },
+  "dependencies": {
+    "@syncfusion/ej2-react-buttons": "^33.2.5",
+    "@syncfusion/ej2-react-dropdowns": "^33.2.8",
+    "@syncfusion/ej2-react-grids": "^33.2.8",
+    "@syncfusion/ej2-react-inputs": "^33.2.5",
+    "@syncfusion/ej2-react-navigations": "^33.2.8",
+    "@syncfusion/ej2-react-popups": "^33.2.7",
+    "@syncfusion/ej2-react-progressbar": "^33.2.3",
+    "@syncfusion/ej2-react-splitbuttons": "^33.2.6",
+    "@syncfusion/ej2-react-treegrid": "^33.2.8",
+    "@syncfusion/react-buttons": "^33.2.4",
+    "ace-builds": "^1.44.0",
+    "dock-spawn-ts": "3.13.1",
+    "electron-settings": "^4.0.4",
+    "fontace": "^0.4.1",
+    "get-system-fonts": "^2.0.2",
+    "react": "^19.2.6",
+    "react-ace": "^14.0.1",
+    "react-dom": "^19.2.6"
+  },
+  "lint-staged": {
+    "src/renderer/**/*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "src/main/**/*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "src/preload/**/*.{ts}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "src/**/*.{json,md,css}": [
+      "prettier --write"
+    ]
+  }
+}

@@ -1,3 +1,31 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:22d1c4788a1498dc5b41f5e623d83d32dae5a9cb57d1c12c9607de18dbe6a793
-size 617
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "src/main",
+    "src/renderer",
+    "src/common",
+    "src/preload"
+  ],
+  "entryPointStrategy": "expand",
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/test-helpers/**",
+    "**/*-test.tsx",
+    "**/*-test.ts",
+    "**/*.d.ts",
+    "**/global.d.ts"
+  ],
+  "out": "docs/api",
+  "tsconfig": "tsconfig.typedoc.json",
+  "readme": "none",
+  "name": "revealGDB API",
+  "excludePrivate": false,
+  "excludeProtected": false,
+  "excludeInternal": true,
+  "categorizeByGroup": true,
+  "sort": [
+    "source-order"
+  ],
+  "plugin": []
+}
