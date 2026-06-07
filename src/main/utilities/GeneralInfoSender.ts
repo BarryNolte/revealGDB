@@ -1,3 +1,9 @@
+/**
+ * Implements GeneralInfoSender for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { EventEmitter } from "events";
 import { DEBUG_STREAM, HTML_STREAM } from "../mi-interface/mi-stream-events";
 

@@ -21,6 +21,11 @@ export interface HexOffsetViewProps {
  *
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs OffsetHeader as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 function OffsetHeader(): JSX.Element {
   return (
     <tr key="offset-header">
@@ -37,6 +42,16 @@ function OffsetHeader(): JSX.Element {
  *
  * @param param1 - Value for `param1` consumed by this operation.
  * @returns The resulting collection produced by this operation.
+ */
+/**
+ * Performs OffsetValues as part of this module's internal workflow.
+ *
+ * @param {
+  offset - {
+  offset parameter.
+ * @param datasource - datasource parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
  */
 function OffsetValues({
   offset,

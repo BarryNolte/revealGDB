@@ -32,6 +32,11 @@ export type SourceBreakpointMarker = {
  *
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs createInitialSourceWindowState as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 export function createInitialSourceWindowState(): SourceWindowState {
   return {
     source: "",
@@ -53,6 +58,12 @@ export function createInitialSourceWindowState(): SourceWindowState {
  * @param filePath - Filesystem or source path used to locate the target resource.
  * @returns The resulting string value produced by this operation.
  */
+/**
+ * Performs getBaseFilename as part of this module's internal workflow.
+ *
+ * @param filePath - filePath parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function getBaseFilename(filePath: string): string {
   return filePath.replace(/^.*[\\/]/, "");
 }
@@ -67,6 +78,15 @@ export function getBaseFilename(filePath: string): string {
  * @param modes - Map of keyed values consumed or updated by this operation.
  * @param fallbackMode - Value for `fallbackMode` consumed by this operation.
  * @returns The resulting string value produced by this operation.
+ */
+/**
+ * Performs getEditorModeForFile as part of this module's internal workflow.
+ *
+ * @param fileName - fileName parameter.
+ * @param modes - modes parameter.
+ * @param string> - string> parameter.
+ * @param fallbackMode - fallbackMode parameter.
+ * @returns The computed result produced by this operation.
  */
 export function getEditorModeForFile(
   fileName: string,
@@ -90,6 +110,12 @@ export function getEditorModeForFile(
  *
  * @param line - Line value used for source navigation or rendering.
  * @returns The resulting collection produced by this operation.
+ */
+/**
+ * Performs createMarkerForLine as part of this module's internal workflow.
+ *
+ * @param line - line parameter.
+ * @returns The computed result produced by this operation.
  */
 export function createMarkerForLine(line: string): { currentMarker: number; markers: IMarker[] } {
   const currentMarker = Number.parseInt(line, 10) - 1;
@@ -120,6 +146,13 @@ export function createMarkerForLine(line: string): { currentMarker: number; mark
  *
  * @param prevState - Current state object read or updated by this operation.
  * @param data - Structured payload consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs applySourceUpdate as part of this module's internal workflow.
+ *
+ * @param prevState - prevState parameter.
+ * @param data - data parameter.
  * @returns The computed result produced by this operation.
  */
 export function applySourceUpdate(
@@ -164,6 +197,13 @@ export function applySourceUpdate(
  *
  * @param breakpoints - Map of keyed values consumed or updated by this operation.
  * @returns The resulting collection produced by this operation.
+ */
+/**
+ * Performs mapBreakpointsToMarkers as part of this module's internal workflow.
+ *
+ * @param breakpoints - breakpoints parameter.
+ * @param gdbBreakpoint> | undefined - gdbBreakpoint> | undefined parameter.
+ * @returns The computed result produced by this operation.
  */
 export function mapBreakpointsToMarkers(
   breakpoints: Map<string, gdbBreakpoint> | undefined,

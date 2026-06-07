@@ -21,6 +21,12 @@ type CommandInputBarProps = {
   onShowHistory: () => void;
   onClearWindow: () => void;
 };
+/**
+ * Performs CommandInputBar as part of this module's internal workflow.
+ *
+ * @param props - props parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function CommandInputBar(props: CommandInputBarProps): JSX.Element {
   const { inputRef, onKeyDown, onKeyUp, onSendCommand, onShowHistory, onClearWindow } = props;

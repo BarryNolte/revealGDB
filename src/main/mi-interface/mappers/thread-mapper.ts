@@ -15,6 +15,12 @@ import { AddThreadArgs, gdbThread } from "../gdb-state-database/types/gdbStateTy
  * @param args - Configuration values that control how this operation executes.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs mapAddThreadArgsToThread as part of this module's internal workflow.
+ *
+ * @param args - args parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function mapAddThreadArgsToThread(args: AddThreadArgs): gdbThread {
   return {
     active: args.active,
@@ -47,6 +53,15 @@ export function mapAddThreadArgsToThread(args: AddThreadArgs): gdbThread {
  * @param groups - Value for `groups` consumed by this operation.
  * @param frameGroups - Value for `frameGroups` consumed by this operation.
  * @param active - Value for `active` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs mapRegexGroupsToAddThreadArgs as part of this module's internal workflow.
+ *
+ * @param groups - groups parameter.
+ * @param string> | undefined - string> | undefined parameter.
+ * @param frameGroups - frameGroups parameter.
+ * @param active - active parameter.
  * @returns The computed result produced by this operation.
  */
 export function mapRegexGroupsToAddThreadArgs(

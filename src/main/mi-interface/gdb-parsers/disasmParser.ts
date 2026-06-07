@@ -17,6 +17,12 @@ const tokenRegex = /[^\s]+\\t|<[^>]+>|0x[0-9A-Fa-f]+|\(|\)|\S+/g;
  * @param input - Value for `input` consumed by this operation.
  * @returns The resulting collection produced by this operation.
  */
+/**
+ * Performs parseDisasmTokens as part of this module's internal workflow.
+ *
+ * @param input - input parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function parseDisasmTokens(input: string): DisasmToken[] {
   if (!input) {
     return [];

@@ -1,3 +1,9 @@
+/**
+ * Implements useSectionsViewController.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -9,6 +15,13 @@ const SAMPLE_DATA: gdbSymbolFiles = {
   mainSym: "hello",
   sections: [{ startAddr: "0x1000", endAddr: "0x2000", section: ".text", file: "main.c" }],
 };
+/**
+ * Performs setWindowIpc as part of this module's internal workflow.
+ *
+ * @param overrides - overrides parameter.
+ * @param unknown> - unknown> parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function setWindowIpc(overrides: Record<string, unknown>): void {
   Object.defineProperty(window, "ipcToMain", {

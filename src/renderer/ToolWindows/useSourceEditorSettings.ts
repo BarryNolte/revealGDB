@@ -24,6 +24,11 @@ export type SourceEditorSettings = {
  *
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs useSourceEditorSettings as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 export function useSourceEditorSettings(): SourceEditorSettings {
   const [theme, setTheme] = useState(defaultTheme);
   const [fontSize, setFontSize] = useState(14);

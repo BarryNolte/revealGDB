@@ -40,6 +40,11 @@ import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 const SELECTION_OPTIONS: SelectionSettingsModel = { mode: "Both", type: "Multiple" };
 const CONTEXT_MENU_ITEMS: ContextMenuItem[] = ["Copy", "Delete"];
 const EDITING = { allowDeleting: true };
+/**
+ * Performs emptyMessageTemplate as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function emptyMessageTemplate(): JSX.Element {
   return (
@@ -48,6 +53,12 @@ function emptyMessageTemplate(): JSX.Element {
     </div>
   );
 }
+/**
+ * Performs BreakpointActionCell as part of this module's internal workflow.
+ *
+ * @param props - props parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function BreakpointActionCell(props: BreakpointGridRow): JSX.Element {
   return (
@@ -78,6 +89,12 @@ function BreakpointActionCell(props: BreakpointGridRow): JSX.Element {
     </div>
   );
 }
+/**
+ * Performs onAction as part of this module's internal workflow.
+ *
+ * @param args - args parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function onAction(args: NotifyArgs): void {
   switch (args.requestType) {
@@ -92,6 +109,12 @@ function onAction(args: NotifyArgs): void {
       break;
   }
 }
+/**
+ * Performs handleRecordDoubleClick as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleRecordDoubleClick(e: RecordDoubleClickEventArgs): void {
   const row = e.rowData as BreakpointGridRow;
@@ -99,6 +122,12 @@ function handleRecordDoubleClick(e: RecordDoubleClickEventArgs): void {
     void window.ipcToMain.queries.debugger.showSourceAt(row.fullName, row.line);
   }
 }
+/**
+ * Performs useBreakpointData as part of this module's internal workflow.
+ *
+ * @param gridRef - gridRef parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useBreakpointData(gridRef: RefObject<GridComponent | null>): {
   breakpointData: BreakpointGridRow[];
@@ -149,6 +178,11 @@ function useBreakpointData(gridRef: RefObject<GridComponent | null>): {
 
   return { breakpointData, onGridCreated };
 }
+/**
+ * Performs breakpointColumnDefinitions as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function breakpointColumnDefinitions(): JSX.Element {
   return (

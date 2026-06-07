@@ -1,3 +1,9 @@
+/**
+ * Implements toolbar-test-page for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import type { JSX, RefObject } from "react";
 import type { NotifyRenderMessage } from "../../common/ipc-contracts";
 import RevealToolbar from "../Components/Toolbar";
@@ -70,6 +76,11 @@ const toolbarRefs: {
     } as SettingsHandle,
   },
 };
+/**
+ * Performs getConfiguredWindows as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function getConfiguredWindows(): ToolbarWindowSettings[] {
   const settings = (window as WindowWithToolbarTestApi).__TOOLBAR_TEST_SETTINGS__;
@@ -81,6 +92,11 @@ function getConfiguredWindows(): ToolbarWindowSettings[] {
     ]
   );
 }
+/**
+ * Performs setupToolbarTestApi as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 export function setupToolbarTestApi(): void {
   let notifyRenderHandler: ((message: NotifyRenderMessage) => void) | undefined;
@@ -154,6 +170,11 @@ export function setupToolbarTestApi(): void {
     },
   };
 }
+/**
+ * Performs ToolbarTestPage as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 export function ToolbarTestPage(): JSX.Element {
   return (

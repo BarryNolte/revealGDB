@@ -17,6 +17,14 @@ import { gdbRegisters } from "../gdb-state-database/types/gdbStateTypes";
  * @param existing - Value for `existing` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs mapToRegisterEntry as part of this module's internal workflow.
+ *
+ * @param index - index parameter.
+ * @param regValue - regValue parameter.
+ * @param existing - existing parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function mapToRegisterEntry(
   index: string,
   regValue: string,

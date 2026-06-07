@@ -22,6 +22,14 @@ export interface EditorEntryProps {
  *
  * @param param1 - Value for `param1` consumed by this operation.
  */
+/**
+ * Performs EditorEntry as part of this module's internal workflow.
+ *
+ * @param { datalength - { datalength parameter.
+ * @param dataCallback - dataCallback parameter.
+ * @param textCallback } - textCallback } parameter.
+ * @returns The computed result produced by this operation.
+ */
 const EditorEntry = ({ datalength, dataCallback, textCallback }: EditorEntryProps) => {
   const radixRef = useRef<HTMLSelectElement>(null);
   const textRef = useRef<HTMLSelectElement>(null);

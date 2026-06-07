@@ -38,6 +38,12 @@ const REGISTERS_EDIT_SETTINGS: EditSettingsModel = {
 };
 
 const REGISTERS_EDIT_PARAMS: IEditCell = { params: { showClearButton: true, allowEdit: true } };
+/**
+ * Performs registersHexCheck as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function registersHexCheck(e: { element: Element; value: string }): boolean {
   const regex = /^0[x|X][0-9A-Fa-f]{1,16}$|^[0-9A-Fa-f]{1,16}$/gm;
@@ -49,6 +55,11 @@ const REGISTERS_VALIDATION_RULES = {
   required: true,
   hexFormat: [registersHexCheck, "Hex value is not valid"],
 };
+/**
+ * Performs registersEmptyTemplate as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function registersEmptyTemplate(): JSX.Element {
   return (
@@ -57,12 +68,24 @@ function registersEmptyTemplate(): JSX.Element {
     </div>
   );
 }
+/**
+ * Performs registersQueryCellInfo as part of this module's internal workflow.
+ *
+ * @param args - args parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function registersQueryCellInfo(args: QueryCellInfoEventArgs): void {
   if (args.column?.field === "value" && (args.data as RegisterGridRow).changed === true) {
     args.cell?.classList.add("register-changed-cell");
   }
 }
+/**
+ * Performs registersCellSaved as part of this module's internal workflow.
+ *
+ * @param args - args parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function registersCellSaved(args: CellSaveArgs): void {
   window.ipcToMain.commands.debugger.sendGdbCommand(

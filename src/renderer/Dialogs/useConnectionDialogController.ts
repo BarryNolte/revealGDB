@@ -52,6 +52,12 @@ export type UseConnectionDialogControllerArgs = {
  * @param settingsConnections - Value for `settingsConnections` consumed by this operation.
  * @returns The resulting collection produced by this operation.
  */
+/**
+ * Performs normalizeConnections as part of this module's internal workflow.
+ *
+ * @param settingsConnections - settingsConnections parameter.
+ * @returns The computed result produced by this operation.
+ */
 function normalizeConnections(settingsConnections: unknown): DefinedConnection[] {
   if (!Array.isArray(settingsConnections)) {
     return [];
@@ -85,6 +91,16 @@ async function fetchConnectionSettings(
     setSelectedConnection(null);
   }
 }
+/**
+ * Performs handleConnectionStatusUpdate as part of this module's internal workflow.
+ *
+ * @param status - status parameter.
+ * @param outputRef - outputRef parameter.
+ * @param connDlgRef - connDlgRef parameter.
+ * @param setConnectionState - setConnectionState parameter.
+ * @param StepAndState>>> - StepAndState>>> parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleConnectionStatusUpdate(
   status: ConnectionStatusPayload,
@@ -121,6 +137,15 @@ function handleConnectionStatusUpdate(
       break;
   }
 }
+/**
+ * Performs useConnectionSubscriptions as part of this module's internal workflow.
+ *
+ * @param connDlgRef - connDlgRef parameter.
+ * @param connectionsRef - connectionsRef parameter.
+ * @param outputRef - outputRef parameter.
+ * @param loadConnectionsFromSettings - loadConnectionsFromSettings parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function useConnectionSubscriptions(
   connDlgRef: RefObject<DialogComponent | null>,
@@ -203,6 +228,17 @@ function useConnectionSubscriptions(
  * Encapsulates stateful React logic and returns values/callbacks consumed by UI components. Includes explicit error-handling logic for expected failure paths. Performs asynchronous work and should be used with completion ordering in mind.
  *
  * @param param1 - Value for `param1` consumed by this operation.
+ */
+/**
+ * Performs useConnectionDialogController as part of this module's internal workflow.
+ *
+ * @param {
+  connectionsRef - {
+  connectionsRef parameter.
+ * @param connDlgRef - connDlgRef parameter.
+ * @param outputRef - outputRef parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
  */
 export function useConnectionDialogController({
   connectionsRef,

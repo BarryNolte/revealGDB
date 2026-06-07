@@ -199,6 +199,12 @@ describe("buildLineVarMap – Approach C (with source)", () => {
     const map = buildLineVarMap(blocks, lineTable, header, sourceLines);
 
     const allEntries = Array.from(map.lineVars.entries());
+/**
+ * Performs lineOf as part of this module's internal workflow.
+ *
+ * @param name - name parameter.
+ * @returns The computed result produced by this operation.
+ */
     const lineOf = (name: string) =>
       allEntries.find(([, locs]) => locs.some((l) => l.name === name))?.[0] ?? -1;
 
@@ -219,6 +225,12 @@ describe("buildLineVarMap – Approach C (with source)", () => {
     const map = buildLineVarMap(blocks, lineTable, header, sourceLines);
 
     const allEntries = Array.from(map.lineVars.entries());
+/**
+ * Performs lineOf as part of this module's internal workflow.
+ *
+ * @param name - name parameter.
+ * @returns The computed result produced by this operation.
+ */
     const lineOf = (name: string) =>
       allEntries.find(([, locs]) => locs.some((l) => l.name === name))?.[0] ?? -1;
 

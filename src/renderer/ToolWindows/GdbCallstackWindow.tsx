@@ -27,6 +27,11 @@ import { ToolWindowContent } from "./ToolWindowContent";
 import { TOOL_WINDOW_TITLES } from "./toolWindowTitles";
 
 const CALLSTACK_SELECTION_OPTIONS: SelectionSettingsModel = { mode: "Both", type: "Multiple" };
+/**
+ * Performs callstackEmptyTemplate as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function callstackEmptyTemplate(): JSX.Element {
   return (
@@ -35,6 +40,12 @@ function callstackEmptyTemplate(): JSX.Element {
     </div>
   );
 }
+/**
+ * Performs handleCallstackDoubleClick as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleCallstackDoubleClick(e: RecordDoubleClickEventArgs): void {
   const row = e.rowData as CallstackGridRow | undefined;

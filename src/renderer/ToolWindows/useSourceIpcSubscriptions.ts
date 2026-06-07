@@ -21,6 +21,12 @@ export type SourceIpcSubscriptionHandlers = {
  *
  * @param handlers - Value for `handlers` consumed by this operation.
  */
+/**
+ * Performs useSourceIpcSubscriptions as part of this module's internal workflow.
+ *
+ * @param handlers - handlers parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function useSourceIpcSubscriptions(handlers: SourceIpcSubscriptionHandlers): void {
   const { onSourceFile, onBreakpoints } = handlers;
 

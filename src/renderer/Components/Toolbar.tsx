@@ -16,6 +16,12 @@ import {
 } from "./useToolbarController";
 
 export type { RevealToolbarProps };
+/**
+ * Performs buildControlItems as part of this module's internal workflow.
+ *
+ * @param ctrl - ctrl parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function buildControlItems(ctrl: ToolbarController): ItemModel[] {
   const { disconnectAvailable, onConnect, onDisconnect, onContinue, onPause, onStop } = ctrl;
@@ -63,6 +69,12 @@ function buildControlItems(ctrl: ToolbarController): ItemModel[] {
     },
   ];
 }
+/**
+ * Performs buildStepItems as part of this module's internal workflow.
+ *
+ * @param ctrl - ctrl parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function buildStepItems(ctrl: ToolbarController): ItemModel[] {
   // prettier-ignore
@@ -110,6 +122,12 @@ function buildStepItems(ctrl: ToolbarController): ItemModel[] {
     },
   ];
 }
+/**
+ * Performs getToolbarItems as part of this module's internal workflow.
+ *
+ * @param ctrl - ctrl parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function getToolbarItems(ctrl: ToolbarController): ItemModel[] {
   return [...buildControlItems(ctrl), ...buildStepItems(ctrl)];

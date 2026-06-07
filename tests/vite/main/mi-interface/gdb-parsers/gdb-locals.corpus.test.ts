@@ -1,3 +1,9 @@
+/**
+ * Implements gdb-locals.corpus.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment node
 
 import { readFileSync } from "node:fs";
@@ -16,6 +22,13 @@ type SerializableLocal = {
 };
 
 const LOCALS_CORPUS_PATH = resolve(process.cwd(), "test-files", "Locals.test.inputs.txt");
+/**
+ * Performs toSerializable as part of this module's internal workflow.
+ *
+ * @param local - local parameter.
+ * @param seen - seen parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function toSerializable(local: Local, seen = new WeakSet<Local>()): SerializableLocal {
   if (seen.has(local)) {
@@ -31,6 +44,12 @@ function toSerializable(local: Local, seen = new WeakSet<Local>()): Serializable
     sublocals: local.sublocals.map((child) => toSerializable(child, seen)),
   };
 }
+/**
+ * Performs extractLocalsPayload as part of this module's internal workflow.
+ *
+ * @param line - line parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function extractLocalsPayload(line: string): string {
   const trimmed = line.trim();
@@ -43,6 +62,11 @@ function extractLocalsPayload(line: string): string {
   const payload = match[1] ?? "";
   return payload.length === 0 ? "{}" : payload;
 }
+/**
+ * Performs loadCorpusCases as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function loadCorpusCases(): Array<{ id: string; sourceLine: number; input: string }> {
   const lines = readFileSync(LOCALS_CORPUS_PATH, "utf8")

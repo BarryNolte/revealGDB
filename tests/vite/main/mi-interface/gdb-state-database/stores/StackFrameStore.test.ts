@@ -14,6 +14,12 @@ import { describe, expect, it } from "vitest";
 import { StackFrameStore } from "../../../../../../src/main/mi-interface/gdb-state-database/stores/StackFrameStore";
 
 describe("StackFrameStore", () => {
+/**
+ * Performs createFrame as part of this module's internal workflow.
+ *
+ * @param level - level parameter.
+ * @returns The computed result produced by this operation.
+ */
   function createFrame(level: string) {
     return {
       active: false,

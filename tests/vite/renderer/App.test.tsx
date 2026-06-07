@@ -1,3 +1,9 @@
+/**
+ * Implements App.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { act, render, screen } from "@testing-library/react";
 import React from "react";
@@ -214,6 +220,12 @@ type ThemeCallback = (data: { shouldUseDarkColors?: boolean }) => void;
 let capturedRenderCallback: RenderCallback = () => {};
 let capturedThemeCallback: ThemeCallback | null = null;
 let unsubThemeMock: ReturnType<typeof vi.fn>;
+/**
+ * Performs buildIpc as part of this module's internal workflow.
+ *
+ * @param settingsData - settingsData parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function buildIpc(settingsData: unknown = { gui: {} }) {
   unsubThemeMock = vi.fn();

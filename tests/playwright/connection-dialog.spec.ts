@@ -39,6 +39,12 @@ declare global {
 
 const OUTPUT_DIR = path.resolve(process.cwd(), "out", "renderer");
 const OUTPUT_HTML = path.join(OUTPUT_DIR, "connectiondialog-test.html");
+/**
+ * Performs getMimeType as part of this module's internal workflow.
+ *
+ * @param filePath - filePath parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function getMimeType(filePath: string): string {
   const ext = path.extname(filePath).toLowerCase();
@@ -61,10 +67,22 @@ function getMimeType(filePath: string): string {
       return "application/octet-stream";
   }
 }
+/**
+ * Performs getConnectionDialog as part of this module's internal workflow.
+ *
+ * @param page - page parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function getConnectionDialog(page: Page): Locator {
   return page.getByRole("dialog", { name: /Connecting/ });
 }
+/**
+ * Performs getConnectionComboInput as part of this module's internal workflow.
+ *
+ * @param page - page parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function getConnectionComboInput(page: Page): Locator {
   return getConnectionDialog(page).locator("#definedConnections").first();

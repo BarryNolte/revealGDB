@@ -27,6 +27,12 @@ export type UseGridColumnStateResult = {
  * @param width - Value for `width` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs normalizeWidth as part of this module's internal workflow.
+ *
+ * @param width - width parameter.
+ * @returns The computed result produced by this operation.
+ */
 function normalizeWidth(width: string | number | undefined): number | string {
   if (width === undefined || width === null) return "auto";
   if (typeof width === "number") return width;
@@ -46,6 +52,12 @@ function normalizeWidth(width: string | number | undefined): number | string {
  * @param columns - Value for `columns` consumed by this operation.
  * @returns The resulting collection produced by this operation.
  */
+/**
+ * Performs extractColumnState as part of this module's internal workflow.
+ *
+ * @param columns - columns parameter.
+ * @returns The computed result produced by this operation.
+ */
 function extractColumnState(columns: Column[]): GridColumnState[] {
   return columns
     .filter((col) => col.field)
@@ -62,6 +74,13 @@ function extractColumnState(columns: Column[]): GridColumnState[] {
  *
  * @param grid - Unique identifier used to look up the target entity.
  * @param savedColumns - Value for `savedColumns` consumed by this operation.
+ */
+/**
+ * Performs applySavedColumnsToGrid as part of this module's internal workflow.
+ *
+ * @param grid - grid parameter.
+ * @param savedColumns - savedColumns parameter.
+ * @returns The computed result produced by this operation.
  */
 export function applySavedColumnsToGrid(
   grid: GridComponent | TreeGridComponent,
@@ -102,6 +121,13 @@ export function applySavedColumnsToGrid(
  * @param gridName - Value for `gridName` consumed by this operation.
  * @param columns - Value for `columns` consumed by this operation.
  */
+/**
+ * Performs saveColumnsToSettings as part of this module's internal workflow.
+ *
+ * @param gridName - gridName parameter.
+ * @param columns - columns parameter.
+ * @returns The computed result produced by this operation.
+ */
 function saveColumnsToSettings(gridName: GridName, columns: Column[]): void {
   const state = extractColumnState(columns);
   window.ipcToMain.commands.app.notifyMain({
@@ -118,6 +144,13 @@ function saveColumnsToSettings(gridName: GridName, columns: Column[]): void {
  *
  * @param gridName - Value for `gridName` consumed by this operation.
  * @param gridRef - Value for `gridRef` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs useGridColumnState as part of this module's internal workflow.
+ *
+ * @param gridName - gridName parameter.
+ * @param gridRef - gridRef parameter.
  * @returns The computed result produced by this operation.
  */
 export function useGridColumnState(

@@ -38,6 +38,12 @@ export function configureAppSettings(appSettings: SettingsLike): void {
     prettify: true,
   });
 }
+/**
+ * Performs applyDefaultSettings as part of this module's internal workflow.
+ *
+ * @param appSettings - appSettings parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 export function applyDefaultSettings(appSettings: typeof AppSettings): void {
   if (!fsSync.existsSync(appSettings.file())) {

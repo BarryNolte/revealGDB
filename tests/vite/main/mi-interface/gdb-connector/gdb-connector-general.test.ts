@@ -1,3 +1,9 @@
+/**
+ * Implements gdb-connector-general.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment node
 
 import { EventEmitter } from "events";
@@ -65,6 +71,11 @@ type MockChildProcess = EventEmitter & {
 type WslSelectedConnection = SelectedConnection & {
   wslDistribution: string;
 };
+/**
+ * Performs createMockChildProcess as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function createMockChildProcess(): MockChildProcess {
   const stdout = new EventEmitter();
@@ -86,6 +97,12 @@ function createMockChildProcess(): MockChildProcess {
     kill: vi.fn(() => true),
   });
 }
+/**
+ * Performs createSelectedConnection as part of this module's internal workflow.
+ *
+ * @param overrides - overrides parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function createSelectedConnection(overrides: Partial<SelectedConnection> = {}): SelectedConnection {
   return {
@@ -95,6 +112,12 @@ function createSelectedConnection(overrides: Partial<SelectedConnection> = {}): 
     ...overrides,
   };
 }
+/**
+ * Performs createWslConnection as part of this module's internal workflow.
+ *
+ * @param overrides - overrides parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function createWslConnection(
   overrides: Partial<WslSelectedConnection> = {},

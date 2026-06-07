@@ -1,3 +1,9 @@
+/**
+ * Implements useSourceBreakpointInteractions.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -22,6 +28,13 @@ vi.mock("../../../../src/renderer/ToolWindows/GdbSourceWindowModel", () => ({
 
 import { useSourceBreakpointInteractions } from "../../../../src/renderer/ToolWindows/useSourceBreakpointInteractions";
 import { sendTextToClipboard } from "../../../../src/renderer/utilities/Clipboard";
+/**
+ * Performs makeFakeEditor as part of this module's internal workflow.
+ *
+ * @param breakpoints - breakpoints parameter.
+ * @param string> - string> parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeFakeEditor(breakpoints: Record<number, string> = {}) {
   const session = {

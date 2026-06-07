@@ -18,6 +18,12 @@ export type WinPos = {
  * @param mainWindow - Value for `mainWindow` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs mapElectronWindowToWinPos as part of this module's internal workflow.
+ *
+ * @param mainWindow - mainWindow parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function mapElectronWindowToWinPos(mainWindow: {
   getPosition(): number[];
   getSize(): number[];

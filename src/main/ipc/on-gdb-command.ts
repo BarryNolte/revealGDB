@@ -25,6 +25,12 @@ const DEFAULT_TABLE_OPTIONS = {
   tableWidth: "auto",
   showTableHeader: false,
 };
+/**
+ * Performs handleHelp as part of this module's internal workflow.
+ *
+ * @param _gdbInterface - _gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleHelp(_gdbInterface: miInterface): void {
   const helpData = {
@@ -53,6 +59,12 @@ function handleHelp(_gdbInterface: miInterface): void {
 }
 
 const DB_TABLE_OPTIONS = { ...DEFAULT_TABLE_OPTIONS, showTableHeader: true };
+/**
+ * Performs handleDbSource as part of this module's internal workflow.
+ *
+ * @param gdbInterface - gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleDbSource(gdbInterface: miInterface): void {
   const sourceData = {
@@ -64,6 +76,12 @@ function handleDbSource(gdbInterface: miInterface): void {
     new HTMLTableGenerator(sourceData, DB_TABLE_OPTIONS).createTableHTML(),
   );
 }
+/**
+ * Performs handleDbThreadGroups as part of this module's internal workflow.
+ *
+ * @param gdbInterface - gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleDbThreadGroups(gdbInterface: miInterface): void {
   const threadGroupData = {
@@ -94,6 +112,12 @@ function handleDbThreadGroups(gdbInterface: miInterface): void {
     new HTMLTableGenerator(threadData, DB_TABLE_OPTIONS).createTableHTML(),
   );
 }
+/**
+ * Performs handleDbFeatures as part of this module's internal workflow.
+ *
+ * @param gdbInterface - gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleDbFeatures(gdbInterface: miInterface): void {
   const featureData = {
@@ -108,6 +132,12 @@ function handleDbFeatures(gdbInterface: miInterface): void {
     new HTMLTableGenerator(featureData, DB_TABLE_OPTIONS).createTableHTML(),
   );
 }
+/**
+ * Performs handleDbParameters as part of this module's internal workflow.
+ *
+ * @param gdbInterface - gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleDbParameters(gdbInterface: miInterface): void {
   const paramData = {
@@ -122,6 +152,12 @@ function handleDbParameters(gdbInterface: miInterface): void {
     new HTMLTableGenerator(paramData, DB_TABLE_OPTIONS).createTableHTML(),
   );
 }
+/**
+ * Performs handleDbStack as part of this module's internal workflow.
+ *
+ * @param gdbInterface - gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleDbStack(gdbInterface: miInterface): void {
   const stackData = {
@@ -144,6 +180,12 @@ function handleDbStack(gdbInterface: miInterface): void {
     new HTMLTableGenerator(stackData, DB_TABLE_OPTIONS).createTableHTML(),
   );
 }
+/**
+ * Performs handleDbBreakpoints as part of this module's internal workflow.
+ *
+ * @param gdbInterface - gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleDbBreakpoints(gdbInterface: miInterface): void {
   const bpData = {
@@ -183,6 +225,12 @@ function handleDbBreakpoints(gdbInterface: miInterface): void {
     new HTMLTableGenerator(bpData, DB_TABLE_OPTIONS).createTableHTML(),
   );
 }
+/**
+ * Performs handleDbRegisters as part of this module's internal workflow.
+ *
+ * @param gdbInterface - gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 function handleDbRegisters(gdbInterface: miInterface): void {
   const regData = {
     title: "GDB Registers",
@@ -197,6 +245,12 @@ function handleDbRegisters(gdbInterface: miInterface): void {
     new HTMLTableGenerator(regData, DB_TABLE_OPTIONS).createTableHTML(),
   );
 }
+/**
+ * Performs handleDbSymbols as part of this module's internal workflow.
+ *
+ * @param gdbInterface - gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleDbSymbols(gdbInterface: miInterface): void {
   const symData = {
@@ -215,6 +269,12 @@ function handleDbSymbols(gdbInterface: miInterface): void {
     new HTMLTableGenerator(symData, DB_TABLE_OPTIONS).createTableHTML(),
   );
 }
+/**
+ * Performs handleDbFunctions as part of this module's internal workflow.
+ *
+ * @param gdbInterface - gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleDbFunctions(gdbInterface: miInterface): void {
   const funcData = {
@@ -232,6 +292,12 @@ function handleDbFunctions(gdbInterface: miInterface): void {
     new HTMLTableGenerator(funcData, DB_TABLE_OPTIONS).createTableHTML(),
   );
 }
+/**
+ * Performs handleDbLocals as part of this module's internal workflow.
+ *
+ * @param _gdbInterface - _gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleDbLocals(_gdbInterface: miInterface): void {}
 
@@ -249,6 +315,13 @@ const DB_SUB_COMMANDS = new Map<string, DbSubCommandHandler>([
   ["symbols", handleDbSymbols],
   ["functions", handleDbFunctions],
 ]);
+/**
+ * Performs handleDb as part of this module's internal workflow.
+ *
+ * @param gdbInterface - gdbInterface parameter.
+ * @param subCommands? - subCommands? parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleDb(gdbInterface: miInterface, subCommands?: string[]): void {
   const sub = subCommands?.[0] ?? "";
@@ -262,6 +335,12 @@ function handleDb(gdbInterface: miInterface, subCommands?: string[]): void {
   );
   GeneralInfoSender.instance.sendOutput();
 }
+/**
+ * Performs handleDebug as part of this module's internal workflow.
+ *
+ * @param _gdbInterface - _gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleDebug(_gdbInterface: miInterface): void {
   GeneralInfoSender.instance.addHeader("Breaking into Debugger");
@@ -269,6 +348,12 @@ function handleDebug(_gdbInterface: miInterface): void {
   // eslint-disable-next-line no-debugger
   debugger;
 }
+/**
+ * Performs handleWsl as part of this module's internal workflow.
+ *
+ * @param _gdbInterface - _gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleWsl(_gdbInterface: miInterface): void {
   const distros = WslUtilities.getWslDistributions();
@@ -295,6 +380,12 @@ function handleWsl(_gdbInterface: miInterface): void {
   const spTable = new HTMLTableGenerator(spData, DEFAULT_TABLE_OPTIONS);
   GeneralInfoSender.instance.sendHtmlBlock(spTable.createTableHTML());
 }
+/**
+ * Performs handleScreen as part of this module's internal workflow.
+ *
+ * @param _gdbInterface - _gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleScreen(_gdbInterface: miInterface): void {
   const allDisplays = screen.getAllDisplays();
@@ -315,6 +406,13 @@ const DOT_COMMANDS = new Map<string, DotCommandHandler>([
   ["wsl", handleWsl],
   ["screen", handleScreen],
 ]);
+/**
+ * Performs handleSelectStackFrame as part of this module's internal workflow.
+ *
+ * @param command - command parameter.
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleSelectStackFrame(
   command: DebuggerSelectStackFrameCommand,
@@ -338,6 +436,13 @@ function handleSelectStackFrame(
  *
  * @param command - Debugger command text or command descriptor to execute.
  * @param context - Dependency container used to register handlers and access shared services.
+ */
+/**
+ * Performs onGdbCommand as part of this module's internal workflow.
+ *
+ * @param command - command parameter.
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
  */
 export function onGdbCommand(command: DebuggerCommand, context: IpcRegistrationContext): void {
   if (typeof command !== "string") {
@@ -368,6 +473,12 @@ export function onGdbCommand(command: DebuggerCommand, context: IpcRegistrationC
  * Participates in main-process IPC wiring between renderer requests and backend services.
  *
  * @param context - Dependency container used to register handlers and access shared services.
+ */
+/**
+ * Performs onGdbControlD as part of this module's internal workflow.
+ *
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
  */
 export function onGdbControlD(context: IpcRegistrationContext): void {
   context.getGdbInterface().sendControlD();

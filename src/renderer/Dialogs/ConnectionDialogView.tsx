@@ -41,6 +41,12 @@ export type ConnectionDialogViewProps = {
  * @param header - Value for `header` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs columnHeaderTemplate as part of this module's internal workflow.
+ *
+ * @param header - header parameter.
+ * @returns The computed result produced by this operation.
+ */
 function columnHeaderTemplate(header: Column): JSX.Element {
   return <div className="column-header-template">{header.headerText}</div>;
 }
@@ -52,6 +58,12 @@ function columnHeaderTemplate(header: Column): JSX.Element {
  * @returns The computed result produced by this operation.
  */
 type StateCellProps = { state: StepAndState["state"] };
+/**
+ * Performs stateCellTemplate as part of this module's internal workflow.
+ *
+ * @param props - props parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function stateCellTemplate(props: StateCellProps): JSX.Element {
   const state = props.state;
@@ -99,6 +111,17 @@ type ConnectionComboBoxProps = Pick<
   ConnectionDialogViewProps,
   "definedConnections" | "selectedConnectionName" | "onSelectedConnectionChange"
 >;
+/**
+ * Performs ConnectionComboBox as part of this module's internal workflow.
+ *
+ * @param {
+  definedConnections - {
+  definedConnections parameter.
+ * @param selectedConnectionName - selectedConnectionName parameter.
+ * @param onSelectedConnectionChange - onSelectedConnectionChange parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function ConnectionComboBox({
   definedConnections,
@@ -123,6 +146,12 @@ function ConnectionComboBox({
     </div>
   );
 }
+/**
+ * Performs connectionDialogFooter as part of this module's internal workflow.
+ *
+ * @param onConnectClick - onConnectClick parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function connectionDialogFooter(
   onConnectClick: () => void,

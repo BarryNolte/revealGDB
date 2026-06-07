@@ -62,6 +62,12 @@ const SELECTION_OPTIONS: SelectionSettingsModel = {
   mode: "Both",
   type: "Multiple",
 };
+/**
+ * Performs rowDataBound as part of this module's internal workflow.
+ *
+ * @param args - args parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function rowDataBound(args: RowDataBoundEventArgs): void {
   const value = (args.data as ILocal).value as string | null | undefined;
@@ -69,6 +75,13 @@ function rowDataBound(args: RowDataBoundEventArgs): void {
   const lineCount = value.split("\\n").length;
   (args.row as HTMLElement).style.height = `${lineCount * 16}px`;
 }
+/**
+ * Performs valueAccessor as part of this module's internal workflow.
+ *
+ * @param _field - _field parameter.
+ * @param data - data parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function valueAccessor(_field: string, data: object): string {
   const local = data as ILocal;
@@ -84,6 +97,20 @@ type LocalsGridProps = {
   cellEdit: (args: CellEditArgs) => void;
   menuId: string;
 };
+/**
+ * Performs LocalsGrid as part of this module's internal workflow.
+ *
+ * @param {
+  treeRef - {
+  treeRef parameter.
+ * @param localData - localData parameter.
+ * @param emptyMessageTemplate - emptyMessageTemplate parameter.
+ * @param cellSaved - cellSaved parameter.
+ * @param cellEdit - cellEdit parameter.
+ * @param menuId - menuId parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function LocalsGrid({
   treeRef,

@@ -26,6 +26,11 @@ const idPrefix = "dIdx-";
  *
  * @returns The resulting collection produced by this operation.
  */
+/**
+ * Performs DataHeader as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 function DataHeader(): JSX.Element[] {
   const textHeader: JSX.Element[] = [];
   const textHeaderItems: JSX.Element[] = [];
@@ -50,6 +55,12 @@ function DataHeader(): JSX.Element[] {
  *
  * @param param1 - Value for `param1` consumed by this operation.
  * @returns The resulting collection produced by this operation.
+ */
+/**
+ * Performs DataValues as part of this module's internal workflow.
+ *
+ * @param { datasource } - { datasource } parameter.
+ * @returns The computed result produced by this operation.
  */
 function DataValues({ datasource }: { datasource: Uint8Array }): JSX.Element[] {
   const valueRows: JSX.Element[] = [];

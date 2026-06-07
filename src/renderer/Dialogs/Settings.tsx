@@ -37,6 +37,12 @@ const fontSizes: string[] = ["8", "10", "11", "12", "14", "16", "18", "20"];
 function settingsHeader(): JSX.Element {
   return <div className="dialogHeader">Settings</div>;
 }
+/**
+ * Performs settingsFooter as part of this module's internal workflow.
+ *
+ * @param onClose - onClose parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function settingsFooter(onClose: () => void): JSX.Element {
   return (
@@ -45,6 +51,12 @@ function settingsFooter(onClose: () => void): JSX.Element {
     </div>
   );
 }
+/**
+ * Performs onSelectEditorTheme as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function onSelectEditorTheme(e: SelectEventArgs): void {
   window.dispatchEvent(
@@ -55,6 +67,12 @@ function onSelectEditorTheme(e: SelectEventArgs): void {
     data: e.itemData.value as string,
   });
 }
+/**
+ * Performs onSelectEditorFont as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function onSelectEditorFont(e: SelectEventArgs): void {
   const newFontName = e.itemData.value as string;
@@ -66,6 +84,12 @@ function onSelectEditorFont(e: SelectEventArgs): void {
     data: newFontName,
   });
 }
+/**
+ * Performs onSelectEditorFontSize as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function onSelectEditorFontSize(e: SelectEventArgs): void {
   const newFontSize = e.itemData.value as string;
@@ -80,6 +104,12 @@ function onSelectEditorFontSize(e: SelectEventArgs): void {
     data: newFontSize,
   });
 }
+/**
+ * Performs onChangeShowDebugInfo as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function onChangeShowDebugInfo(e: CheckboxChangeEventArgs): void {
   window.dispatchEvent(
@@ -90,6 +120,12 @@ function onChangeShowDebugInfo(e: CheckboxChangeEventArgs): void {
     data: e.checked as boolean,
   });
 }
+/**
+ * Performs onChangeDisableAutoSymbolLoading as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function onChangeDisableAutoSymbolLoading(e: CheckboxChangeEventArgs): void {
   window.ipcToMain.commands.app.notifyMain({
@@ -97,6 +133,12 @@ function onChangeDisableAutoSymbolLoading(e: CheckboxChangeEventArgs): void {
     data: e.checked as boolean,
   });
 }
+/**
+ * Performs onSelectAppTheme as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function onSelectAppTheme(e: SelectEventArgs): void {
   const newAppTheme = e.itemData.value as string;
@@ -105,6 +147,16 @@ function onSelectAppTheme(e: SelectEventArgs): void {
   );
   window.ipcToMain.commands.app.notifyMain({ command: "save-app-theme", data: newAppTheme });
 }
+/**
+ * Performs SettingsTableHeader as part of this module's internal workflow.
+ *
+ * @param {
+  title - {
+  title parameter.
+ * @param className - className parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function SettingsTableHeader({
   title,
@@ -126,6 +178,17 @@ function SettingsTableHeader({
     </table>
   );
 }
+/**
+ * Performs SettingsApplicationSection as part of this module's internal workflow.
+ *
+ * @param {
+  appThemeRef - {
+  appThemeRef parameter.
+ * @param appShowDebugInfoRef - appShowDebugInfoRef parameter.
+ * @param appDisableAutoSymbolLoadingRef - appDisableAutoSymbolLoadingRef parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function SettingsApplicationSection({
   appThemeRef,
@@ -181,6 +244,18 @@ function SettingsApplicationSection({
     </table>
   );
 }
+/**
+ * Performs SettingsSourceViewSection as part of this module's internal workflow.
+ *
+ * @param {
+  editorThemeRef - {
+  editorThemeRef parameter.
+ * @param editorFontsRef - editorFontsRef parameter.
+ * @param editorFontSizeRef - editorFontSizeRef parameter.
+ * @param fontNames - fontNames parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function SettingsSourceViewSection({
   editorThemeRef,

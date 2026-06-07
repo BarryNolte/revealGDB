@@ -26,6 +26,12 @@ export interface ValidationResult {
  * @param input - Value for `input` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs validateValue as part of this module's internal workflow.
+ *
+ * @param input - input parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function validateValue(input: string | undefined): ValidationResult {
   // Return invalid for undefined input
   if (input === undefined) {
@@ -60,6 +66,12 @@ export function validateValue(input: string | undefined): ValidationResult {
  * @param input - Value for `input` consumed by this operation.
  * @returns True when the operation succeeds; otherwise false.
  */
+/**
+ * Performs isValidValue as part of this module's internal workflow.
+ *
+ * @param input - input parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function isValidValue(input: string | undefined): boolean {
   const result = validateValue(input);
   return result.isValid;
@@ -69,6 +81,12 @@ export function isValidValue(input: string | undefined): boolean {
  * Returns value type from current state.
  *
  * @param input - Value for `input` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs getValueType as part of this module's internal workflow.
+ *
+ * @param input - input parameter.
  * @returns The computed result produced by this operation.
  */
 export function getValueType(input: string | undefined): ValueType | null {

@@ -40,6 +40,13 @@ configureAceBasePath();
  *
  * Returns `null` when the cursor is not on an identifier character.
  */
+/**
+ * Performs getMemberExpression as part of this module's internal workflow.
+ *
+ * @param line - line parameter.
+ * @param col - col parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function getMemberExpression(
   line: string,
   col: number,
@@ -117,6 +124,14 @@ export function makeTooltipDataProvider(ctx: TooltipContext) {
     }
     const line = editor.session.getLine(pos.row);
     const expr = getMemberExpression(line, pos.column);
+    /**
+     * Performs showTip as part of this module's internal workflow.
+     *
+     * @param name - name parameter.
+     * @param value - value parameter.
+     * @param typeName - typeName parameter.
+     * @returns The computed result produced by this operation.
+     */
 
     const showTip = (name: string, value: string | undefined, typeName: string) => {
       ctx.anchor.style.left = `${e.clientX}px`;
@@ -161,6 +176,14 @@ export function makeTooltipDataProvider(ctx: TooltipContext) {
  * popup rect (handles pointer-event transitions during the open animation).
  * Returns a cleanup function.
  */
+/**
+ * Performs wireTooltipCloseHandlers as part of this module's internal workflow.
+ *
+ * @param sfTip - sfTip parameter.
+ * @param container - container parameter.
+ * @param session - session parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function wireTooltipCloseHandlers(
   sfTip: Tooltip,
   container: HTMLElement,
@@ -170,16 +193,32 @@ export function wireTooltipCloseHandlers(
   let closeTimer: ReturnType<typeof setTimeout> | null = null;
   let lastMouseX = 0;
   let lastMouseY = 0;
+  /**
+   * Performs trackMouse as part of this module's internal workflow.
+   *
+   * @param e - e parameter.
+   * @returns The computed result produced by this operation.
+   */
 
   const trackMouse = (e: MouseEvent) => {
     lastMouseX = e.clientX;
     lastMouseY = e.clientY;
   };
   document.addEventListener("mousemove", trackMouse, { passive: true });
+  /**
+   * Performs closeTip as part of this module's internal workflow.
+   *
+   * @returns The computed result produced by this operation.
+   */
 
   const closeTip = () => {
     sfTip.close();
   };
+  /**
+   * Performs scheduledClose as part of this module's internal workflow.
+   *
+   * @returns The computed result produced by this operation.
+   */
 
   const scheduledClose = () => {
     if (closeTimer) clearTimeout(closeTimer);
@@ -211,6 +250,13 @@ export function wireTooltipCloseHandlers(
     if (closeTimer) clearTimeout(closeTimer);
   };
 }
+/**
+ * Performs useSourceTooltip as part of this module's internal workflow.
+ *
+ * @param editorRef - editorRef parameter.
+ * @param fullFilePathRef - fullFilePathRef parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 export function useSourceTooltip(
   editorRef: RefObject<AceEditor | null>,
@@ -297,6 +343,12 @@ export function useContextMenuDispatcher(
     if (!editor) return;
 
     editor.setShowPrintMargin(false);
+    /**
+     * Performs handler as part of this module's internal workflow.
+     *
+     * @param e - e parameter.
+     * @returns The computed result produced by this operation.
+     */
 
     const handler = (e: MouseEvent) => {
       e.preventDefault();
@@ -346,6 +398,11 @@ function useTopStackFunc(topStackFuncRef: RefObject<string>): void {
     };
   }, [topStackFuncRef]);
 }
+/**
+ * Performs useGdbSourceWindowController as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 export function useGdbSourceWindowController(): GdbSourceWindowController {
   const [sourceState, setSourceState] = useState(createInitialSourceWindowState);

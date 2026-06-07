@@ -1,3 +1,9 @@
+/**
+ * Implements mappers.bench for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment node
 
 import { bench, describe } from "vitest";
@@ -10,6 +16,12 @@ import { mapToRegisterEntry } from "../../src/main/mi-interface/mappers/register
 // GDB returns hex memory contents as a flat hex string ("aabbccdd...").
 // parseHexContents decodes it byte-by-byte using parseInt(byte, 16).
 // These benchmarks cover small, medium, and large read sizes.
+/**
+ * Performs makeHex as part of this module's internal workflow.
+ *
+ * @param bytes - bytes parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeHex(bytes: number): string {
   // Deterministic pattern: bytes 0x00–0xFF cycling
@@ -19,6 +31,12 @@ function makeHex(bytes: number): string {
   }
   return s;
 }
+/**
+ * Performs makeGroups as part of this module's internal workflow.
+ *
+ * @param hexContents - hexContents parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeGroups(hexContents: string): Record<string, string> {
   return {

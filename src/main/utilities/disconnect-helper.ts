@@ -16,6 +16,13 @@ const DEBUGGER_DISCONNECTED_BANNER = "".padStart(51, "*");
  * @param mainWindow - Main BrowserWindow used for renderer notifications.
  * @param gdbInterface - Active debugger interface to disconnect and reset.
  */
+/**
+ * Performs disconnectAndResetApplication as part of this module's internal workflow.
+ *
+ * @param mainWindow - mainWindow parameter.
+ * @param gdbInterface - gdbInterface parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function disconnectAndResetApplication(
   mainWindow: BrowserWindow,
   gdbInterface: miInterface,

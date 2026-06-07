@@ -4,6 +4,13 @@
  * @remarks
  * Exported symbols include `getRegexGroups`, `getRegexMatches`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
+/**
+ * Performs getRegexGroups as part of this module's internal workflow.
+ *
+ * @param input - input parameter.
+ * @param rgx - rgx parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 export function getRegexGroups(input: string, rgx: RegExp): RegExpMatchArray["groups"] {
   return rgx.exec(input)?.groups;
@@ -18,6 +25,13 @@ export function getRegexGroups(input: string, rgx: RegExp): RegExpMatchArray["gr
  * @param input - Value for `input` consumed by this operation.
  * @param rgx - Value for `rgx` consumed by this operation.
  * @returns The resulting collection produced by this operation.
+ */
+/**
+ * Performs getRegexMatches as part of this module's internal workflow.
+ *
+ * @param input - input parameter.
+ * @param rgx - rgx parameter.
+ * @returns The computed result produced by this operation.
  */
 export function getRegexMatches(input: string, rgx: RegExp): RegExpExecArray[] {
   return Array.from(input.matchAll(rgx));

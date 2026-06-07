@@ -1,3 +1,9 @@
+/**
+ * Implements useGridColumnState.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { Column } from "@syncfusion/ej2-grids";
 import { GridComponent } from "@syncfusion/ej2-react-grids";
@@ -9,10 +15,24 @@ import {
   resetAllGridColumnDefaults,
   useGridColumnState,
 } from "../../../../src/renderer/utilities/useGridColumnState";
+/**
+ * Performs makeCol as part of this module's internal workflow.
+ *
+ * @param field - field parameter.
+ * @param width? - width? parameter.
+ * @param visible - visible parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeCol(field: string, width?: string | number, visible = true): Column {
   return { field, width, visible } as unknown as Column;
 }
+/**
+ * Performs makeGrid as part of this module's internal workflow.
+ *
+ * @param cols - cols parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeGrid(cols: Column[]) {
   return {
@@ -22,6 +42,15 @@ function makeGrid(cols: Column[]) {
     removeEventListener: vi.fn(),
   };
 }
+/**
+ * Performs makeSaved as part of this module's internal workflow.
+ *
+ * @param field - field parameter.
+ * @param width - width parameter.
+ * @param visible - visible parameter.
+ * @param index - index parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeSaved(
   field: string,

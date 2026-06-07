@@ -13,6 +13,11 @@
 import { vi } from "vitest";
 
 export type EventHandler = () => void;
+/**
+ * Performs createEventEmitterHarness as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 export function createEventEmitterHarness() {
   const handlers = new Map<string, EventHandler>();

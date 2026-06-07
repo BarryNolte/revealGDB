@@ -22,6 +22,14 @@ export type ParsedRegisterPayload = {
  * @param rgxRegisterValues - Value for `rgxRegisterValues` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs parseRegisterPayload as part of this module's internal workflow.
+ *
+ * @param resList - resList parameter.
+ * @param rgxCleanList - rgxCleanList parameter.
+ * @param rgxRegisterValues - rgxRegisterValues parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function parseRegisterPayload(
   resList: string,
   rgxCleanList: RegExp,

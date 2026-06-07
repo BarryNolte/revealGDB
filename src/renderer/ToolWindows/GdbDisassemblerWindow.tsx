@@ -414,6 +414,12 @@ function useDisasmIpcSubscriptions(
       addressErrorRef.current.style.visibility = "hidden";
       lengthErrorRef.current.style.visibility = "hidden";
     }
+    /**
+     * Performs handleDisasmFunction as part of this module's internal workflow.
+     *
+     * @param e - e parameter.
+     * @returns The computed result produced by this operation.
+     */
     const handleDisasmFunction = (e: Event) => {
       const func = (e as CustomEvent<string>).detail;
       if (func && functionNameRef.current) {
@@ -484,7 +490,17 @@ function useDisassemblerState() {
   const doCopy = (): void => {
     gridRef.current?.copy();
   };
+  /**
+   * Performs disasmFunction as part of this module's internal workflow.
+   *
+   * @returns The computed result produced by this operation.
+   */
   const disasmFunction = () => doDisasmFunction(functionNameRef);
+  /**
+   * Performs validateDisasmParams as part of this module's internal workflow.
+   *
+   * @returns The computed result produced by this operation.
+   */
   const validateDisasmParams = () =>
     doValidateDisasmParams(startRef, lengthRef, addressErrorRef, lengthErrorRef);
 

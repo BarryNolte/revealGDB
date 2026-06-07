@@ -22,6 +22,12 @@ export type MaintSymbolsHeader = {
 
 const rgxSymtab = /^Symtab for file\s+(?<file>\S+)/m;
 const rgxCompDir = /^Compilation directory is (?<dir>.+)$/m;
+/**
+ * Performs parseHeader as part of this module's internal workflow.
+ *
+ * @param lines - lines parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function parseHeader(lines: string[]): MaintSymbolsHeader {
   const text = lines.join("\n");
@@ -33,6 +39,12 @@ function parseHeader(lines: string[]): MaintSymbolsHeader {
 // ─── Line Table ──────────────────────────────────────────────────────────────
 
 const rgxLineEntry = /^\s+line\s+(?<num>\d+)\s+at\s+(?<addr>0x[0-9a-f]+)(?<stmt>\s+\(stmt\))?/i;
+/**
+ * Performs parseLineTable as part of this module's internal workflow.
+ *
+ * @param lines - lines parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function parseLineTable(lines: string[]): gdbLineEntry[] {
   const entries: gdbLineEntry[] = [];
@@ -72,6 +84,12 @@ function parseLineTable(lines: string[]): gdbLineEntry[] {
  */
 const rgxBlockEntry =
   /block #\d+[,\s]+object at [^,]+,\s*\d+ symbols in (?<start>0x[0-9a-f]+)\.\.(?<end>0x[0-9a-f]+)(?:[^,\n]*,\s*function\s+(?<func>\S+))?/gi;
+/**
+ * Performs resolveSubBlockNames as part of this module's internal workflow.
+ *
+ * @param blocks - blocks parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function resolveSubBlockNames(blocks: gdbSymbolBlock[]): void {
   for (const block of blocks) {
@@ -86,6 +104,12 @@ function resolveSubBlockNames(blocks: gdbSymbolBlock[]): void {
     if (parent) block.functionName = parent.functionName;
   }
 }
+/**
+ * Performs parseBlockvector as part of this module's internal workflow.
+ *
+ * @param lines - lines parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function parseBlockvector(lines: string[]): gdbSymbolBlock[] {
   // Collect the blockvector section — split on \n first so section headers
@@ -195,6 +219,12 @@ function processSemicolonToken(
  * Type expressions can be multi-line (nested structs/unions), so we use
  * brace-depth tracking to find the end of each type.
  */
+/**
+ * Performs extractVarsFromChunk as part of this module's internal workflow.
+ *
+ * @param lines - lines parameter.
+ * @returns The computed result produced by this operation.
+ */
 function extractVarsFromChunk(lines: string[]): gdbVarDecl[] {
   const vars: gdbVarDecl[] = [];
 
@@ -253,6 +283,12 @@ function extractVarsFromChunk(lines: string[]): gdbVarDecl[] {
  *
  * Returns an empty array for scalar types that contain no braces.
  */
+/**
+ * Performs extractFieldNames as part of this module's internal workflow.
+ *
+ * @param typeStr - typeStr parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function extractFieldNames(typeStr: string): string[] {
   const fields: string[] = [];
   let depth = 0;
@@ -291,6 +327,14 @@ export function extractFieldNames(typeStr: string): string[] {
  * We do NOT look at what follows the name: `mbs` in `mbs.field` is a root variable
  * reference, not a field access, even though `.` follows it.
  */
+/**
+ * Performs isFieldAccess as part of this module's internal workflow.
+ *
+ * @param line - line parameter.
+ * @param matchIndex - matchIndex parameter.
+ * @param _varName - _varName parameter.
+ * @returns The computed result produced by this operation.
+ */
 function isFieldAccess(line: string, matchIndex: number, _varName: string): boolean {
   const before = line.slice(0, matchIndex).trimEnd();
   return /[.(>]$/.test(before);
@@ -302,6 +346,15 @@ function isFieldAccess(line: string, matchIndex: number, _varName: string): bool
  *
  * Returns a `gdbVarLocation` with the 1-based line and 0-based column range
  * (and an empty `references` array), or `null` if not found.
+ */
+/**
+ * Performs findDeclarationLine as part of this module's internal workflow.
+ *
+ * @param sourceLines - sourceLines parameter.
+ * @param varName - varName parameter.
+ * @param startLine - startLine parameter.
+ * @param endLine - endLine parameter.
+ * @returns The computed result produced by this operation.
  */
 export function findDeclarationLine(
   sourceLines: string[],
@@ -341,6 +394,15 @@ export function findDeclarationLine(
  *
  * Excludes field accesses (`foo.name`, `ptr->name`) but includes all other
  * identifier occurrences — declarations, reads, writes, and uses as arguments.
+ */
+/**
+ * Performs findReferences as part of this module's internal workflow.
+ *
+ * @param sourceLines - sourceLines parameter.
+ * @param varName - varName parameter.
+ * @param startLine - startLine parameter.
+ * @param endLine - endLine parameter.
+ * @returns The computed result produced by this operation.
  */
 export function findReferences(
   sourceLines: string[],
@@ -389,6 +451,15 @@ function addrToLine(addr: string, lineTable: gdbLineEntry[]): number {
 }
 
 // ─── LineVarMap builder (Approach B + optional C) ────────────────────────────
+/**
+ * Performs buildLineVarMap as part of this module's internal workflow.
+ *
+ * @param blocks - blocks parameter.
+ * @param lineTable - lineTable parameter.
+ * @param header - header parameter.
+ * @param sourceLines? - sourceLines? parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 export function buildLineVarMap(
   blocks: gdbSymbolBlock[],
@@ -397,6 +468,12 @@ export function buildLineVarMap(
   sourceLines?: string[],
 ): gdbLineVarMap {
   const lineVars = new Map<number, gdbVarLocation[]>();
+  /**
+   * Performs addVar as part of this module's internal workflow.
+   *
+   * @param loc - loc parameter.
+   * @returns The computed result produced by this operation.
+   */
 
   const addVar = (loc: gdbVarLocation) => {
     const existing = lineVars.get(loc.line) ?? [];
@@ -465,6 +542,14 @@ export function buildLineVarMap(
  * reference spans the given 1-based `line` and 0-based `col`.
  *
  * Returns `undefined` when no variable covers that position.
+ */
+/**
+ * Performs queryVarAtPosition as part of this module's internal workflow.
+ *
+ * @param map - map parameter.
+ * @param line - line parameter.
+ * @param col - col parameter.
+ * @returns The computed result produced by this operation.
  */
 export function queryVarAtPosition(
   map: gdbLineVarMap,

@@ -16,6 +16,12 @@ import type { MemoryData } from "../../../common/ipc-data-types";
  * @param hexData - Value for `hexData` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs parseHexContents as part of this module's internal workflow.
+ *
+ * @param hexData - hexData parameter.
+ * @returns The computed result produced by this operation.
+ */
 function parseHexContents(hexData: string): Uint8Array {
   const resultBytes: string[] = [];
   for (let i = 0; i < hexData.length; i += 2) {
@@ -35,6 +41,13 @@ function parseHexContents(hexData: string): Uint8Array {
  * Participates in the MI processing pipeline that updates debugger state and notifications.
  *
  * @param groups - Value for `groups` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs mapRegexGroupsToMemoryData as part of this module's internal workflow.
+ *
+ * @param groups - groups parameter.
+ * @param string> | undefined - string> | undefined parameter.
  * @returns The computed result produced by this operation.
  */
 export function mapRegexGroupsToMemoryData(groups: Record<string, string> | undefined): MemoryData {

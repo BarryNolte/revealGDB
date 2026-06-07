@@ -1,3 +1,9 @@
+/**
+ * Implements ConnectionDialogView.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from "@testing-library/react";
 import React, { createRef } from "react";

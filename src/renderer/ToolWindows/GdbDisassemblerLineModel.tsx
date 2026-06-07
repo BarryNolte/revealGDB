@@ -30,6 +30,12 @@ export type GroupCaptionProps = {
  * @param token - Value for `token` consumed by this operation.
  * @returns The computed result produced by this operation.
  */
+/**
+ * Performs toInstructionPart as part of this module's internal workflow.
+ *
+ * @param token - token parameter.
+ * @returns The computed result produced by this operation.
+ */
 function toInstructionPart(token: DisasmToken): DisasmInstructionPart {
   switch (token.type) {
     case "instruction":
@@ -77,6 +83,12 @@ function toInstructionPart(token: DisasmToken): DisasmInstructionPart {
  * @param tokens - Value for `tokens` consumed by this operation.
  * @returns The resulting collection produced by this operation.
  */
+/**
+ * Performs toInstructionParts as part of this module's internal workflow.
+ *
+ * @param tokens - tokens parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function toInstructionParts(tokens: DisasmToken[]): DisasmInstructionPart[] {
   return tokens.map((token) => toInstructionPart(token));
 }
@@ -89,6 +101,12 @@ export function toInstructionParts(tokens: DisasmToken[]): DisasmInstructionPart
  *
  * @param groupKey - Value for `groupKey` consumed by this operation.
  * @returns The resulting string value produced by this operation.
+ */
+/**
+ * Performs extractFunctionName as part of this module's internal workflow.
+ *
+ * @param groupKey? - groupKey? parameter.
+ * @returns The computed result produced by this operation.
  */
 export function extractFunctionName(groupKey?: string): string {
   return groupKey?.replace(/.*-/, "") || "Unknown Function";
@@ -105,6 +123,13 @@ export function extractFunctionName(groupKey?: string): string {
  * @param registerNames - Optional set of live register names for the current target architecture.
  * @param onRegisterHover - Optional callback invoked when the pointer enters a register token.
  * @param onRegisterLeave - Optional callback invoked when the pointer leaves a register token.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs renderInstructionParts as part of this module's internal workflow.
+ *
+ * @param tokens - tokens parameter.
+ * @param onFunctionClick - onFunctionClick parameter.
  * @returns The computed result produced by this operation.
  */
 export function renderInstructionParts(
@@ -169,6 +194,12 @@ function cleanRegisterName(token: string): string {
  * Supports debugger tool-window rendering, interaction handling, or data synchronization.
  *
  * @param props - Value for `props` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs renderGroupCaption as part of this module's internal workflow.
+ *
+ * @param props - props parameter.
  * @returns The computed result produced by this operation.
  */
 export function renderGroupCaption(props: GroupCaptionProps): JSX.Element {

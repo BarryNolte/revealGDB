@@ -19,6 +19,15 @@ import { getRegexGroups, getRegexMatches } from "./regex-parsing-helpers";
  * @param parseInstructions - Callback invoked when the associated event occurs.
  * @returns The resulting collection produced by this operation.
  */
+/**
+ * Performs parseAsmRows as part of this module's internal workflow.
+ *
+ * @param output - output parameter.
+ * @param rgxAsmData - rgxAsmData parameter.
+ * @param rgxAsmRow - rgxAsmRow parameter.
+ * @param parseInstructions - parseInstructions parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function parseAsmRows(
   output: string,
   rgxAsmData: RegExp,

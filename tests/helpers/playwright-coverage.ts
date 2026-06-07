@@ -1,3 +1,9 @@
+/**
+ * Implements playwright-coverage for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import type { Page, TestInfo } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
@@ -5,10 +11,21 @@ import path from "node:path";
 type PageCoverage = Record<string, unknown>;
 
 const PLAYWRIGHT_COVERAGE_DIR = path.resolve(process.cwd(), ".nyc_output", "playwright");
+/**
+ * Performs shouldCollectCoverage as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function shouldCollectCoverage(): boolean {
   return process.env.PLAYWRIGHT_COLLECT_COVERAGE === "true";
 }
+/**
+ * Performs sanitizeFileName as part of this module's internal workflow.
+ *
+ * @param value - value parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function sanitizeFileName(value: string): string {
   return value
@@ -16,6 +33,12 @@ function sanitizeFileName(value: string): string {
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
 }
+/**
+ * Performs hasCoverageEntries as part of this module's internal workflow.
+ *
+ * @param coverage - coverage parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function hasCoverageEntries(coverage: PageCoverage | null): coverage is PageCoverage {
   return Boolean(coverage && Object.keys(coverage).length > 0);

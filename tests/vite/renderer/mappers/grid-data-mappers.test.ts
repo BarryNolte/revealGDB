@@ -1,3 +1,9 @@
+/**
+ * Implements grid-data-mappers.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 import { describe, expect, it } from "vitest";
 import {
   mapBreakpointToGridRow,
@@ -18,6 +24,12 @@ import type {
 } from "../../../../src/common/gdb-state-types";
 
 // ─── Helpers ────────────────────────────────────────────────
+/**
+ * Performs makeFrame as part of this module's internal workflow.
+ *
+ * @param overrides - overrides parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeFrame(overrides: Partial<gdbStackFrame> = {}): gdbStackFrame {
   return {
@@ -34,6 +46,12 @@ function makeFrame(overrides: Partial<gdbStackFrame> = {}): gdbStackFrame {
     ...overrides,
   };
 }
+/**
+ * Performs makeThread as part of this module's internal workflow.
+ *
+ * @param overrides - overrides parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeThread(overrides: Partial<gdbThread> = {}): gdbThread {
   return {
@@ -47,6 +65,12 @@ function makeThread(overrides: Partial<gdbThread> = {}): gdbThread {
     ...overrides,
   };
 }
+/**
+ * Performs makeGroup as part of this module's internal workflow.
+ *
+ * @param overrides - overrides parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeGroup(overrides: Partial<gdbThreadGroup> = {}): gdbThreadGroup {
   return {
@@ -55,10 +79,22 @@ function makeGroup(overrides: Partial<gdbThreadGroup> = {}): gdbThreadGroup {
     ...overrides,
   };
 }
+/**
+ * Performs makeRegister as part of this module's internal workflow.
+ *
+ * @param overrides - overrides parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeRegister(overrides: Partial<gdbRegisters> = {}): gdbRegisters {
   return { name: "rax", value: "0x00", changed: false, ...overrides };
 }
+/**
+ * Performs makeBreakpoint as part of this module's internal workflow.
+ *
+ * @param overrides - overrides parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeBreakpoint(overrides: Partial<gdbBreakpoint> = {}): gdbBreakpoint {
   return {

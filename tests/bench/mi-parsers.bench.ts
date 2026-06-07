@@ -1,3 +1,9 @@
+/**
+ * Implements mi-parsers.bench for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment node
 
 import { bench, describe, vi } from "vitest";
@@ -10,6 +16,11 @@ import { MiResultRecordHandler } from "../../src/main/mi-interface/mi-result-han
 vi.mock("../../src/main/ipc-sender", () => ({
   sendToRenderer: vi.fn(),
 }));
+/**
+ * Performs makeHost as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function makeHost(): MiOutputHost {
   return {

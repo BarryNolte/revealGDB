@@ -1,3 +1,9 @@
+/**
+ * Implements MouseKeyboardHandler.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MouseKeyboardHandler } from "../../../../../src/renderer/Components/HexEditor/MouseKeyboardHandler";
@@ -23,6 +29,13 @@ beforeEach(() => {
     }
   }
 });
+/**
+ * Performs makeHexSpan as part of this module's internal workflow.
+ *
+ * @param id - id parameter.
+ * @param text - text parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function makeHexSpan(id: string, text = "AB"): HTMLSpanElement {
   const el = document.createElement("span");

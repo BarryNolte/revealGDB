@@ -50,6 +50,13 @@ export enum TextViewEnum {
  * @param isUnicode - Value for `isUnicode` consumed by this operation.
  * @returns The resulting string value produced by this operation.
  */
+/**
+ * Performs convertCharValue as part of this module's internal workflow.
+ *
+ * @param byte - byte parameter.
+ * @param isUnicode - isUnicode parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function convertCharValue(byte: number, isUnicode: boolean): string {
   return isUnicode
     ? String.fromCharCode(byte)

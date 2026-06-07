@@ -58,6 +58,12 @@ async function clickWithViewportFallback(button: Locator): Promise<void> {
     element.click();
   });
 }
+/**
+ * Performs getMimeType as part of this module's internal workflow.
+ *
+ * @param filePath - filePath parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function getMimeType(filePath: string): string {
   const ext = path.extname(filePath).toLowerCase();

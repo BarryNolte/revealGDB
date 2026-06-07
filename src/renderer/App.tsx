@@ -69,6 +69,12 @@ const SectionsView = lazy(() =>
  *
  * @param importer - Callback invoked when the associated event occurs.
  */
+/**
+ * Performs lazyWindow as part of this module's internal workflow.
+ *
+ * @param importer - importer parameter.
+ * @returns The computed result produced by this operation.
+ */
 function lazyWindow(importer: () => Promise<{ default: unknown }>) {
   return lazy(importer as unknown as () => Promise<{ default: ComponentType }>);
 }
@@ -92,6 +98,16 @@ let dockManager: DockManager;
  * Performs deferred window as part of this module's internal workflow.
  *
  * @param param1 - Value for `param1` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs DeferredWindow as part of this module's internal workflow.
+ *
+ * @param {
+  title - {
+  title parameter.
+ * @param children - children parameter.
+ * @param } - } parameter.
  * @returns The computed result produced by this operation.
  */
 function DeferredWindow({
@@ -138,6 +154,12 @@ function handleResize(): void {
   );
   window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
 }
+/**
+ * Performs handleAppChange as part of this module's internal workflow.
+ *
+ * @param e - e parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleAppChange(e: Event): void {
   const detail = (e as CustomEvent).detail;
@@ -145,6 +167,12 @@ function handleAppChange(e: Event): void {
     applyTheme(detail.theme as AppTheme);
   }
 }
+/**
+ * Performs setupLayoutListeners as part of this module's internal workflow.
+ *
+ * @param dm - dm parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function setupLayoutListeners(dm: DockManager): void {
   dm.addLayoutListener({
@@ -158,6 +186,12 @@ function setupLayoutListeners(dm: DockManager): void {
     },
   });
 }
+/**
+ * Performs registerAllPanels as part of this module's internal workflow.
+ *
+ * @param connector - connector parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function registerAllPanels(connector: DockMenuConnector): void {
   connector.registerPanel(
@@ -210,6 +244,13 @@ function registerAllPanels(connector: DockMenuConnector): void {
     "wm-command",
   );
 }
+/**
+ * Performs createDefaultLayout as part of this module's internal workflow.
+ *
+ * @param dm - dm parameter.
+ * @param connector - connector parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function createDefaultLayout(dm: DockManager, connector: DockMenuConnector): void {
   if (!connector) return;
@@ -270,6 +311,11 @@ async function initializeDockManager(gdb: GdbSettings): Promise<void> {
   // Trigger initial sizing only after dock manager exists.
   window.dispatchEvent(new Event("resize"));
 }
+/**
+ * Performs PrimaryToolWindows as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function PrimaryToolWindows(): JSX.Element {
   return (
@@ -317,6 +363,11 @@ function PrimaryToolWindows(): JSX.Element {
     </>
   );
 }
+/**
+ * Performs SecondaryToolWindows as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function SecondaryToolWindows(): JSX.Element {
   return (
@@ -374,6 +425,11 @@ function SecondaryToolWindows(): JSX.Element {
     </>
   );
 }
+/**
+ * Performs DockLayout as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
 function DockLayout(): JSX.Element {
   return (
@@ -394,6 +450,19 @@ interface AppDialogsProps {
   whileConnectingRef: RefObject<WhileConnectingDialogHandle | null>;
   sectionsViewRef: RefObject<SectionsViewHandle | null>;
 }
+/**
+ * Performs AppDialogs as part of this module's internal workflow.
+ *
+ * @param {
+  aboutBoxRef - {
+  aboutBoxRef parameter.
+ * @param settingsRef - settingsRef parameter.
+ * @param connectionsRef - connectionsRef parameter.
+ * @param whileConnectingRef - whileConnectingRef parameter.
+ * @param sectionsViewRef - sectionsViewRef parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function AppDialogs({
   aboutBoxRef,

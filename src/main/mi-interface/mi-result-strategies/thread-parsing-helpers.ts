@@ -14,6 +14,13 @@ export type ParsedThreadFrameData = {
   line: string;
   arch: string;
 };
+/**
+ * Performs grp as part of this module's internal workflow.
+ *
+ * @param groups - groups parameter.
+ * @param key - key parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function grp(groups: RegExpExecArray["groups"], key: string): string {
   return groups?.[key] || "";
@@ -26,6 +33,12 @@ function grp(groups: RegExpExecArray["groups"], key: string): string {
  * Participates in the MI processing pipeline that updates debugger state and notifications.
  *
  * @param groups - Value for `groups` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs parseThreadFrameFromGroups as part of this module's internal workflow.
+ *
+ * @param groups - groups parameter.
  * @returns The computed result produced by this operation.
  */
 export function parseThreadFrameFromGroups(

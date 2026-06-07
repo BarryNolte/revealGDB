@@ -1,3 +1,9 @@
+/**
+ * Implements useGdbCommandController.test for revealGDB.
+ *
+ * @remarks
+ * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ */
 // @vitest-environment jsdom
 import { act, render, renderHook } from "@testing-library/react";
 import { createElement } from "react";
@@ -454,6 +460,11 @@ describe("useGdbCommandController", () => {
     // the useEffect runs and ondblclick is properly assigned.
     type Ctrl = ReturnType<typeof useGdbCommandController>;
     let ctrl: Ctrl | null = null;
+/**
+ * Performs TestComponent as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
     function TestComponent() {
       ctrl = useGdbCommandController();
@@ -508,11 +519,22 @@ describe("scheduleScroll and auto-scroll race condition", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
+/**
+ * Performs flushRaf as part of this module's internal workflow.
+ *
+ * @returns The computed result produced by this operation.
+ */
 
   function flushRaf(): void {
     const cbs = rafCallbacks.splice(0);
     cbs.forEach((fn) => fn(0));
   }
+/**
+ * Performs makeScrollDiv as part of this module's internal workflow.
+ *
+ * @param scrollHeight - scrollHeight parameter.
+ * @returns The computed result produced by this operation.
+ */
 
   function makeScrollDiv(scrollHeight: number): { div: HTMLDivElement; scrollTopRef: { val: number } } {
     const div = document.createElement("div");

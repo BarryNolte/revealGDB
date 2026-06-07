@@ -5,6 +5,14 @@
  * Exported symbols include `mapRegexGroupsToBreakpoint`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { gdbBreakpoint } from "../gdb-state-database/types/gdbStateTypes";
+/**
+ * Performs getGroup as part of this module's internal workflow.
+ *
+ * @param groups - groups parameter.
+ * @param string> | undefined - string> | undefined parameter.
+ * @param key - key parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function getGroup(groups: Record<string, string> | undefined, key: string): string {
   return groups?.[key] ?? "";
@@ -17,6 +25,13 @@ function getGroup(groups: Record<string, string> | undefined, key: string): stri
  * Participates in the MI processing pipeline that updates debugger state and notifications.
  *
  * @param groups - Value for `groups` consumed by this operation.
+ * @returns The computed result produced by this operation.
+ */
+/**
+ * Performs mapRegexGroupsToBreakpoint as part of this module's internal workflow.
+ *
+ * @param groups - groups parameter.
+ * @param string> | undefined - string> | undefined parameter.
  * @returns The computed result produced by this operation.
  */
 export function mapRegexGroupsToBreakpoint(

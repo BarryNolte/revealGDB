@@ -21,6 +21,13 @@ export interface ConnectionManagerHandle {
 export type ConnectionManagerProps = Record<never, never>;
 
 export const ConnectionManager = forwardRef<ConnectionManagerHandle, ConnectionManagerProps>(
+  /**
+   * Performs ConnectionManager as part of this module's internal workflow.
+   *
+   * @param _props - _props parameter.
+   * @param ref - ref parameter.
+   * @returns The computed result produced by this operation.
+   */
   function ConnectionManager(_props, ref) {
     const onCloseCallbackRef = useRef<(() => void) | null>(null);
 

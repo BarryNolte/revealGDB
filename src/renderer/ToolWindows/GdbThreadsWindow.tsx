@@ -49,6 +49,14 @@ interface ThreadsGridProps {
   threadData: ThreadGridRow[];
   onRowDoubleClick: (e: RecordDoubleClickEventArgs) => void;
 }
+/**
+ * Performs ThreadsGrid as part of this module's internal workflow.
+ *
+ * @param { gridRef - { gridRef parameter.
+ * @param threadData - threadData parameter.
+ * @param onRowDoubleClick } - onRowDoubleClick } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function ThreadsGrid({ gridRef, threadData, onRowDoubleClick }: ThreadsGridProps): JSX.Element {
   return (

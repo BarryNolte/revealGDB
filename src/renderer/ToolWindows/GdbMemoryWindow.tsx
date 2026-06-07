@@ -17,6 +17,13 @@ interface MemoryFormProps {
   address: string;
   length: string;
 }
+/**
+ * Performs updateErrorVisibility as part of this module's internal workflow.
+ *
+ * @param ref - ref parameter.
+ * @param isValid - isValid parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function updateErrorVisibility(
   ref: RefObject<HTMLTableCellElement | null>,
@@ -26,12 +33,24 @@ function updateErrorVisibility(
     ref.current.style.visibility = isValid ? "hidden" : "visible";
   }
 }
+/**
+ * Performs MemoryForm as part of this module's internal workflow.
+ *
+ * @param { address - { address parameter.
+ * @param length } - length } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function MemoryForm({ address, length }: MemoryFormProps): JSX.Element {
   const startRef = useRef<HTMLInputElement>(null);
   const lengthRef = useRef<HTMLInputElement>(null);
   const startErrorRef = useRef<HTMLTableCellElement>(null);
   const lengthErrorRef = useRef<HTMLTableCellElement>(null);
+  /**
+   * Performs validateMemoryParams as part of this module's internal workflow.
+   *
+   * @returns The computed result produced by this operation.
+   */
 
   function validateMemoryParams() {
     const startInput = validateValue(startRef.current?.value);

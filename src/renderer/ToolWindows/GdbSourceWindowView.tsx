@@ -47,6 +47,12 @@ type SourcePaneProps = Pick<
   | "onLoad"
   | "source"
 >;
+/**
+ * Performs SourcePane as part of this module's internal workflow.
+ *
+ * @param props - props parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function SourcePane(props: SourcePaneProps): JSX.Element {
   const {
@@ -88,6 +94,18 @@ type NoSourcePaneProps = Pick<
   GdbSourceWindowViewProps,
   "filename" | "line" | "fullpath" | "onOpenDisassembly"
 >;
+/**
+ * Performs NoSourcePane as part of this module's internal workflow.
+ *
+ * @param {
+  filename - {
+  filename parameter.
+ * @param line - line parameter.
+ * @param fullpath - fullpath parameter.
+ * @param onOpenDisassembly - onOpenDisassembly parameter.
+ * @param } - } parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function NoSourcePane({
   filename,

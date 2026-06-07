@@ -33,11 +33,24 @@ export { onGdbCommand } from "./on-gdb-command";
  * @param context - Dependency container used to register handlers and access shared services.
  * @param payload - Value for `payload` consumed by this operation.
  */
+/**
+ * Performs sendNotifyRender as part of this module's internal workflow.
+ *
+ * @param context - context parameter.
+ * @param payload - payload parameter.
+ * @returns The computed result produced by this operation.
+ */
 function sendNotifyRender(context: IpcRegistrationContext, payload: NotifyRenderMessage): void {
   context
     .getMainWindow()
     .webContents.send(IPC_CHANNELS.mainToRenderer.notifications.render, payload);
 }
+/**
+ * Performs isSafeExternalUrl as part of this module's internal workflow.
+ *
+ * @param value - value parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function isSafeExternalUrl(value: unknown): value is string {
   if (typeof value !== "string" || value.length === 0) {
@@ -61,6 +74,13 @@ function isSafeExternalUrl(value: unknown): value is string {
  * @param selectedConnection - Value for `selectedConnection` consumed by this operation.
  * @param context - Dependency container used to register handlers and access shared services.
  */
+/**
+ * Performs doConnection as part of this module's internal workflow.
+ *
+ * @param selectedConnection - selectedConnection parameter.
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
+ */
 function doConnection(
   selectedConnection: NormalizedConnection,
   context: IpcRegistrationContext,
@@ -79,6 +99,14 @@ function doConnection(
 }
 
 const GDB_GUI_PREFIX = "gdb.gui.";
+/**
+ * Performs handleConnectSelectedConnection as part of this module's internal workflow.
+ *
+ * @param msg - msg parameter.
+ * @param { command - { command parameter.
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleConnectSelectedConnection(
   msg: Extract<NotifyMainRequest, { command: "connect-selected-connection" }>,
@@ -97,6 +125,13 @@ function handleConnectSelectedConnection(
     );
   }
 }
+/**
+ * Performs handleOpenExternal as part of this module's internal workflow.
+ *
+ * @param msg - msg parameter.
+ * @param { command - { command parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleOpenExternal(msg: Extract<NotifyMainRequest, { command: "open-external" }>): void {
   if (isSafeExternalUrl(msg.data)) {
@@ -107,6 +142,12 @@ function handleOpenExternal(msg: Extract<NotifyMainRequest, { command: "open-ext
     );
   }
 }
+/**
+ * Performs handleCancelConnection as part of this module's internal workflow.
+ *
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleCancelConnection(context: IpcRegistrationContext): void {
   const mainWindow = context.getMainWindow();
@@ -134,6 +175,13 @@ type SaveSettingsRequest = Extract<
       | "save-auto-symbol-loading";
   }
 >;
+/**
+ * Performs handleSaveSettings as part of this module's internal workflow.
+ *
+ * @param msg - msg parameter.
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationContext): void {
   const mainWindow = context.getMainWindow();
@@ -209,6 +257,13 @@ function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationCo
  * @param msg - Message payload received from debugger output or renderer events.
  * @param context - Dependency container used to register handlers and access shared services.
  */
+/**
+ * Performs handleNotifyMain as part of this module's internal workflow.
+ *
+ * @param msg - msg parameter.
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
+ */
 export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
   switch (msg?.command) {
     case "connect-selected-connection":
@@ -239,6 +294,13 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
 }
 
 let _dangerousCommandResolver: ((response: DangerousCommandResponse) => void) | null = null;
+/**
+ * Performs findMatchingDangerousCommand as part of this module's internal workflow.
+ *
+ * @param command - command parameter.
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function findMatchingDangerousCommand(
   command: DebuggerCommand,
@@ -251,6 +313,14 @@ function findMatchingDangerousCommand(
   if (!entries) return undefined;
   return entries.find((e) => command.trimStart().toLowerCase().startsWith(e.command.toLowerCase()));
 }
+/**
+ * Performs saveDangerousCommandDefault as part of this module's internal workflow.
+ *
+ * @param commandPrefix - commandPrefix parameter.
+ * @param answer - answer parameter.
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function saveDangerousCommandDefault(
   commandPrefix: string,
@@ -276,6 +346,12 @@ function saveDangerousCommandDefault(
  * Participates in main-process IPC wiring between renderer requests and backend services.
  *
  * @param context - Dependency container used to register handlers and access shared services.
+ */
+/**
+ * Performs registerIpcCommandHandlers as part of this module's internal workflow.
+ *
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
  */
 export function registerIpcCommandHandlers(context: IpcRegistrationContext): void {
   context.ipcMain.on(

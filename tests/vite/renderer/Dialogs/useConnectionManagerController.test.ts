@@ -48,6 +48,12 @@ type IpcStub = {
     };
   };
 };
+/**
+ * Performs setWindowIpc as part of this module's internal workflow.
+ *
+ * @param ipc - ipc parameter.
+ * @returns The computed result produced by this operation.
+ */
 
 function setWindowIpc(ipc: IpcStub): void {
   Object.defineProperty(window, "ipcToMain", {

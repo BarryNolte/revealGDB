@@ -349,6 +349,11 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
    */
   public evaluateExpression(expr: string): Promise<string | undefined> {
     return new Promise((resolve) => {
+      /**
+       * Performs cleanup as part of this module's internal workflow.
+       *
+       * @returns The computed result produced by this operation.
+       */
       const cleanup = () => {
         clearTimeout(timeout);
         this.evaluatingExpression = false;
@@ -360,11 +365,22 @@ export class miInterface extends EventEmitter implements GdbCommandInterface {
         cleanup();
         resolve(undefined);
       }, 2000);
+      /**
+       * Performs valueHandler as part of this module's internal workflow.
+       *
+       * @param value - value parameter.
+       * @returns The computed result produced by this operation.
+       */
 
       const valueHandler = (value: string) => {
         cleanup();
         resolve(value);
       };
+      /**
+       * Performs errorHandler as part of this module's internal workflow.
+       *
+       * @returns The computed result produced by this operation.
+       */
 
       const errorHandler = () => {
         cleanup();
