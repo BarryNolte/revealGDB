@@ -2,7 +2,83 @@
 
 [![CI](https://github.com/BarryNolte/revealGDB/actions/workflows/ci.yml/badge.svg)](https://github.com/BarryNolte/revealGDB/actions/workflows/ci.yml)
 
-Electron + React + TypeScript GDB interface.
+revealGDB is a desktop debugging workspace for GDB/MI built with Electron, React, and TypeScript. It is designed for embedded, firmware, and low-level developers who want to move beyond a terminal-only debug loop and work with source, registers, locals, memory, and command output in a single dockable interface.
+
+## Why revealGDB
+
+revealGDB helps you stay in a single visual workflow while debugging complex targets.
+
+- Connect to local or remote targets from saved connection profiles.
+- Work in a dockable layout with source, command, disassembly, memory, registers, locals, threads, call stack, and breakpoints side by side.
+- Inspect and edit memory with a hex view while staying connected to the active target.
+- Send GDB commands, review output, and keep command history beside the source and data views.
+- Persist UI layout, themes, and connection settings between sessions.
+
+## How it works
+
+1. Connect to a target using a saved profile or a new configuration.
+2. Explore the live debugger state from the source editor and supporting tool windows.
+3. Stay in flow with dockable panels, persisted layout, and direct GDB command entry.
+
+## Screenshots
+
+The screenshots below show the core revealGDB workflows that matter most in daily debugging: a full workspace overview, breakpoints and source navigation, multiple docked panes working together, memory inspection and editing, and connection setup.
+
+![revealGDB dashboard view](docs/images/screenshot_dashboard.png)
+
+The dashboard presents a dockable workspace with source context, command output, registers, locals, and related debugger views arranged for fast inspection.
+
+![revealGDB source editor at a breakpoint](docs/images/screenshot_breakpoint_hit_and_paused.png)
+
+A paused debug session makes it easy to inspect the active source line, surrounding context, and current execution state without leaving the editor.
+
+![revealGDB multiple window panes](docs/images/screenshot_multiple_windows.png)
+
+revealGDB is built around a flexible dock layout, so you can keep source, disassembly, memory, registers, and command output visible at the same time.
+
+![revealGDB memory window](docs/images/screenshot_memory_window.png)
+
+The memory view helps you inspect address ranges and related data while staying connected to the active target. This is especially useful for firmware and embedded debugging when you need to correlate raw memory with disassembly and stack state.
+
+![revealGDB memory editing](docs/images/screenshot_memory_while_editing.png)
+
+For low-level workflows, revealGDB also supports editing memory in place so you can validate a change or inspect a modified value without switching tools.
+
+![revealGDB connection dialog](docs/images/screenshot_connection_dialog.png)
+
+The connection dialog makes it easy to choose a saved target profile or define a new one before launching a debug session.
+
+## Getting started
+
+### Prerequisites
+
+- Node.js and npm installed locally.
+- A local GDB toolchain or remote/debug target that matches one of the configured connection profiles.
+- Playwright browser binaries if you intend to run end-to-end tests.
+
+Install project dependencies:
+
+```powershell
+npm install
+```
+
+Install Playwright browsers when needed:
+
+```powershell
+npm run playwright:install
+```
+
+Start the application in development mode:
+
+```powershell
+npm run dev
+```
+
+`npm run dev` sets `REVEALGDB_BUILD=debug` and `REVEALGDB_DEBUG=true`, then starts three cooperating processes:
+
+- `electron-vite build` compiles the Electron main and preload bundles.
+- `vite` serves the renderer on port `5173`.
+- `electron .` launches the app after the renderer URL is reachable.
 
 ## Developer Quick Start
 
