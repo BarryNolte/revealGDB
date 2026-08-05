@@ -111,4 +111,29 @@ describe("MiOutputProcessor integration", () => {
     expect(notifierMock.endWatchingConsole).toHaveBeenCalledTimes(1);
     expect(notifierMock.notifyGdbStartup).toHaveBeenCalledWith("target-running", "completed");
   });
+
+  it("exits console watch mode when token-prefixed thread-group notify arrives", async () => {
+    setNotifierWatching(true);
+    const host = createHost();
+    const processor = new MiOutputProcessor(host);
+
+    await processor.handleDataChunk('42=thread-group-added,id="i1"\n', () => false);
+
+    expect(notifierMock.endWatchingConsole).toHaveBeenCalledTimes(1);
+    expect(notifierMock.notifyGdbStartup).toHaveBeenCalledWith("target-running", "completed");
+  });
+
+  it("does not swallow MI control records while console watch is active", async () => {
+    setNotifierWatching(true);
+    const host = createHost();
+    const processor = new MiOutputProcessor(host);
+
+    await processor.handleDataChunk("^done,register-names=[\"r0\"]\n", () => false);
+
+    expect(notifierMock.consoleCapture).not.toHaveBeenCalledWith(
+      false,
+      "^done,register-names=[\"r0\"]",
+    );
+    expect(host.gdbDB.registers.get("0")?.name).toBe("r0");
+  });
 });

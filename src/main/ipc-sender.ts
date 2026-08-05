@@ -18,6 +18,23 @@ export function setIpcWindow(w: BrowserWindow): void {
   browserWindow = w;
 }
 
+function getTargetWindows(): BrowserWindow[] {
+  const getAllWindows = (
+    BrowserWindow as unknown as {
+      getAllWindows?: () => BrowserWindow[];
+    }
+  ).getAllWindows;
+
+  if (typeof getAllWindows === "function") {
+    const allWindows = getAllWindows().filter((window) => !window.isDestroyed());
+    if (allWindows.length > 0) {
+      return allWindows;
+    }
+  }
+
+  return browserWindow && !browserWindow.isDestroyed() ? [browserWindow] : [];
+}
+
 /**
  * Sends a message to the renderer process.
  *
@@ -32,5 +49,9 @@ export function setIpcWindow(w: BrowserWindow): void {
  * @returns The computed result produced by this operation.
  */
 export function sendToRenderer(channel: string, ...args: unknown[]): void {
-  browserWindow?.webContents.send(channel, ...args);
+  getTargetWindows().forEach((targetWindow) => {
+    if (!targetWindow.webContents.isDestroyed()) {
+      targetWindow.webContents.send(channel, ...args);
+    }
+  });
 }

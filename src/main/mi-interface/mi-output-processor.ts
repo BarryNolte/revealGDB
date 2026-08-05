@@ -121,16 +121,25 @@ export class MiOutputProcessor {
    */
   private handleConnectionNotifier(line: string): boolean {
     const notifier = ConnectionNotifier.getInstance();
+    const isAsyncNotifyRecord = /^\d*=/.test(line) || line.startsWith("=");
+    const isMiControlRecord = /^\d*[\^*=+]/.test(line);
+    const isThreadGroupAdded =
+      line.includes("thread-group-added") || line.includes("thread-group-started");
 
-    if (notifier.isWatchingConsole() && line.startsWith("=thread-group-added")) {
+    if (notifier.isWatchingConsole() && isAsyncNotifyRecord && isThreadGroupAdded) {
       notifier.endWatchingConsole();
       notifier.notifyGdbStartup("target-running", "completed");
       return false;
     }
 
     if (notifier.isWatchingConsole()) {
-      notifier.consoleCapture(false, line);
-      return true;
+      // Keep consuming startup console output, but do not swallow MI control records.
+      if (!isMiControlRecord) {
+        notifier.consoleCapture(false, line);
+        return true;
+      }
+
+      return false;
     }
 
     return false;

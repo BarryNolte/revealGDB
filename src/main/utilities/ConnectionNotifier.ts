@@ -66,17 +66,32 @@ export class ConnectionNotifier {
   public consoleCapture(error: boolean, text: string): void {
     // Normalize partial console output into line-based events.
     text.split("\n").forEach((line) => {
-      if (line === ConnectionNotifier.shellRunning) {
+      const normalized = this.normalizeConsoleLine(line);
+
+      if (normalized.includes(ConnectionNotifier.shellRunning)) {
         this.notifyGdbStartup("starting-shell", "completed");
         this.notifyGdbStartup("running-commands", "in-progress");
         return;
-      } else if (line === ConnectionNotifier.runningCommandsComplete) {
+      } else if (normalized.includes(ConnectionNotifier.runningCommandsComplete)) {
         this.notifyGdbStartup("running-commands", "completed");
         this.notifyGdbStartup("target-running", "in-progress");
         return;
       }
-      sendToRenderer("connection-status", ["console-capture", { error, line }]);
+      sendToRenderer("connection-status", ["console-capture", { error, line: normalized }]);
     });
+  }
+
+  private normalizeConsoleLine(line: string): string {
+    // Normalize MI-wrapped, escaped, and CRLF output into a stable plain-text line.
+    const withoutMiPrefix = line.replace(/^~"/, "").replace(/"$/, "");
+    return withoutMiPrefix
+      .replace(/\\r/g, "")
+      .replace(/\\n/g, "")
+      .replace(/\\t/g, "\t")
+      .replace(/\\"/g, '"')
+      .replace(/\\\\/g, "\\")
+      .replace(/\r/g, "")
+      .trim();
   }
 
   /**

@@ -80,6 +80,29 @@ describe("ConnectionNotifier", () => {
     ]);
   });
 
+  it("detects startup markers from MI-escaped console lines", () => {
+    const notifier = ConnectionNotifier.getInstance();
+
+    notifier.consoleCapture(
+      false,
+      [
+        `~"${ConnectionNotifier.shellRunning}\\r\\n"`,
+        `~"${ConnectionNotifier.runningCommandsComplete}\\r\\n"`,
+      ].join("\n"),
+    );
+
+    expect(notifierMocks.send).toHaveBeenCalledWith("connection-status", [
+      "gdb-startup",
+      "starting-shell",
+      "completed",
+    ]);
+    expect(notifierMocks.send).toHaveBeenCalledWith("connection-status", [
+      "gdb-startup",
+      "running-commands",
+      "completed",
+    ]);
+  });
+
   it("sends explicit startup notifications", () => {
     const notifier = ConnectionNotifier.getInstance();
 
