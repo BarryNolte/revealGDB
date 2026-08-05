@@ -142,11 +142,11 @@ function getToolbarItems(ctrl: ToolbarController): ItemModel[] {
 export default function RevealToolbar(props: RevealToolbarProps): JSX.Element {
   const ctrl = useToolbarController(props);
   return (
-    <div className="flex-container-row" data-testid="toolbar-root">
-      <ToolbarComponent id="toolbar" className="flex-item-grow" items={getToolbarItems(ctrl)} />
+    <div className="toolbar-root" data-testid="toolbar-root">
+      <ToolbarComponent id="toolbar" className="toolbar-main" items={getToolbarItems(ctrl)} />
       <SplitButtonComponent
         id="toolbar-window-menu"
-        className="flex-item-grow"
+        className="toolbar-window-menu"
         items={ctrl.items}
         content="Windows"
         select={ctrl.onSelectWindow}

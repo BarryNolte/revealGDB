@@ -190,7 +190,7 @@ body {
 .revealDockManager {
   position: relative;
   width: 100%;
-  height: calc(100% - 42px);
+  height: 100%;
 }
 
 div > .dialogHeader {
@@ -265,6 +265,22 @@ div.e-grid {
   width: 100%;
   margin: 0;
   padding: 0;
+}
+
+.main-page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.dock-workspace-root {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .full-size {

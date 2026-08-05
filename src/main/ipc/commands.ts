@@ -341,12 +341,11 @@ function saveDangerousCommandDefault(
  * @param context - Dependency container used to register handlers and access shared services.
  */
 /**
- * Registers workspace-related command handlers.
+ * Registers the saveHostLayout workspace command handler.
  *
  * @param context - IPC registration context with workspace persistence.
  */
-function registerWorkspaceCommandHandlers(context: IpcRegistrationContext): void {
-  // Register saveHostLayout command
+function registerSaveHostLayoutHandler(context: IpcRegistrationContext): void {
   context.ipcMain.handle(
     IPC_CHANNELS.rendererToMain.commands.workspace?.saveHostLayout || "workspace:saveHostLayout",
     (_event: IpcMainInvokeEvent, hostId: string, layout: DockHostLayout): Promise<void> => {
@@ -379,8 +378,14 @@ function registerWorkspaceCommandHandlers(context: IpcRegistrationContext): void
       });
     },
   );
+}
 
-  // Register createNewDockWindow command
+/**
+ * Registers the createNewDockWindow workspace command handler.
+ *
+ * @param context - IPC registration context with workspace persistence.
+ */
+function registerCreateNewDockWindowHandler(context: IpcRegistrationContext): void {
   context.ipcMain.handle(
     IPC_CHANNELS.rendererToMain.commands.workspace?.createNewDockWindow ||
       "workspace:createNewDockWindow",
@@ -438,8 +443,14 @@ function registerWorkspaceCommandHandlers(context: IpcRegistrationContext): void
       });
     },
   );
+}
 
-  // Register moveWindowToHost command
+/**
+ * Registers the moveWindowToHost workspace command handler.
+ *
+ * @param context - IPC registration context with workspace persistence.
+ */
+function registerMoveWindowToHostHandler(context: IpcRegistrationContext): void {
   context.ipcMain.handle(
     IPC_CHANNELS.rendererToMain.commands.workspace?.moveWindowToHost ||
       "workspace:moveWindowToHost",
@@ -462,11 +473,10 @@ function registerWorkspaceCommandHandlers(context: IpcRegistrationContext): void
           }
 
           // Move window between hosts
-          const updatedState = WorkspaceService.moveWindowToHost(
-            currentState,
+          const updatedState = WorkspaceService.moveWindowToHost(currentState, {
             windowId,
             targetHostId,
-          );
+          });
           context.workspacePersistence.save(updatedState);
           context.setWorkspaceState(updatedState);
           debugLog(`[workspace] Moved window ${windowId} to host ${targetHostId}`);
@@ -477,6 +487,17 @@ function registerWorkspaceCommandHandlers(context: IpcRegistrationContext): void
       });
     },
   );
+}
+
+/**
+ * Registers workspace-related command handlers.
+ *
+ * @param context - IPC registration context with workspace persistence.
+ */
+function registerWorkspaceCommandHandlers(context: IpcRegistrationContext): void {
+  registerSaveHostLayoutHandler(context);
+  registerCreateNewDockWindowHandler(context);
+  registerMoveWindowToHostHandler(context);
 }
 
 /**

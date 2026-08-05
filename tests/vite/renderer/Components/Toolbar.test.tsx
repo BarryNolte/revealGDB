@@ -30,9 +30,13 @@ vi.mock("@syncfusion/ej2-react-navigations", async () => {
 
   return {
     ToolbarComponent: ({
+      id,
+      className,
       items,
       children,
     }: {
+      id?: string;
+      className?: string;
       items?: Array<{
         id?: string;
         text?: string;
@@ -50,7 +54,7 @@ vi.mock("@syncfusion/ej2-react-navigations", async () => {
       const allItems = propItems.length > 0 ? propItems : childItems;
 
       return (
-        <div data-testid="toolbar-component">
+        <div id={id} className={className} data-testid="toolbar-component">
           {allItems.map((item) => (
             <button
               key={item.id ?? item.text}
@@ -75,19 +79,21 @@ vi.mock("@syncfusion/ej2-react-splitbuttons", async () => {
   return {
     SplitButtonComponent: ({
       id,
+      className,
       content,
       items,
       open,
       select,
     }: {
       id?: string;
+      className?: string;
       content?: string;
       items?: Array<{ text?: string }>;
       open?: () => void;
       select?: (args: { item: { properties: { text: string | undefined } } }) => void;
     }) => (
       <div>
-        <button id={id} onClick={() => open?.()}>
+        <button id={id} className={className} onClick={() => open?.()}>
           {content}
         </button>
         <div data-testid="window-menu-items">
@@ -272,5 +278,25 @@ describe("RevealToolbar", () => {
     expect(toggleEvent.detail).toBe("Registers");
 
     window.removeEventListener("toggle-window", toggleHandler as EventListener);
+  });
+
+  it("applies toolbar layout classes used for height and horizontal alignment", () => {
+    setDockMenuConnector({
+      reconsilePanels: vi.fn(),
+      getPanelList: vi.fn(() => []),
+    } as never);
+
+    const { container } = render(<RevealToolbar />);
+
+    const root = screen.getByTestId("toolbar-root");
+    expect(root.className).toContain("toolbar-root");
+
+    const toolbarMain = container.querySelector("#toolbar");
+    expect(toolbarMain).toBeTruthy();
+    expect(toolbarMain?.className).toContain("toolbar-main");
+
+    const windowMenu = container.querySelector("#toolbar-window-menu");
+    expect(windowMenu).toBeTruthy();
+    expect(windowMenu?.className).toContain("toolbar-window-menu");
   });
 });

@@ -112,13 +112,6 @@ const SectionsView = lazy(() =>
 
 /* Application Version Info */
 /**
- * Performs App initialization handlers.
- *
- * @remarks
- * Theme application and workspace initialization now delegated to component lifecycle.
- */
-
-/**
  * Handles application theme changes from main process.
  */
 function handleAppThemeChange(e: Event): void {
@@ -126,6 +119,95 @@ function handleAppThemeChange(e: Event): void {
   if (detail?.theme) {
     applyTheme(detail.theme as AppTheme);
   }
+}
+
+/**
+ * Custom hook for App initialization: version info, workspace state, settings, and theme management.
+ * @param onWorkspaceError - Callback to handle workspace state loading errors
+ * @param dialogRefs - References to dialog components for command handling
+ */
+function useAppInitialization(
+  onWorkspaceError: (error: Error) => void,
+  aboutBoxRef: RefObject<AboutBoxHandle | null>,
+  whileConnectingRef: RefObject<WhileConnectingDialogHandle | null>,
+  connectionsRef: RefObject<ConnectionManagerHandle | null>,
+  settingsRef: RefObject<SettingsHandle | null>,
+  sectionsViewRef: RefObject<SectionsViewHandle | null>,
+): WorkspaceState | null {
+  const [workspaceState, setWorkspaceState] = useState<WorkspaceState | null>(null);
+
+  useEffect(() => {
+    window.ipcToMain.queries.app.getVersionInfo().then((e) => {
+      setAppMainVersionInfo(e);
+    });
+
+    // Listen for commands from main process to show dialogs
+    window.ipcToMain.notifications.render((msg: NotifyRenderMessage) => {
+      switch (msg.command) {
+        case "about-box":
+          aboutBoxRef.current?.ShowDialog();
+          break;
+        case "connection-dialog":
+          whileConnectingRef.current?.ShowDialog();
+          break;
+        case "connections-dialog":
+          connectionsRef.current?.ShowDialog();
+          break;
+        case "settings-dialog":
+          settingsRef.current?.ShowDialog();
+          break;
+        case "sections-view":
+          sectionsViewRef.current?.ShowDialog();
+          break;
+      }
+    });
+
+    // Load settings and workspace state
+    window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings): void => {
+      // Apply saved theme before workspace renders
+      const savedTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
+      applyTheme(savedTheme);
+    });
+
+    // Query workspace state from main process
+    window.ipcToMain.queries.workspace
+      .getWorkspaceState()
+      .then((state) => {
+        setWorkspaceState(state);
+      })
+      .catch((error) => {
+        console.error("Failed to load workspace state:", error);
+        onWorkspaceError(error as Error);
+      });
+
+    // Handle app theme changes (e.g., from Electron theme event)
+    window.addEventListener("changeApplication", handleAppThemeChange);
+
+    // Handle OS theme changes pushed from the main process (Auto mode)
+    const unsubTheme = window.ipcToMain.notifications.themeChanged?.((data) => {
+      window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings) => {
+        const currentTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
+        if (currentTheme === "Auto") {
+          applyTheme("Auto", data?.shouldUseDarkColors ?? false);
+        }
+      });
+    });
+
+    // Cleanup function: remove event listeners on unmount
+    return () => {
+      window.removeEventListener("changeApplication", handleAppThemeChange);
+      if (unsubTheme) unsubTheme();
+    };
+  }, [
+    onWorkspaceError,
+    aboutBoxRef,
+    whileConnectingRef,
+    connectionsRef,
+    settingsRef,
+    sectionsViewRef,
+  ]);
+
+  return workspaceState;
 }
 /**
  * Performs PrimaryToolWindows as part of this module's internal workflow.
@@ -201,73 +283,18 @@ export default function App(): JSX.Element {
   const whileConnectingRef = useRef<WhileConnectingDialogHandle>(null);
   const sectionsViewRef = useRef<SectionsViewHandle>(null);
 
-  // State for workspace (dock layout and window management)
-  const [workspaceState, setWorkspaceState] = useState<WorkspaceState | null>(null);
+  // State for workspace and errors
   const [workspaceError, setWorkspaceError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    window.ipcToMain.queries.app.getVersionInfo().then((e) => {
-      setAppMainVersionInfo(e);
-    });
-
-    // Listen for commands from main process to show dialogs
-    window.ipcToMain.notifications.render((msg: NotifyRenderMessage) => {
-      switch (msg.command) {
-        case "about-box":
-          aboutBoxRef.current?.ShowDialog();
-          break;
-        case "connection-dialog":
-          whileConnectingRef.current?.ShowDialog();
-          break;
-        case "connections-dialog":
-          connectionsRef.current?.ShowDialog();
-          break;
-        case "settings-dialog":
-          settingsRef.current?.ShowDialog();
-          break;
-        case "sections-view":
-          sectionsViewRef.current?.ShowDialog();
-          break;
-      }
-    });
-
-    // Load settings and workspace state
-    window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings): void => {
-      // Apply saved theme before workspace renders
-      const savedTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
-      applyTheme(savedTheme);
-    });
-
-    // Query workspace state from main process
-    window.ipcToMain.queries.workspace
-      .getWorkspaceState()
-      .then((state) => {
-        setWorkspaceState(state);
-      })
-      .catch((error) => {
-        console.error("Failed to load workspace state:", error);
-        setWorkspaceError(error as Error);
-      });
-
-    // Handle app theme changes (e.g., from Electron theme event)
-    window.addEventListener("changeApplication", handleAppThemeChange);
-
-    // Handle OS theme changes pushed from the main process (Auto mode)
-    const unsubTheme = window.ipcToMain.notifications.themeChanged?.((data) => {
-      window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings) => {
-        const currentTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
-        if (currentTheme === "Auto") {
-          applyTheme("Auto", data?.shouldUseDarkColors ?? false);
-        }
-      });
-    });
-
-    // Cleanup function: remove event listeners on unmount
-    return () => {
-      window.removeEventListener("changeApplication", handleAppThemeChange);
-      if (unsubTheme) unsubTheme();
-    };
-  }, []);
+  // Load workspace state and initialize app
+  const workspaceState = useAppInitialization(
+    setWorkspaceError,
+    aboutBoxRef,
+    whileConnectingRef,
+    connectionsRef,
+    settingsRef,
+    sectionsViewRef,
+  );
 
   // Handle workspace initialization errors
   if (workspaceError) {
