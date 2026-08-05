@@ -6,6 +6,7 @@
  */
 import { gdbShowSourceInfo, gdbSymbolFiles } from "../../common/gdb-state-types";
 import { IPC_CHANNELS } from "../../common/ipc-contracts";
+import type { WorkspaceHost, WorkspaceState } from "../../common/workspace-types";
 import { gdbFunction, gdbVarLocation } from "../mi-interface/gdb-state-database/gdbStateDatabase";
 import { WslUtilities, type WslDistro } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
@@ -134,6 +135,61 @@ function registerDebuggerQueryHandlers(context: IpcRegistrationContext): void {
 }
 
 /**
+ * Registers workspace-related query handlers.
+ *
+ * @param context - IPC registration context with workspace persistence and window manager.
+ */
+function registerWorkspaceQueryHandlers(context: IpcRegistrationContext): void {
+  // Register getWorkspaceState query
+  context.ipcMain.handle(
+    IPC_CHANNELS.rendererToMain.queries.workspace?.getWorkspaceState ||
+      "workspace:getWorkspaceState",
+    (): Promise<WorkspaceState | null> => {
+      try {
+        if (context.getWorkspaceState) {
+          const state = context.getWorkspaceState();
+          return Promise.resolve(state || null);
+        }
+
+        if (context.workspacePersistence) {
+          const state = context.workspacePersistence.load();
+          return Promise.resolve(state);
+        }
+
+        return Promise.resolve(null);
+      } catch (error) {
+        console.error("Failed to get workspace state:", error);
+        return Promise.resolve(null);
+      }
+    },
+  );
+
+  // Register getAvailableHosts query
+  context.ipcMain.handle(
+    IPC_CHANNELS.rendererToMain.queries.workspace?.getAvailableHosts ||
+      "workspace:getAvailableHosts",
+    (): Promise<WorkspaceHost[]> => {
+      try {
+        if (context.getWorkspaceState) {
+          const state = context.getWorkspaceState();
+          return Promise.resolve(state?.hosts || []);
+        }
+
+        if (context.workspacePersistence) {
+          const state = context.workspacePersistence.load();
+          return Promise.resolve(state.hosts);
+        }
+
+        return Promise.resolve([]);
+      } catch (error) {
+        console.error("Failed to get available hosts:", error);
+        return Promise.resolve([]);
+      }
+    },
+  );
+}
+
+/**
  * Registers ipc query handlers for the active runtime context.
  *
  * @remarks
@@ -150,4 +206,7 @@ function registerDebuggerQueryHandlers(context: IpcRegistrationContext): void {
 export function registerIpcQueryHandlers(context: IpcRegistrationContext): void {
   registerAppAndEnvironmentQueryHandlers(context);
   registerDebuggerQueryHandlers(context);
+  if (context.workspacePersistence || context.getWorkspaceState) {
+    registerWorkspaceQueryHandlers(context);
+  }
 }

@@ -5,6 +5,7 @@
  * Exported symbols include `ConnectionNotifier`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { Step, StepState } from "../../common/gdb-common";
+import { IPC_CHANNELS } from "../../common/ipc-contracts";
 import { sendToRenderer } from "../ipc-sender";
 
 export class ConnectionNotifier {
@@ -86,5 +87,18 @@ export class ConnectionNotifier {
    */
   public notifyGdbStartup(step: Step, stepState: StepState): void {
     sendToRenderer("connection-status", ["gdb-startup", step, stepState]);
+
+    if (step === "target-running" && stepState === "completed") {
+      sendToRenderer(IPC_CHANNELS.mainToRenderer.notifications.render, {
+        command: "connection-success",
+      });
+      return;
+    }
+
+    if (stepState === "failed") {
+      sendToRenderer(IPC_CHANNELS.mainToRenderer.notifications.render, {
+        command: "connection-failed",
+      });
+    }
   }
 }

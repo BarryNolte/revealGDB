@@ -22,9 +22,10 @@ import {
   NotifyMainRequest,
   NotifyRenderMessage,
 } from "../common/ipc-contracts";
-import { MemoryData, WslDistro, ConnectionStatusPayload } from "../common/ipc-data-types";
+import { ConnectionStatusPayload, MemoryData, WslDistro } from "../common/ipc-data-types";
 import { ILocal } from "../common/local-view";
 import { GdbSettings } from "../common/settings-types";
+import { DockHostLayout, WorkspaceHost, WorkspaceState } from "../common/workspace-types";
 
 type Unsubscribe = () => void;
 type ValueCallback<T> = (data: T) => void;
@@ -85,6 +86,10 @@ export interface IElectronAPI {
       getSectionData: () => Promise<gdbSymbolFiles>;
       showSourceAt: (fileName: string, line: string) => Promise<gdbShowSourceInfo>;
     };
+    workspace: {
+      getWorkspaceState: () => Promise<WorkspaceState | null>;
+      getAvailableHosts: () => Promise<WorkspaceHost[]>;
+    };
   };
 
   commands: {
@@ -95,6 +100,11 @@ export interface IElectronAPI {
     };
     app: {
       notifyMain: (command: NotifyMainRequest) => void;
+    };
+    workspace: {
+      saveHostLayout: (hostId: string, layout: DockHostLayout) => Promise<void>;
+      createNewDockWindow: () => Promise<string | null>;
+      moveWindowToHost: (windowId: string, targetHostId: string) => Promise<void>;
     };
   };
 

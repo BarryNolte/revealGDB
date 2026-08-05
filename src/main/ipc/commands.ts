@@ -5,6 +5,7 @@
  * Exported symbols include `handleNotifyMain`, `registerIpcCommandHandlers`. It is responsible for channel registration, payload marshalling, and returning data to renderer callers.
  */
 import { IpcMainEvent, IpcMainInvokeEvent, shell } from "electron";
+import { join } from "path";
 import type { NormalizedConnection } from "../../common/connection-types";
 import {
   DangerousCommandEntry,
@@ -14,14 +15,15 @@ import {
   NotifyMainRequest,
   NotifyRenderMessage,
 } from "../../common/ipc-contracts";
-import { mapElectronWindowToWinPos } from "../mappers/window-pos-mapper";
+import type { DockHostLayout } from "../../common/workspace-types";
 import { setNativeThemeFromAppTheme } from "../theme-support";
 import { disconnectAndResetApplication } from "../utilities/disconnect-helper";
+import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
+import { formatGeneralError } from "../utilities/html-error-formatter";
 import { debugLog } from "../utilities/logger";
+import { WorkspaceService } from "../workspaceService";
 import { onGdbCommand, onGdbControlD } from "./on-gdb-command";
 import { IpcRegistrationContext } from "./types";
-import { formatGeneralError } from "../utilities/html-error-formatter";
-import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
 export { onGdbCommand } from "./on-gdb-command";
 
 /**
@@ -93,9 +95,9 @@ function doConnection(
 
   const connected = gdbInterface.connect(selectedConnection);
 
-  sendNotifyRender(context, {
-    command: connected ? "connection-success" : "connection-failed",
-  });
+  if (!connected) {
+    sendNotifyRender(context, { command: "connection-failed" });
+  }
 }
 
 const GDB_GUI_PREFIX = "gdb.gui.";
@@ -184,8 +186,6 @@ type SaveSettingsRequest = Extract<
  */
 
 function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationContext): void {
-  const mainWindow = context.getMainWindow();
-
   switch (msg.command) {
     case "save-connections":
       context.appSettings.setSync("gdb.connections", msg.data.connections as never);
@@ -224,13 +224,6 @@ function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationCo
       break;
     case "save-source-viewer-font-name":
       context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerFontName`, msg.data as never);
-      break;
-    case "save-dock-layout":
-      context.appSettings.setSync(`${GDB_GUI_PREFIX}dockLayout`, msg.data as never);
-      context.appSettings.setSync(
-        `${GDB_GUI_PREFIX}windowSize`,
-        mapElectronWindowToWinPos(mainWindow),
-      );
       break;
     case "save-grid-columns":
       context.appSettings.setSync(
@@ -348,12 +341,154 @@ function saveDangerousCommandDefault(
  * @param context - Dependency container used to register handlers and access shared services.
  */
 /**
+ * Registers workspace-related command handlers.
+ *
+ * @param context - IPC registration context with workspace persistence.
+ */
+function registerWorkspaceCommandHandlers(context: IpcRegistrationContext): void {
+  // Register saveHostLayout command
+  context.ipcMain.handle(
+    IPC_CHANNELS.rendererToMain.commands.workspace?.saveHostLayout || "workspace:saveHostLayout",
+    (_event: IpcMainInvokeEvent, hostId: string, layout: DockHostLayout): Promise<void> => {
+      return Promise.resolve().then(() => {
+        try {
+          if (
+            !context.workspacePersistence ||
+            !context.getWorkspaceState ||
+            !context.setWorkspaceState
+          ) {
+            console.warn("[workspace-commands] Workspace persistence not available");
+            return;
+          }
+
+          const currentState = context.getWorkspaceState();
+          if (!currentState) {
+            console.warn("[workspace-commands] No current workspace state");
+            return;
+          }
+
+          // Update layout for host
+          const updatedState = WorkspaceService.setHostLayout(currentState, hostId, layout);
+          context.workspacePersistence.save(updatedState);
+          context.setWorkspaceState(updatedState);
+          debugLog(`[workspace] Saved layout for host: ${hostId}`);
+        } catch (error) {
+          console.error("[workspace-commands] Failed to save host layout:", error);
+          throw error;
+        }
+      });
+    },
+  );
+
+  // Register createNewDockWindow command
+  context.ipcMain.handle(
+    IPC_CHANNELS.rendererToMain.commands.workspace?.createNewDockWindow ||
+      "workspace:createNewDockWindow",
+    (_event: IpcMainInvokeEvent): Promise<string | null> => {
+      return Promise.resolve().then(() => {
+        try {
+          if (
+            !context.windowManager ||
+            !context.workspacePersistence ||
+            !context.getWorkspaceState ||
+            !context.setWorkspaceState
+          ) {
+            console.warn("[workspace-commands] Required context not available");
+            return null;
+          }
+
+          const currentState = context.getWorkspaceState();
+          if (!currentState) {
+            console.warn("[workspace-commands] No current workspace state");
+            return null;
+          }
+
+          // Create new host (returns updated state with new host added)
+          const updatedState = WorkspaceService.createHost(currentState);
+          const newHost = updatedState.hosts[updatedState.hosts.length - 1];
+
+          // Persist the updated state
+          context.workspacePersistence.save(updatedState);
+
+          // Update in-memory state
+          context.setWorkspaceState(updatedState);
+
+          // Create the new window
+          const newWindow = context.windowManager.createDockWindow(newHost);
+
+          // Get the base URL to load
+          let baseUrl = process.env.ELECTRON_RENDERER_URL;
+          if (!baseUrl) {
+            baseUrl = `file://${join(__dirname, "..", "..", "out", "renderer", "index.html")}`;
+          }
+
+          // Load the URL with host parameter
+          context.windowManager.loadDockWindowUrl(newWindow, newHost.id, baseUrl);
+
+          // Show the window
+          newWindow.show();
+
+          debugLog(`[workspace] Created new dock window for host: ${newHost.id}`);
+
+          return newHost.id;
+        } catch (error) {
+          console.error("[workspace-commands] Failed to create dock window:", error);
+          throw error;
+        }
+      });
+    },
+  );
+
+  // Register moveWindowToHost command
+  context.ipcMain.handle(
+    IPC_CHANNELS.rendererToMain.commands.workspace?.moveWindowToHost ||
+      "workspace:moveWindowToHost",
+    (_event: IpcMainInvokeEvent, windowId: string, targetHostId: string): Promise<void> => {
+      return Promise.resolve().then(() => {
+        try {
+          if (
+            !context.workspacePersistence ||
+            !context.getWorkspaceState ||
+            !context.setWorkspaceState
+          ) {
+            console.warn("[workspace-commands] Workspace persistence not available");
+            return;
+          }
+
+          const currentState = context.getWorkspaceState();
+          if (!currentState) {
+            console.warn("[workspace-commands] No current workspace state");
+            return;
+          }
+
+          // Move window between hosts
+          const updatedState = WorkspaceService.moveWindowToHost(
+            currentState,
+            windowId,
+            targetHostId,
+          );
+          context.workspacePersistence.save(updatedState);
+          context.setWorkspaceState(updatedState);
+          debugLog(`[workspace] Moved window ${windowId} to host ${targetHostId}`);
+        } catch (error) {
+          console.error("[workspace-commands] Failed to move window to host:", error);
+          throw error;
+        }
+      });
+    },
+  );
+}
+
+/**
  * Performs registerIpcCommandHandlers as part of this module's internal workflow.
  *
  * @param context - context parameter.
  * @returns The computed result produced by this operation.
  */
 export function registerIpcCommandHandlers(context: IpcRegistrationContext): void {
+  if (context.workspacePersistence || context.getWorkspaceState) {
+    registerWorkspaceCommandHandlers(context);
+  }
   context.ipcMain.on(
     IPC_CHANNELS.rendererToMain.commands.app.notify,
     (_event: IpcMainEvent, msg: NotifyMainRequest) => {

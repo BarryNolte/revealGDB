@@ -137,7 +137,7 @@ describe("handleNotifyMain", () => {
     });
   });
 
-  it("handles valid selected connection payloads by connecting and notifying success", () => {
+  it("handles valid selected connection payloads by connecting and notifying start", () => {
     const { context, gdbInterface, send } = createIpcRegistrationHarness({
       isSelectedConnection: ((value: unknown) => {
         return Boolean(value && typeof value === "object" && "name" in (value as object));
@@ -162,9 +162,7 @@ describe("handleNotifyMain", () => {
     expect(send).toHaveBeenNthCalledWith(1, IPC_CHANNELS.mainToRenderer.notifications.render, {
       command: "connection-started",
     });
-    expect(send).toHaveBeenNthCalledWith(2, IPC_CHANNELS.mainToRenderer.notifications.render, {
-      command: "connection-success",
-    });
+    expect(send).toHaveBeenCalledTimes(1);
   });
 
   it("handles invalid selected connection payloads without connecting", () => {
@@ -174,19 +172,27 @@ describe("handleNotifyMain", () => {
     });
 
     handleNotifyMain(
-      { command: "connect-selected-connection", data: { connection: { name: "bad" } } } as NotifyMainRequest,
+      {
+        command: "connect-selected-connection",
+        data: { connection: { name: "bad" } },
+      } as NotifyMainRequest,
       context,
     );
 
     expect(gdbInterface.connect).not.toHaveBeenCalled();
-    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("Invalid selected connection payload"));
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(
+      expect.stringContaining("Invalid selected connection payload"),
+    );
   });
 
   it("persists command history, source viewer settings, and connection list", () => {
     const { context, appSettings } = createIpcRegistrationHarness();
 
     handleNotifyMain(
-      { command: "save-connections", data: { connections: [{ name: "one" }] } } as NotifyMainRequest,
+      {
+        command: "save-connections",
+        data: { connections: [{ name: "one" }] },
+      } as NotifyMainRequest,
       context,
     );
     handleNotifyMain({ command: "save-cmd-history", data: ["help"] }, context);
@@ -203,10 +209,11 @@ describe("handleNotifyMain", () => {
     expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.showDebugInfo", true);
   });
 
-  it("persists dock layout and grid columns and supports resetting grid columns", () => {
+  it("persists grid columns and supports resetting grid columns", () => {
     const { context, appSettings } = createIpcRegistrationHarness();
 
-    handleNotifyMain({ command: "save-dock-layout", data: { nodes: [] } }, context);
+    // save-dock-layout is now handled via saveHostLayout IPC command (Phase 5 WorkspaceState migration)
+    // This test verifies grid columns are still persisted via legacy settings
     handleNotifyMain(
       {
         command: "save-grid-columns",
@@ -220,11 +227,7 @@ describe("handleNotifyMain", () => {
     );
     handleNotifyMain({ command: "reset-grid-columns" } as NotifyMainRequest, context);
 
-    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.dockLayout", { nodes: [] });
-    expect(appSettings.setSync).toHaveBeenCalledWith(
-      "gdb.gui.windowSize",
-      expect.objectContaining({ x: 100, y: 200, width: 798, height: 598, fullscreen: false }),
-    );
+    // Grid columns are still persisted via legacy settings
     expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.gridColumns.locals", [
       { field: "name", visible: true },
     ]);
@@ -268,7 +271,9 @@ describe("handleNotifyMain", () => {
     );
 
     expect(vi.mocked(shell.openExternal)).not.toHaveBeenCalled();
-    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("Invalid Path Provided"));
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(
+      expect.stringContaining("Invalid Path Provided"),
+    );
   });
 
   it("rejects empty string in open-external as an invalid URL", () => {
@@ -277,7 +282,9 @@ describe("handleNotifyMain", () => {
     handleNotifyMain({ command: "open-external", data: "" }, context);
 
     expect(vi.mocked(shell.openExternal)).not.toHaveBeenCalled();
-    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("Invalid Path Provided"));
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(
+      expect.stringContaining("Invalid Path Provided"),
+    );
   });
 
   it("rejects non-string data in open-external as an invalid URL", () => {
@@ -286,7 +293,9 @@ describe("handleNotifyMain", () => {
     handleNotifyMain({ command: "open-external", data: 42 as never }, context);
 
     expect(vi.mocked(shell.openExternal)).not.toHaveBeenCalled();
-    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(expect.stringContaining("Invalid Path Provided"));
+    expect(gissMocks.sendHtmlBlock).toHaveBeenCalledWith(
+      expect.stringContaining("Invalid Path Provided"),
+    );
   });
 
   it("handles save-sections-view-options by persisting both view settings", () => {
@@ -535,21 +544,30 @@ describe("onGdbCommand", () => {
  * @returns The computed result produced by this operation.
  */
 
-function getRegisteredHandlers(ipcMain: { on: ReturnType<typeof vi.fn>; handle: ReturnType<typeof vi.fn> }) {
-/**
- * Performs getOn as part of this module's internal workflow.
- *
- * @param ch - ch parameter.
- * @returns The computed result produced by this operation.
- */
-  const getOn = (ch: string) => ipcMain.on.mock.calls.find(([c]) => c === ch)?.[1] as ((...args: unknown[]) => unknown) | undefined;
-/**
- * Performs getHandle as part of this module's internal workflow.
- *
- * @param ch - ch parameter.
- * @returns The computed result produced by this operation.
- */
-  const getHandle = (ch: string) => ipcMain.handle.mock.calls.find(([c]) => c === ch)?.[1] as ((...args: unknown[]) => unknown) | undefined;
+function getRegisteredHandlers(ipcMain: {
+  on: ReturnType<typeof vi.fn>;
+  handle: ReturnType<typeof vi.fn>;
+}) {
+  /**
+   * Performs getOn as part of this module's internal workflow.
+   *
+   * @param ch - ch parameter.
+   * @returns The computed result produced by this operation.
+   */
+  const getOn = (ch: string) =>
+    ipcMain.on.mock.calls.find(([c]) => c === ch)?.[1] as
+      | ((...args: unknown[]) => unknown)
+      | undefined;
+  /**
+   * Performs getHandle as part of this module's internal workflow.
+   *
+   * @param ch - ch parameter.
+   * @returns The computed result produced by this operation.
+   */
+  const getHandle = (ch: string) =>
+    ipcMain.handle.mock.calls.find(([c]) => c === ch)?.[1] as
+      | ((...args: unknown[]) => unknown)
+      | undefined;
   return {
     notifyHandler: getOn(IPC_CHANNELS.rendererToMain.commands.app.notify),
     sendHandler: getHandle(IPC_CHANNELS.rendererToMain.commands.debugger.send),

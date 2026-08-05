@@ -1,0 +1,268 @@
+
+> revealgdb@0.9.2-3fca6d1 test
+> vitest --run && npm run test:playwright
+
+
+ RUN  v4.1.9 C:/Users/barry/Documents/Projects/revealGDB
+
+ Γ¥» tests/vite/main/main.test.ts (1 test | 1 failed) 423ms
+     ├ù registers app events and IPC handlers on import and wires the ready startup path 420ms
+ Γ¥» tests/vite/main/ipc/commands.test.ts (50 tests | 1 failed) 157ms
+     ├ù persists dock layout and grid columns and supports resetting grid columns 12ms
+ Γ¥» tests/vite/renderer/App.test.tsx (43 tests | 38 failed) 491ms
+     ├ù renders the main-page-container div 70ms
+     ├ù renders the toolbar 18ms
+     ├ù renders revealDockDiv and revealDockManager elements 79ms
+     ├ù renders all nine tool-window container divs 25ms
+     ├ù calls getVersionInfo on mount 6ms
+     ├ù registers the render notification callback 5ms
+     ├ù about-box command: invokes optional ShowDialog without throwing 5ms
+     ├ù connection-dialog command: does not throw 5ms
+     ├ù connections-dialog command: does not throw 5ms
+     ├ù settings-dialog command: does not throw 4ms
+     ├ù calls getSettings on mount 10ms
+     ├ù applies saved applicationTheme from settings 5ms
+     ├ù constructs a DockManager instance on dock init 20ms
+     ├ù calls dockManager.initialize() 16ms
+     ├ù creates and sets a DockMenuConnector 5ms
+     ├ù registers exactly 9 tool-window panels 12ms
+     ├ù registers expected panel IDs 5ms
+     ├ù attaches a layout listener to the dock manager 9ms
+     ├ù calls reconsilePanels after dock init 17ms
+     ├ù calls loadState when gdb.gui.dockLayout is present 6ms
+     ├ù creates default layout (createAllWindows) when no dockLayout in settings 9ms
+     ├ù calls dockFill, dockRight, and dockUp for default layout wiring 4ms
+     ├ù falls back to default layout when loadState throws 5ms
+     ├ù onContainerResized dispatches update-window-list and save-dock-layout 12ms
+     ├ù onTabChanged dispatches update-window-list and save-dock-layout 4ms
+     ├ù changeApplication with theme calls applyTheme with the theme value 6ms
+     ├ù changeApplication without theme does NOT call applyTheme 10ms
+     ├ù changeApplication with null detail does not throw 4ms
+     ├ù subscribes to themeChanged notifications on mount 5ms
+     ├ù themeChanged with Auto mode calls applyTheme('Auto', shouldUseDarkColors) 7ms
+     ├ù themeChanged with non-Auto mode does NOT call applyTheme 7ms
+     ├ù themeChanged with missing shouldUseDarkColors defaults to false 7ms
+     ├ù resize event calls dockManager.resize when dockMenuConnector is set 18ms
+     ├ù resize event before dock init (dockMenuConnector null) does not throw 6ms
+     ├ù unmounting calls unsubTheme 5ms
+     ├ù unmounting removes the changeApplication event listener 13ms
+     ├ù save-dock-layout event calls saveState and notifyMain after dock init 5ms
+     ├ù beforeunload dispatches a save-dock-layout event 3ms
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ» Failed Tests 40 ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+ FAIL  tests/vite/main/main.test.ts > main startup wiring > registers app events and IPC handlers on import and wires the ready startup path
+Error: Failed to resolve import "electron-settings" from "src/main/app-settings.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: C:/Users/barry/Documents/Projects/revealGDB/src/main/app-settings.ts:7:21
+  1  |  import settings from "electron-settings";
+     |                        ^
+  2  |  export const AppSettings = settings;
+  3  |  
+ Γ¥» TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/config.js:29079:43
+ Γ¥» TransformPluginContext.error node_modules/vite/dist/node/chunks/config.js:29076:14
+ Γ¥» normalizeUrl node_modules/vite/dist/node/chunks/config.js:27199:18
+ Γ¥» node_modules/vite/dist/node/chunks/config.js:27257:32
+ Γ¥» TransformPluginContext.transform node_modules/vite/dist/node/chunks/config.js:27225:4
+ Γ¥» EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/config.js:28877:14
+ Γ¥» loadAndTransform node_modules/vite/dist/node/chunks/config.js:22746:26
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/40]ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > renders the main-page-container div
+ FAIL  tests/vite/renderer/App.test.tsx > App component > renders the toolbar
+ FAIL  tests/vite/renderer/App.test.tsx > App component > renders all nine tool-window container divs
+ FAIL  tests/vite/renderer/App.test.tsx > App component > calls getVersionInfo on mount
+ FAIL  tests/vite/renderer/App.test.tsx > App component > registers the render notification callback
+ FAIL  tests/vite/renderer/App.test.tsx > App component > about-box command: invokes optional ShowDialog without throwing
+ FAIL  tests/vite/renderer/App.test.tsx > App component > connection-dialog command: does not throw
+ FAIL  tests/vite/renderer/App.test.tsx > App component > connections-dialog command: does not throw
+ FAIL  tests/vite/renderer/App.test.tsx > App component > settings-dialog command: does not throw
+ FAIL  tests/vite/renderer/App.test.tsx > App component > calls getSettings on mount
+ FAIL  tests/vite/renderer/App.test.tsx > App component > applies saved applicationTheme from settings
+ FAIL  tests/vite/renderer/App.test.tsx > App component > constructs a DockManager instance on dock init
+ FAIL  tests/vite/renderer/App.test.tsx > App component > calls dockManager.initialize()
+ FAIL  tests/vite/renderer/App.test.tsx > App component > registers exactly 9 tool-window panels
+ FAIL  tests/vite/renderer/App.test.tsx > App component > registers expected panel IDs
+ FAIL  tests/vite/renderer/App.test.tsx > App component > calls reconsilePanels after dock init
+ FAIL  tests/vite/renderer/App.test.tsx > App component > calls loadState when gdb.gui.dockLayout is present
+ FAIL  tests/vite/renderer/App.test.tsx > App component > creates default layout (createAllWindows) when no dockLayout in settings
+ FAIL  tests/vite/renderer/App.test.tsx > App component > calls dockFill, dockRight, and dockUp for default layout wiring
+ FAIL  tests/vite/renderer/App.test.tsx > App component > onContainerResized dispatches update-window-list and save-dock-layout
+ FAIL  tests/vite/renderer/App.test.tsx > App component > onTabChanged dispatches update-window-list and save-dock-layout
+ FAIL  tests/vite/renderer/App.test.tsx > App component > changeApplication without theme does NOT call applyTheme
+ FAIL  tests/vite/renderer/App.test.tsx > App component > changeApplication with null detail does not throw
+ FAIL  tests/vite/renderer/App.test.tsx > App component > themeChanged with Auto mode calls applyTheme('Auto', shouldUseDarkColors)
+ FAIL  tests/vite/renderer/App.test.tsx > App component > themeChanged with non-Auto mode does NOT call applyTheme
+ FAIL  tests/vite/renderer/App.test.tsx > App component > resize event calls dockManager.resize when dockMenuConnector is set
+ FAIL  tests/vite/renderer/App.test.tsx > App component > resize event before dock init (dockMenuConnector null) does not throw
+ FAIL  tests/vite/renderer/App.test.tsx > App component > unmounting calls unsubTheme
+ FAIL  tests/vite/renderer/App.test.tsx > App component > unmounting removes the changeApplication event listener
+ FAIL  tests/vite/renderer/App.test.tsx > App component > save-dock-layout event calls saveState and notifyMain after dock init
+TypeError: Cannot read properties of undefined (reading 'getWorkspaceState')
+ Γ¥» src/renderer/App.tsx:244:8
+    242|     // Query workspace state from main process
+    243|     window.ipcToMain.queries.workspace
+    244|       .getWorkspaceState()
+       |        ^
+    245|       .then((state) => {
+    246|         setWorkspaceState(state);
+ Γ¥» Object.react_stack_bottom_frame node_modules/react-dom/cjs/react-dom-client.development.js:25989:20
+ Γ¥» runWithFiberInDEV node_modules/react-dom/cjs/react-dom-client.development.js:874:13
+ Γ¥» commitHookEffectListMount node_modules/react-dom/cjs/react-dom-client.development.js:13249:29
+ Γ¥» commitHookPassiveMountEffects node_modules/react-dom/cjs/react-dom-client.development.js:13336:11
+ Γ¥» commitPassiveMountOnFiber node_modules/react-dom/cjs/react-dom-client.development.js:15484:13
+ Γ¥» recursivelyTraversePassiveMountEffects node_modules/react-dom/cjs/react-dom-client.development.js:15439:11
+ Γ¥» commitPassiveMountOnFiber node_modules/react-dom/cjs/react-dom-client.development.js:15519:11
+ Γ¥» flushPassiveEffects node_modules/react-dom/cjs/react-dom-client.development.js:18432:9
+ Γ¥» flushPendingEffects node_modules/react-dom/cjs/react-dom-client.development.js:18358:14
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[2/40]ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > renders revealDockDiv and revealDockManager elements
+AssertionError: expected null to be truthy
+
+- Expected:
+true
+
++ Received:
+null
+
+ Γ¥» tests/vite/renderer/App.test.tsx:326:54
+    324|   it("renders revealDockDiv and revealDockManager elements", async () ΓÇª
+    325|     await renderApp();
+    326|     expect(document.getElementById("revealDockDiv")).toBeTruthy();
+       |                                                      ^
+    327|     expect(document.getElementById("revealDockManager")).toBeTruthy();
+    328|   });
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[3/40]ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > creates and sets a DockMenuConnector
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ Γ¥» tests/vite/renderer/App.test.tsx:432:35
+    430|   it("creates and sets a DockMenuConnector", async () => {
+    431|     await renderApp();
+    432|     expect(appMocks.dcSpies.ctor).toHaveBeenCalledTimes(1);
+       |                                   ^
+    433|     expect(appMocks.getDockConnector()).not.toBeNull();
+    434|   });
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[4/40]ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > attaches a layout listener to the dock manager
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ Γ¥» tests/vite/renderer/App.test.tsx:451:48
+    449|   it("attaches a layout listener to the dock manager", async () => {
+    450|     await renderApp();
+    451|     expect(appMocks.dmSpies.addLayoutListener).toHaveBeenCalledTimes(1ΓÇª
+       |                                                ^
+    452|   });
+    453|
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[5/40]ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > falls back to default layout when loadState throws
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ Γ¥» tests/vite/renderer/App.test.tsx:492:47
+    490|     appMocks.dmSpies.loadState.mockRejectedValue(new Error("corrupt laΓÇª
+    491|     await renderApp({ gui: { dockLayout: { bad: true } } });
+    492|     expect(appMocks.dcSpies.createAllWindows).toHaveBeenCalledTimes(1);
+       |                                               ^
+    493|   });
+    494|
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[6/40]ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > changeApplication with theme calls applyTheme with the theme value
+AssertionError: expected "vi.fn()" to be called with arguments: [ 'Light' ]
+
+Number of calls: 0
+
+ Γ¥» tests/vite/renderer/App.test.tsx:527:33
+    525|     appMocks.applyTheme.mockClear();
+    526|     window.dispatchEvent(new CustomEvent("changeApplication", { detailΓÇª
+    527|     expect(appMocks.applyTheme).toHaveBeenCalledWith("Light");
+       |                                 ^
+    528|   });
+    529|
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[7/40]ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > subscribes to themeChanged notifications on mount
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ Γ¥» tests/vite/renderer/App.test.tsx:553:44
+    551|       await new Promise((r) => setTimeout(r, 0));
+    552|     });
+    553|     expect(ipc.notifications.themeChanged).toHaveBeenCalledTimes(1);
+       |                                            ^
+    554|   });
+    555|
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[8/40]ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > themeChanged with missing shouldUseDarkColors defaults to false
+AssertionError: expected "vi.fn()" to be called with arguments: [ 'Auto', false ]
+
+Number of calls: 0
+
+ Γ¥» tests/vite/renderer/App.test.tsx:598:33
+    596|       await new Promise((r) => setTimeout(r, 0));
+    597|     });
+    598|     expect(appMocks.applyTheme).toHaveBeenCalledWith("Auto", false);
+       |                                 ^
+    599|   });
+    600|
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[9/40]ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > beforeunload dispatches a save-dock-layout event
+AssertionError: expected [ 'beforeunload' ] to include 'save-dock-layout'
+ Γ¥» tests/vite/renderer/App.test.tsx:665:19
+    663|     window.dispatchEvent(new Event("beforeunload"));
+    664|     const types = spy.mock.calls.map((c) => (c[0] as Event).type);
+    665|     expect(types).toContain("save-dock-layout");
+       |                   ^
+    666|   });
+    667| });
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[10/40]ΓÄ»
+
+ FAIL  tests/vite/main/ipc/commands.test.ts > handleNotifyMain > persists dock layout and grid columns and supports resetting grid columns
+AssertionError: expected "vi.fn()" to be called with arguments: [ 'gdb.gui.dockLayout', { nodes: [] } ]
+
+Received:
+
+  1st vi.fn() call:
+
+  [
+-   "gdb.gui.dockLayout",
++   "gdb.gui.gridColumns.locals",
++   [
+      {
+-     "nodes": [],
++       "field": "name",
++       "visible": true,
+      },
++   ],
+  ]
+
+
+Number of calls: 1
+
+ Γ¥» tests/vite/main/ipc/commands.test.ts:223:33
+    221|     handleNotifyMain({ command: "reset-grid-columns" } as NotifyMainReΓÇª
+    222|
+    223|     expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.dockLayoΓÇª
+       |                                 ^
+    224|     expect(appSettings.setSync).toHaveBeenCalledWith(
+    225|       "gdb.gui.windowSize",
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[11/40]ΓÄ»
+
+
+ Test Files  3 failed | 92 passed (95)
+      Tests  40 failed | 1668 passed (1708)
+   Start at  22:08:48
+   Duration  24.80s (transform 15.89s, setup 6.34s, import 48.10s, tests 13.32s, environment 326.53s)
+

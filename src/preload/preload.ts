@@ -153,6 +153,12 @@ const ipcApi: IpcApiCore = {
           line,
         ),
     },
+    workspace: {
+      getWorkspaceState: () =>
+        invoke(IPC_CHANNELS.rendererToMain.queries.workspace.getWorkspaceState),
+      getAvailableHosts: () =>
+        invoke(IPC_CHANNELS.rendererToMain.queries.workspace.getAvailableHosts),
+    },
   },
   commands: {
     debugger: {
@@ -165,6 +171,22 @@ const ipcApi: IpcApiCore = {
     app: {
       notifyMain: (command: NotifyMainRequest) =>
         send(IPC_CHANNELS.rendererToMain.commands.app.notify, command),
+    },
+    workspace: {
+      saveHostLayout: (hostId: string, layout: unknown) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.commands.workspace.saveHostLayout,
+          hostId,
+          layout,
+        ),
+      createNewDockWindow: () =>
+        invoke(IPC_CHANNELS.rendererToMain.commands.workspace.createNewDockWindow),
+      moveWindowToHost: (windowId: string, targetHostId: string) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.commands.workspace.moveWindowToHost,
+          windowId,
+          targetHostId,
+        ),
     },
   },
 };

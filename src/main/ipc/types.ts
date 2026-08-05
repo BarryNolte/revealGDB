@@ -7,7 +7,10 @@
 import { BrowserWindow, IpcMain } from "electron";
 import settings from "electron-settings";
 import type { NormalizedConnection } from "../../common/connection-types";
+import type { WorkspaceState } from "../../common/workspace-types";
 import { miInterface } from "../mi-interface/mi-interface";
+import type { MultiHostWindowManager } from "../window-manager";
+import type { WorkspacePersistence } from "../workspace-persistence";
 
 export type IsSelectedConnection = (value: unknown) => value is NormalizedConnection;
 
@@ -19,4 +22,8 @@ export type IpcRegistrationContext = {
   getMainWindow: () => BrowserWindow;
   getGdbInterface: () => miInterface;
   isSelectedConnection: IsSelectedConnection;
+  workspacePersistence?: WorkspacePersistence;
+  windowManager?: MultiHostWindowManager;
+  getWorkspaceState?: () => WorkspaceState | undefined;
+  setWorkspaceState?: (state: WorkspaceState) => void;
 };

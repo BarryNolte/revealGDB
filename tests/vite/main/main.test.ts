@@ -3,6 +3,7 @@
  *
  * @remarks
  * Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ * @vitest-environment node
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -29,11 +30,40 @@ const mainMocks = vi.hoisted(() => {
     }),
   };
 
+  const workspacePersistence = {
+    load: vi.fn(() => ({
+      id: "workspace-1",
+      windows: [],
+      hosts: [],
+      hostLayouts: {},
+      updatedAt: new Date().toISOString(),
+    })),
+    save: vi.fn(),
+  };
+
+  const windowManager = {
+    createDockWindow: vi.fn(),
+    loadDockWindowUrl: vi.fn(),
+  };
+
   return {
     app,
     ipcMain: { on: vi.fn(), handle: vi.fn() },
     nativeTheme: { themeSource: "system" },
-    settings: { getSync: vi.fn(() => "Dark") },
+    settings: {
+      configure: vi.fn(),
+      file: vi.fn(() => "config.json"),
+      getSync: vi.fn(() => "Dark"),
+      setSync: vi.fn(),
+      hasSync: vi.fn(() => false),
+      get: vi.fn(),
+      set: vi.fn(),
+      has: vi.fn(() => false),
+      delete: vi.fn(),
+      clear: vi.fn(),
+    },
+    workspacePersistence,
+    windowManager,
     registerAppEvents: vi.fn(),
     configureAppSettings: vi.fn(),
     logStartupDiagnostics: vi.fn(),
@@ -64,10 +94,6 @@ vi.mock("electron", () => ({
   BrowserWindow: vi.fn(),
   ipcMain: mainMocks.ipcMain,
   nativeTheme: mainMocks.nativeTheme,
-}));
-
-vi.mock("electron-settings", () => ({
-  default: mainMocks.settings,
 }));
 
 vi.mock("../../../src/main/app-events", () => ({
@@ -108,6 +134,15 @@ vi.mock("../../../src/main/window-manager", () => ({
   resolvePreloadPath: mainMocks.resolvePreloadPath,
   restoreWindowBounds: mainMocks.restoreWindowBounds,
   wireWindowCloseHandlers: mainMocks.wireWindowCloseHandlers,
+  MultiHostWindowManager: vi.fn(function (this: any) {
+    Object.assign(this, mainMocks.windowManager);
+  }),
+}));
+
+vi.mock("../../../src/main/workspace-persistence", () => ({
+  WorkspacePersistence: vi.fn(function (this: any) {
+    Object.assign(this, mainMocks.workspacePersistence);
+  }),
 }));
 
 describe("main startup wiring", () => {
@@ -121,6 +156,11 @@ describe("main startup wiring", () => {
   it("registers app events and IPC handlers on import and wires the ready startup path", async () => {
     vi.resetModules();
     vi.doUnmock("../../../src/main/main");
+
+    // Mock the app-settings module to return mock settings
+    vi.doMock("../../../src/main/app-settings", () => ({
+      AppSettings: mainMocks.settings,
+    }));
 
     const mainModule = await import("../../../src/main/main");
 
@@ -151,7 +191,7 @@ describe("main startup wiring", () => {
     expect(mainMocks.logStartupDiagnostics).toHaveBeenCalledWith(mainMocks.settings);
     expect(mainMocks.collectVersionInfo).toHaveBeenCalledWith(mainModule.gdbAppInfo);
     expect(mainMocks.setNativeThemeFromAppTheme).toHaveBeenCalledWith("Dark");
-    expect(mainMocks.resolvePreloadPath).toHaveBeenCalledTimes(1);
+    expect(mainMocks.resolvePreloadPath).toHaveBeenCalledTimes(2); // Once for windowManager, once for createMainWindow
     expect(mainMocks.createMainWindow).toHaveBeenCalledWith("out/preload/preload.js");
     expect(mainMocks.loadMainWindow).toHaveBeenCalledWith(mainMocks.mainWindow);
     expect(mainMocks.installMenu).toHaveBeenCalledTimes(1);

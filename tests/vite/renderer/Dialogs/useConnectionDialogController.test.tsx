@@ -97,6 +97,12 @@ describe("useConnectionDialogController", () => {
     });
 
     act(() => {
+      renderSubscriptions[0]?.({ command: "connection-success" });
+    });
+
+    expect(connDialog.hide).toHaveBeenCalledTimes(1);
+
+    act(() => {
       statusSubscriptions[0]?.(["console-capture", { error: false, line: "hello" }]);
     });
 

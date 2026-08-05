@@ -100,7 +100,9 @@ export default defineConfig({
       emptyOutDir: true,
       sourcemap: true,
       reportCompressedSize: shouldAnalyzeBundle,
-      rollupOptions: {},
+      rollupOptions: {
+        external: ["electron", "electron-builder"],
+      },
       watch: {
         // Rollup WatcherOptions can be configured here
         // For example, to ignore specific files:

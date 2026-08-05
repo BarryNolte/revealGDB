@@ -14,11 +14,11 @@ import {
   useMemo,
   useState,
 } from "react";
+import type { NormalizedConnection } from "../../common/connection-types";
 import { Step, StepAndState } from "../../common/gdb-common";
 import type { NotifyRenderMessage } from "../../common/ipc-contracts";
 import type { ConnectionStatusPayload } from "../../common/ipc-data-types";
 import type { ConnectionConfig, GdbSettings } from "../../common/settings-types";
-import type { NormalizedConnection } from "../../common/connection-types";
 import type { ConnectionManagerHandle } from "./ConnectionManager";
 
 const states: Record<Step, StepAndState> = {
@@ -176,8 +176,11 @@ function useConnectionSubscriptions(
     const unsubscribeNotify = window.ipcToMain.notifications.render((msg: NotifyRenderMessage) => {
       switch (msg.command) {
         case "connection-started":
+          setDisconnectAvailable(true);
+          break;
         case "connection-success":
           setDisconnectAvailable(true);
+          connDlgRef.current?.hide();
           break;
         case "connection-failed":
         case "cancel-connection":

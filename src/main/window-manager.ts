@@ -2,10 +2,14 @@
  * Implements window manager for revealGDB runtime behavior.
  *
  * @remarks
- * Exported symbols include `createMainWindow`, `createDebugWindow`, `loadMainWindow`, `restoreWindowBounds`, `wireWindowCloseHandlers`, `resolvePreloadPath`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ * Supports both single-window and multi-host docking architectures.
+ * Manages BrowserWindow lifecycle, layout restoration, and URL routing
+ * for main and dock windows with query parameter-based host identification.
+ * Exported symbols include all window creation, loading, and lifecycle functions.
  */
 import { BrowserWindow } from "electron";
 import path, { join } from "path";
+import type { WorkspaceHost } from "../common/workspace-types";
 
 export type WindowSizeSettings = {
   getSync: (key: string) => unknown;
@@ -151,4 +155,152 @@ export function wireWindowCloseHandlers(
  */
 export function resolvePreloadPath(): string {
   return path.join(__dirname, "..", "preload", "preload.js");
+}
+
+/**
+ * Multi-host window manager for tracking and managing multiple renderer windows.
+ *
+ * @remarks
+ * Maintains a registry of all open windows and their associated host IDs.
+ * Supports creating new dock windows, finding windows by host ID, and cleanup.
+ */
+export class MultiHostWindowManager {
+  private windows: Map<string, BrowserWindow> = new Map();
+  private preloadPath: string;
+
+  /**
+   * Creates a new MultiHostWindowManager.
+   *
+   * @param preloadPath - Path to the preload script.
+   */
+  constructor(preloadPath: string) {
+    this.preloadPath = preloadPath;
+  }
+
+  /**
+   * Registers a window with its associated host ID.
+   *
+   * @param hostId - Unique host identifier.
+   * @param window - BrowserWindow to register.
+   */
+  registerWindow(hostId: string, window: BrowserWindow): void {
+    this.windows.set(hostId, window);
+
+    // Auto-cleanup when window is closed
+    window.on("closed", () => {
+      this.windows.delete(hostId);
+    });
+  }
+
+  /**
+   * Gets a window by its host ID.
+   *
+   * @param hostId - Host identifier to look up.
+   * @returns The BrowserWindow if found, undefined otherwise.
+   */
+  getWindow(hostId: string): BrowserWindow | undefined {
+    return this.windows.get(hostId);
+  }
+
+  /**
+   * Gets all registered windows.
+   *
+   * @returns Array of all managed BrowserWindow instances.
+   */
+  getAllWindows(): BrowserWindow[] {
+    return Array.from(this.windows.values());
+  }
+
+  /**
+   * Gets the host ID for a given window.
+   *
+   * @param window - The BrowserWindow to look up.
+   * @returns The host ID if found, undefined otherwise.
+   */
+  getHostIdForWindow(window: BrowserWindow): string | undefined {
+    for (const [hostId, win] of this.windows.entries()) {
+      if (win === window) {
+        return hostId;
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * Creates a new dock window for the given host.
+   *
+   * @remarks
+   * The window URL includes a query parameter (?dockHost=<hostId>) to identify
+   * which host this window belongs to when it loads.
+   *
+   * @param host - The WorkspaceHost to create a window for.
+   * @returns The newly created BrowserWindow.
+   */
+  createDockWindow(host: WorkspaceHost): BrowserWindow {
+    const window = new BrowserWindow({
+      webPreferences: {
+        preload: this.preloadPath,
+      },
+      show: false,
+    });
+
+    // Register before loading to ensure it's tracked
+    this.registerWindow(host.id, window);
+
+    return window;
+  }
+
+  /**
+   * Loads a URL into a dock window with host identification.
+   *
+   * @remarks
+   * Appends ?dockHost=<hostId> query parameter to route the renderer
+   * to the correct host layout restoration path.
+   *
+   * @param window - The BrowserWindow to load the URL into.
+   * @param hostId - The host ID to embed in the query parameter.
+   * @param baseUrl - The base URL or file path to load.
+   */
+  loadDockWindowUrl(window: BrowserWindow, hostId: string, baseUrl: string): void {
+    const separator = baseUrl.includes("?") ? "&" : "?";
+    const urlWithHost = `${baseUrl}${separator}dockHost=${hostId}`;
+    window.loadURL(urlWithHost);
+  }
+
+  /**
+   * Shows or hides all windows based on visibility state.
+   * Used during workspace restoration to update window visibility.
+   *
+   * @param visibleHostIds - Set of host IDs that should be visible.
+   */
+  setWindowsVisibility(visibleHostIds: Set<string>): void {
+    this.windows.forEach((window, hostId) => {
+      if (visibleHostIds.has(hostId)) {
+        window.show();
+      } else {
+        window.hide();
+      }
+    });
+  }
+
+  /**
+   * Closes all managed windows.
+   * Used during app shutdown.
+   */
+  closeAllWindows(): void {
+    this.windows.forEach((window) => {
+      if (!window.isDestroyed()) {
+        window.close();
+      }
+    });
+  }
+
+  /**
+   * Gets the count of open windows.
+   *
+   * @returns Number of currently registered windows.
+   */
+  getWindowCount(): number {
+    return this.windows.size;
+  }
 }

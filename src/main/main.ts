@@ -7,6 +7,7 @@
 import { app, BrowserWindow, ipcMain, nativeTheme } from "electron";
 // import path from "path";
 import type { NormalizedConnection } from "../common/connection-types";
+import type { WorkspaceState } from "../common/workspace-types";
 import { registerAppEvents } from "./app-events";
 import { AppSettings } from "./app-settings";
 import {
@@ -29,10 +30,13 @@ import {
   createDebugWindow,
   createMainWindow,
   loadMainWindow,
+  MultiHostWindowManager,
   resolvePreloadPath,
   restoreWindowBounds,
   wireWindowCloseHandlers,
 } from "./window-manager";
+import { WorkspacePersistence } from "./workspace-persistence";
+import { WorkspaceService } from "./workspaceService";
 
 // Re-export for backward compatibility
 export { AppSettings, isDebug, isLinux, isMac, isWin };
@@ -60,6 +64,11 @@ let debugWindow: BrowserWindow | undefined;
 export let gdbInterface: miInterface;
 
 export const gdbAppInfo: Map<string, unknown> = new Map<string, unknown>();
+
+// Workspace and multi-host window management
+let workspacePersistence: WorkspacePersistence;
+let windowManager: MultiHostWindowManager;
+let currentWorkspaceState: WorkspaceState | undefined;
 
 /**
  * Performs is selected connection as part of this module's internal workflow.
@@ -95,6 +104,19 @@ app.on("ready", () => {
   applyDefaultSettings(AppSettings);
   logStartupDiagnostics(AppSettings);
   collectVersionInfo(gdbAppInfo);
+
+  // Initialize workspace persistence and window manager
+  workspacePersistence = new WorkspacePersistence();
+  windowManager = new MultiHostWindowManager(resolvePreloadPath());
+
+  // Load workspace state with legacy settings migration
+  try {
+    currentWorkspaceState = workspacePersistence.load(AppSettings as never);
+    logStartupMilestone("workspace-state-loaded");
+  } catch (error) {
+    console.error("[startup] Failed to load workspace state, using default:", error);
+    currentWorkspaceState = WorkspaceService.createEmptyWorkspace();
+  }
 
   // Apply saved theme to Electron chrome before creating windows to avoid flash.
   const savedTheme = AppSettings.getSync("gdb.gui.applicationTheme") as string | undefined;
@@ -148,4 +170,10 @@ registerIpcHandlers({
   getMainWindow: () => mainWindow,
   getGdbInterface: () => gdbInterface,
   isSelectedConnection,
+  workspacePersistence,
+  windowManager,
+  getWorkspaceState: () => currentWorkspaceState,
+  setWorkspaceState: (state: WorkspaceState) => {
+    currentWorkspaceState = state;
+  },
 });
