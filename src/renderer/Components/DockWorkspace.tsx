@@ -84,33 +84,6 @@ const GdbRegistersWindow = lazy(() =>
 import iconLocal from "../icons/icons8-local-48.png?asset";
 import iconSrc from "../icons/icons8-source-code-48.png?asset";
 
-const REQUIRED_DEFAULT_PANEL_IDS = ["sourceWindow", "commandWindow", "localsWindow"];
-
-function collectPanelIds(value: unknown, ids: Set<string>): void {
-  if (!value || typeof value !== "object") {
-    return;
-  }
-
-  if (Array.isArray(value)) {
-    value.forEach((item) => collectPanelIds(item, ids));
-    return;
-  }
-
-  const record = value as Record<string, unknown>;
-  const id = record.id;
-  if (typeof id === "string") {
-    ids.add(id);
-  }
-
-  Object.values(record).forEach((item) => collectPanelIds(item, ids));
-}
-
-function hasRequiredDefaultPanels(layout: unknown): boolean {
-  const panelIds = new Set<string>();
-  collectPanelIds(layout, panelIds);
-  return REQUIRED_DEFAULT_PANEL_IDS.every((requiredId) => panelIds.has(requiredId));
-}
-
 /**
  * Props for DockWorkspace component
  */
@@ -226,11 +199,15 @@ function DockLayout(): JSX.Element {
 }
 
 /**
- * Setup listener for dock layout save requests.
+ * Setup listener for dock layout save requests with debouncing.
  * Serializes layout and sends to main process for persistence.
+ * Debounces saves to avoid excessive IPC calls during rapid layout changes.
  */
 function setupLayoutSaveListener(dockManager: DockManager, hostId: string): () => void {
-  const handleSaveDockLayout = async (): Promise<void> => {
+  let savePending = false;
+  let saveTimer: ReturnType<typeof setTimeout> | null = null;
+
+  const performSave = async (): Promise<void> => {
     try {
       const layoutState = JSON.parse(dockManager.saveState());
       // Send to main process to persist
@@ -241,16 +218,42 @@ function setupLayoutSaveListener(dockManager: DockManager, hostId: string): () =
     }
   };
 
+  const handleSaveDockLayout = (): void => {
+    // Clear any pending save timer
+    if (saveTimer) {
+      clearTimeout(saveTimer);
+    }
+
+    // Set flag and schedule save with debounce
+    savePending = true;
+    saveTimer = setTimeout(async () => {
+      savePending = false;
+      saveTimer = null;
+      await performSave();
+    }, 500); // Debounce for 500ms
+  };
+
   // Listen for save requests
   window.addEventListener(SAVE_DOCK_LAYOUT, handleSaveDockLayout);
 
-  // Save layout before window unload
-  const handleBeforeUnload = (): void => {
-    window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
+  // Save layout before window unload (don't debounce this)
+  const handleBeforeUnload = async (): Promise<void> => {
+    // Cancel any pending debounced save
+    if (saveTimer) {
+      clearTimeout(saveTimer);
+      saveTimer = null;
+    }
+    // Perform immediate save before unload
+    if (savePending) {
+      await performSave();
+    }
   };
   window.addEventListener("beforeunload", handleBeforeUnload);
 
   return () => {
+    if (saveTimer) {
+      clearTimeout(saveTimer);
+    }
     window.removeEventListener(SAVE_DOCK_LAYOUT, handleSaveDockLayout);
     window.removeEventListener("beforeunload", handleBeforeUnload);
   };
@@ -309,19 +312,66 @@ function buildDefaultLayout(dockManager: DockManager, menuConnector: DockMenuCon
 }
 
 /**
- * Setup layout listeners for dock container events.
+ * Setup comprehensive layout listeners for dock container events.
+ * Listens to multiple layout change events and triggers saves.
  */
 function setupLayoutListeners(dockManager: DockManager): void {
-  dockManager.addLayoutListener({
+  // Create layout listener with all available events
+  const layoutListener = {
     onContainerResized: () => {
+      console.log("DockWorkspace: Layout event - onContainerResized");
       window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
       window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
     },
     onTabChanged: () => {
+      console.log("DockWorkspace: Layout event - onTabChanged");
       window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
       window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
     },
-  });
+    // Handle panel additions
+    onPanelAdded: () => {
+      console.log("DockWorkspace: Layout event - onPanelAdded");
+      window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
+      window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
+    },
+    // Handle panel removals
+    onPanelRemoved: () => {
+      console.log("DockWorkspace: Layout event - onPanelRemoved");
+      window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
+      window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
+    },
+    // Handle before panel close
+    onBeforePanelClose: () => {
+      console.log("DockWorkspace: Layout event - onBeforePanelClose");
+      return true; // Allow close
+    },
+    // Handle after panel close
+    onAfterPanelClose: () => {
+      console.log("DockWorkspace: Layout event - onAfterPanelClose");
+      window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
+      window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
+    },
+  };
+
+  dockManager.addLayoutListener(layoutListener as never);
+
+  // Watch for DOM mutations in the dock container that indicate layout changes
+  // This catches drag-drop, splitter moves, and other visual changes
+  const dockContainer = document.getElementById("revealDockManager");
+  if (dockContainer && typeof MutationObserver !== "undefined") {
+    const mutationObserver = new MutationObserver(() => {
+      // Debounce mutations to avoid excessive saves during complex layout operations
+      window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
+    });
+
+    mutationObserver.observe(dockContainer, {
+      attributes: true,
+      attributeFilter: ["style", "class"],
+      subtree: true,
+      characterData: false,
+      childList: true,
+    });
+  }
 }
 
 /**
@@ -350,13 +400,6 @@ async function attemptLayoutRestore(
 
     if (Object.keys(layoutToRestore).length === 0) {
       console.log(`DockWorkspace: No layout content to restore for host ${hostId}`);
-      return false;
-    }
-
-    if (!hasRequiredDefaultPanels(layoutToRestore)) {
-      console.warn(
-        `DockWorkspace: Saved layout for host ${hostId} is missing required panels; using fallback`,
-      );
       return false;
     }
 
@@ -434,6 +477,16 @@ async function initializeDockManagerAndPanels(
   if (!layoutRestored) {
     console.log(`DockWorkspace: Creating default layout for host ${hostId}`);
     buildDefaultLayout(dockManager, menuConnector);
+
+    // IMPORTANT: Save the newly-built default layout to workspace persistence
+    // Without this, the default layout is built but never saved, so it rebuilds every time the app starts
+    try {
+      const defaultLayoutState = JSON.parse(dockManager.saveState());
+      await window.ipcToMain.commands.workspace.saveHostLayout(hostId, defaultLayoutState);
+      console.log(`DockWorkspace: Saved newly-built default layout for host ${hostId}`);
+    } catch (error) {
+      console.error(`DockWorkspace: Failed to save default layout for host ${hostId}:`, error);
+    }
   }
 
   console.log("DockWorkspace: Reconciling panels...");

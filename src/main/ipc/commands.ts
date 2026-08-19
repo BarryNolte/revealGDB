@@ -174,7 +174,8 @@ type SaveSettingsRequest = Extract<
       | "save-grid-columns"
       | "reset-grid-columns"
       | "save-sections-view-options"
-      | "save-auto-symbol-loading";
+      | "save-auto-symbol-loading"
+      | "save-window-bounds";
   }
 >;
 /**
@@ -237,6 +238,16 @@ function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationCo
       } else {
         context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns`);
       }
+      break;
+    case "save-window-bounds":
+      context.appSettings.setSync(`${GDB_GUI_PREFIX}windowSize.x`, msg.data.x as never);
+      context.appSettings.setSync(`${GDB_GUI_PREFIX}windowSize.y`, msg.data.y as never);
+      context.appSettings.setSync(`${GDB_GUI_PREFIX}windowSize.width`, msg.data.width as never);
+      context.appSettings.setSync(`${GDB_GUI_PREFIX}windowSize.height`, msg.data.height as never);
+      context.appSettings.setSync(
+        `${GDB_GUI_PREFIX}windowSize.fullscreen`,
+        msg.data.fullscreen as never,
+      );
       break;
   }
 }

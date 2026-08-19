@@ -122,7 +122,7 @@ export class MiOutputProcessor {
   private handleConnectionNotifier(line: string): boolean {
     const notifier = ConnectionNotifier.getInstance();
     const isAsyncNotifyRecord = /^\d*=/.test(line) || line.startsWith("=");
-    const isMiControlRecord = /^\d*[\^*=+]/.test(line);
+    //const isMiControlRecord = /^\d*[\^*=+]/.test(line);
     const isThreadGroupAdded =
       line.includes("thread-group-added") || line.includes("thread-group-started");
 
@@ -134,12 +134,12 @@ export class MiOutputProcessor {
 
     if (notifier.isWatchingConsole()) {
       // Keep consuming startup console output, but do not swallow MI control records.
-      if (!isMiControlRecord) {
-        notifier.consoleCapture(false, line);
-        return true;
-      }
+      //if (!isMiControlRecord) {
+      notifier.consoleCapture(false, line);
+      return true;
+      //}
 
-      return false;
+      //return false;
     }
 
     return false;

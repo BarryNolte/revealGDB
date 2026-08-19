@@ -160,6 +160,7 @@ export type NotifyMainCommand =
   | "reset-grid-columns"
   | "save-sections-view-options"
   | "save-auto-symbol-loading"
+  | "save-window-bounds"
   | "open-external"
   | "renderStart"
   | "renderEnd";
@@ -184,6 +185,13 @@ export type NotifyMainPayloadMap = {
   "reset-grid-columns": GridName | undefined;
   "save-sections-view-options": SectionsViewOptions;
   "save-auto-symbol-loading": boolean;
+  "save-window-bounds": {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    fullscreen: boolean;
+  };
   "open-external": string;
   renderStart: undefined;
   renderEnd: undefined;

@@ -81,6 +81,7 @@ const mainMocks = vi.hoisted(() => {
     resolvePreloadPath: vi.fn(() => "out/preload/preload.js"),
     restoreWindowBounds: vi.fn(),
     wireWindowCloseHandlers: vi.fn(),
+    wireWindowSizeSaver: vi.fn(),
     mainWindow,
     debugWindow,
     gdbInterface,
@@ -134,6 +135,7 @@ vi.mock("../../../src/main/window-manager", () => ({
   resolvePreloadPath: mainMocks.resolvePreloadPath,
   restoreWindowBounds: mainMocks.restoreWindowBounds,
   wireWindowCloseHandlers: mainMocks.wireWindowCloseHandlers,
+  wireWindowSizeSaver: mainMocks.wireWindowSizeSaver,
   MultiHostWindowManager: vi.fn(function (this: any) {
     Object.assign(this, mainMocks.windowManager);
   }),

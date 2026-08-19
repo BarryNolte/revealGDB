@@ -216,4 +216,46 @@ describe("DockWorkspace resize regression", () => {
     expect(resizeWidth).toBe(777);
     expect(resizeHeight).toBe(555);
   });
+
+  it("restores a saved host layout when one is present", async () => {
+    const loadStateSpy = vi.spyOn(dockWorkspaceMocks.DockManagerMock.prototype, "loadState");
+    const dockFillSpy = vi.spyOn(dockWorkspaceMocks.DockManagerMock.prototype, "dockFill");
+
+    const savedLayout = {
+      type: "split",
+      orientation: "horizontal",
+      id: 0,
+      parentId: -1,
+      sizes: [0.4, 0.6],
+      areas: [
+        {
+          type: "tab",
+          parentId: 0,
+          widgets: [{ className: "GdbSourceWindow", index: 0, depth: 2 }],
+        },
+      ],
+    };
+
+    render(
+      <DockWorkspace
+        workspaceState={{
+          id: "main-workspace",
+          windows: [],
+          hosts: [{ id: "main", label: "Main", visibleWindows: [] }],
+          hostLayouts: { main: savedLayout },
+          updatedAt: Date.now(),
+        }}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(loadStateSpy).toHaveBeenCalledTimes(1);
+    });
+
+    expect(loadStateSpy).toHaveBeenCalledWith(JSON.stringify(savedLayout));
+    expect(dockFillSpy).not.toHaveBeenCalled();
+
+    loadStateSpy.mockRestore();
+    dockFillSpy.mockRestore();
+  });
 });

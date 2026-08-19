@@ -34,6 +34,7 @@ import {
   resolvePreloadPath,
   restoreWindowBounds,
   wireWindowCloseHandlers,
+  wireWindowSizeSaver,
 } from "./window-manager";
 import { WorkspacePersistence } from "./workspace-persistence";
 import { WorkspaceService } from "./workspaceService";
@@ -141,6 +142,9 @@ app.on("ready", () => {
 
     mainWindow.show();
     logStartupMilestone("main-window-shown");
+
+    // Wire window size saver to persist bounds on window events
+    wireWindowSizeSaver(mainWindow, AppSettings);
 
     // Keep non-critical font metadata warming off the startup critical path.
     setImmediate(() => {

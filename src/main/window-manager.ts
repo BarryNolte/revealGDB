@@ -13,6 +13,7 @@ import type { WorkspaceHost } from "../common/workspace-types";
 
 export type WindowSizeSettings = {
   getSync: (key: string) => unknown;
+  setSync?: (key: string, value: unknown) => void;
 };
 
 /**
@@ -117,6 +118,37 @@ export function restoreWindowBounds(
 }
 
 /**
+ * Performs save window bounds as part of this module's public API.
+ *
+ * @param mainWindow - Value for `mainWindow` consumed by this operation.
+ * @param appSettings - Value for `appSettings` consumed by this operation.
+ */
+/**
+ * Performs saveWindowBounds as part of this module's internal workflow.
+ *
+ * @param mainWindow - mainWindow parameter.
+ * @param appSettings - appSettings parameter.
+ * @returns The computed result produced by this operation.
+ */
+export function saveWindowBounds(mainWindow: BrowserWindow, appSettings: WindowSizeSettings): void {
+  // Only save if window is not destroyed and not in fullscreen
+  if (mainWindow.isDestroyed()) {
+    return;
+  }
+
+  const [x, y] = mainWindow.getPosition();
+  const [w, h] = mainWindow.getSize();
+  const isFullscreen = mainWindow.isFullScreen();
+
+  // Use setSync to persist to electron-settings
+  appSettings.setSync?.("gdb.gui.windowSize.x", x);
+  appSettings.setSync?.("gdb.gui.windowSize.y", y);
+  appSettings.setSync?.("gdb.gui.windowSize.width", w);
+  appSettings.setSync?.("gdb.gui.windowSize.height", h);
+  appSettings.setSync?.("gdb.gui.windowSize.fullscreen", isFullscreen);
+}
+
+/**
  * Performs wire window close handlers as part of this module's public API.
  *
  * @param mainWindow - Value for `mainWindow` consumed by this operation.
@@ -146,6 +178,51 @@ export function wireWindowCloseHandlers(
       debugWindowClosed = true;
     });
   }
+}
+
+/**
+ * Performs wire window size saver as part of this module's public API.
+ *
+ * @remarks
+ * Saves window bounds (position, size, fullscreen state) on window move, resize, and close events.
+ *
+ * @param mainWindow - Value for `mainWindow` consumed by this operation.
+ * @param appSettings - Value for `appSettings` consumed by this operation.
+ */
+/**
+ * Performs wireWindowSizeSaver as part of this module's internal workflow.
+ *
+ * @param mainWindow - mainWindow parameter.
+ * @param appSettings - appSettings parameter.
+ * @returns The computed result produced by this operation.
+ */
+export function wireWindowSizeSaver(
+  mainWindow: BrowserWindow,
+  appSettings: WindowSizeSettings,
+): void {
+  // Save on window move
+  mainWindow.on("move", () => {
+    saveWindowBounds(mainWindow, appSettings);
+  });
+
+  // Save on window resize
+  mainWindow.on("resize", () => {
+    saveWindowBounds(mainWindow, appSettings);
+  });
+
+  // Save on window close (before window is destroyed)
+  mainWindow.on("close", () => {
+    saveWindowBounds(mainWindow, appSettings);
+  });
+
+  // Save on fullscreen state change
+  mainWindow.on("enter-full-screen", () => {
+    saveWindowBounds(mainWindow, appSettings);
+  });
+
+  mainWindow.on("leave-full-screen", () => {
+    saveWindowBounds(mainWindow, appSettings);
+  });
 }
 
 /**
