@@ -13,6 +13,8 @@ const StoreModule = require("electron-store");
 
 const Store = StoreModule.default || StoreModule;
 
+const APP_PROJECT_NAME = "revealgdb";
+
 import type { DockHostLayout, WorkspaceState } from "../common/workspace-types";
 import { WorkspaceService } from "./workspaceService";
 
@@ -34,6 +36,7 @@ export class WorkspacePersistence {
    */
   constructor(storePath?: string) {
     this.store = new Store({
+      projectName: APP_PROJECT_NAME,
       ...(storePath && { cwd: storePath }),
       defaults: {
         workspace: WorkspaceService.createEmptyWorkspace(),

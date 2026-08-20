@@ -214,6 +214,9 @@ function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationCo
       context.appSettings.setSync(`${GDB_GUI_PREFIX}applicationTheme`, msg.data as never);
       setNativeThemeFromAppTheme(msg.data);
       break;
+    case "save-dock-layout":
+      context.appSettings.setSync(`${GDB_GUI_PREFIX}dockLayout`, msg.data as never);
+      break;
     case "save-cmd-history":
       context.appSettings.setSync("gdb.command.history", msg.data as never);
       break;

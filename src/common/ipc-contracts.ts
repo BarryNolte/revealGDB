@@ -152,6 +152,7 @@ export type NotifyMainCommand =
   | "save-last-used-connection"
   | "save-app-show-debug-info"
   | "save-app-theme"
+  | "save-dock-layout"
   | "save-cmd-history"
   | "save-source-viewer-theme"
   | "save-source-viewer-font-size"
@@ -177,6 +178,7 @@ export type NotifyMainPayloadMap = {
   "save-last-used-connection": string | null;
   "save-app-show-debug-info": boolean;
   "save-app-theme": string;
+  "save-dock-layout": Record<string, unknown>;
   "save-cmd-history": string[];
   "save-source-viewer-theme": string;
   "save-source-viewer-font-size": string | number;

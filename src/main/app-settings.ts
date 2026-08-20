@@ -9,6 +9,8 @@ const StoreModule = require("electron-store");
 // Handle both default and named exports from CommonJS module
 const Store = StoreModule.default || StoreModule;
 
+const APP_PROJECT_NAME = "revealgdb";
+
 interface ConfigureOptions {
   atomicSave: boolean;
   fileName: string;
@@ -21,7 +23,7 @@ class AppSettingsWrapper {
 
   constructor() {
     this.store = new Store({
-      projectName: "revealGDB",
+      projectName: APP_PROJECT_NAME,
     });
   }
 

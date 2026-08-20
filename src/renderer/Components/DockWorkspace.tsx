@@ -219,7 +219,13 @@ function setupLayoutSaveListener(dockManager: DockManager, hostId: string): () =
         return;
       }
 
-      // Send to main process to persist
+      // Persist to the canonical config file key expected by the app settings state.
+      window.ipcToMain.commands.app.notifyMain({
+        command: "save-dock-layout",
+        data: layoutState,
+      });
+
+      // Also keep the workspace state in sync for multi-host persistence.
       await window.ipcToMain.commands.workspace.saveHostLayout(hostId, layoutState);
       console.log(`DockWorkspace: Layout saved for host ${hostId}`);
     } catch (error) {
@@ -398,11 +404,47 @@ async function attemptLayoutRestore(
   workspaceState: WorkspaceState,
   hostId: string,
 ): Promise<boolean> {
+  try {
+    const settings = await window.ipcToMain.queries.app.getSettings();
+    const configLayout = settings?.gui?.dockLayout as Record<string, unknown> | undefined;
+
+    if (hasUsableLayout(configLayout)) {
+      const layoutJson = serializeLayout(configLayout);
+      console.log(
+        `DockWorkspace: Restoring dock layout from gdb.gui.dockLayout for host ${hostId} (${layoutJson.length} chars)`,
+      );
+      await dockManager.loadState(layoutJson);
+      return true;
+    }
+  } catch (error) {
+    console.warn(
+      `DockWorkspace: Could not read gdb.gui.dockLayout; falling back to workspace state`,
+      error,
+    );
+  }
+
   const currentHost = workspaceState.hosts.find((h) => h.id === hostId);
-  const savedLayout = workspaceState.hostLayouts[hostId];
-  if (!currentHost || !hasUsableLayout(savedLayout)) {
+  const hasSavedLayoutEntry = Object.prototype.hasOwnProperty.call(
+    workspaceState.hostLayouts,
+    hostId,
+  );
+  const savedLayout = hasSavedLayoutEntry ? workspaceState.hostLayouts[hostId] : undefined;
+
+  if (!currentHost) {
     console.log(
-      `DockWorkspace: No saved layout content to restore for host ${hostId}; using default layout`,
+      `DockWorkspace: Host ${hostId} is not present in the workspace; using default layout`,
+    );
+    return false;
+  }
+
+  if (!hasSavedLayoutEntry) {
+    console.log(`DockWorkspace: No saved layout entry for host ${hostId}; using default layout`);
+    return false;
+  }
+
+  if (!hasUsableLayout(savedLayout)) {
+    console.log(
+      `DockWorkspace: Saved layout entry exists but has no usable content for host ${hostId}; using default layout`,
     );
     return false;
   }

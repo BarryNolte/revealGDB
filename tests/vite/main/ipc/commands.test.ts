@@ -209,11 +209,11 @@ describe("handleNotifyMain", () => {
     expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.showDebugInfo", true);
   });
 
-  it("persists grid columns and supports resetting grid columns", () => {
+  it("persists dock layout under gdb.gui.dockLayout and grid columns", () => {
     const { context, appSettings } = createIpcRegistrationHarness();
+    const layout = { version: 1, panels: [{ id: "source", title: "Source" }] };
 
-    // save-dock-layout is now handled via saveHostLayout IPC command (Phase 5 WorkspaceState migration)
-    // This test verifies grid columns are still persisted via legacy settings
+    handleNotifyMain({ command: "save-dock-layout", data: layout } as NotifyMainRequest, context);
     handleNotifyMain(
       {
         command: "save-grid-columns",
@@ -227,7 +227,7 @@ describe("handleNotifyMain", () => {
     );
     handleNotifyMain({ command: "reset-grid-columns" } as NotifyMainRequest, context);
 
-    // Grid columns are still persisted via legacy settings
+    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.dockLayout", layout);
     expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.gridColumns.locals", [
       { field: "name", visible: true },
     ]);
