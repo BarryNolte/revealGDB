@@ -110,9 +110,9 @@ app.on("ready", () => {
   workspacePersistence = new WorkspacePersistence();
   windowManager = new MultiHostWindowManager(resolvePreloadPath());
 
-  // Load workspace state with legacy settings migration
+  // Load workspace state from the canonical workspace store.
   try {
-    currentWorkspaceState = workspacePersistence.load(AppSettings as never);
+    currentWorkspaceState = workspacePersistence.load();
     logStartupMilestone("workspace-state-loaded");
   } catch (error) {
     console.error("[startup] Failed to load workspace state, using default:", error);

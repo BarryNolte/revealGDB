@@ -192,6 +192,7 @@ describe("main startup wiring", () => {
     expect(mainMocks.configureAppSettings).toHaveBeenCalledWith(mainMocks.settings);
     expect(mainMocks.logStartupDiagnostics).toHaveBeenCalledWith(mainMocks.settings);
     expect(mainMocks.collectVersionInfo).toHaveBeenCalledWith(mainModule.gdbAppInfo);
+    expect(mainMocks.workspacePersistence.load).toHaveBeenCalledWith();
     expect(mainMocks.setNativeThemeFromAppTheme).toHaveBeenCalledWith("Dark");
     expect(mainMocks.resolvePreloadPath).toHaveBeenCalledTimes(2); // Once for windowManager, once for createMainWindow
     expect(mainMocks.createMainWindow).toHaveBeenCalledWith("out/preload/preload.js");

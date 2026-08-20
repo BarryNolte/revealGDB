@@ -23,6 +23,7 @@ import { DockMenuConnector } from "../utilities/DockMenuConnector";
 import { setDockMenuConnector } from "../utilities/dock-menu-state";
 import {
   getHostIdFromUrl,
+  hasUsableLayout,
   selectLayoutForRestore,
   serializeLayout,
 } from "../utilities/dock-workspace-utils";
@@ -210,6 +211,14 @@ function setupLayoutSaveListener(dockManager: DockManager, hostId: string): () =
   const performSave = async (): Promise<void> => {
     try {
       const layoutState = JSON.parse(dockManager.saveState());
+
+      if (!hasUsableLayout(layoutState)) {
+        console.log(
+          `DockWorkspace: Skipping empty layout save for host ${hostId}; dock is still initializing or has no panels yet`,
+        );
+        return;
+      }
+
       // Send to main process to persist
       await window.ipcToMain.commands.workspace.saveHostLayout(hostId, layoutState);
       console.log(`DockWorkspace: Layout saved for host ${hostId}`);
@@ -390,15 +399,19 @@ async function attemptLayoutRestore(
   hostId: string,
 ): Promise<boolean> {
   const currentHost = workspaceState.hosts.find((h) => h.id === hostId);
-  if (!currentHost || !workspaceState.hostLayouts[hostId]) {
+  const savedLayout = workspaceState.hostLayouts[hostId];
+  if (!currentHost || !hasUsableLayout(savedLayout)) {
+    console.log(
+      `DockWorkspace: No saved layout content to restore for host ${hostId}; using default layout`,
+    );
     return false;
   }
 
   try {
-    const layoutToRestore = selectLayoutForRestore(workspaceState.hostLayouts[hostId]);
+    const layoutToRestore = selectLayoutForRestore(savedLayout);
     console.log(`DockWorkspace: layoutToRestore keys:`, Object.keys(layoutToRestore));
 
-    if (Object.keys(layoutToRestore).length === 0) {
+    if (!hasUsableLayout(layoutToRestore)) {
       console.log(`DockWorkspace: No layout content to restore for host ${hostId}`);
       return false;
     }
@@ -465,8 +478,6 @@ async function initializeDockManagerAndPanels(
   menuConnector.createAllWindows();
   console.log(`DockWorkspace: Created ${menuConnector.getPanelList().length} window containers`);
 
-  setupLayoutListeners(dockManager);
-
   const layoutRestored = await attemptLayoutRestore(
     dockManager,
     menuConnector,
@@ -482,12 +493,21 @@ async function initializeDockManagerAndPanels(
     // Without this, the default layout is built but never saved, so it rebuilds every time the app starts
     try {
       const defaultLayoutState = JSON.parse(dockManager.saveState());
-      await window.ipcToMain.commands.workspace.saveHostLayout(hostId, defaultLayoutState);
-      console.log(`DockWorkspace: Saved newly-built default layout for host ${hostId}`);
+
+      if (!hasUsableLayout(defaultLayoutState)) {
+        console.warn(
+          `DockWorkspace: Default layout still empty for host ${hostId}; the dock has no real panels yet`,
+        );
+      } else {
+        await window.ipcToMain.commands.workspace.saveHostLayout(hostId, defaultLayoutState);
+        console.log(`DockWorkspace: Saved newly-built default layout for host ${hostId}`);
+      }
     } catch (error) {
       console.error(`DockWorkspace: Failed to save default layout for host ${hostId}:`, error);
     }
   }
+
+  setupLayoutListeners(dockManager);
 
   console.log("DockWorkspace: Reconciling panels...");
   menuConnector.reconsilePanels();

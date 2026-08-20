@@ -217,6 +217,85 @@ describe("DockWorkspace resize regression", () => {
     expect(resizeHeight).toBe(555);
   });
 
+  it("saves the generated default layout when no saved host layout exists", async () => {
+    const saveStateSpy = vi
+      .spyOn(dockWorkspaceMocks.DockManagerMock.prototype, "saveState")
+      .mockReturnValue(JSON.stringify({ type: "default-layout", panels: ["source"] }));
+    const saveHostLayoutSpy = vi.fn().mockResolvedValue(undefined);
+
+    Object.defineProperty(window, "ipcToMain", {
+      configurable: true,
+      writable: true,
+      value: {
+        commands: {
+          workspace: {
+            saveHostLayout: saveHostLayoutSpy,
+          },
+        },
+      },
+    });
+
+    render(
+      <DockWorkspace
+        workspaceState={{
+          id: "main-workspace",
+          windows: [],
+          hosts: [{ id: "main", label: "Main", visibleWindows: [] }],
+          hostLayouts: { main: {} },
+          updatedAt: Date.now(),
+        }}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(saveHostLayoutSpy).toHaveBeenCalledWith("main", {
+        type: "default-layout",
+        panels: ["source"],
+      });
+    });
+
+    expect(saveStateSpy).toHaveBeenCalled();
+    saveStateSpy.mockRestore();
+  });
+
+  it("does not persist an empty layout when dock panels are registered", async () => {
+    const saveStateSpy = vi
+      .spyOn(dockWorkspaceMocks.DockManagerMock.prototype, "saveState")
+      .mockReturnValue(JSON.stringify({}));
+    const saveHostLayoutSpy = vi.fn().mockResolvedValue(undefined);
+
+    Object.defineProperty(window, "ipcToMain", {
+      configurable: true,
+      writable: true,
+      value: {
+        commands: {
+          workspace: {
+            saveHostLayout: saveHostLayoutSpy,
+          },
+        },
+      },
+    });
+
+    render(
+      <DockWorkspace
+        workspaceState={{
+          id: "main-workspace",
+          windows: [],
+          hosts: [{ id: "main", label: "Main", visibleWindows: [] }],
+          hostLayouts: { main: {} },
+          updatedAt: Date.now(),
+        }}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(saveStateSpy).toHaveBeenCalled();
+    });
+
+    expect(saveHostLayoutSpy).not.toHaveBeenCalledWith("main", {});
+    saveStateSpy.mockRestore();
+  });
+
   it("restores a saved host layout when one is present", async () => {
     const loadStateSpy = vi.spyOn(dockWorkspaceMocks.DockManagerMock.prototype, "loadState");
     const dockFillSpy = vi.spyOn(dockWorkspaceMocks.DockManagerMock.prototype, "dockFill");

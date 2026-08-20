@@ -71,6 +71,20 @@ export function deserializeLayout(layoutJson: string): DockHostLayout {
 }
 
 /**
+ * Verifies that a dock layout has usable runtime content.
+ *
+ * @remarks
+ * Empty objects are not valid persisted layouts when dock panels are registered,
+ * because they represent the pre-layout initialization state rather than a real dock tree.
+ *
+ * @param layout - Layout to validate
+ * @returns True when the layout has meaningful content to restore or save
+ */
+export function hasUsableLayout(layout: DockHostLayout | undefined): layout is DockHostLayout {
+  return !!layout && typeof layout === "object" && Object.keys(layout).length > 0;
+}
+
+/**
  * Determines the layout to use based on availability.
  *
  * @remarks
@@ -82,7 +96,7 @@ export function deserializeLayout(layoutJson: string): DockHostLayout {
  * @returns Layout object ready for dockManager.loadState()
  */
 export function selectLayoutForRestore(snapshotLayout: DockHostLayout | undefined): DockHostLayout {
-  if (snapshotLayout && Object.keys(snapshotLayout).length > 0) {
+  if (hasUsableLayout(snapshotLayout)) {
     return snapshotLayout;
   }
   return createFallbackLayout();

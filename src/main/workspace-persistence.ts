@@ -16,30 +16,10 @@ const Store = StoreModule.default || StoreModule;
 import type { DockHostLayout, WorkspaceState } from "../common/workspace-types";
 import { WorkspaceService } from "./workspaceService";
 
-/**
- * Type definition for electron-store schema.
- * Defines the structure of data persisted to disk.
- * @internal Not directly usable with CommonJS require, but retained for documentation.
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface WorkspaceStoreSchema {
-  workspace: WorkspaceState;
-}
-
 // Type alias for Store instances to work around CommonJS require typing issues
 type StoreInstance = InstanceType<typeof Store>;
 
-/**
- * Interface for AppSettings-like objects used for backwards compatibility.
- */
-interface AppSettingsLike {
-  getSync(key: string): unknown;
-  hasSync(key: string): boolean;
-  unsetSync(key: string): void;
-}
-
 const LOG_PREFIX = "[workspace-persistence]";
-const LEGACY_DOCK_LAYOUT_KEY = "gdb.gui.dockLayout";
 
 /**
  * Workspace persistence service that manages state storage and retrieval.
@@ -62,90 +42,11 @@ export class WorkspacePersistence {
   }
 
   /**
-   * Migrates old gdb.gui.dockLayout setting to new WorkspaceState format.
-   * Handles backwards compatibility with pre-Phase3 settings.
-   *
-   * @param appSettings - AppSettings-like object for reading legacy settings
-   * @returns true if migration occurred, false if no migration was needed or failed
-   *
-   * @remarks
-   * This function:
-   * 1. Checks if old gdb.gui.dockLayout exists
-   * 2. Migrates it to hostLayouts["main"] in workspace state
-   * 3. Clears the old setting after successful migration
-   * 4. Logs warnings if the old setting is invalid
+   * Loads workspace state from the workspace store.
+   * Returns an empty workspace if the stored state is missing or corrupted.
    */
-  migrateFromLegacySettings(appSettings: AppSettingsLike): boolean {
+  load(): WorkspaceState {
     try {
-      // Check if old setting exists
-      if (!appSettings.hasSync(LEGACY_DOCK_LAYOUT_KEY)) {
-        return false;
-      }
-
-      // Load current workspace state
-      let state = this.store.get("workspace");
-      if (!state || !WorkspaceService.validateWorkspaceState(state)) {
-        state = WorkspaceService.createEmptyWorkspace();
-      }
-
-      // Only migrate if hostLayouts for main is empty/missing
-      if (state.hostLayouts && state.hostLayouts.main) {
-        console.log(`${LOG_PREFIX} Main host layout already exists, skipping migration`);
-        return false;
-      }
-
-      // Get old layout value
-      const oldLayout = appSettings.getSync(LEGACY_DOCK_LAYOUT_KEY);
-      if (!oldLayout) {
-        console.log(`${LOG_PREFIX} Old dockLayout setting is empty, clearing it`);
-        appSettings.unsetSync(LEGACY_DOCK_LAYOUT_KEY);
-        return false;
-      }
-
-      // Validate that it's a proper object
-      if (typeof oldLayout !== "object") {
-        console.warn(`${LOG_PREFIX} Old dockLayout setting is not an object, clearing it`);
-        appSettings.unsetSync(LEGACY_DOCK_LAYOUT_KEY);
-        return false;
-      }
-
-      // Migrate the layout to the new format
-      const migratedLayout: DockHostLayout = oldLayout as unknown as DockHostLayout;
-      if (!state.hostLayouts) {
-        state.hostLayouts = {};
-      }
-      state.hostLayouts.main = migratedLayout;
-      state.updatedAt = Date.now();
-
-      // Save the migrated state
-      this.save(state);
-
-      // Clear the old setting
-      appSettings.unsetSync(LEGACY_DOCK_LAYOUT_KEY);
-
-      console.log(`${LOG_PREFIX} Successfully migrated legacy dockLayout to workspace state`);
-      return true;
-    } catch (error) {
-      console.error(`${LOG_PREFIX} Failed to migrate legacy settings:`, error);
-      return false;
-    }
-  }
-
-  /**
-   * Loads workspace state from persistent store.
-   * Optionally migrates from legacy settings if provided.
-   * Returns empty workspace if store is corrupted.
-   *
-   * @param appSettings - Optional AppSettings-like object for legacy settings migration
-   * @returns The loaded or fallback WorkspaceState.
-   */
-  load(appSettings?: AppSettingsLike): WorkspaceState {
-    try {
-      // Attempt migration from legacy settings if available
-      if (appSettings) {
-        this.migrateFromLegacySettings(appSettings);
-      }
-
       let state = this.store.get("workspace");
 
       // Validate structure and fix if needed
@@ -162,7 +63,7 @@ export class WorkspacePersistence {
         state.hostLayouts = {};
       } else {
         // Sanitize each layout to remove corrupted data
-        const sanitizedLayouts: Record<string, unknown> = {};
+        const sanitizedLayouts: Record<string, DockHostLayout> = {};
         Object.entries(state.hostLayouts).forEach(([hostId, layout]) => {
           const sanitized = this.sanitizeLayout(layout);
           if (Object.keys(sanitized).length > 0) {
@@ -211,9 +112,9 @@ export class WorkspacePersistence {
    * @param layout - The layout to validate
    * @returns Sanitized layout, or empty object if invalid
    */
-  private sanitizeLayout(layout: unknown): Record<string, unknown> {
+  private sanitizeLayout(layout: unknown): DockHostLayout {
     if (!layout || typeof layout !== "object") {
-      return {};
+      return {} as DockHostLayout;
     }
 
     try {
@@ -221,16 +122,16 @@ export class WorkspacePersistence {
       const serialized = JSON.stringify(layout);
       // Verify the JSON is valid and has content
       if (!serialized || serialized === "{}" || serialized === "null") {
-        return {};
+        return {} as DockHostLayout;
       }
-      const deserialized = JSON.parse(serialized) as Record<string, unknown>;
+      const deserialized = JSON.parse(serialized) as DockHostLayout;
       return deserialized;
     } catch {
       // If we can't serialize/deserialize, the layout is corrupted
       console.warn(
         `${LOG_PREFIX} Layout is corrupted and cannot be serialized, using empty layout`,
       );
-      return {};
+      return {} as DockHostLayout;
     }
   }
 
@@ -250,7 +151,7 @@ export class WorkspacePersistence {
       let normalized = WorkspaceService.normalizeWorkspaceState(state);
 
       // Sanitize all layouts before saving
-      const sanitizedLayouts: Record<string, unknown> = {};
+      const sanitizedLayouts: Record<string, DockHostLayout> = {};
       if (normalized.hostLayouts && typeof normalized.hostLayouts === "object") {
         Object.entries(normalized.hostLayouts).forEach(([hostId, layout]) => {
           const sanitized = this.sanitizeLayout(layout);
