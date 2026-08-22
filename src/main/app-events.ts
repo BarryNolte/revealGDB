@@ -26,13 +26,20 @@ export function registerAppEvents(
   appInstance: App,
   nativeTheme: NativeTheme,
   getMainWindow: () => BrowserWindow | undefined,
+  getSecondaryWindows: () => BrowserWindow[] = () => [],
 ): void {
+  const broadcastToWindows = (channel: string, payload: unknown): void => {
+    const windows = [getMainWindow(), ...getSecondaryWindows()].filter(
+      (window): window is BrowserWindow => !!window && !window.isDestroyed(),
+    );
+
+    windows.forEach((window) => {
+      window.webContents.send(channel, payload);
+    });
+  };
+
   appInstance.on("did-resign-active", () => {
-    const mainWindow = getMainWindow();
-    if (!mainWindow || mainWindow.isDestroyed()) {
-      return;
-    }
-    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.notifications.render, {
+    broadcastToWindows(IPC_CHANNELS.mainToRenderer.notifications.render, {
       command: "theme-changed",
       data: nativeTheme,
     });
@@ -45,11 +52,7 @@ export function registerAppEvents(
   });
 
   nativeTheme.on("updated", () => {
-    const mainWindow = getMainWindow();
-    if (!mainWindow || mainWindow.isDestroyed()) {
-      return;
-    }
-    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.notifications.themeChanged, {
+    broadcastToWindows(IPC_CHANNELS.mainToRenderer.notifications.themeChanged, {
       shouldUseDarkColors: nativeTheme.shouldUseDarkColors,
     });
   });

@@ -47,28 +47,64 @@ export class DockMenuConnector {
       const di = this.getDockPanelInfoByDisplayName(ev.detail);
       if (di) {
         di.visible = !di.visible;
+        const panel = di.panel;
+        const hasLiveDockNode = this.hasLiveDockNode(panel);
+
         if (!di.visible) {
-          // Hide panel by converting to dialog and moving off-screen
-          if (!di.panel?.isDialog) {
-            di.dialog = di.panel?.performUndockToDialog(undefined, { x: 0, y: 0 });
+          // Hide panel by converting to dialog and moving off-screen. Some panels can be
+          // created in the connector map before they are ever inserted into the active dock tree,
+          // so a detached panel must be treated as already hidden instead of undocking it.
+          if (panel && hasLiveDockNode && !panel.isDialog) {
+            di.dialog = panel.performUndockToDialog(undefined, { x: 0, y: 0 });
             di.dialog?.setPosition(-100000, 0);
             di.dialog?.hide();
-          } else {
-            di.panel?.floatingDialog?.setPosition(-100000, 0);
-            di.panel?.floatingDialog?.hide();
+          } else if (panel && (panel.isDialog || panel.floatingDialog)) {
+            panel.floatingDialog?.setPosition(-100000, 0);
+            panel.floatingDialog?.hide();
           }
-        } else {
+        } else if (di.dialog) {
           // Show panel by docking dialog back into layout
-          if (di.panel && di.dialog) {
-            this.dockManager.dockDialogUp(this.dockManager.context.model.rootNode, di.dialog);
-            di.dialog = undefined;
-          }
+          this.dockManager.dockDialogUp(this.dockManager.context.model.rootNode, di.dialog);
+          di.dialog = undefined;
         }
       }
       // Update UI and save layout
       window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
       window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
     });
+  }
+
+  private hasLiveDockNode(panel: PanelContainer | undefined): boolean {
+    if (!panel) {
+      return false;
+    }
+
+    const dockManager = this.dockManager as DockManager & {
+      getNodeByElement?: (element: Element) => unknown;
+      getNodeByElementId?: (id: string) => unknown;
+      getPanels?: () => PanelContainer[];
+    };
+
+    const candidateElement =
+      panel.elementContent ?? panel.elementContentContainer ?? panel.elementPanel;
+    if (candidateElement && typeof dockManager.getNodeByElement === "function") {
+      const liveNode = dockManager.getNodeByElement(candidateElement as Element);
+      if (liveNode) {
+        return true;
+      }
+    }
+
+    if (
+      candidateElement instanceof Element &&
+      typeof dockManager.getNodeByElementId === "function"
+    ) {
+      const liveNode = dockManager.getNodeByElementId(candidateElement.id);
+      if (liveNode) {
+        return true;
+      }
+    }
+
+    return !!dockManager.getPanels?.().includes(panel);
   }
 
   /**
@@ -78,6 +114,7 @@ export class DockMenuConnector {
     this.panelMap.forEach((di) => {
       const el = document.getElementById(di.id);
       if (el) {
+        di.visible = !el.hidden;
         const panel = new PanelContainer(el, this.dockManager, di.displayName);
         panel.hideCloseButton(true); // Disable close button (use visibility toggle instead)
         di.panel = panel;
@@ -147,12 +184,8 @@ export class DockMenuConnector {
    * @param dn - Value for `dn` consumed by this operation.
    * @returns The computed result produced by this operation.
    */
-  public getPanelByDisplayName(dn: string): PanelContainer {
-    const panel = this.panelMap.get(dn)?.panel;
-    if (!panel) {
-      throw new Error(`Panel '${dn}' is not registered or not initialized`);
-    }
-    return panel;
+  public getPanelByDisplayName(dn: string): PanelContainer | undefined {
+    return this.panelMap.get(dn)?.panel;
   }
 
   /**
@@ -163,10 +196,13 @@ export class DockMenuConnector {
    */
   public isVisible(displayName: string): boolean {
     const di = this.panelMap.get(displayName);
-    if (di?.dialog) {
+    if (!di) {
       return false;
     }
-    return true;
+    if (di.dialog) {
+      return false;
+    }
+    return di.visible;
   }
 
   /**

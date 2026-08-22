@@ -84,6 +84,8 @@ describe("DockMenuConnector", () => {
   it("registers panels, creates windows from DOM nodes, and reconciles live panel instances", () => {
     const dockManager = {
       getPanels: vi.fn(() => []),
+      getNodeByElement: vi.fn(() => null),
+      getNodeByElementId: vi.fn(() => null),
       dockDialogUp: vi.fn(),
       context: { model: { rootNode: { id: "root" } } },
     };
@@ -119,15 +121,15 @@ describe("DockMenuConnector", () => {
     expect(connector.getPanelList()).toHaveLength(2);
     expect(connector.getDockPanelInfoByDisplayName("Locals")?.description).toBe("Local variables");
     expect(connector.isVisible("Locals")).toBe(true);
-    expect(() => connector.getPanelByDisplayName("Missing")).toThrow(
-      "Panel 'Missing' is not registered or not initialized",
-    );
+    expect(connector.getPanelByDisplayName("Missing")).toBeUndefined();
   });
 
   it("toggles non-dialog panels into hidden dialogs and restores them on the next toggle", () => {
     const dockDialogUp = vi.fn();
     const dockManager = {
-      getPanels: vi.fn(() => []),
+      getPanels: vi.fn(() => [dockConnectorMocks.createdPanels.get("Locals")]),
+      getNodeByElement: vi.fn(() => ({ id: "live" })),
+      getNodeByElementId: vi.fn(() => ({ id: "live" })),
       dockDialogUp,
       context: { model: { rootNode: { id: "root" } } },
     };
@@ -176,6 +178,8 @@ describe("DockMenuConnector", () => {
   it("hides floating dialogs when the panel is already undocked", () => {
     const dockManager = {
       getPanels: vi.fn(() => []),
+      getNodeByElement: vi.fn(() => null),
+      getNodeByElementId: vi.fn(() => null),
       dockDialogUp: vi.fn(),
       context: { model: { rootNode: { id: "root" } } },
     };
@@ -203,6 +207,56 @@ describe("DockMenuConnector", () => {
     expect(panel.performUndockToDialog).not.toHaveBeenCalled();
     expect(panel.floatingDialog.setPosition).toHaveBeenCalledWith(-100000, 0);
     expect(panel.floatingDialog.hide).toHaveBeenCalledTimes(1);
-    expect(connector.isVisible("Memory")).toBe(true);
+    expect(connector.isVisible("Memory")).toBe(false);
+  });
+
+  it("ignores toggle requests for panels that are detached from the live dock tree", () => {
+    const dockManager = {
+      getPanels: vi.fn(() => []),
+      getNodeByElement: vi.fn(() => null),
+      getNodeByElementId: vi.fn(() => null),
+      dockDialogUp: vi.fn(),
+      context: { model: { rootNode: { id: "root" } } },
+    };
+
+    const connector = new DockMenuConnector(dockManager as never);
+    connector.registerPanel("stack-window", "Stack", "Stack frame view", "stack-icon");
+
+    const stackElement = document.createElement("div");
+    stackElement.id = "stack-window";
+    document.body.appendChild(stackElement);
+    connector.createAllWindows();
+
+    const panel = connector.getPanelByDisplayName("Stack") as unknown as {
+      isDialog: boolean;
+      performUndockToDialog: ReturnType<typeof vi.fn>;
+    };
+
+    window.dispatchEvent(new CustomEvent("toggle-window", { detail: "Stack" }));
+
+    expect(panel.performUndockToDialog).not.toHaveBeenCalled();
+    expect(connector.getDockPanelInfoByDisplayName("Stack")?.visible).toBe(false);
+  });
+
+  it("treats startup-hidden panels as hidden instead of visible", () => {
+    const dockManager = {
+      getPanels: vi.fn(() => []),
+      getNodeByElement: vi.fn(() => null),
+      getNodeByElementId: vi.fn(() => null),
+      dockDialogUp: vi.fn(),
+      context: { model: { rootNode: { id: "root" } } },
+    };
+
+    const connector = new DockMenuConnector(dockManager as never);
+    connector.registerPanel("stack-window", "Stack", "Stack frame view", "stack-icon");
+
+    const stackElement = document.createElement("div");
+    stackElement.id = "stack-window";
+    stackElement.hidden = true;
+    document.body.appendChild(stackElement);
+    connector.createAllWindows();
+
+    expect(connector.getDockPanelInfoByDisplayName("Stack")?.visible).toBe(false);
+    expect(connector.isVisible("Stack")).toBe(false);
   });
 });

@@ -8,6 +8,8 @@ const dockWorkspaceMocks = vi.hoisted(() => {
   const resizeSpy = vi.fn();
 
   class DockManagerMock {
+    static lastInstance: DockManagerMock | null = null;
+
     public config: { dialogRootElement: unknown; enableBrowserWindows: boolean } = {
       dialogRootElement: null,
       enableBrowserWindows: false,
@@ -20,7 +22,9 @@ const dockWorkspaceMocks = vi.hoisted(() => {
       },
     };
 
-    constructor(_element: HTMLElement) {}
+    constructor(_element: HTMLElement) {
+      DockManagerMock.lastInstance = this;
+    }
 
     public initialize(): void {}
 
@@ -167,6 +171,17 @@ describe("DockWorkspace resize regression", () => {
           },
         },
       },
+    });
+  });
+
+  it("enables browser-window undocking so panel title-bar context menus can launch a new dock window", async () => {
+    render(<DockWorkspace workspaceState={buildWorkspaceState()} />);
+
+    await waitFor(() => {
+      expect(dockWorkspaceMocks.DockManagerMock.lastInstance).toBeTruthy();
+      expect(dockWorkspaceMocks.DockManagerMock.lastInstance?.config.enableBrowserWindows).toBe(
+        true,
+      );
     });
   });
 

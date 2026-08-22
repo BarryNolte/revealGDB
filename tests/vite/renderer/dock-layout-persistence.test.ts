@@ -10,6 +10,10 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  persistHostLayoutState,
+  resolveHostLayoutForRestore,
+} from "../../../src/renderer/utilities/dock-workspace-utils";
 
 /**
  * Mock implementation of DockManager for testing
@@ -374,6 +378,42 @@ describe("Dock Layout Persistence", () => {
   });
 
   describe("Layout State Capture", () => {
+    it("prefers the host-specific workspace layout over the legacy main-window global layout for secondary hosts", () => {
+      const workspaceState = {
+        id: "workspace-1",
+        windows: [],
+        hosts: [
+          { id: "main", label: "Main Window", visibleWindows: [] },
+          { id: "dock-1", label: "Dock Window 1", visibleWindows: [] },
+        ],
+        hostLayouts: {
+          main: { legacyMain: true },
+          "dock-1": { hostSpecific: true },
+        },
+        updatedAt: Date.now(),
+      } as any;
+
+      const settingsLayout = { legacyMain: true };
+
+      expect(resolveHostLayoutForRestore(settingsLayout, workspaceState, "dock-1")).toEqual({
+        hostSpecific: true,
+      });
+      expect(resolveHostLayoutForRestore(settingsLayout, workspaceState, "main")).toEqual({
+        legacyMain: true,
+      });
+    });
+
+    it("saves secondary host layouts without writing the legacy global dockLayout key", async () => {
+      const notifyMain = vi.fn();
+      const saveHostLayout = vi.fn(async () => undefined);
+      const layout = { version: 1, panels: [{ id: "locals", title: "Locals" }] };
+
+      await persistHostLayoutState("dock-1", layout, saveHostLayout, notifyMain, false);
+
+      expect(saveHostLayout).toHaveBeenCalledWith("dock-1", layout);
+      expect(notifyMain).not.toHaveBeenCalled();
+    });
+
     it("correctly serializes layout state for persistence", () => {
       const mockLayout = {
         version: 1,

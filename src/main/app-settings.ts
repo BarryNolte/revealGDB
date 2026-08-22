@@ -11,6 +11,19 @@ const Store = StoreModule.default || StoreModule;
 
 const APP_PROJECT_NAME = "revealgdb";
 
+function resolveUserDataDirectory(): string | undefined {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const electronApp = require("electron").app as
+      | { getPath?: (name: string) => string }
+      | undefined;
+    const userDataDir = electronApp?.getPath?.("userData");
+    return userDataDir && userDataDir.trim().length > 0 ? userDataDir : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 interface ConfigureOptions {
   atomicSave: boolean;
   fileName: string;
@@ -22,8 +35,10 @@ class AppSettingsWrapper {
   private store: typeof Store;
 
   constructor() {
+    const userDataDirectory = resolveUserDataDirectory();
     this.store = new Store({
       projectName: APP_PROJECT_NAME,
+      ...(userDataDirectory ? { cwd: userDataDirectory } : {}),
     });
   }
 

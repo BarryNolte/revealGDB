@@ -128,12 +128,23 @@ describe("MiOutputProcessor integration", () => {
     const host = createHost();
     const processor = new MiOutputProcessor(host);
 
-    await processor.handleDataChunk("^done,register-names=[\"r0\"]\n", () => false);
+    await processor.handleDataChunk('^done,register-names=["r0"]\n', () => false);
 
     expect(notifierMock.consoleCapture).not.toHaveBeenCalledWith(
       false,
-      "^done,register-names=[\"r0\"]",
+      '^done,register-names=["r0"]',
     );
     expect(host.gdbDB.registers.get("0")?.name).toBe("r0");
+  });
+
+  it("does not swallow the GDB prompt while console capture is active", async () => {
+    setNotifierWatching(true);
+    const host = createHost();
+    const processor = new MiOutputProcessor(host);
+
+    await processor.handleDataChunk("(gdb)\n", () => false);
+
+    expect(notifierMock.consoleCapture).not.toHaveBeenCalledWith(false, "(gdb)");
+    expect(host.emit).toHaveBeenCalledWith("gdb-idle");
   });
 });

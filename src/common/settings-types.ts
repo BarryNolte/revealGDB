@@ -17,6 +17,7 @@ export interface GdbSettings {
     showDebugInfo?: boolean;
     disableAutoSymbolLoading?: boolean;
     gridColumns?: Record<string, unknown>;
+    dockLayout?: Record<string, unknown>;
     windowSize?: unknown;
     sectionsView?: {
       showEmptySpace?: boolean;

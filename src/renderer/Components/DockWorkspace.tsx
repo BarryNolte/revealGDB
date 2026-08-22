@@ -24,6 +24,8 @@ import { setDockMenuConnector } from "../utilities/dock-menu-state";
 import {
   getHostIdFromUrl,
   hasUsableLayout,
+  persistHostLayoutState,
+  resolveHostLayoutForRestore,
   selectLayoutForRestore,
   serializeLayout,
 } from "../utilities/dock-workspace-utils";
@@ -219,14 +221,14 @@ function setupLayoutSaveListener(dockManager: DockManager, hostId: string): () =
         return;
       }
 
-      // Persist to the canonical config file key expected by the app settings state.
-      window.ipcToMain.commands.app.notifyMain({
-        command: "save-dock-layout",
-        data: layoutState,
-      });
-
-      // Also keep the workspace state in sync for multi-host persistence.
-      await window.ipcToMain.commands.workspace.saveHostLayout(hostId, layoutState);
+      // Persist each host's layout in the canonical workspace state. Do not mirror the
+      // same structure into the legacy global gdb.gui.dockLayout key; the workspace host
+      // map is the authoritative multi-host storage.
+      await persistHostLayoutState(
+        hostId,
+        layoutState,
+        window.ipcToMain.commands.workspace.saveHostLayout,
+      );
       console.log(`DockWorkspace: Layout saved for host ${hostId}`);
     } catch (error) {
       console.error("DockWorkspace: Failed to save layout", error);
@@ -407,18 +409,22 @@ async function attemptLayoutRestore(
   try {
     const settings = await window.ipcToMain.queries.app.getSettings();
     const configLayout = settings?.gui?.dockLayout as Record<string, unknown> | undefined;
+    const hostLayoutToRestore = resolveHostLayoutForRestore(configLayout, workspaceState, hostId);
 
-    if (hasUsableLayout(configLayout)) {
-      const layoutJson = serializeLayout(configLayout);
+    if (hostLayoutToRestore) {
+      const layoutJson = serializeLayout(hostLayoutToRestore);
+      const sourceLabel = Object.prototype.hasOwnProperty.call(workspaceState.hostLayouts, hostId)
+        ? "workspace hostLayouts"
+        : "legacy gdb.gui.dockLayout";
       console.log(
-        `DockWorkspace: Restoring dock layout from gdb.gui.dockLayout for host ${hostId} (${layoutJson.length} chars)`,
+        `DockWorkspace: Restoring dock layout from ${sourceLabel} for host ${hostId} (${layoutJson.length} chars)`,
       );
       await dockManager.loadState(layoutJson);
       return true;
     }
   } catch (error) {
     console.warn(
-      `DockWorkspace: Could not read gdb.gui.dockLayout; falling back to workspace state`,
+      `DockWorkspace: Could not read saved layout for host ${hostId}; falling back to workspace state`,
       error,
     );
   }
@@ -506,7 +512,7 @@ async function initializeDockManagerAndPanels(
 ): Promise<DockManager> {
   const dockManager = new DockManager(dockManagerElement);
   dockManager.config.dialogRootElement = dockManagerElement;
-  dockManager.config.enableBrowserWindows = false;
+  dockManager.config.enableBrowserWindows = true;
   dockManager.initialize();
   console.log("DockWorkspace: DockManager initialized");
 

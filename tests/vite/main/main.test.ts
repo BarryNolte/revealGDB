@@ -28,6 +28,12 @@ const mainMocks = vi.hoisted(() => {
         readyHandlers.push(handler);
       }
     }),
+    getPath: vi.fn((name: string) => {
+      if (name === "userData") {
+        return "C:\\Users\\barry\\AppData\\Roaming\\revealgdb";
+      }
+      return "";
+    }),
   };
 
   const workspacePersistence = {
@@ -41,9 +47,15 @@ const mainMocks = vi.hoisted(() => {
     save: vi.fn(),
   };
 
+  const dockWindow = {
+    once: vi.fn(),
+    show: vi.fn(),
+  };
+
   const windowManager = {
-    createDockWindow: vi.fn(),
+    createDockWindow: vi.fn(() => dockWindow),
     loadDockWindowUrl: vi.fn(),
+    getWindow: vi.fn(() => undefined),
   };
 
   return {
@@ -64,6 +76,7 @@ const mainMocks = vi.hoisted(() => {
     },
     workspacePersistence,
     windowManager,
+    dockWindow,
     registerAppEvents: vi.fn(),
     configureAppSettings: vi.fn(),
     logStartupDiagnostics: vi.fn(),
@@ -155,6 +168,193 @@ describe("main startup wiring", () => {
     mainMocks.readyHandlers.length = 0;
   });
 
+  it("starts cleanly with an empty workspace and no persisted dock layout", async () => {
+    vi.resetModules();
+    vi.doUnmock("../../../src/main/main");
+    vi.doMock("../../../src/main/app-settings", () => ({
+      AppSettings: mainMocks.settings,
+    }));
+
+    mainMocks.workspacePersistence.load.mockReturnValue({
+      id: "workspace-1",
+      windows: [],
+      hosts: [{ id: "main", label: "Main Window", visibleWindows: [] }],
+      hostLayouts: {},
+      updatedAt: Date.now(),
+    });
+
+    await import("../../../src/main/main");
+    const readyHandler = mainMocks.readyHandlers[0];
+    readyHandler();
+
+    expect(mainMocks.windowManager.createDockWindow).not.toHaveBeenCalled();
+    expect(mainMocks.windowManager.loadDockWindowUrl).not.toHaveBeenCalled();
+    expect(mainMocks.createMainWindow).toHaveBeenCalledTimes(1);
+  });
+
+  it("registers workspace IPC handlers only after the workspace persistence service exists", async () => {
+    vi.resetModules();
+    vi.doUnmock("../../../src/main/main");
+    vi.doMock("../../../src/main/app-settings", () => ({
+      AppSettings: mainMocks.settings,
+    }));
+
+    mainMocks.workspacePersistence.load.mockReturnValue({
+      id: "workspace-1",
+      windows: [],
+      hosts: [{ id: "main", label: "Main Window", visibleWindows: [] }],
+      hostLayouts: {},
+      updatedAt: Date.now(),
+    });
+
+    await import("../../../src/main/main");
+    const readyHandler = mainMocks.readyHandlers[0];
+    readyHandler();
+
+    const workspaceContext = mainMocks.registerIpcHandlers.mock.calls.at(-1)?.[0];
+    expect(workspaceContext).toBeDefined();
+    expect(workspaceContext.workspacePersistence).toBeDefined();
+    expect(workspaceContext.getWorkspaceState).toBeTypeOf("function");
+  });
+
+  it("restores persisted secondary host windows during startup", async () => {
+    vi.resetModules();
+    vi.doUnmock("../../../src/main/main");
+    vi.doMock("../../../src/main/app-settings", () => ({
+      AppSettings: mainMocks.settings,
+    }));
+
+    mainMocks.workspacePersistence.load.mockReturnValue({
+      id: "workspace-1",
+      windows: [],
+      hosts: [
+        { id: "main", label: "Main Window", visibleWindows: [] },
+        { id: "dock-1", label: "Dock Window 1", visibleWindows: [] },
+      ],
+      hostLayouts: {
+        "dock-1": { version: 1, panels: [] },
+      },
+      updatedAt: Date.now(),
+    });
+
+    await import("../../../src/main/main");
+    const readyHandler = mainMocks.readyHandlers[0];
+    expect(readyHandler).toBeTypeOf("function");
+    readyHandler();
+
+    expect(mainMocks.windowManager.createDockWindow).toHaveBeenCalledTimes(1);
+    expect(mainMocks.windowManager.createDockWindow).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "dock-1", label: "Dock Window 1" }),
+    );
+    expect(mainMocks.windowManager.loadDockWindowUrl).toHaveBeenCalledWith(
+      mainMocks.windowManager.createDockWindow.mock.results[0].value,
+      "dock-1",
+      expect.any(String),
+    );
+  });
+
+  it("shows a persisted secondary host if it still has a saved layout even when no windows are listed", async () => {
+    vi.resetModules();
+    vi.doUnmock("../../../src/main/main");
+    vi.doMock("../../../src/main/app-settings", () => ({
+      AppSettings: mainMocks.settings,
+    }));
+
+    mainMocks.workspacePersistence.load.mockReturnValue({
+      id: "workspace-1",
+      windows: [],
+      hosts: [
+        { id: "main", label: "Main Window", visibleWindows: [] },
+        { id: "dock-1", label: "Dock Window 1", visibleWindows: [] },
+      ],
+      hostLayouts: {
+        "dock-1": { version: 1, panels: ["locals", "threads"] },
+      },
+      updatedAt: Date.now(),
+    });
+
+    await import("../../../src/main/main");
+    const readyHandler = mainMocks.readyHandlers[0];
+    readyHandler();
+
+    const readyToShowCallback = mainMocks.dockWindow.once.mock.calls.find(
+      ([eventName]) => eventName === "ready-to-show",
+    )?.[1];
+
+    expect(readyToShowCallback).toBeTypeOf("function");
+    readyToShowCallback?.();
+
+    expect(mainMocks.dockWindow.show).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps secondary hosts with no visible windows hidden when restored", async () => {
+    vi.resetModules();
+    vi.doUnmock("../../../src/main/main");
+    vi.doMock("../../../src/main/app-settings", () => ({
+      AppSettings: mainMocks.settings,
+    }));
+
+    mainMocks.workspacePersistence.load.mockReturnValue({
+      id: "workspace-1",
+      windows: [],
+      hosts: [
+        { id: "main", label: "Main Window", visibleWindows: [] },
+        { id: "dock-1", label: "Dock Window 1", visibleWindows: [] },
+      ],
+      hostLayouts: {
+        "dock-1": { version: 1, panels: [] },
+      },
+      updatedAt: Date.now(),
+    });
+
+    await import("../../../src/main/main");
+    const readyHandler = mainMocks.readyHandlers[0];
+    readyHandler();
+
+    const readyToShowCallback = mainMocks.dockWindow.once.mock.calls.find(
+      ([eventName]) => eventName === "ready-to-show",
+    )?.[1];
+
+    expect(readyToShowCallback).toBeTypeOf("function");
+    readyToShowCallback?.();
+
+    expect(mainMocks.dockWindow.show).not.toHaveBeenCalled();
+  });
+
+  it("shows a persisted secondary host if it still has a saved layout even when no windows are listed", async () => {
+    vi.resetModules();
+    vi.doUnmock("../../../src/main/main");
+    vi.doMock("../../../src/main/app-settings", () => ({
+      AppSettings: mainMocks.settings,
+    }));
+
+    mainMocks.workspacePersistence.load.mockReturnValue({
+      id: "workspace-1",
+      windows: [],
+      hosts: [
+        { id: "main", label: "Main Window", visibleWindows: [] },
+        { id: "dock-1", label: "Dock Window 1", visibleWindows: [] },
+      ],
+      hostLayouts: {
+        "dock-1": { version: 1, panels: ["locals", "threads"] },
+      },
+      updatedAt: Date.now(),
+    });
+
+    await import("../../../src/main/main");
+    const readyHandler = mainMocks.readyHandlers[0];
+    readyHandler();
+
+    const readyToShowCallback = mainMocks.dockWindow.once.mock.calls.find(
+      ([eventName]) => eventName === "ready-to-show",
+    )?.[1];
+
+    expect(readyToShowCallback).toBeTypeOf("function");
+    readyToShowCallback?.();
+
+    expect(mainMocks.dockWindow.show).toHaveBeenCalledTimes(1);
+  });
+
   it("registers app events and IPC handlers on import and wires the ready startup path", async () => {
     vi.resetModules();
     vi.doUnmock("../../../src/main/main");
@@ -170,7 +370,12 @@ describe("main startup wiring", () => {
       mainMocks.app,
       mainMocks.nativeTheme,
       expect.any(Function),
+      expect.any(Function),
     );
+    const readyToRunHandler = mainMocks.readyHandlers[0];
+    expect(typeof readyToRunHandler).toBe("function");
+    readyToRunHandler();
+
     expect(mainMocks.registerIpcHandlers).toHaveBeenCalledWith(
       expect.objectContaining({
         ipcMain: mainMocks.ipcMain,
@@ -179,15 +384,14 @@ describe("main startup wiring", () => {
       }),
     );
 
-    const context = mainMocks.registerIpcHandlers.mock.calls[0][0];
-    expect(context.getMainWindow()).toBeUndefined();
+    const context = mainMocks.registerIpcHandlers.mock.calls.at(-1)?.[0];
+    expect(context.getMainWindow()).toBe(mainMocks.mainWindow);
     expect(context.isSelectedConnection({ name: "ok", shell: "bash", commands: ["gdb"] })).toBe(
       true,
     );
     expect(context.isSelectedConnection({ name: "bad", shell: "bash", commands: [1] })).toBe(false);
 
     expect(mainMocks.readyHandlers).toHaveLength(1);
-    mainMocks.readyHandlers[0]();
 
     expect(mainMocks.configureAppSettings).toHaveBeenCalledWith(mainMocks.settings);
     expect(mainMocks.logStartupDiagnostics).toHaveBeenCalledWith(mainMocks.settings);

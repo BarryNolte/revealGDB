@@ -6,7 +6,24 @@
  * and dock-spawn-ts layout serialization/deserialization.
  */
 
-import type { DockHostLayout } from "../../common/workspace-types";
+import type { DockHostLayout, WorkspaceState } from "../../common/workspace-types";
+
+export async function persistHostLayoutState(
+  hostId: string,
+  layoutState: DockHostLayout,
+  saveHostLayout: (hostId: string, layout: DockHostLayout) => Promise<void>,
+  notifyMain?: (payload: { command: "save-dock-layout"; data: DockHostLayout }) => void,
+  persistLegacyMainLayout = false,
+): Promise<void> {
+  if (persistLegacyMainLayout && hostId === "main" && notifyMain) {
+    notifyMain({
+      command: "save-dock-layout",
+      data: layoutState,
+    });
+  }
+
+  await saveHostLayout(hostId, layoutState);
+}
 
 /**
  * Extracts the host ID from the current window's URL query parameters.
@@ -82,6 +99,39 @@ export function deserializeLayout(layoutJson: string): DockHostLayout {
  */
 export function hasUsableLayout(layout: DockHostLayout | undefined): layout is DockHostLayout {
   return !!layout && typeof layout === "object" && Object.keys(layout).length > 0;
+}
+
+/**
+ * Resolves the layout to restore for a given host.
+ *
+ * @remarks
+ * Host-specific workspace layouts take precedence for every host, while the legacy
+ * global gdb.gui.dockLayout remains only as a fallback for the main window.
+ * This prevents secondary hosts from incorrectly reusing the primary host layout.
+ *
+ * @param legacyMainLayout - Legacy global layout persisted under gdb.gui.dockLayout
+ * @param workspaceState - Current workspace metadata including hostLayouts
+ * @param hostId - Host whose layout is being restored
+ * @returns Host-specific layout if available, otherwise the legacy main layout fallback
+ */
+export function resolveHostLayoutForRestore(
+  legacyMainLayout: DockHostLayout | undefined,
+  workspaceState: WorkspaceState,
+  hostId: string,
+): DockHostLayout | undefined {
+  const hostLayout = Object.prototype.hasOwnProperty.call(workspaceState.hostLayouts, hostId)
+    ? workspaceState.hostLayouts[hostId]
+    : undefined;
+
+  if (hasUsableLayout(hostLayout)) {
+    return hostLayout;
+  }
+
+  if (hostId === "main" && hasUsableLayout(legacyMainLayout)) {
+    return legacyMainLayout;
+  }
+
+  return undefined;
 }
 
 /**

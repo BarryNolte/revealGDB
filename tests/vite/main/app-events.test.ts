@@ -77,4 +77,32 @@ describe("registerAppEvents", () => {
       { shouldUseDarkColors: true },
     );
   });
+
+  it("broadcasts theme updates to secondary dock windows as well", () => {
+    const appInstance = createEventEmitterHarness();
+    const nativeTheme = {
+      ...createEventEmitterHarness(),
+      shouldUseDarkColors: true,
+    };
+    const mainWindow = createMockBrowserWindow({
+      isDestroyed: vi.fn().mockReturnValue(false),
+    } as never);
+    const secondaryWindow = createMockBrowserWindow({
+      isDestroyed: vi.fn().mockReturnValue(false),
+    } as never);
+
+    registerAppEvents(
+      appInstance as never,
+      nativeTheme as never,
+      () => mainWindow as never,
+      () => [secondaryWindow as never],
+    );
+
+    nativeTheme.emit("updated");
+
+    expect(secondaryWindow.webContents.send).toHaveBeenCalledWith(
+      IPC_CHANNELS.mainToRenderer.notifications.themeChanged,
+      { shouldUseDarkColors: true },
+    );
+  });
 });

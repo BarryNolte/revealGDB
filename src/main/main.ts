@@ -5,7 +5,7 @@
  * Exported symbols include `isMac`, `isWin`, `isLinux`, `isDebug`, `AppSettings`, `mainWindow`, `gdbInterface`, `gdbAppInfo`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { app, BrowserWindow, ipcMain, nativeTheme } from "electron";
-// import path from "path";
+import { join } from "path";
 import type { NormalizedConnection } from "../common/connection-types";
 import type { WorkspaceState } from "../common/workspace-types";
 import { registerAppEvents } from "./app-events";
@@ -67,8 +67,8 @@ export let gdbInterface: miInterface;
 export const gdbAppInfo: Map<string, unknown> = new Map<string, unknown>();
 
 // Workspace and multi-host window management
-let workspacePersistence: WorkspacePersistence;
-let windowManager: MultiHostWindowManager;
+let workspacePersistence: WorkspacePersistence | undefined;
+let windowManager: MultiHostWindowManager | undefined;
 let currentWorkspaceState: WorkspaceState | undefined;
 
 /**
@@ -98,6 +98,73 @@ function isSelectedConnection(value: unknown): value is NormalizedConnection {
   );
 }
 
+function resolveDockWindowUrl(): string {
+  const rendererUrl = process.env.ELECTRON_RENDERER_URL;
+  if (rendererUrl) {
+    return rendererUrl;
+  }
+
+  return `file://${join(__dirname, "..", "..", "out", "renderer", "index.html")}`;
+}
+
+function hasUsablePersistedLayout(layout: Record<string, unknown> | undefined): boolean {
+  if (!layout || typeof layout !== "object" || Array.isArray(layout)) {
+    return false;
+  }
+
+  return Object.values(layout).some((value) => {
+    if (Array.isArray(value)) {
+      return value.length > 0;
+    }
+
+    if (value && typeof value === "object") {
+      return hasUsablePersistedLayout(value as Record<string, unknown>);
+    }
+
+    return false;
+  });
+}
+
+function restorePersistedSecondaryDockWindows(): void {
+  const activeWindowManager = windowManager;
+  if (!currentWorkspaceState || !activeWindowManager) {
+    return;
+  }
+
+  currentWorkspaceState.hosts.forEach((host) => {
+    if (host.id === "main" || activeWindowManager.getWindow(host.id)) {
+      return;
+    }
+
+    const layout = currentWorkspaceState?.hostLayouts?.[host.id];
+    const shouldShowOnRestore = host.visibleWindows.length > 0 || hasUsablePersistedLayout(layout);
+
+    const dockWindow = activeWindowManager.createDockWindow(host);
+
+    activeWindowManager.loadDockWindowUrl(dockWindow, host.id, resolveDockWindowUrl());
+    dockWindow.once("ready-to-show", () => {
+      if (shouldShowOnRestore) {
+        dockWindow.show();
+      }
+    });
+  });
+}
+
+function reconcileClosedDockHost(hostId: string): void {
+  if (!workspacePersistence || !currentWorkspaceState) {
+    return;
+  }
+
+  const nextState = WorkspaceService.deleteHost(currentWorkspaceState, hostId);
+  if (nextState === currentWorkspaceState) {
+    return;
+  }
+
+  currentWorkspaceState = nextState;
+  workspacePersistence.save(currentWorkspaceState);
+  debugLog(`[workspace] Recovered host ${hostId} back onto the main workspace host`);
+}
+
 app.on("ready", () => {
   logStartupMilestone("app.ready");
 
@@ -106,9 +173,28 @@ app.on("ready", () => {
   logStartupDiagnostics(AppSettings);
   collectVersionInfo(gdbAppInfo);
 
-  // Initialize workspace persistence and window manager
+  // Initialize workspace persistence and window manager before wiring IPC so the live
+  // persisted workspace is available to the runtime handlers.
   workspacePersistence = new WorkspacePersistence();
-  windowManager = new MultiHostWindowManager(resolvePreloadPath());
+  windowManager = new MultiHostWindowManager(resolvePreloadPath(), (hostId) => {
+    reconcileClosedDockHost(hostId);
+  });
+
+  registerIpcHandlers({
+    ipcMain,
+    appSettings: AppSettings,
+    fontList,
+    gdbAppInfo,
+    getMainWindow: () => mainWindow,
+    getGdbInterface: () => gdbInterface,
+    isSelectedConnection,
+    workspacePersistence,
+    windowManager,
+    getWorkspaceState: () => currentWorkspaceState,
+    setWorkspaceState: (state: WorkspaceState) => {
+      currentWorkspaceState = state;
+    },
+  });
 
   // Load workspace state from the canonical workspace store.
   try {
@@ -126,6 +212,8 @@ app.on("ready", () => {
   mainWindow = createMainWindow(resolvePreloadPath());
 
   setIpcWindow(mainWindow);
+
+  restorePersistedSecondaryDockWindows();
 
   if (isDebug) {
     debugWindow = createDebugWindow(mainWindow);
@@ -164,20 +252,9 @@ app.on("ready", () => {
   GdbMenu.installMenu(gdbInterface);
   wireWindowCloseHandlers(mainWindow, isDebug ? debugWindow : undefined);
 });
-registerAppEvents(app, nativeTheme, () => mainWindow);
-
-registerIpcHandlers({
-  ipcMain,
-  appSettings: AppSettings,
-  fontList,
-  gdbAppInfo,
-  getMainWindow: () => mainWindow,
-  getGdbInterface: () => gdbInterface,
-  isSelectedConnection,
-  workspacePersistence,
-  windowManager,
-  getWorkspaceState: () => currentWorkspaceState,
-  setWorkspaceState: (state: WorkspaceState) => {
-    currentWorkspaceState = state;
-  },
-});
+registerAppEvents(
+  app,
+  nativeTheme,
+  () => mainWindow,
+  () => (windowManager ? windowManager.getAllWindows() : []),
+);

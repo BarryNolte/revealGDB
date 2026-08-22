@@ -7,9 +7,16 @@
  * for main and dock windows with query parameter-based host identification.
  * Exported symbols include all window creation, loading, and lifecycle functions.
  */
-import { BrowserWindow } from "electron";
+import { BrowserWindow, nativeTheme } from "electron";
 import path, { join } from "path";
+import { IPC_CHANNELS } from "../common/ipc-contracts";
 import type { WorkspaceHost } from "../common/workspace-types";
+
+function getShouldUseDarkColors(): boolean {
+  return !!nativeTheme && typeof nativeTheme.shouldUseDarkColors === "boolean"
+    ? nativeTheme.shouldUseDarkColors
+    : false;
+}
 
 export type WindowSizeSettings = {
   getSync: (key: string) => unknown;
@@ -244,14 +251,17 @@ export function resolvePreloadPath(): string {
 export class MultiHostWindowManager {
   private windows: Map<string, BrowserWindow> = new Map();
   private preloadPath: string;
+  private onHostClosed?: (hostId: string) => void;
 
   /**
    * Creates a new MultiHostWindowManager.
    *
    * @param preloadPath - Path to the preload script.
+   * @param onHostClosed - Optional callback invoked when a host window closes.
    */
-  constructor(preloadPath: string) {
+  constructor(preloadPath: string, onHostClosed?: (hostId: string) => void) {
     this.preloadPath = preloadPath;
+    this.onHostClosed = onHostClosed;
   }
 
   /**
@@ -266,6 +276,7 @@ export class MultiHostWindowManager {
     // Auto-cleanup when window is closed
     window.on("closed", () => {
       this.windows.delete(hostId);
+      this.onHostClosed?.(hostId);
     });
   }
 
@@ -314,11 +325,20 @@ export class MultiHostWindowManager {
    * @returns The newly created BrowserWindow.
    */
   createDockWindow(host: WorkspaceHost): BrowserWindow {
+    const shouldUseDarkColors = getShouldUseDarkColors();
     const window = new BrowserWindow({
       webPreferences: {
         preload: this.preloadPath,
       },
       show: false,
+      backgroundColor: shouldUseDarkColors ? "#111827" : "#f5f5f5",
+      titleBarStyle: process.platform === "darwin" ? "hiddenInset" : undefined,
+    });
+
+    window.webContents.once("did-finish-load", () => {
+      window.webContents.send(IPC_CHANNELS.mainToRenderer.notifications.themeChanged, {
+        shouldUseDarkColors,
+      });
     });
 
     // Register before loading to ensure it's tracked
@@ -341,6 +361,14 @@ export class MultiHostWindowManager {
   loadDockWindowUrl(window: BrowserWindow, hostId: string, baseUrl: string): void {
     const separator = baseUrl.includes("?") ? "&" : "?";
     const urlWithHost = `${baseUrl}${separator}dockHost=${hostId}`;
+    const shouldUseDarkColors = getShouldUseDarkColors();
+
+    window.webContents.once("did-finish-load", () => {
+      window.webContents.send(IPC_CHANNELS.mainToRenderer.notifications.themeChanged, {
+        shouldUseDarkColors,
+      });
+    });
+
     window.loadURL(urlWithHost);
   }
 

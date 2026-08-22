@@ -130,10 +130,49 @@ export class WorkspaceService {
     const windowIds = new Set(state.windows.map((w) => w.id));
     const hostIds = new Set(state.hosts.map((h) => h.id));
 
-    // Clean up orphaned window IDs in hosts
+    // Clean up orphaned window IDs in hosts while preserving host-to-window membership.
     const cleanedHosts = state.hosts.map((host) => ({
       ...host,
       visibleWindows: host.visibleWindows.filter((id) => windowIds.has(id)),
+    }));
+
+    const normalizedWindows = state.windows.map((window) => {
+      const hostFromList = cleanedHosts.find((host) => host.visibleWindows.includes(window.id));
+      const storedHostId =
+        typeof window.windowState?.hostId === "string" ? window.windowState.hostId : undefined;
+      const resolvedHostId =
+        storedHostId && hostIds.has(storedHostId) ? storedHostId : (hostFromList?.id ?? "main");
+
+      return {
+        ...window,
+        windowState: {
+          ...(window.windowState ?? {}),
+          hostId: resolvedHostId,
+        },
+      };
+    });
+
+    const hostWindowMap = new Map<string, Set<string>>();
+    for (const window of normalizedWindows) {
+      const hostId =
+        typeof window.windowState?.hostId === "string" ? window.windowState.hostId : undefined;
+      if (!hostId || !hostIds.has(hostId)) {
+        continue;
+      }
+
+      const assignedWindowIds = hostWindowMap.get(hostId) ?? new Set<string>();
+      assignedWindowIds.add(window.id);
+      hostWindowMap.set(hostId, assignedWindowIds);
+    }
+
+    const resolvedHosts = cleanedHosts.map((host) => ({
+      ...host,
+      visibleWindows: Array.from(
+        new Set([
+          ...host.visibleWindows,
+          ...(hostWindowMap.get(host.id) ? Array.from(hostWindowMap.get(host.id) ?? []) : []),
+        ]),
+      ),
     }));
 
     // Remove layouts for non-existent hosts
@@ -145,8 +184,8 @@ export class WorkspaceService {
     });
 
     // Ensure at least one host exists
-    if (cleanedHosts.length === 0) {
-      cleanedHosts.push({
+    if (resolvedHosts.length === 0) {
+      resolvedHosts.push({
         id: "main",
         label: "Main Window",
         visibleWindows: [],
@@ -155,7 +194,8 @@ export class WorkspaceService {
 
     return {
       ...state,
-      hosts: cleanedHosts,
+      windows: normalizedWindows,
+      hosts: resolvedHosts,
       hostLayouts: cleanedLayouts,
       updatedAt: Date.now(),
     };
@@ -169,6 +209,11 @@ export class WorkspaceService {
    * @returns Updated workspace state with new window
    */
   public static createWindow(state: WorkspaceState, request: CreateWindowRequest): WorkspaceState {
+    const hostId = request.windowState?.hostId ?? "main";
+    const normalizedHostId = state.hosts.some((host) => host.id === hostId)
+      ? hostId
+      : (state.hosts[0]?.id ?? "main");
+
     const newWindow: DockableWindow = {
       id: uuidv4(),
       title: request.title,
@@ -177,14 +222,27 @@ export class WorkspaceService {
       group: request.group,
       isVisible: request.isVisible ?? true,
       displayMode: request.displayMode ?? WindowDisplayMode.Docked,
-      windowState: request.windowState,
+      windowState: {
+        ...(request.windowState ?? {}),
+        hostId: normalizedHostId,
+      },
     };
 
-    return {
+    const updatedHosts = state.hosts.map((host) =>
+      host.id === normalizedHostId
+        ? {
+            ...host,
+            visibleWindows: [...new Set([...host.visibleWindows, newWindow.id])],
+          }
+        : host,
+    );
+
+    return WorkspaceService.normalizeWorkspaceState({
       ...state,
       windows: [...state.windows, newWindow],
+      hosts: updatedHosts,
       updatedAt: Date.now(),
-    };
+    });
   }
 
   /**
@@ -300,16 +358,27 @@ export class WorkspaceService {
       ...host,
       visibleWindows:
         host.id === request.targetHostId
-          ? // Add to target host if not already there
-            !host.visibleWindows.includes(request.windowId)
+          ? !host.visibleWindows.includes(request.windowId)
             ? [...host.visibleWindows, request.windowId]
             : host.visibleWindows
-          : // Remove from other hosts
-            host.visibleWindows.filter((id) => id !== request.windowId),
+          : host.visibleWindows.filter((id) => id !== request.windowId),
     }));
+
+    const updatedWindows = state.windows.map((candidate) =>
+      candidate.id === request.windowId
+        ? {
+            ...candidate,
+            windowState: {
+              ...(candidate.windowState ?? {}),
+              hostId: request.targetHostId,
+            },
+          }
+        : candidate,
+    );
 
     return {
       ...state,
+      windows: updatedWindows,
       hosts: updatedHosts,
       updatedAt: Date.now(),
     };
@@ -398,6 +467,53 @@ export class WorkspaceService {
    * Layout entry for deleted host is removed.
    * Main host cannot be deleted.
    */
+  private static mergeDockLayouts(
+    baseLayout: DockHostLayout | undefined,
+    incomingLayout: DockHostLayout | undefined,
+  ): DockHostLayout | undefined {
+    if (!baseLayout) {
+      return incomingLayout;
+    }
+
+    if (!incomingLayout) {
+      return baseLayout;
+    }
+
+    const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+      !!value && typeof value === "object" && !Array.isArray(value);
+
+    const mergeValues = (left: unknown, right: unknown): unknown => {
+      if (Array.isArray(left) && Array.isArray(right)) {
+        const mergedItems = [...left];
+        for (const item of right) {
+          const alreadyExists = mergedItems.some(
+            (existingItem) => JSON.stringify(existingItem) === JSON.stringify(item),
+          );
+          if (!alreadyExists) {
+            mergedItems.push(item);
+          }
+        }
+        return mergedItems;
+      }
+
+      if (isPlainObject(left) && isPlainObject(right)) {
+        const mergedObject: Record<string, unknown> = { ...left };
+        for (const [key, value] of Object.entries(right)) {
+          if (!Object.prototype.hasOwnProperty.call(mergedObject, key)) {
+            mergedObject[key] = value;
+            continue;
+          }
+          mergedObject[key] = mergeValues(mergedObject[key], value);
+        }
+        return mergedObject;
+      }
+
+      return left ?? right;
+    };
+
+    return mergeValues(baseLayout, incomingLayout) as DockHostLayout | undefined;
+  }
+
   public static deleteHost(state: WorkspaceState, hostId: string): WorkspaceState {
     if (hostId === "main") {
       return state; // Prevent deletion of main host
@@ -408,7 +524,21 @@ export class WorkspaceService {
       return state;
     }
 
-    // Move windows from deleted host to main host
+    const deletedLayout = state.hostLayouts[hostId];
+
+    const updatedWindows = state.windows.map((window) =>
+      hostToDelete.visibleWindows.includes(window.id)
+        ? {
+            ...window,
+            windowState: {
+              ...(window.windowState ?? {}),
+              hostId: "main",
+            },
+          }
+        : window,
+    );
+
+    // Move windows from deleted host to main host so they remain visible after recovery.
     const updatedHosts = state.hosts
       .filter((h) => h.id !== hostId)
       .map((host) =>
@@ -422,12 +552,21 @@ export class WorkspaceService {
           : host,
       );
 
-    // Remove layout for deleted host
     const updatedLayouts = { ...state.hostLayouts };
     delete updatedLayouts[hostId];
 
+    // Preserve the closed host's panes by merging its layout into the primary host layout.
+    // The primary host should keep its own layout while absorbing the secondary host's panel
+    // state so the user never loses the docked panes when a satellite window is closed.
+    if (deletedLayout && Object.keys(deletedLayout).length > 0) {
+      updatedLayouts.main =
+        WorkspaceService.mergeDockLayouts(updatedLayouts.main, deletedLayout) ??
+        updatedLayouts.main;
+    }
+
     return {
       ...state,
+      windows: updatedWindows,
       hosts: updatedHosts,
       hostLayouts: updatedLayouts,
       updatedAt: Date.now(),

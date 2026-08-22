@@ -133,13 +133,8 @@ export class MiOutputProcessor {
     }
 
     if (notifier.isWatchingConsole()) {
-      // Keep consuming startup console output, but do not swallow MI control records.
-      //if (!isMiControlRecord) {
       notifier.consoleCapture(false, line);
       return true;
-      //}
-
-      //return false;
     }
 
     return false;

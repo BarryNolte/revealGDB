@@ -187,20 +187,20 @@ type SaveSettingsRequest = Extract<
  */
 
 function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationContext): void {
-  switch (msg.command) {
-    case "save-connections":
+  const commandHandlers: Partial<Record<SaveSettingsRequest["command"], () => void>> = {
+    "save-connections": () => {
       context.appSettings.setSync("gdb.connections", msg.data.connections as never);
-      break;
-    case "save-last-used-connection":
+    },
+    "save-last-used-connection": () => {
       context.appSettings.setSync("gdb.lastUsedConnection", msg.data as never);
-      break;
-    case "save-app-show-debug-info":
+    },
+    "save-app-show-debug-info": () => {
       context.appSettings.setSync(`${GDB_GUI_PREFIX}showDebugInfo`, msg.data as never);
-      break;
-    case "save-auto-symbol-loading":
+    },
+    "save-auto-symbol-loading": () => {
       context.appSettings.setSync(`${GDB_GUI_PREFIX}disableAutoSymbolLoading`, msg.data as never);
-      break;
-    case "save-sections-view-options":
+    },
+    "save-sections-view-options": () => {
       context.appSettings.setSync(
         `${GDB_GUI_PREFIX}sectionsView.showEmptySpace`,
         msg.data.showEmptySpace as never,
@@ -209,40 +209,42 @@ function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationCo
         `${GDB_GUI_PREFIX}sectionsView.showLegend`,
         msg.data.showLegend as never,
       );
-      break;
-    case "save-app-theme":
+    },
+    "save-app-theme": () => {
       context.appSettings.setSync(`${GDB_GUI_PREFIX}applicationTheme`, msg.data as never);
       setNativeThemeFromAppTheme(msg.data);
-      break;
-    case "save-dock-layout":
-      context.appSettings.setSync(`${GDB_GUI_PREFIX}dockLayout`, msg.data as never);
-      break;
-    case "save-cmd-history":
+    },
+    "save-dock-layout": () => {
+      // Legacy single-host setting is intentionally ignored. The canonical multi-host
+      // storage lives under workspace.hostLayouts[hostId], so writing the global
+      // gdb.gui.dockLayout here duplicates data and prevents secondary host persistence.
+    },
+    "save-cmd-history": () => {
       context.appSettings.setSync("gdb.command.history", msg.data as never);
-      break;
-    case "save-source-viewer-theme":
+    },
+    "save-source-viewer-theme": () => {
       context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerTheme`, msg.data as never);
-      break;
-    case "save-source-viewer-font-size":
+    },
+    "save-source-viewer-font-size": () => {
       context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerFontSize`, msg.data as never);
-      break;
-    case "save-source-viewer-font-name":
+    },
+    "save-source-viewer-font-name": () => {
       context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerFontName`, msg.data as never);
-      break;
-    case "save-grid-columns":
+    },
+    "save-grid-columns": () => {
       context.appSettings.setSync(
         `${GDB_GUI_PREFIX}gridColumns.${msg.data.gridName}`,
         msg.data.columns as never,
       );
-      break;
-    case "reset-grid-columns":
+    },
+    "reset-grid-columns": () => {
       if (msg.data) {
         context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns.${msg.data}`);
       } else {
         context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns`);
       }
-      break;
-    case "save-window-bounds":
+    },
+    "save-window-bounds": () => {
       context.appSettings.setSync(`${GDB_GUI_PREFIX}windowSize.x`, msg.data.x as never);
       context.appSettings.setSync(`${GDB_GUI_PREFIX}windowSize.y`, msg.data.y as never);
       context.appSettings.setSync(`${GDB_GUI_PREFIX}windowSize.width`, msg.data.width as never);
@@ -251,8 +253,10 @@ function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationCo
         `${GDB_GUI_PREFIX}windowSize.fullscreen`,
         msg.data.fullscreen as never,
       );
-      break;
-  }
+    },
+  };
+
+  commandHandlers[msg.command]?.();
 }
 
 /**
@@ -444,10 +448,9 @@ function registerCreateNewDockWindowHandler(context: IpcRegistrationContext): vo
           // Load the URL with host parameter
           context.windowManager.loadDockWindowUrl(newWindow, newHost.id, baseUrl);
 
-          // Show the window
-          newWindow.show();
-
-          debugLog(`[workspace] Created new dock window for host: ${newHost.id}`);
+          // Secondary hosts should stay hidden until they are explicitly shown by the user
+          // or by a restore flow that knows the host has visible content to display.
+          debugLog(`[workspace] Created hidden dock window for host: ${newHost.id}`);
 
           return newHost.id;
         } catch (error) {

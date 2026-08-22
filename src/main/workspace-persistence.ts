@@ -15,6 +15,19 @@ const Store = StoreModule.default || StoreModule;
 
 const APP_PROJECT_NAME = "revealgdb";
 
+function resolveUserDataDirectory(): string | undefined {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const electronApp = require("electron").app as
+      | { getPath?: (name: string) => string }
+      | undefined;
+    const userDataDir = electronApp?.getPath?.("userData");
+    return userDataDir && userDataDir.trim().length > 0 ? userDataDir : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 import type { DockHostLayout, WorkspaceState } from "../common/workspace-types";
 import { WorkspaceService } from "./workspaceService";
 
@@ -35,9 +48,10 @@ export class WorkspacePersistence {
    * @param storePath - Optional custom path for the store file.
    */
   constructor(storePath?: string) {
+    const userDataDirectory = resolveUserDataDirectory();
     this.store = new Store({
       projectName: APP_PROJECT_NAME,
-      ...(storePath && { cwd: storePath }),
+      ...(storePath ? { cwd: storePath } : userDataDirectory ? { cwd: userDataDirectory } : {}),
       defaults: {
         workspace: WorkspaceService.createEmptyWorkspace(),
       },
