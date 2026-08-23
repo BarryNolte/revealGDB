@@ -148,6 +148,7 @@ export type NotifyMainCommand =
   | "save-source-viewer-font-size"
   | "save-source-viewer-font-name"
   | "save-dock-layout"
+  | "save-satellite-windows"
   | "save-grid-columns"
   | "reset-grid-columns"
   | "save-sections-view-options"
@@ -173,6 +174,7 @@ export type NotifyMainPayloadMap = {
   "save-source-viewer-font-size": string | number;
   "save-source-viewer-font-name": string;
   "save-dock-layout": unknown;
+  "save-satellite-windows": unknown;
   "save-grid-columns": { gridName: GridName; columns: GridColumnState[] };
   "reset-grid-columns": GridName | undefined;
   "save-sections-view-options": SectionsViewOptions;

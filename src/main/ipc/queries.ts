@@ -9,6 +9,7 @@ import { IPC_CHANNELS } from "../../common/ipc-contracts";
 import { gdbFunction, gdbVarLocation } from "../mi-interface/gdb-state-database/gdbStateDatabase";
 import { WslUtilities, type WslDistro } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
+import { registerWorkspaceQueryHandlers } from "./workspace-handlers";
 /**
  * Performs registerAppAndEnvironmentQueryHandlers as part of this module's internal workflow.
  *
@@ -150,4 +151,5 @@ function registerDebuggerQueryHandlers(context: IpcRegistrationContext): void {
 export function registerIpcQueryHandlers(context: IpcRegistrationContext): void {
   registerAppAndEnvironmentQueryHandlers(context);
   registerDebuggerQueryHandlers(context);
+  registerWorkspaceQueryHandlers(context);
 }

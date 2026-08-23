@@ -9,6 +9,7 @@ import { app, BrowserWindow, ipcMain, nativeTheme } from "electron";
 import type { NormalizedConnection } from "../common/connection-types";
 import { registerAppEvents } from "./app-events";
 import { AppSettings } from "./app-settings";
+import { SatelliteWindowHandler } from "./satellite-window-handler";
 import {
   applyDefaultSettings,
   collectVersionInfo,
@@ -20,6 +21,7 @@ import {
 import { createGdbInterface } from "./gdb-lifecycle";
 import { registerIpcHandlers } from "./ipc";
 import { setIpcWindow } from "./ipc-sender";
+import { createWorkspaceService } from "./ipc/workspace-handlers";
 import { GdbMenu } from "./menu";
 import { miInterface } from "./mi-interface/mi-interface";
 import { isDebug, isLinux, isMac, isWin } from "./platform-info";
@@ -58,6 +60,7 @@ export let mainWindow: BrowserWindow;
 let debugWindow: BrowserWindow | undefined;
 
 export let gdbInterface: miInterface;
+let satelliteWindowHandler: SatelliteWindowHandler;
 
 export const gdbAppInfo: Map<string, unknown> = new Map<string, unknown>();
 
@@ -135,10 +138,17 @@ app.on("ready", () => {
    */
   gdbInterface = createGdbInterface(mainWindow, AppSettings);
   logStartupMilestone("gdb-interface-created");
+
+  // Initialize satellite window handler
+  satelliteWindowHandler = new SatelliteWindowHandler();
+  debugLog("[startup] Satellite window handler initialized");
+
   GdbMenu.installMenu(gdbInterface);
   wireWindowCloseHandlers(mainWindow, isDebug ? debugWindow : undefined);
 });
 registerAppEvents(app, nativeTheme, () => mainWindow);
+
+const workspaceService = createWorkspaceService(AppSettings);
 
 registerIpcHandlers({
   ipcMain,
@@ -148,4 +158,6 @@ registerIpcHandlers({
   getMainWindow: () => mainWindow,
   getGdbInterface: () => gdbInterface,
   isSelectedConnection,
+  workspaceService,
+  satelliteWindowHandler,
 });

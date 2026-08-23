@@ -11,6 +11,10 @@ import {
   IPC_CHANNELS,
   NotifyMainRequest,
 } from "../common/ipc-contracts";
+import {
+  WORKSPACE_IPC_CHANNELS,
+  MONITOR_PROFILE_IPC_CHANNELS,
+} from "../common/workspace-ipc-contracts";
 import type { IElectronAPI } from "./interface";
 
 type IpcApiCore = Pick<
@@ -167,6 +171,48 @@ const ipcApi: IpcApiCore = {
         send(IPC_CHANNELS.rendererToMain.commands.app.notify, command),
     },
   },
+  workspace: {
+    queries: {
+      getState: () => invoke(WORKSPACE_IPC_CHANNELS.workspaceGetState),
+      listHosts: () => invoke(WORKSPACE_IPC_CHANNELS.workspaceListHosts),
+    },
+    notifications: {
+      onWorkspaceUpdated: (callback) =>
+        subscribe(WORKSPACE_IPC_CHANNELS.workspaceUpdated, callback),
+    },
+    commands: {
+      createWindow: (request) =>
+        ipcRenderer.invoke(WORKSPACE_IPC_CHANNELS.workspaceCreateWindow, request),
+      moveWindow: (request) =>
+        ipcRenderer.invoke(WORKSPACE_IPC_CHANNELS.workspaceMoveWindow, request),
+      setWindowVisibility: (request) =>
+        ipcRenderer.invoke(WORKSPACE_IPC_CHANNELS.workspaceSetWindowVisibility, request),
+      saveHostLayout: (request) =>
+        ipcRenderer.invoke(WORKSPACE_IPC_CHANNELS.workspaceSaveHostLayout, request),
+      openHostWindow: (request) =>
+        ipcRenderer.invoke(WORKSPACE_IPC_CHANNELS.workspaceOpenHostWindow, request),
+      closeHostWindow: (request) =>
+        ipcRenderer.invoke(WORKSPACE_IPC_CHANNELS.workspaceCloseHostWindow, request),
+    },
+  },
+  monitorProfiles: {
+    queries: {
+      getProfiles: () => invoke(MONITOR_PROFILE_IPC_CHANNELS.monitorGetProfiles),
+      detectProfile: () => invoke(MONITOR_PROFILE_IPC_CHANNELS.monitorDetectProfile),
+    },
+    notifications: {
+      onConfigChanged: (callback) =>
+        subscribe(MONITOR_PROFILE_IPC_CHANNELS.monitorConfigChanged, callback),
+    },
+    commands: {
+      createProfile: (request) =>
+        ipcRenderer.invoke(MONITOR_PROFILE_IPC_CHANNELS.monitorCreateProfile, request),
+      applyProfile: (request) =>
+        ipcRenderer.invoke(MONITOR_PROFILE_IPC_CHANNELS.monitorApplyProfile, request),
+      deleteProfile: (request) =>
+        ipcRenderer.invoke(MONITOR_PROFILE_IPC_CHANNELS.monitorDeleteProfile, request),
+    },
+  },
 };
 
 contextBridge.exposeInMainWorld("ipcToMain", {
@@ -196,4 +242,21 @@ contextBridge.exposeInMainWorld("ipcToMain", {
   sendControlD: ipcApi.commands.debugger.sendControlD,
   respondToDangerousCommand: ipcApi.commands.debugger.respondToDangerousCommand,
   notifyMain: ipcApi.commands.app.notifyMain,
+  // Workspace methods
+  getWorkspaceState: ipcApi.workspace.queries.getState,
+  listHostWindows: ipcApi.workspace.queries.listHosts,
+  workspaceUpdated: ipcApi.workspace.notifications.onWorkspaceUpdated,
+  createDockableWindow: ipcApi.workspace.commands.createWindow,
+  moveWindow: ipcApi.workspace.commands.moveWindow,
+  setWindowVisibility: ipcApi.workspace.commands.setWindowVisibility,
+  saveDockLayout: ipcApi.workspace.commands.saveHostLayout,
+  openHostWindow: ipcApi.workspace.commands.openHostWindow,
+  closeHostWindow: ipcApi.workspace.commands.closeHostWindow,
+  // Monitor profile methods
+  getMonitorProfiles: ipcApi.monitorProfiles.queries.getProfiles,
+  detectMonitorProfile: ipcApi.monitorProfiles.queries.detectProfile,
+  monitorConfigChanged: ipcApi.monitorProfiles.notifications.onConfigChanged,
+  createMonitorProfile: ipcApi.monitorProfiles.commands.createProfile,
+  applyMonitorProfile: ipcApi.monitorProfiles.commands.applyProfile,
+  deleteMonitorProfile: ipcApi.monitorProfiles.commands.deleteProfile,
 });

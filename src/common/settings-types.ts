@@ -23,6 +23,14 @@ export interface GdbSettings {
       showLegend?: boolean;
     };
   };
+  workspace?: {
+    state?: unknown;
+    hostLayouts?: Record<string, unknown>;
+    windowBounds?: Record<string, [number, number, number, number]>;
+    windowMaximized?: Record<string, boolean>;
+    windowFullScreen?: Record<string, boolean>;
+    satelliteWindows?: unknown;
+  };
   command?: {
     history?: string[];
   };

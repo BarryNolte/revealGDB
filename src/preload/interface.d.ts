@@ -22,15 +22,31 @@ import {
   NotifyMainRequest,
   NotifyRenderMessage,
 } from "../common/ipc-contracts";
-import { MemoryData, WslDistro, ConnectionStatusPayload } from "../common/ipc-data-types";
+import { ConnectionStatusPayload, MemoryData, WslDistro } from "../common/ipc-data-types";
 import { ILocal } from "../common/local-view";
 import { GdbSettings } from "../common/settings-types";
+import type {
+  CreateWindowRequest,
+  DockHost,
+  MoveWindowRequest,
+  SaveHostLayoutRequest,
+  SetWindowVisibilityRequest,
+  WorkspaceState,
+} from "../common/workspace-types";
+import type {
+  CreateMonitorProfileRequest,
+  ApplyMonitorProfileRequest,
+  DeleteMonitorProfileRequest,
+  MonitorProfiles,
+  ProfileDetectionResult,
+} from "../common/monitor-profile-types";
 
 type Unsubscribe = () => void;
 type ValueCallback<T> = (data: T) => void;
 type ConsoleCallback = ValueCallback<string>;
 type ThemeChangedPayload = { shouldUseDarkColors: boolean };
 type ThreadsPayload = { th: Map<string, gdbThread>; grp: Map<string, gdbThreadGroup> };
+type WorkspaceUpdatedPayload = WorkspaceState;
 
 /**
  * Electron IPC API interface exposed to the renderer process.
@@ -95,6 +111,41 @@ export interface IElectronAPI {
     };
     app: {
       notifyMain: (command: NotifyMainRequest) => void;
+    };
+  };
+
+  workspace: {
+    queries: {
+      getState: () => Promise<WorkspaceState>;
+      listHosts: () => Promise<DockHost[]>;
+    };
+    notifications: {
+      onWorkspaceUpdated: (callback: ValueCallback<WorkspaceUpdatedPayload>) => Unsubscribe;
+    };
+    commands: {
+      createWindow: (request: CreateWindowRequest) => Promise<WorkspaceState>;
+      moveWindow: (request: MoveWindowRequest) => Promise<WorkspaceState>;
+      setWindowVisibility: (request: SetWindowVisibilityRequest) => Promise<WorkspaceState>;
+      saveHostLayout: (
+        request: SaveHostLayoutRequest,
+      ) => Promise<{ workspace: WorkspaceState; result: boolean }>;
+      openHostWindow: (request: { label?: string }) => Promise<{ hostId: string; host: DockHost }>;
+      closeHostWindow: (request: { hostId: string }) => Promise<{ success: boolean }>;
+    };
+  };
+
+  monitorProfiles: {
+    queries: {
+      getProfiles: () => Promise<MonitorProfiles>;
+      detectProfile: () => Promise<ProfileDetectionResult>;
+    };
+    notifications: {
+      onConfigChanged: (callback: ValueCallback<unknown>) => Unsubscribe;
+    };
+    commands: {
+      createProfile: (request: CreateMonitorProfileRequest) => Promise<{ profileId: string }>;
+      applyProfile: (request: ApplyMonitorProfileRequest) => Promise<{ success: boolean }>;
+      deleteProfile: (request: DeleteMonitorProfileRequest) => Promise<{ success: boolean }>;
     };
   };
 
@@ -268,6 +319,113 @@ export interface IElectronAPI {
    * @param command - The notification data to send
    */
   notifyMain: (command: NotifyMainRequest) => void;
+
+  // === Workspace Methods (Renderer -> Main) ===
+
+  /**
+   * Retrieves the current workspace state from the main process.
+   * @returns Promise resolving to the current workspace state
+   */
+  getWorkspaceState: () => Promise<WorkspaceState>;
+
+  /**
+   * Registers a callback for workspace state updates.
+   * @param callback - Function to handle workspace updates
+   * @returns Cleanup function to remove the listener
+   */
+  workspaceUpdated: (callback: ValueCallback<WorkspaceUpdatedPayload>) => Unsubscribe;
+
+  /**
+   * Creates a new dockable window in the workspace.
+   * @param request - Window creation request
+   * @returns Promise resolving to the updated workspace state
+   */
+  createDockableWindow: (request: CreateWindowRequest) => Promise<WorkspaceState>;
+
+  /**
+   * Moves a window to a different group.
+   * @param request - Window move request
+   * @returns Promise resolving to the updated workspace state
+   */
+  moveWindow: (request: MoveWindowRequest) => Promise<WorkspaceState>;
+
+  /**
+   * Sets the visibility of a window.
+   * @param request - Window visibility request
+   * @returns Promise resolving to the updated workspace state
+   */
+  setWindowVisibility: (request: SetWindowVisibilityRequest) => Promise<WorkspaceState>;
+
+  /**
+   * Saves the dock layout for a host.
+   * @param request - Host layout save request
+   * @returns Promise resolving to the workspace state and success flag
+   */
+  saveDockLayout: (
+    request: SaveHostLayoutRequest,
+  ) => Promise<{ workspace: WorkspaceState; result: boolean }>;
+
+  /**
+   * Lists all host windows (main + satellites).
+   * @returns Promise resolving to array of DockHost objects
+   */
+  listHostWindows: () => Promise<DockHost[]>;
+
+  /**
+   * Opens a new satellite host window.
+   * @param request - Optional label for the new host
+   * @returns Promise resolving to { hostId, host }
+   */
+  openHostWindow: (request: { label?: string }) => Promise<{ hostId: string; host: DockHost }>;
+
+  /**
+   * Closes a satellite host window.
+   * @param request - The hostId to close
+   * @returns Promise resolving to { success }
+   */
+  closeHostWindow: (request: { hostId: string }) => Promise<{ success: boolean }>;
+
+  // === Monitor Profile Methods (Renderer -> Main) ===
+
+  /**
+   * Retrieves all saved monitor profiles.
+   * @returns Promise resolving to MonitorProfiles object
+   */
+  getMonitorProfiles: () => Promise<MonitorProfiles>;
+
+  /**
+   * Auto-detects the best-matching monitor profile for current display configuration.
+   * @returns Promise resolving to ProfileDetectionResult
+   */
+  detectMonitorProfile: () => Promise<ProfileDetectionResult>;
+
+  /**
+   * Registers a callback for monitor configuration changes.
+   * @param callback - Function to handle display changes
+   * @returns Cleanup function to remove the listener
+   */
+  monitorConfigChanged: (callback: ValueCallback<unknown>) => Unsubscribe;
+
+  /**
+   * Creates a new monitor profile with current display and window configuration.
+   * @param request - Profile creation request with name
+   * @returns Promise resolving to { profileId }
+   */
+  createMonitorProfile: (request: CreateMonitorProfileRequest) => Promise<{ profileId: string }>;
+
+  /**
+   * Applies a saved monitor profile, restoring display and window configuration.
+   * @param request - Profile application request with profileId and options
+   * @returns Promise resolving to { success }
+   */
+  applyMonitorProfile: (request: ApplyMonitorProfileRequest) => Promise<{ success: boolean }>;
+
+  /**
+   * Deletes a monitor profile.
+   * @param request - Profile deletion request with profileId
+   * @returns Promise resolving to { success }
+   */
+  deleteMonitorProfile: (request: DeleteMonitorProfileRequest) => Promise<{ success: boolean }>;
 }
 
 /**

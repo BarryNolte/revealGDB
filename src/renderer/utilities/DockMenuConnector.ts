@@ -65,7 +65,7 @@ export class DockMenuConnector {
           }
         }
       }
-      // Update UI and save layout
+      // Phase 4: Sync visibility change to workspace system\n      if (di) {\n        try {\n          window.ipcToMain.commands.workspace.setWindowVisibility({\n            windowId: di.id,\n            isVisible: di.visible,\n          }).catch((error) => {\n            console.warn(\"Failed to sync window visibility to workspace:\", error);\n          });\n        } catch (error) {\n          console.warn(\"Failed to call workspace visibility sync:\", error);\n        }\n      }\n      // Update UI and save layout
       window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
       window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
     });

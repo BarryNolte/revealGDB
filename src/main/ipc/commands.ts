@@ -14,14 +14,16 @@ import {
   NotifyMainRequest,
   NotifyRenderMessage,
 } from "../../common/ipc-contracts";
+import type { SatelliteWindowsState } from "../../common/satellite-window-types";
 import { mapElectronWindowToWinPos } from "../mappers/window-pos-mapper";
 import { setNativeThemeFromAppTheme } from "../theme-support";
 import { disconnectAndResetApplication } from "../utilities/disconnect-helper";
+import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
+import { formatGeneralError } from "../utilities/html-error-formatter";
 import { debugLog } from "../utilities/logger";
 import { onGdbCommand, onGdbControlD } from "./on-gdb-command";
 import { IpcRegistrationContext } from "./types";
-import { formatGeneralError } from "../utilities/html-error-formatter";
-import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
+import { registerWorkspaceCommandHandlers } from "./workspace-handlers";
 export { onGdbCommand } from "./on-gdb-command";
 
 /**
@@ -169,6 +171,7 @@ type SaveSettingsRequest = Extract<
       | "save-source-viewer-font-size"
       | "save-source-viewer-font-name"
       | "save-dock-layout"
+      | "save-satellite-windows"
       | "save-grid-columns"
       | "reset-grid-columns"
       | "save-sections-view-options"
@@ -183,6 +186,7 @@ type SaveSettingsRequest = Extract<
  * @returns The computed result produced by this operation.
  */
 
+// eslint-disable-next-line complexity
 function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationContext): void {
   const mainWindow = context.getMainWindow();
 
@@ -232,6 +236,12 @@ function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationCo
         mapElectronWindowToWinPos(mainWindow),
       );
       break;
+    case "save-satellite-windows": {
+      const satelliteWindowsState = msg.data as unknown as SatelliteWindowsState;
+      context.appSettings.setSync("gdb.workspace.satelliteWindows", satelliteWindowsState);
+      debugLog("[satellite-windows] Persisted satellite window state");
+      break;
+    }
     case "save-grid-columns":
       context.appSettings.setSync(
         `${GDB_GUI_PREFIX}gridColumns.${msg.data.gridName}`,
@@ -409,4 +419,6 @@ export function registerIpcCommandHandlers(context: IpcRegistrationContext): voi
   context.ipcMain.on(IPC_CHANNELS.rendererToMain.commands.debugger.sendControlD, () => {
     onGdbControlD(context);
   });
+
+  registerWorkspaceCommandHandlers(context);
 }

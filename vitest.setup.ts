@@ -46,3 +46,9 @@ vi.mock("./src/main/main", () => ({
     },
   },
 }));
+
+// Setup global mocks for jsdom environment
+if (typeof globalThis !== "undefined" && typeof globalThis.window !== "undefined") {
+  // Mock window.ipcToMain for renderer tests
+  globalThis.window.ipcToMain = {} as any;
+}

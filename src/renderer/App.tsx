@@ -6,10 +6,11 @@
  */
 import { DockManager } from "../../node_modules/dock-spawn-ts/lib/js/DockManager.js";
 
-import { JSX, RefObject, Suspense, lazy, useEffect, useRef } from "react";
 import type { ComponentType, ForwardRefExoticComponent, RefAttributes } from "react";
+import { JSX, RefObject, Suspense, lazy, useEffect, useRef } from "react";
 import type { NotifyRenderMessage } from "../common/ipc-contracts";
 import type { GdbSettings } from "../common/settings-types";
+import { useWorkspace } from "./hooks/useWorkspace";
 import { AppTheme, applyTheme } from "./theme-manager";
 import { setAppMainVersionInfo } from "./utilities/app-version-state";
 
@@ -32,7 +33,29 @@ import GdbSourceWindow from "./ToolWindows/GdbSourceWindow";
 import { TOOL_WINDOW_TITLES } from "./ToolWindows/toolWindowTitles";
 import { DockMenuConnector } from "./utilities/DockMenuConnector.js";
 import { dockMenuConnector, setDockMenuConnector } from "./utilities/dock-menu-state";
+import { SatelliteWindowManager } from "./utilities/SatelliteWindowManager";
 import { SAVE_DOCK_LAYOUT, UPDATE_WINDOW_LIST } from "./utilities/renderer-events";
+
+/**
+ * Gets the host ID from the URL query parameters.
+ * Satellite windows are loaded with ?dockHost=<hostId> query parameter.
+ *
+ * @returns The hostId (e.g., 'main', 'satellite-xyz'), defaults to 'main'
+ */
+function getHostIdFromUrl(): string {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("dockHost") || "main";
+}
+
+/**
+ * Extend Window interface to include satellite window manager.
+ * Used for lifecycle management and debugging access to the satellite window system.
+ */
+declare global {
+  interface Window {
+    satelliteWindowManager: SatelliteWindowManager | undefined;
+  }
+}
 
 const AboutBox = lazy(() =>
   import("./Dialogs/AboutBox.js").then((module) => ({
@@ -93,6 +116,12 @@ const GdbThreadsWindow = lazyWindow(() => import("./ToolWindows/GdbThreadsWindow
  * Handles window layout, docking, undocking, and resizing operations.
  */
 let dockManager: DockManager;
+
+/**
+ * Satellite window manager for multi-window docking support.
+ * Persists for the application lifetime to handle satellite window lifecycle.
+ */
+let satelliteWindowManager: SatelliteWindowManager;
 
 /**
  * Performs deferred window as part of this module's internal workflow.
@@ -278,12 +307,25 @@ function createDefaultLayout(dm: DockManager, connector: DockMenuConnector): voi
   dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.disassembly));
 }
 
-async function initializeDockManager(gdb: GdbSettings): Promise<void> {
+async function initializeDockManager(
+  gdb: GdbSettings,
+  workspace: ReturnType<typeof useWorkspace> | null,
+): Promise<void> {
+  const hostId = getHostIdFromUrl();
   const dockManagerElement = document.getElementById("revealDockManager")!;
   dockManager = new DockManager(dockManagerElement);
   dockManager.config.dialogRootElement = dockManagerElement;
-  dockManager.config.enableBrowserWindows = false;
+  // Enable satellite windows (browser windows) for tool panels
+  dockManager.config.enableBrowserWindows = true;
   dockManager.initialize();
+
+  // Initialize satellite window manager for handling multi-window docking
+  satelliteWindowManager = new SatelliteWindowManager(dockManager);
+  console.log("[revealGDB] Satellite window manager initialized");
+
+  // Expose satellite window manager on window object for debugging and lifecycle access
+  window.satelliteWindowManager = satelliteWindowManager;
+
   setDockMenuConnector(new DockMenuConnector(dockManager));
   if (!dockMenuConnector) {
     console.error("Failed to initialize DockMenuConnector");
@@ -292,23 +334,62 @@ async function initializeDockManager(gdb: GdbSettings): Promise<void> {
   registerAllPanels(dockMenuConnector);
   setupLayoutListeners(dockManager);
   let loadedFromState = false;
-  if (gdb.gui?.dockLayout) {
+
+  // Try to load per-host layout first, fallback to global dockLayout for backward compatibility
+  let layoutToLoad: unknown = null;
+
+  if (workspace?.workspace?.hostLayouts?.[hostId]) {
+    // Use per-host layout if available
+    layoutToLoad = workspace.workspace.hostLayouts[hostId];
+    console.log(`[revealGDB] Loading per-host layout for hostId: ${hostId}`);
+  } else if (gdb.gui?.dockLayout) {
+    // Fallback to global dockLayout for backward compatibility (main window)
+    layoutToLoad = gdb.gui.dockLayout;
+    console.log("[revealGDB] Loading global dockLayout (backward compatibility)");
+  }
+
+  if (layoutToLoad) {
     try {
       // loadState is async in dock-spawn-ts; must await before resizing or
       // all panels stay hidden (resize fires before deserialization completes).
-      await dockManager.loadState(JSON.stringify(gdb.gui?.dockLayout));
+      await dockManager.loadState(JSON.stringify(layoutToLoad));
       loadedFromState = true;
     } catch (e) {
       // Saved layout is corrupt or incompatible — fall through to default layout.
-      console.warn("dock-spawn-ts: failed to restore saved layout, using default", e);
+      console.warn(
+        `[revealGDB] Failed to restore layout for hostId: ${hostId}, using default layout`,
+        e,
+      );
     }
   }
+
   if (!loadedFromState) {
     createDefaultLayout(dockManager, dockMenuConnector);
+    // After building default layout programmatically, we need to yield to the event loop
+    // to allow React to render the panels before we try to resize/layout the dock manager.
+    // This is necessary because createDefaultLayout only builds the layout tree;
+    // the actual DOM elements need to be rendered by React first.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // After building default layout programmatically, save it to persistence
+    // (programmatic dock operations don't trigger event listeners, so we must save manually)
+    if (workspace && workspace.saveHostLayout) {
+      try {
+        const defaultLayout = JSON.parse(dockManager.saveState());
+        await workspace.saveHostLayout({
+          hostId,
+          layout: defaultLayout,
+        });
+        console.log(`[revealGDB] Saved newly-built default dock layout for hostId: ${hostId}`);
+      } catch (error) {
+        console.error("[revealGDB] Failed to save default dock layout:", error);
+      }
+    }
   }
   dockMenuConnector.reconsilePanels();
   window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
   // Trigger initial sizing only after dock manager exists.
+  // This calls handleResize() which invokes dockManager.resize() with proper dimensions.
   window.dispatchEvent(new Event("resize"));
 }
 /**
@@ -496,6 +577,104 @@ function AppDialogs({
 }
 
 /**
+ * Setup workspace save dock layout handler.
+ * Integrates with dock manager to persist layout changes to workspace settings.
+ * Detects the current host ID from URL and saves layout for that specific host.
+ *
+ * @param workspace - The workspace state hook result
+ */
+function setupWorkspaceSaveDockLayout(workspace: ReturnType<typeof useWorkspace> | null): void {
+  const hostId = getHostIdFromUrl();
+  const handleSaveDockLayout = async (): Promise<void> => {
+    if (!dockManager || !workspace) {
+      return;
+    }
+
+    try {
+      const layout = JSON.parse(dockManager.saveState());
+      // Use workspace IPC instead of old notifyMain pattern
+      await workspace.saveHostLayout({
+        hostId,
+        layout: layout,
+      });
+    } catch (error) {
+      console.error(`Failed to save dock layout for hostId ${hostId} via workspace:`, error);
+      // Fallback to old method for compatibility
+      try {
+        const layout = JSON.parse(dockManager.saveState());
+        window.ipcToMain.commands.app.notifyMain({ command: "save-dock-layout", data: layout });
+      } catch (fallbackError) {
+        console.error("Fallback dock layout save also failed:", fallbackError);
+      }
+    }
+  };
+
+  // Store handler globally so event listener can access it
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (window as any).__workspaceSaveDockLayout = handleSaveDockLayout;
+}
+
+/**
+ * Setup dialog listeners for app commands from main process.
+ * Responds to main process notifications to show various dialogs.
+ *
+ * @param aboutBoxRef - Reference to about box dialog
+ * @param whileConnectingRef - Reference to while connecting dialog
+ * @param connectionsRef - Reference to connections dialog
+ * @param settingsRef - Reference to settings dialog
+ * @param sectionsViewRef - Reference to sections view dialog
+ */
+function setupDialogListeners(
+  aboutBoxRef: RefObject<AboutBoxHandle>,
+  whileConnectingRef: RefObject<WhileConnectingDialogHandle>,
+  connectionsRef: RefObject<ConnectionManagerHandle>,
+  settingsRef: RefObject<SettingsHandle>,
+  sectionsViewRef: RefObject<SectionsViewHandle>,
+): void {
+  window.ipcToMain.queries.app.getVersionInfo().then((e) => {
+    setAppMainVersionInfo(e);
+  });
+
+  // Listen for commands from main process to show dialogs
+  window.ipcToMain.notifications.render((msg: NotifyRenderMessage) => {
+    switch (msg.command) {
+      case "about-box":
+        aboutBoxRef.current?.ShowDialog();
+        break;
+      case "connection-dialog":
+        whileConnectingRef.current?.ShowDialog();
+        break;
+      case "connections-dialog":
+        connectionsRef.current?.ShowDialog();
+        break;
+      case "settings-dialog":
+        settingsRef.current?.ShowDialog();
+        break;
+      case "sections-view":
+        sectionsViewRef.current?.ShowDialog();
+        break;
+    }
+  });
+}
+
+/**
+ * Setup theme change listener for OS theme changes in Auto mode.
+ * Fetches current theme setting and applies Auto theme if active.
+ *
+ * @returns Unsubscribe function for theme change listener
+ */
+function setupThemeChangeListener(): (() => void) | undefined {
+  return window.ipcToMain.notifications.themeChanged?.((data) => {
+    window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings) => {
+      const currentTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
+      if (currentTheme === "Auto") {
+        applyTheme("Auto", data?.shouldUseDarkColors ?? false);
+      }
+    });
+  });
+}
+
+/**
  * Performs app as part of this module's public API.
  *
  * @remarks
@@ -511,55 +690,33 @@ export default function App(): JSX.Element {
   const whileConnectingRef = useRef<WhileConnectingDialogHandle>(null);
   const sectionsViewRef = useRef<SectionsViewHandle>(null);
 
+  // Workspace state for multi-window support
+  const workspace = useWorkspace();
+
+  // Initialize version info and dialog listeners
   useEffect(() => {
-    window.ipcToMain.queries.app.getVersionInfo().then((e) => {
-      setAppMainVersionInfo(e);
-    });
+    setupDialogListeners(
+      aboutBoxRef,
+      whileConnectingRef,
+      connectionsRef,
+      settingsRef,
+      sectionsViewRef,
+    );
+  }, []);
 
-    // Listen for commands from main process to show dialogs
-    window.ipcToMain.notifications.render((msg: NotifyRenderMessage) => {
-      switch (msg.command) {
-        case "about-box":
-          aboutBoxRef.current?.ShowDialog();
-          break;
-        case "connection-dialog":
-          whileConnectingRef.current?.ShowDialog();
-          break;
-        case "connections-dialog":
-          connectionsRef.current?.ShowDialog();
-          break;
-        case "settings-dialog":
-          settingsRef.current?.ShowDialog();
-          break;
-        case "sections-view":
-          sectionsViewRef.current?.ShowDialog();
-          break;
-      }
-    });
-
-    // Load settings first so dock initialization can avoid race conditions.
-    window.ipcToMain.queries.app.getSettings().then(async (gdb: GdbSettings): Promise<void> => {
-      // Apply saved theme before dock layout renders
-      const savedTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
-      applyTheme(savedTheme);
-      await initializeDockManager(gdb);
-    });
-
+  // Setup dock manager integration and event listeners
+  useEffect(() => {
     window.addEventListener("changeApplication", handleAppChange);
 
     // Handle OS theme changes pushed from the main process (Auto mode)
-    const unsubTheme = window.ipcToMain.notifications.themeChanged?.((data) => {
-      window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings) => {
-        const currentTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
-        if (currentTheme === "Auto") {
-          applyTheme("Auto", data?.shouldUseDarkColors ?? false);
-        }
-      });
-    });
+    const unsubTheme = setupThemeChangeListener();
 
     window.addEventListener("resize", handleResize);
     dockMenuConnector?.reconsilePanels();
     window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
+
+    // Setup workspace save handler that integrates with dock manager
+    setupWorkspaceSaveDockLayout(workspace);
 
     // Cleanup function: remove event listeners on unmount
     return () => {
@@ -567,7 +724,25 @@ export default function App(): JSX.Element {
       window.removeEventListener("changeApplication", handleAppChange);
       if (unsubTheme) unsubTheme();
     };
-  }, []);
+  }, [workspace]);
+
+  // Separate effect to initialize dock manager after workspace is loaded
+  useEffect(() => {
+    // Wait for workspace to be fully loaded before initializing dock manager
+    if (workspace.isLoading || dockManager) {
+      // Skip if workspace still loading or dock manager already initialized
+      return;
+    }
+
+    // Load settings and apply theme before dock initialization
+    window.ipcToMain.queries.app.getSettings().then(async (gdb: GdbSettings): Promise<void> => {
+      // Apply saved theme before dock layout renders
+      const savedTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
+      applyTheme(savedTheme);
+      await initializeDockManager(gdb, workspace);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workspace.isLoading]);
 
   return (
     <div className={"main-page-container"}>
@@ -603,12 +778,15 @@ window.addEventListener("beforeunload", () => {
 /**
  * Handle dock layout save requests.
  * Serializes the current layout and sends it to the main process for persistence.
+ * Phase 4: Now uses workspace IPC instead of direct notifyMain.
  */
 window.addEventListener(SAVE_DOCK_LAYOUT, () => {
-  if (!dockManager) {
-    return;
+  // Get the save handler from global scope (set in App component effect)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const globalSaveHandler = (window as any).__workspaceSaveDockLayout;
+  if (globalSaveHandler) {
+    globalSaveHandler().catch((error: unknown) => {
+      console.error("Failed to save dock layout:", error);
+    });
   }
-
-  const layout = JSON.parse(dockManager.saveState());
-  window.ipcToMain.commands.app.notifyMain({ command: "save-dock-layout", data: layout });
 });
