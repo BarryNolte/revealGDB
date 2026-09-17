@@ -18,11 +18,11 @@ import { TOGGLE_WINDOW, UPDATE_WINDOW_LIST } from "../utilities/renderer-events"
 /** Props for RevealToolbar component */
 export type RevealToolbarProps = {
   /** Reference to connection manager dialog for imperative access */
-  connectionsRef?: RefObject<ConnectionManagerHandle> | null;
+  connectionsRef?: RefObject<ConnectionManagerHandle | null> | null;
   /** Reference to while-connecting dialog for imperative access */
-  whileConnectingRef?: RefObject<WhileConnectingDialogHandle> | null;
+  whileConnectingRef?: RefObject<WhileConnectingDialogHandle | null> | null;
   /** Reference to settings dialog for imperative access */
-  settingsRef?: RefObject<SettingsHandle> | null;
+  settingsRef?: RefObject<SettingsHandle | null> | null;
 };
 
 /** All handlers and state returned by useToolbarController */
@@ -41,6 +41,7 @@ export type ToolbarController = {
   onSettings: () => void;
   onSelectWindow: (args: MenuEventArgs) => void;
   onOpenWindow: () => void;
+  onCreateNewWindow: () => void;
 };
 /**
  * Performs createToolbarHandlers as part of this module's internal workflow.
@@ -77,6 +78,9 @@ function createToolbarHandlers({
         }),
       ),
     onOpenWindow: () => dockMenuConnector?.reconsilePanels(),
+    onCreateNewWindow: async () => {
+      await window.ipcToMain.commands.workspace.createHost({ label: "New Window" });
+    },
   };
 }
 /**

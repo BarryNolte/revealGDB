@@ -1,14 +1,892 @@
 
-> revealgdb@0.9.2-3fca6d1 test:fuzz
-> vitest run tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts
+ RUN  v4.1.11 C:/Users/barry/Documents/Projects/revealGDB
+
+ Γ£ô tests/vite/renderer/App.test.tsx > App module-level save-dock-layout listener (no dock init) > returns early without calling notifyMain when dockManager is not yet set 3ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > renders the main-page-container div 76ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > renders the toolbar 16ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > renders revealDockDiv and revealDockManager elements 8ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > renders all nine tool-window container divs 9ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > calls getVersionInfo on mount 29ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > calls setAppMainVersionInfo with the resolved version data 17ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > registers the render notification callback 4ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > about-box command: invokes optional ShowDialog without throwing 5ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > connection-dialog command: does not throw 4ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > connections-dialog command: does not throw 5ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > settings-dialog command: does not throw 4ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > calls getSettings on mount 9ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > applies saved applicationTheme from settings 178ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > defaults to Auto theme when applicationTheme is absent 35ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > constructs a DockManager instance on dock init 26ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > calls dockManager.initialize() 30ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > creates and sets a DockMenuConnector 41ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > registers exactly 9 tool-window panels 21ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > registers expected panel IDs 37ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > attaches a layout listener to the dock manager 27ms
+ ├ù tests/vite/renderer/App.test.tsx > App component > calls reconsilePanels after dock init 18ms
+   ΓåÆ expected "vi.fn()" to be called at least once
+ ├ù tests/vite/renderer/App.test.tsx > App component > calls loadState when gdb.gui.dockLayout is present 20ms
+   ΓåÆ expected "vi.fn()" to be called with arguments: [ '{"panels":["a"]}' ]
+
+Number of calls: 0
+
+ ├ù tests/vite/renderer/App.test.tsx > App component > does NOT create default layout when saved layout loads successfully 22ms
+   ΓåÆ expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array []
 
 
-[1m[30m[46m RUN [49m[39m[22m [36mv4.1.7 [39m[90mC:/Users/barry/Documents/Projects/revealGDB[39m
+Number of calls: 1
 
- [32mΓ£ô[39m tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts [2m([22m[2m262 tests[22m[2m)[22m[32m 129[2mms[22m[39m
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > creates default layout (createAllWindows) when no dockLayout in settings 38ms
+ ├ù tests/vite/renderer/App.test.tsx > App component > calls dockFill, dockRight, and dockUp for default layout wiring 29ms
+   ΓåÆ expected "vi.fn()" to be called at least once
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > falls back to default layout when loadState throws 24ms
+ ├ù tests/vite/renderer/App.test.tsx > App component > onContainerResized dispatches update-window-list and save-dock-layout 15ms
+   ΓåÆ dm.getPanels is not a function
+ ├ù tests/vite/renderer/App.test.tsx > App component > onTabChanged dispatches update-window-list and save-dock-layout 16ms
+   ΓåÆ expected [ 'update-window-list' ] to include 'save-dock-layout'
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > changeApplication with theme calls applyTheme with the theme value 18ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > changeApplication without theme does NOT call applyTheme 32ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > changeApplication with null detail does not throw 19ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > subscribes to themeChanged notifications on mount 32ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > themeChanged with Auto mode calls applyTheme('Auto', shouldUseDarkColors) 53ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > themeChanged with non-Auto mode does NOT call applyTheme 40ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > themeChanged with missing shouldUseDarkColors defaults to false 34ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > resize event calls dockManager.resize when dockMenuConnector is set 23ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > resize event before dock init (dockMenuConnector null) does not throw 14ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > unmounting calls unsubTheme 14ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > unmounting removes the resize event listener 17ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > unmounting removes the changeApplication event listener 15ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > save-dock-layout event calls saveState and notifyMain after dock init 17ms
+ Γ£ô tests/vite/renderer/App.test.tsx > App component > beforeunload dispatches a save-dock-layout event 0ms
 
-[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
-[2m      Tests [22m [1m[32m262 passed[39m[22m[90m (262)[39m
-[2m   Start at [22m 10:37:36
-[2m   Duration [22m 1.93s[2m (transform 456ms, setup 55ms, import 522ms, tests 129ms, environment 1.01s)[22m
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ» Failed Tests 6 ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > calls reconsilePanels after dock init
+AssertionError: expected "vi.fn()" to be called at least once
+ Γ¥» tests/vite/renderer/App.test.tsx:456:46
+    454|   it("calls reconsilePanels after dock init", async () => {
+    455|     await renderApp();
+    456|     expect(appMocks.dcSpies.reconsilePanels).toHaveBeenCalled();
+       |                                              ^
+    457|   });
+    458|
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/6]ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > calls loadState when gdb.gui.dockLayout is present
+AssertionError: expected "vi.fn()" to be called with arguments: [ '{"panels":["a"]}' ]
+
+Number of calls: 0
+
+ Γ¥» tests/vite/renderer/App.test.tsx:464:40
+    462|     const saved = { panels: ["a"] };
+    463|     await renderApp({ gui: { dockLayout: saved } });
+    464|     expect(appMocks.dmSpies.loadState).toHaveBeenCalledWith(JSON.strinΓÇª
+       |                                        ^
+    465|   });
+    466|
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[2/6]ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > does NOT create default layout when saved layout loads successfully
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array []
+
+
+Number of calls: 1
+
+ Γ¥» tests/vite/renderer/App.test.tsx:469:51
+    467|   it("does NOT create default layout when saved layout loads successfuΓÇª
+    468|     await renderApp({ gui: { dockLayout: { panels: [] } } });
+    469|     expect(appMocks.dcSpies.createAllWindows).not.toHaveBeenCalled();
+       |                                                   ^
+    470|   });
+    471|
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[3/6]ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > calls dockFill, dockRight, and dockUp for default layout wiring
+AssertionError: expected "vi.fn()" to be called at least once
+ Γ¥» tests/vite/renderer/App.test.tsx:483:37
+    481|     expect(appMocks.dmSpies.dockFill).toHaveBeenCalled();
+    482|     expect(appMocks.dmSpies.dockRight).toHaveBeenCalled();
+    483|     expect(appMocks.dmSpies.dockUp).toHaveBeenCalled();
+       |                                     ^
+    484|   });
+    485|
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[4/6]ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > onContainerResized dispatches update-window-list and save-dock-layout
+TypeError: dm.getPanels is not a function
+ Γ¥» Object.onContainerResized src/renderer/App.tsx:232:25
+    230|
+    231|       // Log current panel dimensions
+    232|       const panels = dm.getPanels();
+       |                         ^
+    233|       panels.forEach((panel) => {
+    234|         log(`  Panel: ${panel.title}`);
+ Γ¥» tests/vite/renderer/App.test.tsx:503:14
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[5/6]ΓÄ»
+
+ FAIL  tests/vite/renderer/App.test.tsx > App component > onTabChanged dispatches update-window-list and save-dock-layout
+AssertionError: expected [ 'update-window-list' ] to include 'save-dock-layout'
+ Γ¥» tests/vite/renderer/App.test.tsx:518:19
+    516|     const types = spy.mock.calls.map((c) => (c[0] as Event).type);
+    517|     expect(types).toContain("update-window-list");
+    518|     expect(types).toContain("save-dock-layout");
+       |                   ^
+    519|   });
+    520|
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[6/6]ΓÄ»
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Errors ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+Vitest caught 41 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "renders the main-page-container div". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "renders the toolbar". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "renders revealDockDiv and revealDockManager elements". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "renders all nine tool-window container divs". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "calls getVersionInfo on mount". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "calls setAppMainVersionInfo with the resolved version data". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "calls getSettings on mount". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "calls getSettings on mount". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "calls getSettings on mount". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "calls getSettings on mount". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "calls getSettings on mount". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "calls getSettings on mount". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "applies saved applicationTheme from settings". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+ Γ¥» runNextTicks node:internal/process/task_queues:65:5
+ Γ¥» processTimers node:internal/timers:615:9
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "defaults to Auto theme when applicationTheme is absent". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+ Γ¥» runNextTicks node:internal/process/task_queues:65:5
+ Γ¥» processTimers node:internal/timers:615:9
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "constructs a DockManager instance on dock init". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+ Γ¥» runNextTicks node:internal/process/task_queues:65:5
+ Γ¥» processTimers node:internal/timers:615:9
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "calls dockManager.initialize()". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+ Γ¥» runNextTicks node:internal/process/task_queues:65:5
+ Γ¥» processTimers node:internal/timers:615:9
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "creates and sets a DockMenuConnector". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "registers exactly 9 tool-window panels". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+ Γ¥» runNextTicks node:internal/process/task_queues:65:5
+ Γ¥» processTimers node:internal/timers:615:9
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "registers expected panel IDs". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+ Γ¥» runNextTicks node:internal/process/task_queues:65:5
+ Γ¥» processTimers node:internal/timers:615:9
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "attaches a layout listener to the dock manager". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "calls reconsilePanels after dock init". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "calls loadState when gdb.gui.dockLayout is present". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+ Γ¥» runNextTicks node:internal/process/task_queues:65:5
+ Γ¥» processTimers node:internal/timers:615:9
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "does NOT create default layout when saved layout loads successfully". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+ Γ¥» runNextTicks node:internal/process/task_queues:65:5
+ Γ¥» processTimers node:internal/timers:615:9
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "creates default layout (createAllWindows) when no dockLayout in settings". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "calls dockFill, dockRight, and dockUp for default layout wiring". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+ Γ¥» runNextTicks node:internal/process/task_queues:65:5
+ Γ¥» processTimers node:internal/timers:615:9
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "falls back to default layout when loadState throws". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "onContainerResized dispatches update-window-list and save-dock-layout". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "onTabChanged dispatches update-window-list and save-dock-layout". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "changeApplication with theme calls applyTheme with the theme value". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+ Γ¥» runNextTicks node:internal/process/task_queues:65:5
+ Γ¥» processTimers node:internal/timers:615:9
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "changeApplication without theme does NOT call applyTheme". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+ Γ¥» runNextTicks node:internal/process/task_queues:65:5
+ Γ¥» processTimers node:internal/timers:615:9
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "changeApplication with null detail does not throw". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+ Γ¥» runNextTicks node:internal/process/task_queues:65:5
+ Γ¥» processTimers node:internal/timers:615:9
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "subscribes to themeChanged notifications on mount". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+ Γ¥» runNextTicks node:internal/process/task_queues:65:5
+ Γ¥» processTimers node:internal/timers:615:9
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "themeChanged with Auto mode calls applyTheme('Auto', shouldUseDarkColors)". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "themeChanged with non-Auto mode does NOT call applyTheme". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "themeChanged with missing shouldUseDarkColors defaults to false". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+ Γ¥» runNextTicks node:internal/process/task_queues:65:5
+ Γ¥» processTimers node:internal/timers:615:9
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "resize event calls dockManager.resize when dockMenuConnector is set". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "unmounting calls unsubTheme". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "unmounting calls unsubTheme". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "unmounting removes the resize event listener". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "unmounting removes the changeApplication event listener". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ» Unhandled Rejection ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+TypeError: dm.dockDown is not a function
+ Γ¥» createDefaultLayout src/renderer/App.tsx:337:6
+    335|   log(`[LAYOUT] Locals window docked right with 50% width split (top rΓÇª
+    336|
+    337|   dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TΓÇª
+       |      ^
+    338|   log(`[LAYOUT] Command window docked down with 50% height split (bottΓÇª
+    339|
+ Γ¥» initializeDockManager src/renderer/App.tsx:407:5
+ Γ¥» src/renderer/App.tsx:663:11
+
+This error originated in "tests/vite/renderer/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "save-dock-layout event calls saveState and notifyMain after dock init". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 37 passed (43)
+     Errors  41 errors
+   Start at  13:15:02
+   Duration  2.47s (transform 244ms, setup 46ms, import 358ms, tests 1.10s, environment 765ms)
 

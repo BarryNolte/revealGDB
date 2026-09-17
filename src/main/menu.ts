@@ -106,6 +106,12 @@ export class GdbMenu {
         },
         { type: "separator" },
         {
+          label: "New Window",
+          click: () => {
+            sendToRenderer(NOTIFY_RENDER, { command: "create-new-window" });
+          },
+        },
+        {
           label: "Command Entry",
           accelerator: "F1",
           click: () => {

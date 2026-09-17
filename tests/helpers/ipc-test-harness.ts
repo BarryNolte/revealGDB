@@ -13,6 +13,7 @@
 import { vi } from "vitest";
 import type { GdbAny } from "../../src/common/gdb-common";
 import type { IpcRegistrationContext } from "../../src/main/ipc/types";
+import type { ElectronStateStore } from "../../src/main/workspace-state-store";
 
 export type BrowserWindowMock = {
   fullScreen: boolean;
@@ -24,6 +25,8 @@ export type BrowserWindowMock = {
   loadURL: (url: string) => void;
   loadFile: (filePath: string) => void;
   isDestroyed: () => boolean;
+  isFullScreen: () => boolean;
+  isMaximized: () => boolean;
   on: (event: string, handler: () => void) => void;
   webContents: {
     send: (channel: string, payload?: unknown) => void;
@@ -57,6 +60,7 @@ type IpcHarnessOptions = {
   fontList?: Map<string, string>;
   gdbAppInfo?: Map<string, GdbAny>;
   isSelectedConnection?: IpcRegistrationContext["isSelectedConnection"];
+  workspaceStateStore?: Pick<ElectronStateStore, "save">;
 };
 /**
  * Performs createMockAppSettings as part of this module's internal workflow.
@@ -69,12 +73,14 @@ export function createMockAppSettings(
   overrides: {
     getSync?: (key: string) => unknown;
     setSync?: (key: string, value: unknown) => void;
+    delete?: (key: string) => void;
     unsetSync?: (key: string) => void;
   } = {},
 ) {
   return {
     getSync: vi.fn<(key: string) => unknown>(),
     setSync: vi.fn<(key: string, value: unknown) => void>(),
+    delete: vi.fn<(key: string) => void>(),
     unsetSync: vi.fn<(key: string) => void>(),
     ...overrides,
   };
@@ -116,6 +122,8 @@ export function createMockBrowserWindow(
     loadURL: vi.fn<(url: string) => void>(),
     loadFile: vi.fn<(filePath: string) => void>(),
     isDestroyed: vi.fn<() => boolean>().mockReturnValue(false),
+    isFullScreen: vi.fn<() => boolean>().mockReturnValue(false),
+    isMaximized: vi.fn<() => boolean>().mockReturnValue(false),
     on: vi.fn<(event: string, handler: () => void) => void>(),
     webContents: mergedWebContents,
     ...windowOverrides,
@@ -166,6 +174,7 @@ export function createIpcRegistrationHarness(options: IpcHarnessOptions = {}) {
       (((value: unknown) => {
         return Boolean(value);
       }) as IpcRegistrationContext["isSelectedConnection"]),
+    workspaceStateStore: options.workspaceStateStore as ElectronStateStore | undefined,
   };
 
   return {

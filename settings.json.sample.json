@@ -1,341 +1,37 @@
 {
-  "connections": [
-    {
-      "name": "wsl",
-      "executable": "/home/barry/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/xtensa-esp-elf-gdb-3.12",
-      "connectionType": "wsl",
-      "extraArguments": []
-    }
-  ],
   "gdb": {
     "gui": {
-      "sourceViewerTheme": "chaos",
-      "sourceViewerFontSize": "14",
-      "mainTheme": "dark",
-      "windowSize": {
-        "x": 0,
-        "y": 0,
-        "width": 1625,
-        "height": 1406,
-        "fullscreen": false
+      "applicationTheme": "Auto",
+      "sourceViewerTheme": "dark",
+      "sourceViewerFontSize": "12px",
+      "sourceViewerFontName": "Monaco",
+      "showDebugInfo": false,
+      "disableAutoSymbolLoading": false,
+      "gridColumns": {},
+      "sectionsView": {
+        "showEmptySpace": true,
+        "showLegend": true
       },
-      "dockLayout": {
-        "type": "split",
-        "orientation": "horizontal",
-        "id": 0,
-        "parentId": -1,
-        "sizes": [
-          0.4153750774953503,
-          0.5846249225046497
-        ],
-        "areas": [
-          {
-            "type": "split",
-            "orientation": "vertical",
-            "id": 1,
-            "parentId": 0,
-            "sizes": [
-              0.6502003205128205,
-              0.18313301282051278,
-              0.16666666666666669
-            ],
-            "areas": [
-              {
-                "type": "tab",
-                "parentId": 1,
-                "widgets": [
-                  {
-                    "className": "GdbSourceWindow",
-                    "index": 0,
-                    "depth": 2
-                  }
-                ]
-              },
-              {
-                "type": "tab",
-                "parentId": 1,
-                "widgets": [
-                  {
-                    "className": "GdbThreadsWindow",
-                    "index": 0,
-                    "metadata": {
-                      "data": [
-                        48,
-                        45,
-                        74,
-                        282,
-                        125,
-                        300
-                      ]
-                    },
-                    "depth": 2
-                  },
-                  {
-                    "className": "GdbBreakPointWindow",
-                    "index": 1,
-                    "metadata": {
-                      "data": [
-                        25,
-                        60,
-                        48,
-                        42,
-                        60,
-                        62,
-                        38,
-                        74,
-                        77,
-                        80,
-                        35,
-                        205
-                      ]
-                    },
-                    "depth": 2
-                  }
-                ]
-              },
-              {
-                "type": "tab",
-                "parentId": 1,
-                "widgets": [
-                  {
-                    "className": "GdbCallStackWindow",
-                    "index": 0,
-                    "metadata": {
-                      "data": [
-                        64,
-                        155,
-                        89,
-                        64,
-                        85,
-                        64,
-                        60,
-                        87
-                      ]
-                    },
-                    "depth": 2
-                  }
-                ]
-              }
-            ]
+      "windowConfigs": {
+        "main": {
+          "bounds": {
+            "x": 100,
+            "y": 100,
+            "width": 1200,
+            "height": 800
           },
-          {
-            "type": "split",
-            "orientation": "vertical",
-            "id": 2,
-            "parentId": 0,
-            "sizes": [
-              0.504601226993865,
-              0.495398773006135
-            ],
-            "areas": [
-              {
-                "type": "split",
-                "orientation": "horizontal",
-                "id": 3,
-                "parentId": 2,
-                "sizes": [
-                  0.7595846645367412,
-                  0.24041533546325877
-                ],
-                "areas": [
-                  {
-                    "type": "tab",
-                    "parentId": 3,
-                    "widgets": [
-                      {
-                        "className": "GdbLocalsWindow",
-                        "index": 0,
-                        "depth": 3
-                      },
-                      {
-                        "className": "GdbMemoryWindow",
-                        "index": 1,
-                        "metadata": {
-                          "data": [
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            135
-                          ]
-                        },
-                        "depth": 3
-                      }
-                    ]
-                  },
-                  {
-                    "type": "tab",
-                    "parentId": 3,
-                    "widgets": [
-                      {
-                        "className": "GdbRegisterWindow",
-                        "index": 0,
-                        "metadata": {
-                          "data": [
-                            90,
-                            200
-                          ]
-                        },
-                        "depth": 3
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "tab",
-                "parentId": 2,
-                "widgets": [
-                  {
-                    "className": "GdbCommandWindow",
-                    "index": 0,
-                    "depth": 2
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+          "dockLayout": null,
+          "maximized": false,
+          "fullscreen": false,
+          "createdAt": "2024-01-01T00:00:00Z",
+          "updatedAt": "2024-01-01T00:00:00Z"
+        }
       }
     },
-    "run": {
-      "onStartup": [
-        "-list-features",
-        "-data-list-register-names",
-        "source ~/perftool/mygdbinit"
-      ],
-      "onStopped": [
-        "-data-list-register-values x",
-        "-stack-list-frames",
-        "-stack-list-locals 1",
-        "-thread-info"
-      ]
-    },
     "command": {
-      "history": [
-        "monitor",
-        "monitor help",
-        "help",
-        "help monitor",
-        "help attach",
-        "target",
-        ".wsl",
-        ".hw",
-        "bc foo",
-        "help breakpoint",
-        "d 3",
-        "d 4",
-        "b fo",
-        "b foo",
-        "d 2",
-        "maintenance print register-groups",
-        "-stack-list-locals 2",
-        "-stack-list-locals 2 --all-values",
-        "-stack-list-locals --all-values",
-        "-data-read-memory $pc z 1 32 16 .",
-        "-data-read-memory pd z 1 32 16 .",
-        "pd",
-        "?pd",
-        "print pd",
-        "?mbs",
-        "-data-read-memory $1 z 1 32 16 .",
-        "p &mbs",
-        "-data-read-memory 0x3ffb3d5t0 z 1 32 16 .",
-        "-data-read-memory 0x3ffb3d50 z 1 32 16 .",
-        "-data-read-memory 0x3f501ed8 z 1 32 16 .",
-        "-stack-list-variables --all-values",
-        "-stack-list-variables --all-values 2",
-        "-stack-list-variables 2 --all-values ",
-        "help types",
-        "apropos types",
-        "info types mbs",
-        "info types ms",
-        "help info types",
-        "info types MyBigStruct",
-        "show case-sensitive",
-        "whatis mbs",
-        "ptype mbs",
-        "ptype mbs.ms",
-        "ptype mbs.ms.embed",
-        "ptype mbs.ms.embed_t",
-        "ptype /o mbs.ms.embed_t",
-        "ptype /or mbs.ms.embed_t",
-        "echo bar",
-        "echo foo",
-        "echo --start-type-scrape",
-        "ptype /r mbs.ms.embed_t",
-        "-stack-list-variables 0",
-        "-stack-list-variables 2",
-        "ptype bf1",
-        "ptype /r bf1",
-        "ptype /r bf2",
-        "ptype /o bf1",
-        "ptype /o MyBigStruct",
-        "-data-read-memory 0x3f401ed8 z 1 32 16 .",
-        "-stack-list-variables 1",
-        ".db",
-        "so",
-        "bp 20",
-        "frame",
-        "mbx",
-        "mbs",
-        "locals",
-        "-stack-list-locals",
-        "-stack-list-locals 0",
-        "-var-list-children",
-        "-stack-list-variables --simple-values",
-        "-stack-list-variables chip_info --simple-values",
-        "-stack-list-variables --simple-values chip_info",
-        "info variables",
-        "p/ls",
-        "info locals",
-        "p mbs",
-        "p mbs.ms",
-        "p mbs.ms.a",
-        "p mbs.ms.c",
-        "p mbs.pd",
-        "p chip_info",
-        "get architecture",
-        "apropos architecture",
-        "show architecture",
-        "show debug arch",
-        "maintenance print architecture",
-        "-data-list-regster-names",
-        "-source ~/perftool/mygdbinit",
-        "source ~/perftool/mygdbinit",
-        "maintenance flush register-cache",
-        "b app_main",
-        "-data-list-register-names",
-        "symbol-file ~/perftool/build/perftool.elf",
-        "thb app_main",
-        "c",
-        "target remote :3333",
-        "n",
-        "-list-features",
-        "s"
-      ],
-      "metas": [
-        {
-          "Name": "Geezer",
-          "Commands": [
-            "echo meta_dis_start\n",
-            "disassemble _mcount",
-            "echo meta_dis_end\n"
-          ]
-        }
-      ]
-    }
+      "history": []
+    },
+    "connections": [],
+    "dangerousCommands": []
   }
 }

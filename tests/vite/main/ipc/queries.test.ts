@@ -60,22 +60,12 @@ describe("registerIpcQueryHandlers", () => {
     );
   });
 
-  it("resolves settings after retries, returns fonts, version info, WSL distros, and function names", async () => {
-    vi.useFakeTimers();
-
+  it("resolves settings immediately, returns fonts, version info, WSL distros, and function names", async () => {
     const fontList = {
       keys: () => ({ toArray: () => ["Consolas", "Fira Code"] }),
     } as unknown as Map<string, string>;
     const versionInfo = new Map<string, unknown>([["Electron Version", "1.0.0"]]) as never;
-    const getSync = vi
-      .fn<(key: string) => unknown>()
-      .mockImplementationOnce(() => {
-        throw new Error("locked");
-      })
-      .mockImplementationOnce(() => {
-        throw new Error("still locked");
-      })
-      .mockReturnValue({ theme: "Dark" });
+    const getSync = vi.fn<(key: string) => unknown>().mockReturnValue({ theme: "Dark" });
     const getAllFunctionNames = vi.fn().mockReturnValue([{ name: "main" }]);
     const { context, ipcMain } = createIpcRegistrationHarness({
       appSettings: { getSync },
@@ -91,7 +81,6 @@ describe("registerIpcQueryHandlers", () => {
     );
 
     const settingsPromise = handlers[IPC_CHANNELS.rendererToMain.queries.app.settings]();
-    await vi.runAllTimersAsync();
     await expect(settingsPromise).resolves.toEqual({ theme: "Dark" });
 
     await expect(handlers[IPC_CHANNELS.rendererToMain.queries.app.systemFonts]()).resolves.toEqual([
@@ -107,8 +96,6 @@ describe("registerIpcQueryHandlers", () => {
     await expect(
       handlers[IPC_CHANNELS.rendererToMain.queries.debugger.functionNames](),
     ).resolves.toEqual([{ name: "main" }]);
-
-    vi.useRealTimers();
   });
 
   it("returns an empty WSL distribution list when enumeration fails", async () => {
@@ -243,9 +230,7 @@ describe("registerIpcQueryHandlers", () => {
     });
   });
 
-  it("getSettings handler throws after exhausting all retries", async () => {
-    vi.useFakeTimers();
-
+  it("getSettings handler throws immediately when getSync fails", async () => {
     const getSync = vi.fn<(key: string) => unknown>().mockImplementation(() => {
       throw new Error("always locked");
     });
@@ -260,11 +245,6 @@ describe("registerIpcQueryHandlers", () => {
     )?.[1];
 
     const promise = handler();
-    // Attach rejection handler before advancing timers so the rejection is never unhandled
-    const rejection = expect(promise).rejects.toThrow("always locked");
-    await vi.runAllTimersAsync();
-    await rejection;
-
-    vi.useRealTimers();
+    await expect(promise).rejects.toThrow("always locked");
   });
 });

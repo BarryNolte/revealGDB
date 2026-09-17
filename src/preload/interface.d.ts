@@ -22,9 +22,10 @@ import {
   NotifyMainRequest,
   NotifyRenderMessage,
 } from "../common/ipc-contracts";
-import { MemoryData, WslDistro, ConnectionStatusPayload } from "../common/ipc-data-types";
+import { ConnectionStatusPayload, MemoryData, WslDistro } from "../common/ipc-data-types";
 import { ILocal } from "../common/local-view";
 import { GdbSettings } from "../common/settings-types";
+import type { Workspace } from "../common/workspace-types";
 
 type Unsubscribe = () => void;
 type ValueCallback<T> = (data: T) => void;
@@ -50,6 +51,7 @@ export interface IElectronAPI {
     connectionStatus: (callback: ValueCallback<ConnectionStatusPayload>) => Unsubscribe;
     render: (callback: ValueCallback<NotifyRenderMessage>) => Unsubscribe;
     themeChanged: (callback: ValueCallback<ThemeChangedPayload>) => Unsubscribe;
+    workspaceUpdated: (callback: ValueCallback<Workspace>) => Unsubscribe;
   };
 
   debuggerData: {
@@ -69,6 +71,13 @@ export interface IElectronAPI {
       getSettings: () => Promise<GdbSettings>;
       getSystemFonts: () => Promise<string[]>;
       getVersionInfo: () => Promise<Map<string, unknown>>;
+      getFloatingWindowsState: () => Promise<
+        Array<{
+          windowId: string;
+          panelTitle: string;
+          bounds: { x: number; y: number; width: number; height: number };
+        }>
+      >;
     };
     environment: {
       getWslDistrobutions: () => Promise<WslDistro[]>;
@@ -85,6 +94,9 @@ export interface IElectronAPI {
       getSectionData: () => Promise<gdbSymbolFiles>;
       showSourceAt: (fileName: string, line: string) => Promise<gdbShowSourceInfo>;
     };
+    workspace: {
+      getWorkspace: () => Promise<Workspace>;
+    };
   };
 
   commands: {
@@ -95,6 +107,40 @@ export interface IElectronAPI {
     };
     app: {
       notifyMain: (command: NotifyMainRequest) => void;
+      instrumentationLog: (message: string) => void;
+    };
+    workspace: {
+      addWindow: (
+        type: "SourceFileWindow" | "ToolWindow",
+        title: string,
+        group?: string,
+      ) => Promise<Workspace>;
+      removeWindow: (windowId: string) => Promise<Workspace>;
+      showWindow: (windowId: string) => Promise<Workspace>;
+      hideWindow: (windowId: string) => Promise<Workspace>;
+      moveWindow: (windowId: string, targetGroupName: string) => Promise<Workspace>;
+      setActiveWindow: (windowId: string) => Promise<Workspace>;
+      floatWindow: (windowId: string) => Promise<Workspace>;
+      dockWindow: (floatingWindowId: string, targetPaneId: string) => Promise<Workspace>;
+      splitPane: (windowId: string, direction: "horizontal" | "vertical") => Promise<Workspace>;
+      resizePane: (paneId: string, newSize: number) => Promise<Workspace>;
+      moveWindowToPane: (windowId: string, targetPaneId: string) => Promise<Workspace>;
+      reorderPaneWindows: (paneId: string, windowIds: string[]) => Promise<Workspace>;
+      createHost: (payload: { label: string }) => Promise<string>;
+      deleteHost: (payload: { hostId: string }) => Promise<Workspace>;
+      movePane: (payload: {
+        paneId: string;
+        sourceHostId: string;
+        targetHostId: string;
+      }) => Promise<Workspace>;
+      saveHostLayout: (payload: { hostId: string; layout: unknown }) => Promise<Workspace>;
+      openHost: (payload: { hostId: string }) => Promise<void>;
+      createFloatingWindow: (payload: { windowId: string; label: string }) => Promise<string>;
+      closeFloatingWindow: (payload: { windowId: string }) => Promise<void>;
+      updateFloatingWindowBounds: (payload: {
+        windowId: string;
+        bounds: { x: number; y: number; width: number; height: number };
+      }) => Promise<void>;
     };
   };
 

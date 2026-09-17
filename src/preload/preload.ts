@@ -100,6 +100,8 @@ const ipcApi: IpcApiCore = {
     render: (callback) => subscribe(IPC_CHANNELS.mainToRenderer.notifications.render, callback),
     themeChanged: (callback) =>
       subscribe(IPC_CHANNELS.mainToRenderer.notifications.themeChanged, callback),
+    workspaceUpdated: (callback) =>
+      subscribe(IPC_CHANNELS.mainToRenderer.notifications.workspaceUpdated, callback),
   },
   debuggerData: {
     registers: (callback) =>
@@ -123,6 +125,8 @@ const ipcApi: IpcApiCore = {
       getSettings: () => invoke(IPC_CHANNELS.rendererToMain.queries.app.settings),
       getSystemFonts: () => invoke(IPC_CHANNELS.rendererToMain.queries.app.systemFonts),
       getVersionInfo: () => invoke(IPC_CHANNELS.rendererToMain.queries.app.versionInfo),
+      getFloatingWindowsState: () =>
+        invoke(IPC_CHANNELS.rendererToMain.queries.app.getFloatingWindowsState),
     },
     environment: {
       getWslDistrobutions: () =>
@@ -153,6 +157,9 @@ const ipcApi: IpcApiCore = {
           line,
         ),
     },
+    workspace: {
+      getWorkspace: () => invoke(IPC_CHANNELS.rendererToMain.queries.workspace.getWorkspace),
+    },
   },
   commands: {
     debugger: {
@@ -165,6 +172,93 @@ const ipcApi: IpcApiCore = {
     app: {
       notifyMain: (command: NotifyMainRequest) =>
         send(IPC_CHANNELS.rendererToMain.commands.app.notify, command),
+      instrumentationLog: (message: string) => send(IPC_CHANNELS.rendererSend.appLog, { message }),
+    },
+    workspace: {
+      addWindow: (type: "SourceFileWindow" | "ToolWindow", title: string, group?: string) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.commands.workspace.addWindow,
+          type,
+          title,
+          group,
+        ),
+      removeWindow: (windowId: string) =>
+        ipcRenderer.invoke(IPC_CHANNELS.rendererToMain.commands.workspace.removeWindow, windowId),
+      showWindow: (windowId: string) =>
+        ipcRenderer.invoke(IPC_CHANNELS.rendererToMain.commands.workspace.showWindow, windowId),
+      hideWindow: (windowId: string) =>
+        ipcRenderer.invoke(IPC_CHANNELS.rendererToMain.commands.workspace.hideWindow, windowId),
+      moveWindow: (windowId: string, targetGroupName: string) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.commands.workspace.moveWindow,
+          windowId,
+          targetGroupName,
+        ),
+      setActiveWindow: (windowId: string) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.commands.workspace.setActiveWindow,
+          windowId,
+        ),
+      floatWindow: (windowId: string) =>
+        ipcRenderer.invoke(IPC_CHANNELS.rendererToMain.commands.workspace.floatWindow, windowId),
+      dockWindow: (floatingWindowId: string, targetPaneId: string) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.commands.workspace.dockWindow,
+          floatingWindowId,
+          targetPaneId,
+        ),
+      splitPane: (windowId: string, direction: "horizontal" | "vertical") =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.commands.workspace.splitPane,
+          windowId,
+          direction,
+        ),
+      resizePane: (paneId: string, newSize: number) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.commands.workspace.resizePane,
+          paneId,
+          newSize,
+        ),
+      moveWindowToPane: (windowId: string, targetPaneId: string) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.commands.workspace.moveWindowToPane,
+          windowId,
+          targetPaneId,
+        ),
+      reorderPaneWindows: (paneId: string, windowIds: string[]) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.commands.workspace.reorderPaneWindows,
+          paneId,
+          windowIds,
+        ),
+      createHost: (payload: { label: string }) =>
+        ipcRenderer.invoke(IPC_CHANNELS.rendererToMain.commands.workspace.createHost, payload),
+      deleteHost: (payload: { hostId: string }) =>
+        ipcRenderer.invoke(IPC_CHANNELS.rendererToMain.commands.workspace.deleteHost, payload),
+      movePane: (payload: { paneId: string; sourceHostId: string; targetHostId: string }) =>
+        ipcRenderer.invoke(IPC_CHANNELS.rendererToMain.commands.workspace.movePane, payload),
+      saveHostLayout: (payload: { hostId: string; layout: unknown }) =>
+        ipcRenderer.invoke(IPC_CHANNELS.rendererToMain.commands.workspace.saveHostLayout, payload),
+      openHost: (payload: { hostId: string }) =>
+        ipcRenderer.invoke(IPC_CHANNELS.rendererToMain.commands.workspace.openHost, payload),
+      createFloatingWindow: (payload: { windowId: string; label: string }) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.commands.workspace.createFloatingWindow,
+          payload,
+        ),
+      closeFloatingWindow: (payload: { windowId: string }) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.commands.workspace.closeFloatingWindow,
+          payload,
+        ),
+      updateFloatingWindowBounds: (payload: {
+        windowId: string;
+        bounds: { x: number; y: number; width: number; height: number };
+      }) =>
+        ipcRenderer.invoke(
+          IPC_CHANNELS.rendererToMain.commands.workspace.updateFloatingWindowBounds,
+          payload,
+        ),
     },
   },
 };
@@ -196,4 +290,5 @@ contextBridge.exposeInMainWorld("ipcToMain", {
   sendControlD: ipcApi.commands.debugger.sendControlD,
   respondToDangerousCommand: ipcApi.commands.debugger.respondToDangerousCommand,
   notifyMain: ipcApi.commands.app.notifyMain,
+  instrumentationLog: ipcApi.commands.app.instrumentationLog,
 });

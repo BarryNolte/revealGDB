@@ -6,24 +6,24 @@
  */
 import { DockManager } from "../../node_modules/dock-spawn-ts/lib/js/DockManager.js";
 
-import { JSX, RefObject, Suspense, lazy, useEffect, useRef } from "react";
 import type { ComponentType, ForwardRefExoticComponent, RefAttributes } from "react";
+import { JSX, MutableRefObject, RefObject, Suspense, lazy, useEffect, useRef } from "react";
 import type { NotifyRenderMessage } from "../common/ipc-contracts";
 import type { GdbSettings } from "../common/settings-types";
+import type { Workspace, WorkspaceHost } from "../common/workspace-types";
 import { AppTheme, applyTheme } from "./theme-manager";
 import { setAppMainVersionInfo } from "./utilities/app-version-state";
+import { filterWindowsForHost, getCurrentHostId } from "./utilities/multi-window-utils";
 
 /* Dialogs */
 import type { AboutBoxHandle } from "./Dialogs/AboutBox";
-import type {
-  ConnectionDialogProps,
-  WhileConnectingDialogHandle,
-} from "./Dialogs/ConnectionDialog.jsx";
-import type { ConnectionManagerHandle } from "./Dialogs/ConnectionManager";
+import { ConnectionDialog, WhileConnectingDialogHandle } from "./Dialogs/ConnectionDialog.jsx";
+import { ConnectionManager, type ConnectionManagerHandle } from "./Dialogs/ConnectionManager";
 import type { SectionsViewHandle } from "./Dialogs/SectionsView";
 
 /* Tool Windows */
 import RevealToolbar from "./Components/Toolbar.jsx";
+import { WorkspacePanel } from "./Components/WorkspacePanel";
 import type { SettingsHandle } from "./Dialogs/Settings.jsx";
 import { ToolWindowErrorBoundary } from "./Errors/ToolWindowErrorBoundary";
 import { ToolWindowsHostErrorBoundary } from "./Errors/ToolWindowsHostErrorBoundary";
@@ -31,8 +31,20 @@ import GdbCommandWindow from "./ToolWindows/GdbCommandWindow";
 import GdbSourceWindow from "./ToolWindows/GdbSourceWindow";
 import { TOOL_WINDOW_TITLES } from "./ToolWindows/toolWindowTitles";
 import { DockMenuConnector } from "./utilities/DockMenuConnector.js";
+import { sanitizeDockLayout } from "./utilities/dock-layout-sanitizer";
 import { dockMenuConnector, setDockMenuConnector } from "./utilities/dock-menu-state";
 import { SAVE_DOCK_LAYOUT, UPDATE_WINDOW_LIST } from "./utilities/renderer-events";
+
+type DockGraphNode = {
+  containerType: string;
+  state: Record<string, unknown>;
+  children: DockGraphNode[];
+};
+
+type DockLayoutState = {
+  graphInfo: DockGraphNode;
+  dialogsInfo?: Array<Record<string, unknown>>;
+};
 
 const AboutBox = lazy(() =>
   import("./Dialogs/AboutBox.js").then((module) => ({
@@ -44,18 +56,6 @@ const Settings = lazy(() =>
     default: module.default as unknown as () => JSX.Element,
   })),
 ) as unknown as ForwardRefExoticComponent<RefAttributes<SettingsHandle>>;
-const ConnectionManager = lazy(() =>
-  import("./Dialogs/ConnectionManager.js").then((module) => ({
-    default: module.ConnectionManager as unknown as () => JSX.Element,
-  })),
-) as unknown as ForwardRefExoticComponent<RefAttributes<ConnectionManagerHandle>>;
-const ConnectionDialog = lazy(() =>
-  import("./Dialogs/ConnectionDialog.js").then((module) => ({
-    default: module.ConnectionDialog as unknown as () => JSX.Element,
-  })),
-) as unknown as ForwardRefExoticComponent<
-  ConnectionDialogProps & RefAttributes<WhileConnectingDialogHandle>
->;
 const SectionsView = lazy(() =>
   import("./Dialogs/SectionsView.js").then((module) => ({
     default: module.SectionsView as unknown as () => JSX.Element,
@@ -93,6 +93,21 @@ const GdbThreadsWindow = lazyWindow(() => import("./ToolWindows/GdbThreadsWindow
  * Handles window layout, docking, undocking, and resizing operations.
  */
 let dockManager: DockManager;
+
+/**
+ * Helper function to create a debug logger for layout operations.
+ *
+ * @param msg - Message to log
+ */
+function createDebugLogger(msg: string): void {
+  if (__REVEALGDB_DEBUG__) {
+    console.log(msg);
+    window.ipcToMain?.commands?.app?.instrumentationLog(msg);
+  }
+}
+
+/* Phase 1: Pane context menus */
+import { usePaneContextMenu, type PaneContextMenuOptions } from "./utilities/usePaneContextMenu";
 
 /**
  * Performs deferred window as part of this module's internal workflow.
@@ -175,14 +190,43 @@ function handleAppChange(e: Event): void {
  */
 
 function setupLayoutListeners(dm: DockManager): void {
+  const log = createDebugLogger;
+
+  // Debounce timer to prevent saving layout before dimensions are finalized
+  let saveLayoutTimer: ReturnType<typeof setTimeout> | null = null;
+  let resizeCount = 0;
+
+  const debouncedSaveLayout = () => {
+    if (saveLayoutTimer) {
+      clearTimeout(saveLayoutTimer);
+    }
+    // Wait 1000ms after last resize event before saving to ensure layout is stable
+    // and to prevent concurrent file write operations
+    saveLayoutTimer = setTimeout(() => {
+      log("[LAYOUT] Debounce timeout fired - saving layout after resize events");
+      window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
+      saveLayoutTimer = null;
+    }, 1000);
+  };
+
   dm.addLayoutListener({
     onContainerResized: () => {
+      resizeCount++;
+      log(`[LAYOUT] onContainerResized event #${resizeCount}`);
+
+      // Log current panel dimensions
+      const panels = dm.getPanels();
+      panels.forEach((panel) => {
+        log(`  Panel: ${panel.title}`);
+      });
+
       window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
-      window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
+      debouncedSaveLayout();
     },
     onTabChanged: () => {
+      log("[LAYOUT] onTabChanged event");
       window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
-      window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
+      debouncedSaveLayout();
     },
   });
 }
@@ -254,31 +298,205 @@ function registerAllPanels(connector: DockMenuConnector): void {
 
 function createDefaultLayout(dm: DockManager, connector: DockMenuConnector): void {
   if (!connector) return;
+
+  const log = createDebugLogger;
+
+  log("[LAYOUT] Creating default layout");
+
   connector.createAllWindows();
   const documentNode = dm.context.model.documentManagerNode;
+  log(`[LAYOUT] Document node created`);
+
   const srcNode = dm.dockFill(
     documentNode,
     connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.source),
   );
-  const cmdNode = dm.dockRight(
+  log(`[LAYOUT] Source window docked at fill (left pane)`);
+
+  const toolsNode = dm.dockRight(
     srcNode,
-    connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.command),
-    0.5,
-  );
-  const localsNode = dm.dockUp(
-    cmdNode,
     connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.locals),
     0.5,
   );
-  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.threads));
-  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.callstack));
-  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.memory));
-  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.breakpoints));
-  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.registers));
-  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.disassembly));
+  log(`[LAYOUT] Locals window docked right with 50% width split (top right pane)`);
+
+  dm.dockDown(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.command), 0.5);
+  log(`[LAYOUT] Command window docked down with 50% height split (bottom right pane)`);
+
+  // Log panel dimensions before filling
+  const panels = dm.getPanels();
+  panels.forEach((panel) => {
+    log(`  Before fill - ${panel.title}`);
+  });
+
+  dm.dockFill(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.threads));
+  log(`[LAYOUT] Threads docked into tools pane`);
+
+  dm.dockFill(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.callstack));
+  log(`[LAYOUT] Callstack docked into tools pane`);
+
+  dm.dockFill(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.memory));
+  log(`[LAYOUT] Memory docked into tools pane`);
+
+  dm.dockFill(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.breakpoints));
+  log(`[LAYOUT] Breakpoints docked into tools pane`);
+
+  dm.dockFill(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.registers));
+  log(`[LAYOUT] Registers docked into tools pane`);
+
+  dm.dockFill(toolsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.disassembly));
+  log(`[LAYOUT] Disassembly docked into tools pane`);
+
+  // Log final panel dimensions
+  const finalPanels = dm.getPanels();
+  finalPanels.forEach((panel) => {
+    log(`  After layout - ${panel.title}`);
+  });
+
+  log("[LAYOUT] Default layout creation complete");
 }
 
-async function initializeDockManager(gdb: GdbSettings): Promise<void> {
+function hasUsableWorkspaceLayout(layout: unknown): layout is Record<string, unknown> {
+  return !!layout && typeof layout === "object" && Object.keys(layout).length > 0;
+}
+
+function cloneLayout<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
+function getCurrentHostLayout(): DockLayoutState | null {
+  if (!dockManager) {
+    return null;
+  }
+
+  return JSON.parse(dockManager.saveState()) as DockLayoutState;
+}
+
+function createPanelNode(panelElementId: string, width: number, height: number): DockGraphNode {
+  return {
+    containerType: "panel",
+    state: {
+      element: panelElementId,
+      width,
+      height,
+      canUndock: true,
+      hideCloseButton: true,
+      panelType: "panel",
+    },
+    children: [],
+  };
+}
+
+function createEmptyHostLayoutState(width: number, height: number): DockLayoutState {
+  return {
+    graphInfo: {
+      containerType: "fill",
+      state: {
+        width,
+        height,
+      },
+      children: [],
+    },
+    dialogsInfo: [],
+  };
+}
+
+function findFirstFillNode(node: DockGraphNode): DockGraphNode | null {
+  if (node.containerType === "fill") {
+    return node;
+  }
+
+  for (const child of node.children) {
+    const match = findFirstFillNode(child);
+    if (match) {
+      return match;
+    }
+  }
+
+  return null;
+}
+
+function removePanelNode(node: DockGraphNode, panelElementId: string): DockGraphNode | null {
+  if (node.containerType === "panel") {
+    return node.state.element === panelElementId ? null : node;
+  }
+
+  const nextChildren = node.children
+    .map((child) => removePanelNode(child, panelElementId))
+    .filter((child): child is DockGraphNode => child !== null);
+
+  if (nextChildren.length === 0) {
+    return {
+      ...node,
+      children: [],
+    };
+  }
+
+  if (nextChildren.length === 1 && node.containerType !== "fill") {
+    return nextChildren[0];
+  }
+
+  return {
+    ...node,
+    children: nextChildren,
+  };
+}
+
+function insertPanelIntoHostLayout(
+  existingLayout: Record<string, unknown> | undefined,
+  panelElementId: string,
+  width: number,
+  height: number,
+): DockLayoutState {
+  const baseLayout = hasUsableWorkspaceLayout(existingLayout)
+    ? cloneLayout(existingLayout as DockLayoutState)
+    : createEmptyHostLayoutState(width, height);
+
+  const graphInfo = baseLayout.graphInfo || createEmptyHostLayoutState(width, height).graphInfo;
+  const firstFillNode = findFirstFillNode(graphInfo) || graphInfo;
+  const hasPanelAlready = JSON.stringify(graphInfo).includes(`"element":"${panelElementId}"`);
+
+  if (!hasPanelAlready) {
+    firstFillNode.children = firstFillNode.children || [];
+    firstFillNode.children.push(createPanelNode(panelElementId, width, height));
+  }
+
+  baseLayout.graphInfo = graphInfo;
+  baseLayout.dialogsInfo = [];
+  return baseLayout;
+}
+
+async function applyHostLayoutToDockManager(
+  layout: Record<string, unknown> | undefined,
+): Promise<void> {
+  if (!dockManager) {
+    return;
+  }
+
+  if (!hasUsableWorkspaceLayout(layout)) {
+    return;
+  }
+
+  await dockManager.loadState(JSON.stringify(layout));
+  dockMenuConnector?.reconsilePanels();
+  window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
+}
+
+async function initializeDockManager(_gdb: GdbSettings): Promise<void> {
+  const log = createDebugLogger;
+  const currentHostId = getCurrentHostId();
+  let workspaceLayout: unknown;
+
+  try {
+    const workspace = await window.ipcToMain.queries.workspace.getWorkspace();
+    workspaceLayout = workspace.hostLayouts?.[currentHostId];
+  } catch (error) {
+    if (__REVEALGDB_DEBUG__) {
+      console.warn("[INIT] Failed to load workspace host layout, falling back to default", error);
+    }
+  }
+
+  log("[INIT] Initializing DockManager");
   const dockManagerElement = document.getElementById("revealDockManager")!;
   dockManager = new DockManager(dockManagerElement);
   dockManager.config.dialogRootElement = dockManagerElement;
@@ -292,24 +510,50 @@ async function initializeDockManager(gdb: GdbSettings): Promise<void> {
   registerAllPanels(dockMenuConnector);
   setupLayoutListeners(dockManager);
   let loadedFromState = false;
-  if (gdb.gui?.dockLayout) {
+  if (hasUsableWorkspaceLayout(workspaceLayout)) {
     try {
+      log("[INIT] Attempting to load saved workspace host layout");
       // loadState is async in dock-spawn-ts; must await before resizing or
       // all panels stay hidden (resize fires before deserialization completes).
-      await dockManager.loadState(JSON.stringify(gdb.gui?.dockLayout));
+      await dockManager.loadState(JSON.stringify(workspaceLayout));
       loadedFromState = true;
+      log("[INIT] Successfully loaded saved workspace host layout");
     } catch (e) {
-      // Saved layout is corrupt or incompatible — fall through to default layout.
-      console.warn("dock-spawn-ts: failed to restore saved layout, using default", e);
+      // Saved host layout is corrupt or incompatible — fall through to the hard-coded default.
+      console.warn(
+        "[INIT] dock-spawn-ts: failed to restore workspace host layout, using default",
+        e,
+      );
     }
+  } else {
+    log("[INIT] No usable workspace host layout found, will create default");
   }
   if (!loadedFromState) {
-    createDefaultLayout(dockManager, dockMenuConnector);
+    if (currentHostId === "main") {
+      log("[INIT] Creating default layout");
+      createDefaultLayout(dockManager, dockMenuConnector);
+    } else {
+      log("[INIT] Leaving satellite host empty until panels are assigned");
+    }
   }
   dockMenuConnector.reconsilePanels();
   window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
+  log("[INIT] Triggering initial resize");
   // Trigger initial sizing only after dock manager exists.
   window.dispatchEvent(new Event("resize"));
+}
+
+function getWorkspaceWindowForCurrentHost(
+  workspace: Workspace | null,
+): Workspace["windows"][number] | undefined {
+  if (!workspace) {
+    return undefined;
+  }
+
+  const currentHostId = getCurrentHostId();
+  return workspace.windows.find(
+    (workspaceWindow) => (workspaceWindow.hostId || workspaceWindow.id || "main") === currentHostId,
+  );
 }
 /**
  * Performs PrimaryToolWindows as part of this module's internal workflow.
@@ -479,19 +723,412 @@ function AppDialogs({
       <Suspense fallback={null}>
         <Settings ref={settingsRef} />
       </Suspense>
-      <Suspense fallback={null}>
-        <ConnectionManager ref={connectionsRef} />
-      </Suspense>
-      <Suspense fallback={null}>
-        <ConnectionDialog
-          ref={whileConnectingRef}
-          connectionsRef={connectionsRef as RefObject<ConnectionManagerHandle>}
-        />
-      </Suspense>
+      <ConnectionManager ref={connectionsRef} />
+      <ConnectionDialog ref={whileConnectingRef} connectionsRef={connectionsRef} />
       <Suspense fallback={null}>
         <SectionsView ref={sectionsViewRef} />
       </Suspense>
     </>
+  );
+}
+
+/**
+ * Set up dialog message handlers from main process
+ */
+function setupDialogHandlers(
+  aboutBoxRef: RefObject<AboutBoxHandle | null>,
+  settingsRef: RefObject<SettingsHandle | null>,
+  connectionsRef: RefObject<ConnectionManagerHandle | null>,
+  whileConnectingRef: RefObject<WhileConnectingDialogHandle | null>,
+  sectionsViewRef: RefObject<SectionsViewHandle | null>,
+): void {
+  window.ipcToMain.notifications.render((msg: NotifyRenderMessage) => {
+    switch (msg.command) {
+      case "about-box":
+        aboutBoxRef.current?.ShowDialog();
+        break;
+      case "connection-dialog":
+        whileConnectingRef.current?.ShowDialog();
+        break;
+      case "connections-dialog":
+        connectionsRef.current?.ShowDialog();
+        break;
+      case "settings-dialog":
+        settingsRef.current?.ShowDialog();
+        break;
+      case "sections-view":
+        sectionsViewRef.current?.ShowDialog();
+        break;
+      case "create-new-window":
+        window.ipcToMain.commands.workspace.createHost({ label: "New Window" }).catch((error) => {
+          console.error("Failed to create new window:", error);
+        });
+        break;
+    }
+  });
+}
+
+function setupKeyboardShortcuts(
+  connectionsRef: RefObject<ConnectionManagerHandle | null>,
+): () => void {
+  const onKeyDown = (event: KeyboardEvent): void => {
+    if (!(event.ctrlKey && event.shiftKey)) {
+      return;
+    }
+
+    const target = event.target as HTMLElement | null;
+    const isTextInput =
+      !!target &&
+      (target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "SELECT" ||
+        target.isContentEditable);
+
+    if (isTextInput) {
+      return;
+    }
+
+    const key = event.key.toLowerCase();
+    if (key === "c") {
+      event.preventDefault();
+      connectionsRef.current?.ShowDialog();
+      return;
+    }
+
+    if (key === "n") {
+      event.preventDefault();
+      void window.ipcToMain.commands.workspace.createHost({ label: "New Window" });
+    }
+  };
+
+  window.addEventListener("keydown", onKeyDown);
+  return () => {
+    window.removeEventListener("keydown", onKeyDown);
+  };
+}
+
+/**
+ * Set up workspace synchronization listener
+ */
+function setupWorkspaceSync(
+  workspaceRef: RefObject<Workspace | null>,
+  appliedLayoutRef: MutableRefObject<string | null>,
+): (() => void) | undefined {
+  const currentHostId = getCurrentHostId();
+  void window.ipcToMain.queries.workspace
+    .getWorkspace()
+    .then((workspace) => {
+      workspaceRef.current = workspace;
+      const hostLayout = workspace.hostLayouts?.[currentHostId];
+      appliedLayoutRef.current = hasUsableWorkspaceLayout(hostLayout)
+        ? JSON.stringify(hostLayout)
+        : null;
+    })
+    .catch((error) => {
+      if (__REVEALGDB_DEBUG__) {
+        console.warn("[workspace-update] Failed to load initial workspace snapshot", error);
+      }
+    });
+
+  return window.ipcToMain.notifications.workspaceUpdated?.((workspace: Workspace) => {
+    workspaceRef.current = workspace;
+
+    if (workspace.windows) {
+      const hostWindows = filterWindowsForHost(workspace.windows, currentHostId);
+      if (__REVEALGDB_DEBUG__) {
+        console.log(`[workspace-update] Host '${currentHostId}' has ${hostWindows.length} windows`);
+      }
+    }
+
+    const hostLayout = workspace.hostLayouts?.[currentHostId];
+    const nextAppliedLayout = hasUsableWorkspaceLayout(hostLayout)
+      ? JSON.stringify(hostLayout)
+      : null;
+    if (nextAppliedLayout && nextAppliedLayout !== appliedLayoutRef.current) {
+      appliedLayoutRef.current = nextAppliedLayout;
+      void applyHostLayoutToDockManager(hostLayout).catch((error) => {
+        console.error(`Failed to apply host layout for ${currentHostId}:`, error);
+      });
+    }
+  });
+}
+
+/**
+ * Initialize dock manager and restore state
+ */
+function initializeDockAndRestore(): void {
+  window.ipcToMain.queries.app.getSettings().then(async (gdb: GdbSettings): Promise<void> => {
+    const savedTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
+    applyTheme(savedTheme);
+    await initializeDockManager(gdb);
+  });
+}
+
+/**
+ * Set up theme change listener
+ */
+function setupThemeSync(): (() => void) | undefined {
+  return window.ipcToMain.notifications.themeChanged?.((data) => {
+    window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings) => {
+      const currentTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
+      if (currentTheme === "Auto") {
+        applyTheme("Auto", data?.shouldUseDarkColors ?? false);
+      }
+    });
+  });
+}
+
+/**
+ * Create pane context menu options for floating/docking windows
+ */
+// eslint-disable-next-line max-lines-per-function
+function createPaneContextMenuOptions(
+  workspaceRef: MutableRefObject<Workspace | null>,
+  connectionsRef: RefObject<ConnectionManagerHandle | null>,
+  appliedLayoutRef: MutableRefObject<string | null>,
+): PaneContextMenuOptions {
+  const getMoveTargets = (): WorkspaceHost[] => {
+    const currentHostId = getCurrentHostId();
+    return (workspaceRef.current?.hosts || []).filter((host) => host.id !== currentHostId);
+  };
+
+  return {
+    onFloatPane: async (panelTitle: string) => {
+      if (!workspaceRef.current) return;
+
+      const dockableWindow = workspaceRef.current.groups
+        .flatMap((group) => group.windows)
+        .find((window) => window.title === panelTitle);
+
+      if (dockableWindow) {
+        try {
+          const currentLayout = getCurrentHostLayout();
+          if (!currentLayout) {
+            return;
+          }
+
+          const nextCurrentGraph = removePanelNode(
+            currentLayout.graphInfo,
+            panelElementIdForTitle(panelTitle),
+          );
+          const dockWidth = document.getElementById("revealDockManager")?.clientWidth || 1200;
+          const dockHeight = document.getElementById("revealDockManager")?.clientHeight || 800;
+          const nextCurrentLayout: DockLayoutState = {
+            graphInfo:
+              nextCurrentGraph || createEmptyHostLayoutState(dockWidth, dockHeight).graphInfo,
+            dialogsInfo: [],
+          };
+
+          const result = await window.ipcToMain.commands.workspace.floatWindow(dockableWindow.id);
+          const floatingWindow = result.windows.find(
+            (workspaceWindow) =>
+              workspaceWindow.type === "floating" && workspaceWindow.id === dockableWindow.id,
+          );
+          if (!floatingWindow) {
+            return;
+          }
+
+          const floatingLayout = insertPanelIntoHostLayout(
+            undefined,
+            panelElementIdForTitle(panelTitle),
+            dockWidth,
+            dockHeight,
+          );
+
+          await window.ipcToMain.commands.workspace.saveHostLayout({
+            hostId: getCurrentHostId(),
+            layout: nextCurrentLayout,
+          });
+          await window.ipcToMain.commands.workspace.saveHostLayout({
+            hostId: floatingWindow.id,
+            layout: floatingLayout,
+          });
+
+          appliedLayoutRef.current = JSON.stringify(nextCurrentLayout);
+          await applyHostLayoutToDockManager(nextCurrentLayout);
+        } catch (error) {
+          console.error(`Failed to float window ${dockableWindow.id}:`, error);
+        }
+      }
+    },
+    onDockPane: async (panelTitle: string) => {
+      if (!workspaceRef.current) return;
+
+      const dockableWindow = workspaceRef.current.groups
+        .flatMap((group) => group.windows)
+        .find((window) => window.title === panelTitle);
+
+      if (!dockableWindow) {
+        return;
+      }
+
+      const floatingWindow = workspaceRef.current.windows.find(
+        (workspaceWindow) =>
+          workspaceWindow.type === "floating" && workspaceWindow.id === getCurrentHostId(),
+      );
+
+      if (floatingWindow && floatingWindow.type === "floating") {
+        const currentLayout = getCurrentHostLayout();
+        if (!currentLayout) {
+          return;
+        }
+
+        const dockWidth = document.getElementById("revealDockManager")?.clientWidth || 1200;
+        const dockHeight = document.getElementById("revealDockManager")?.clientHeight || 800;
+        const nextMainLayout = insertPanelIntoHostLayout(
+          workspaceRef.current.hostLayouts?.main,
+          panelElementIdForTitle(panelTitle),
+          dockWidth,
+          dockHeight,
+        );
+
+        try {
+          await window.ipcToMain.commands.workspace.saveHostLayout({
+            hostId: "main",
+            layout: nextMainLayout,
+          });
+          await window.ipcToMain.commands.workspace.dockWindow(floatingWindow.id, "main");
+        } catch (error) {
+          console.error(`Failed to dock window ${floatingWindow.id}:`, error);
+        }
+      }
+    },
+    onSplitPane: async (panelTitle: string, direction: "horizontal" | "vertical") => {
+      if (!workspaceRef.current) return;
+
+      const dockableWindow = workspaceRef.current.groups
+        .flatMap((group) => group.windows)
+        .find((window) => window.title === panelTitle);
+
+      if (!dockableWindow) {
+        return;
+      }
+
+      try {
+        await window.ipcToMain.commands.workspace.splitPane(dockableWindow.id, direction);
+      } catch (error) {
+        console.error(`Failed to split pane for ${dockableWindow.id}:`, error);
+      }
+    },
+    onOpenConnections: () => {
+      connectionsRef.current?.ShowDialog();
+    },
+    onCreateWindow: () => {
+      void window.ipcToMain.commands.workspace.createHost({ label: "New Window" });
+    },
+    isPanelFloating: () =>
+      getWorkspaceWindowForCurrentHost(workspaceRef.current)?.type === "floating",
+    getMoveTargets: () => getMoveTargets().map((host) => ({ hostId: host.id, label: host.label })),
+    onMoveToHost: async (panelTitle: string, targetHostId: string) => {
+      const currentWorkspace = workspaceRef.current;
+      const connector = dockMenuConnector;
+      if (!currentWorkspace || !connector) {
+        return;
+      }
+
+      const panelElementId = panelElementIdForTitle(panelTitle);
+      if (!panelElementId) {
+        console.error(`Failed to resolve panel element for '${panelTitle}'`);
+        return;
+      }
+
+      const currentHostId = getCurrentHostId();
+      const currentLayout = getCurrentHostLayout();
+      if (!currentLayout) {
+        return;
+      }
+
+      const nextCurrentGraph = removePanelNode(currentLayout.graphInfo, panelElementId);
+      const dockWidth = document.getElementById("revealDockManager")?.clientWidth || 1200;
+      const dockHeight = document.getElementById("revealDockManager")?.clientHeight || 800;
+      const nextCurrentLayout: DockLayoutState = {
+        graphInfo: nextCurrentGraph || createEmptyHostLayoutState(dockWidth, dockHeight).graphInfo,
+        dialogsInfo: [],
+      };
+      const nextTargetLayout = insertPanelIntoHostLayout(
+        currentWorkspace.hostLayouts?.[targetHostId],
+        panelElementId,
+        dockWidth,
+        dockHeight,
+      );
+
+      try {
+        await window.ipcToMain.commands.workspace.saveHostLayout({
+          hostId: currentHostId,
+          layout: nextCurrentLayout,
+        });
+        await window.ipcToMain.commands.workspace.saveHostLayout({
+          hostId: targetHostId,
+          layout: nextTargetLayout,
+        });
+        await window.ipcToMain.commands.workspace.openHost({ hostId: targetHostId });
+        appliedLayoutRef.current = JSON.stringify(nextCurrentLayout);
+        await applyHostLayoutToDockManager(nextCurrentLayout);
+      } catch (error) {
+        console.error(`Failed to move panel '${panelTitle}' to host '${targetHostId}':`, error);
+      }
+    },
+  };
+}
+
+function panelElementIdForTitle(panelTitle: string): string | undefined {
+  return dockMenuConnector?.getDockPanelInfoByDisplayName(panelTitle)?.id;
+}
+
+/**
+ * Custom hook to create refs for App component
+ */
+function useAppRefs() {
+  return {
+    aboutBoxRef: useRef<AboutBoxHandle>(null),
+    settingsRef: useRef<SettingsHandle>(null),
+    connectionsRef: useRef<ConnectionManagerHandle>(null),
+    whileConnectingRef: useRef<WhileConnectingDialogHandle>(null),
+    sectionsViewRef: useRef<SectionsViewHandle>(null),
+    workspaceRef: useRef<Workspace | null>(null),
+    appliedLayoutRef: useRef<string | null>(null),
+  };
+}
+
+/**
+ * Render the main app UI
+ */
+function renderAppUI(
+  connectionsRef: RefObject<ConnectionManagerHandle | null>,
+  whileConnectingRef: RefObject<WhileConnectingDialogHandle | null>,
+  settingsRef: RefObject<SettingsHandle | null>,
+  aboutBoxRef: RefObject<AboutBoxHandle | null>,
+  sectionsViewRef: RefObject<SectionsViewHandle | null>,
+): JSX.Element {
+  return (
+    <div className={"main-page-container"}>
+      <RevealToolbar
+        connectionsRef={connectionsRef}
+        whileConnectingRef={whileConnectingRef}
+        settingsRef={settingsRef}
+      />
+      <DockLayout />
+      {__REVEALGDB_DEBUG__ && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "10px",
+            right: "10px",
+            width: "350px",
+            zIndex: 9999,
+          }}
+        >
+          <WorkspacePanel isVisible={true} />
+        </div>
+      )}
+      <AppDialogs
+        aboutBoxRef={aboutBoxRef}
+        settingsRef={settingsRef}
+        connectionsRef={connectionsRef}
+        whileConnectingRef={whileConnectingRef}
+        sectionsViewRef={sectionsViewRef}
+      />
+    </div>
   );
 }
 
@@ -504,88 +1141,59 @@ function AppDialogs({
  * @returns The computed result produced by this operation.
  */
 export default function App(): JSX.Element {
-  // Refs for imperative access to child components
-  const aboutBoxRef = useRef<AboutBoxHandle>(null);
-  const settingsRef = useRef<SettingsHandle>(null);
-  const connectionsRef = useRef<ConnectionManagerHandle>(null);
-  const whileConnectingRef = useRef<WhileConnectingDialogHandle>(null);
-  const sectionsViewRef = useRef<SectionsViewHandle>(null);
+  const {
+    aboutBoxRef,
+    settingsRef,
+    connectionsRef,
+    whileConnectingRef,
+    sectionsViewRef,
+    workspaceRef,
+    appliedLayoutRef,
+  } = useAppRefs();
+
+  // Set up pane context menu handlers
+  usePaneContextMenu(createPaneContextMenuOptions(workspaceRef, connectionsRef, appliedLayoutRef));
 
   useEffect(() => {
     window.ipcToMain.queries.app.getVersionInfo().then((e) => {
       setAppMainVersionInfo(e);
     });
 
-    // Listen for commands from main process to show dialogs
-    window.ipcToMain.notifications.render((msg: NotifyRenderMessage) => {
-      switch (msg.command) {
-        case "about-box":
-          aboutBoxRef.current?.ShowDialog();
-          break;
-        case "connection-dialog":
-          whileConnectingRef.current?.ShowDialog();
-          break;
-        case "connections-dialog":
-          connectionsRef.current?.ShowDialog();
-          break;
-        case "settings-dialog":
-          settingsRef.current?.ShowDialog();
-          break;
-        case "sections-view":
-          sectionsViewRef.current?.ShowDialog();
-          break;
-      }
-    });
-
-    // Load settings first so dock initialization can avoid race conditions.
-    window.ipcToMain.queries.app.getSettings().then(async (gdb: GdbSettings): Promise<void> => {
-      // Apply saved theme before dock layout renders
-      const savedTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
-      applyTheme(savedTheme);
-      await initializeDockManager(gdb);
-    });
+    setupDialogHandlers(
+      aboutBoxRef,
+      settingsRef,
+      connectionsRef,
+      whileConnectingRef,
+      sectionsViewRef,
+    );
+    const unsubWorkspace = setupWorkspaceSync(workspaceRef, appliedLayoutRef);
+    initializeDockAndRestore();
+    const unsubTheme = setupThemeSync();
+    const removeKeyboardShortcuts = setupKeyboardShortcuts(connectionsRef);
 
     window.addEventListener("changeApplication", handleAppChange);
-
-    // Handle OS theme changes pushed from the main process (Auto mode)
-    const unsubTheme = window.ipcToMain.notifications.themeChanged?.((data) => {
-      window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings) => {
-        const currentTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
-        if (currentTheme === "Auto") {
-          applyTheme("Auto", data?.shouldUseDarkColors ?? false);
-        }
-      });
-    });
-
     window.addEventListener("resize", handleResize);
     dockMenuConnector?.reconsilePanels();
     window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
 
-    // Cleanup function: remove event listeners on unmount
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("changeApplication", handleAppChange);
+      removeKeyboardShortcuts();
       if (unsubTheme) unsubTheme();
+      if (unsubWorkspace) unsubWorkspace();
     };
-  }, []);
+  }, [
+    aboutBoxRef,
+    appliedLayoutRef,
+    connectionsRef,
+    sectionsViewRef,
+    settingsRef,
+    whileConnectingRef,
+    workspaceRef,
+  ]);
 
-  return (
-    <div className={"main-page-container"}>
-      <RevealToolbar
-        connectionsRef={connectionsRef as RefObject<ConnectionManagerHandle>}
-        whileConnectingRef={whileConnectingRef as RefObject<WhileConnectingDialogHandle>}
-        settingsRef={settingsRef as RefObject<SettingsHandle>}
-      />
-      <DockLayout />
-      <AppDialogs
-        aboutBoxRef={aboutBoxRef}
-        settingsRef={settingsRef}
-        connectionsRef={connectionsRef}
-        whileConnectingRef={whileConnectingRef}
-        sectionsViewRef={sectionsViewRef}
-      />
-    </div>
-  );
+  return renderAppUI(connectionsRef, whileConnectingRef, settingsRef, aboutBoxRef, sectionsViewRef);
 }
 
 /**
@@ -605,10 +1213,58 @@ window.addEventListener("beforeunload", () => {
  * Serializes the current layout and sends it to the main process for persistence.
  */
 window.addEventListener(SAVE_DOCK_LAYOUT, () => {
+  const log = createDebugLogger;
+
   if (!dockManager) {
+    log("[SAVE] No dockManager available");
     return;
   }
 
+  log("[SAVE] Saving dock layout");
   const layout = JSON.parse(dockManager.saveState());
-  window.ipcToMain.commands.app.notifyMain({ command: "save-dock-layout", data: layout });
+  log("[SAVE] Raw layout before sanitization: " + JSON.stringify(layout).substring(0, 200) + "...");
+
+  const sanitizedLayout = sanitizeDockLayout(layout) as Record<string, unknown>;
+  log("[SAVE] Sanitized layout: " + JSON.stringify(sanitizedLayout).substring(0, 200) + "...");
+
+  // Log specific command window dimensions
+  const findCommandWindow = (
+    node: Record<string, unknown> | undefined,
+  ): Record<string, unknown> | null => {
+    if (
+      node &&
+      typeof node === "object" &&
+      (node as Record<string, unknown>).state &&
+      typeof (node as Record<string, unknown>).state === "object"
+    ) {
+      const state = (node as Record<string, unknown>).state as Record<string, unknown>;
+      if (state.element === "commandWindow") {
+        log(`[SAVE] Found command window: width=${state.width}, height=${state.height}`);
+        return node as Record<string, unknown>;
+      }
+    }
+    if (node && Array.isArray((node as Record<string, unknown>).children)) {
+      for (const child of (node as Record<string, unknown>).children as Array<
+        Record<string, unknown> | undefined
+      >) {
+        const result = findCommandWindow(child);
+        if (result) return result;
+      }
+    }
+    return null;
+  };
+
+  const cmdWindow = findCommandWindow(
+    (sanitizedLayout as Record<string, Record<string, unknown> | undefined>).graphInfo,
+  );
+  if (!cmdWindow) {
+    log("[SAVE] Command window NOT found in layout");
+    // Continue anyway, the command window may not be in this layout version
+  }
+
+  void window.ipcToMain.commands.workspace
+    .saveHostLayout({ hostId: getCurrentHostId(), layout: sanitizedLayout })
+    .catch((error: unknown) => {
+      console.error("Failed to save host layout:", error);
+    });
 });

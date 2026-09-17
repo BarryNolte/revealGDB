@@ -1,0 +1,113 @@
+
+> revealgdb@0.9.2-3fca6d1 dev
+> cross-env REVEALGDB_BUILD=debug REVEALGDB_DEBUG=true concurrently "electron-vite build" "vite" "wait-on http://localhost:5173 && electron ."
+
+[1] 
+[1]   [32m[1mVITE[22m v7.3.6[39m  [2mready in [0m[1m537[22m[2m[0m ms[22m
+[1] 
+[1]   [32mΓ₧£[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[1] [2m  [32mΓ₧£[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[0] [36mvite v7.3.6 [32mbuilding ssr environment for production...[36m[39m
+[0] transforming...
+[2] 
+[2] [startup] app.ready: 60ms
+[2] Settings File: C:\Users\barry\AppData\Roaming\revealgdb\settings.json
+[2] Display: (4096 x 2160)
+[2] Display: (2560 x 1600)
+[2] [startup] main-window-created: 271ms
+[2] [startup] main-window-load-started: 291ms
+[2] [startup] gdb-interface-created: 292ms
+[2] (node:48656) electron: Failed to load URL: file:///C:/Users/barry/Documents/Projects/revealGDB/out/renderer/index.html with error: ERR_FILE_NOT_FOUND
+[2] (Use `electron --trace-warnings ...` to show where the warning was created)
+[2] [startup] main-window-ready-to-show: 570ms
+[2] [startup] main-window-shown: 595ms
+[2] (electron) 'session.getAllExtensions' is deprecated and will be removed. Please use 'session.extensions.getAllExtensions' instead.
+[2] (electron) 'session.loadExtension' is deprecated and will be removed. Please use 'session.extensions.loadExtension' instead.
+[2] Installed DevTools extension: [object Object]
+[0] [32mΓ£ô[39m 187 modules transformed.
+[0] rendering chunks...
+[0] [2mout/main/[22m[36mmain.js  [39m[1m[33m536.04 kB[39m[22m[2m Γöé map: 1,185.97 kB[22m
+[0] [32mΓ£ô built in 1.77s[39m
+[0] [36mvite v7.3.6 [32mbuilding ssr environment for production...[36m[39m
+[0] transforming...
+[0] [32mΓ£ô[39m 2 modules transformed.
+[0] rendering chunks...
+[0] [2mout/preload/[22m[36mpreload.js  [39m[1m[2m10.01 kB[22m[1m[22m[2m Γöé map: 27.33 kB[22m
+[0] [32mΓ£ô built in 49ms[39m
+[0] [36mvite v7.3.6 [32mbuilding client environment for production...[36m[39m
+[0] transforming...
+[2] [48656:0824/125350.517:ERROR:CONSOLE:1] "Request Autofill.enable failed. {"code":-32601,"message":"'Autofill.enable' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
+[2] [48656:0824/125350.517:ERROR:CONSOLE:1] "Request Autofill.setAddresses failed. {"code":-32601,"message":"'Autofill.setAddresses' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
+[0] [32mΓ£ô[39m 1058 modules transformed.
+[0] rendering chunks...
+[0] [2m../../out/renderer/[22m[32mhexeditor-test.html                        [39m[1m[2m    0.79 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[32mconnectiondialog-test.html                 [39m[1m[2m    1.01 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[32mconnectionmanager-test.html                [39m[1m[2m    1.01 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[32mtoolbar-test.html                          [39m[1m[2m    1.04 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[32mgdbcommand-test.html                       [39m[1m[2m    1.16 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[32msettings-test.html                         [39m[1m[2m    1.38 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[32mindex.html                                 [39m[1m[2m    1.55 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[32mworkspace-test.html                        [39m[1m[2m    2.97 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[32massets/icons8-process-Bf48_iiw.gif         [39m[1m[2m   15.06 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[32massets/OpenRoad_small-CJ_Zop5F.png         [39m[1m[2m   48.86 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[32massets/bmc_qr-BA-7oCWK.png                 [39m[1m[2m  109.78 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/GdbCallstackWindow-tn0RQdqM.css     [39m[1m[2m    0.00 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/hexeditor-DJeSHvZo.css              [39m[1m[2m    0.05 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/toolbar-DUwFkqHz.css                [39m[1m[2m    0.05 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/gdbcommand-D2DQqOGo.css             [39m[1m[2m    0.05 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/GdbLocalsWindow-DcpL8yVj.css        [39m[1m[2m    0.06 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/GdbRegistersWindow-BG7eCOgG.css     [39m[1m[2m    0.06 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/settings-B1KQSxvj.css               [39m[1m[2m    0.10 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/connectiondialog-8g7jq5dp.css       [39m[1m[2m    0.11 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/connectionmanager-Dw5m0eVi.css      [39m[1m[2m    0.11 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/GdbBreakpointsWindow-BA0Onpoq.css   [39m[1m[2m    0.33 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/GdbMemoryWindow-C9kA7Sse.css        [39m[1m[2m    0.44 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/Settings-DXlSlbdD.css               [39m[1m[2m    0.45 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/toolWindowTitles-ClLdZRDb.css       [39m[1m[2m    1.13 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/AboutBox-Cpyaics4.css               [39m[1m[2m    1.30 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/SectionsView-CwpVmk5M.css           [39m[1m[2m    1.85 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/GdbDisassemblerWindow-DTviG1r0.css  [39m[1m[2m    1.85 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/ConnectionDialog-CwPSr3Kj.css       [39m[1m[2m    1.98 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/HexEditor-_Wy3ZJmy.css              [39m[1m[2m    3.18 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/ConnectionManager-CknUe24z.css      [39m[1m[2m    4.04 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/GdbSourceWindow-Cid8DNLt.css        [39m[1m[2m    4.07 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/GdbCommandWindow-Bh68TcCx.css       [39m[1m[2m    7.22 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/Toolbar-DfcNA69A.css                [39m[1m[2m   32.61 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/vendor-D8lhtheQ.css                 [39m[1m[2m   44.38 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/index-Dyr2bn_4.css                  [39m[1m[2m   61.51 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[35massets/main-CeI2yIdN.css                   [39m[1m[2m2,622.07 kB[22m[1m[22m
+[0] [2m../../out/renderer/[22m[36massets/renderer-events-D-DkmkdW.js         [39m[1m[2m    0.50 kB[22m[1m[22m[2m Γöé map:      1.48 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/hexeditor-mvoxPisO.js               [39m[1m[2m    1.05 kB[22m[1m[22m[2m Γöé map:      3.06 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/valueValidation-iYbrjiBg.js         [39m[1m[2m    1.08 kB[22m[1m[22m[2m Γöé map:      4.29 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/grid-data-mappers-Bi9Nx2EC.js       [39m[1m[2m    2.15 kB[22m[1m[22m[2m Γöé map:     10.54 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/connectionmanager-D-Mxzs1z.js       [39m[1m[2m    2.39 kB[22m[1m[22m[2m Γöé map:      5.79 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/settings-DAVCk6YO.js                [39m[1m[2m    2.69 kB[22m[1m[22m[2m Γöé map:      6.81 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/toolWindowTitles-8IsZfc2b.js        [39m[1m[2m    3.04 kB[22m[1m[22m[2m Γöé map:      7.00 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/ipc-test-setup-BjwTSpsI.js          [39m[1m[2m    3.16 kB[22m[1m[22m[2m Γöé map:      6.23 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/connectiondialog-D2aDINcx.js        [39m[1m[2m    3.29 kB[22m[1m[22m[2m Γöé map:      8.29 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/gdbcommand-CYlBEyeu.js              [39m[1m[2m    3.61 kB[22m[1m[22m[2m Γöé map:      9.00 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/toolbar-BdDcmg1S.js                 [39m[1m[2m    3.85 kB[22m[1m[22m[2m Γöé map:      9.47 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/useGridColumnState-CmNlcIgM.js      [39m[1m[2m    4.00 kB[22m[1m[22m[2m Γöé map:     12.81 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/GdbRegistersWindow-BFxH8CqN.js      [39m[1m[2m    4.43 kB[22m[1m[22m[2m Γöé map:      8.40 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/GdbCallstackWindow-BfFDivdk.js      [39m[1m[2m    4.82 kB[22m[1m[22m[2m Γöé map:      8.03 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/GdbMemoryWindow-C-MEoxps.js         [39m[1m[2m    5.17 kB[22m[1m[22m[2m Γöé map:      9.51 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/GdbLocalsWindow-Drd-Z0zE.js         [39m[1m[2m    5.30 kB[22m[1m[22m[2m Γöé map:     10.60 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/GdbThreadsWindow-BxICyX3X.js        [39m[1m[2m    5.39 kB[22m[1m[22m[2m Γöé map:      9.32 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/Toolbar-DfPDfhWb.js                 [39m[1m[2m    6.17 kB[22m[1m[22m[2m Γöé map:     15.05 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/AboutBox-X_eW4Fmo.js                [39m[1m[2m    7.60 kB[22m[1m[22m[2m Γöé map:     11.65 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/GdbBreakpointsWindow-CdIgH8GK.js    [39m[1m[2m    7.93 kB[22m[1m[22m[2m Γöé map:     15.01 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/WorkspacePanel-CpjodhZj.js          [39m[1m[2m    7.98 kB[22m[1m[22m[2m Γöé map:     14.63 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/workspace-DSplDu4n.js               [39m[1m[2m    8.94 kB[22m[1m[22m[2m Γöé map:     13.94 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/Settings-htuPaTgx.js                [39m[1m[2m   10.41 kB[22m[1m[22m[2m Γöé map:     20.26 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/HexEditor-DQUnP5lx.js               [39m[1m[2m   17.06 kB[22m[1m[22m[2m Γöé map:     46.38 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/SectionsView-mv3WiSTq.js            [39m[1m[2m   18.39 kB[22m[1m[22m[2m Γöé map:     36.06 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/ConnectionDialog-BOclZ0d7.js        [39m[1m[2m   18.70 kB[22m[1m[22m[2m Γöé map:     36.97 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/GdbDisassemblerWindow-9NuYoH7D.js   [39m[1m[2m   19.31 kB[22m[1m[22m[2m Γöé map:     39.02 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/GdbCommandWindow-CEkaIphM.js        [39m[1m[2m   19.88 kB[22m[1m[22m[2m Γöé map:     42.35 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/GdbSourceWindow-B1q_5ZLZ.js         [39m[1m[2m   27.86 kB[22m[1m[22m[2m Γöé map:     79.43 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/ConnectionManager-CtctC9lP.js       [39m[1m[2m   36.92 kB[22m[1m[22m[2m Γöé map:     91.49 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/vendor-D_UVQ1mN.js                  [39m[1m[33m2,273.33 kB[39m[22m[2m Γöé map:  3,585.52 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/main-CrGL2G6V.js                    [39m[1m[33m2,701.59 kB[39m[22m[2m Γöé map:     84.98 kB[22m
+[0] [2m../../out/renderer/[22m[36massets/syncfusion-vendor-CollgEn7.js       [39m[1m[33m5,925.89 kB[39m[22m[2m Γöé map: 11,431.10 kB[22m
+[0] [32mΓ£ô built in 27.88s[39m
+[0] electron-vite build exited with code 0

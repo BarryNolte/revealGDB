@@ -17,6 +17,7 @@ import {
   createMainWindow,
   loadMainWindow,
   restoreWindowBounds,
+  saveWindowBounds,
   wireWindowCloseHandlers,
 } from "../../../src/main/window-manager";
 import { createEventEmitterHarness } from "../../helpers/event-emitter-test-harness";
@@ -30,6 +31,16 @@ vi.mock("electron", () => ({
   BrowserWindow: vi.fn(function BrowserWindowMock(options: unknown) {
     return browserWindowFactory(options);
   }),
+  screen: {
+    getAllDisplays: vi.fn(() => [
+      {
+        bounds: { x: 0, y: 0, width: 1920, height: 1080 },
+      },
+    ]),
+    getPrimaryDisplay: vi.fn(() => ({
+      bounds: { x: 0, y: 0, width: 1920, height: 1080 },
+    })),
+  },
 }));
 
 describe("window-manager", () => {
@@ -113,33 +124,124 @@ describe("window-manager", () => {
 
   it("restores saved window bounds and fullscreen flag", () => {
     const mainWindow = createMockBrowserWindow({
-      setPosition: vi.fn(),
-      setSize: vi.fn(),
+      setBounds: vi.fn(),
+      setFullScreen: vi.fn(),
     } as never);
     const appSettings = createMockAppSettings({
       getSync: vi.fn((key: string) => {
-        switch (key) {
-          case "gdb.gui.windowSize.x":
-            return 10;
-          case "gdb.gui.windowSize.y":
-            return 20;
-          case "gdb.gui.windowSize.width":
-            return 1200;
-          case "gdb.gui.windowSize.height":
-            return 800;
-          case "gdb.gui.windowSize.fullscreen":
-            return true;
-          default:
-            return undefined;
+        if (key === "gdb.gui.workspace") {
+          return {
+            windows: [
+              {
+                id: "main",
+                type: "main",
+                hostId: "main",
+                bounds: {
+                  x: 10,
+                  y: 20,
+                  width: 1200,
+                  height: 800,
+                },
+                isMaximized: false,
+                isMinimized: true,
+              },
+            ],
+          };
         }
+        return undefined;
       }),
     });
 
     restoreWindowBounds(mainWindow as never, appSettings);
 
-    expect(mainWindow.setPosition).toHaveBeenCalledWith(10, 20);
-    expect(mainWindow.setSize).toHaveBeenCalledWith(1200, 800);
-    expect(mainWindow.fullScreen).toBe(true);
+    expect(mainWindow.setBounds).toHaveBeenCalledWith({
+      x: 10,
+      y: 20,
+      width: 1200,
+      height: 800,
+    });
+    expect(mainWindow.setFullScreen).toHaveBeenCalledWith(true);
+  });
+
+  it("re-centers off-screen saved bounds onto the primary display", () => {
+    const mainWindow = createMockBrowserWindow({
+      setBounds: vi.fn(),
+      setFullScreen: vi.fn(),
+    } as never);
+    const appSettings = createMockAppSettings({
+      getSync: vi.fn((key: string) => {
+        if (key === "gdb.gui.workspace") {
+          return {
+            windows: [
+              {
+                id: "main",
+                type: "main",
+                hostId: "main",
+                bounds: {
+                  x: -5000,
+                  y: -5000,
+                  width: 1200,
+                  height: 800,
+                },
+                isMaximized: false,
+                isMinimized: false,
+              },
+            ],
+          };
+        }
+        return undefined;
+      }),
+    });
+
+    restoreWindowBounds(mainWindow as never, appSettings);
+
+    expect(mainWindow.setBounds).toHaveBeenCalledWith({
+      x: 360,
+      y: 140,
+      width: 1200,
+      height: 800,
+    });
+  });
+
+  it("drops stale dockLayout data when saving bounds", () => {
+    const mainWindow = createMockBrowserWindow({
+      getBounds: vi.fn().mockReturnValue({ x: 10, y: 20, width: 900, height: 700 }),
+      isMaximized: vi.fn().mockReturnValue(false),
+    } as never);
+    const appSettings = createMockAppSettings({
+      getSync: vi.fn((key: string) => {
+        if (key === "gdb.gui.workspace") {
+          return {
+            windows: [
+              {
+                id: "main",
+                type: "main",
+                hostId: "main",
+                bounds: { x: 0, y: 0, width: 1200, height: 800 },
+                isMaximized: false,
+                isMinimized: false,
+              },
+            ],
+          };
+        }
+        return undefined;
+      }),
+    });
+
+    saveWindowBounds("main", mainWindow as never, appSettings);
+
+    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.workspace", {
+      windows: [
+        {
+          id: "main",
+          type: "main",
+          hostId: "main",
+          bounds: { x: 10, y: 20, width: 900, height: 700 },
+          isMaximized: false,
+          isMinimized: false,
+        },
+      ],
+    });
   });
 
   it("closes the debug window when the main window closes", () => {
@@ -153,7 +255,7 @@ describe("window-manager", () => {
       on: debugWindowEvents.on,
     };
 
-    wireWindowCloseHandlers(mainWindow as never, debugWindow as never);
+    wireWindowCloseHandlers(mainWindow as never, debugWindow as never, undefined);
 
     mainWindowEvents.emit("closed");
 
@@ -171,8 +273,43 @@ describe("window-manager", () => {
       on: mainWindowEvents.on,
     } as never);
 
-    wireWindowCloseHandlers(mainWindow as never, undefined);
+    wireWindowCloseHandlers(mainWindow as never, undefined, undefined);
 
     expect(() => mainWindowEvents.emit("closed")).not.toThrow();
+  });
+
+  it("invokes the callback when the main window closes", () => {
+    const mainWindowEvents = createEventEmitterHarness();
+    const mainWindow = createMockBrowserWindow({
+      on: mainWindowEvents.on,
+    } as never);
+    const callback = vi.fn();
+
+    wireWindowCloseHandlers(mainWindow as never, undefined, callback);
+
+    mainWindowEvents.emit("closed");
+
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+
+  it("invokes the callback before closing the debug window", () => {
+    const mainWindowEvents = createEventEmitterHarness();
+    const debugWindowEvents = createEventEmitterHarness();
+    const debugWindow = {
+      close: vi.fn(),
+      on: debugWindowEvents.on,
+    };
+    const mainWindow = createMockBrowserWindow({
+      on: mainWindowEvents.on,
+    } as never);
+    const callOrder: string[] = [];
+    const callback = vi.fn(() => callOrder.push("callback"));
+    (debugWindow.close as any).mockImplementation(() => callOrder.push("debugWindow.close"));
+
+    wireWindowCloseHandlers(mainWindow as never, debugWindow as never, callback);
+
+    mainWindowEvents.emit("closed");
+
+    expect(callOrder).toEqual(["debugWindow.close", "callback"]);
   });
 });

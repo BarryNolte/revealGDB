@@ -4,12 +4,12 @@
  * @remarks
  * Exported symbols include `ConnectionDialogView`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
+import { Column } from "@syncfusion/ej2-grids";
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns";
 import { ColumnDirective, ColumnsDirective, GridComponent } from "@syncfusion/ej2-react-grids";
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
 import { JSX, RefObject } from "react";
-import { Column } from "@syncfusion/ej2-grids";
 import { StepAndState } from "../../common/gdb-common";
 
 import completedIcon from "../icons/icons8-complete-48.png";

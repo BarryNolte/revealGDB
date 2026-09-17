@@ -1,0 +1,1028 @@
+
+ RUN  v4.1.11 C:/Users/barry/Documents/Projects/revealGDB
+
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > should keep test case count aligned with Locals.test.inputs.txt 4ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-001 from Locals.test.inputs.txt:1 3ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-002 from Locals.test.inputs.txt:2 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-003 from Locals.test.inputs.txt:3 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-004 from Locals.test.inputs.txt:4 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-005 from Locals.test.inputs.txt:5 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-006 from Locals.test.inputs.txt:6 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-007 from Locals.test.inputs.txt:7 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-008 from Locals.test.inputs.txt:8 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-009 from Locals.test.inputs.txt:9 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-010 from Locals.test.inputs.txt:10 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-011 from Locals.test.inputs.txt:11 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-012 from Locals.test.inputs.txt:12 3ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-013 from Locals.test.inputs.txt:13 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-014 from Locals.test.inputs.txt:14 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-015 from Locals.test.inputs.txt:15 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-016 from Locals.test.inputs.txt:16 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-017 from Locals.test.inputs.txt:17 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-018 from Locals.test.inputs.txt:18 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-019 from Locals.test.inputs.txt:19 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-020 from Locals.test.inputs.txt:20 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-021 from Locals.test.inputs.txt:21 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-022 from Locals.test.inputs.txt:22 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-023 from Locals.test.inputs.txt:23 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-024 from Locals.test.inputs.txt:24 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-025 from Locals.test.inputs.txt:25 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-026 from Locals.test.inputs.txt:26 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-027 from Locals.test.inputs.txt:27 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-028 from Locals.test.inputs.txt:28 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-029 from Locals.test.inputs.txt:29 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-030 from Locals.test.inputs.txt:30 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-031 from Locals.test.inputs.txt:31 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-032 from Locals.test.inputs.txt:32 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-033 from Locals.test.inputs.txt:33 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-034 from Locals.test.inputs.txt:34 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-035 from Locals.test.inputs.txt:35 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-036 from Locals.test.inputs.txt:36 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-037 from Locals.test.inputs.txt:37 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-038 from Locals.test.inputs.txt:38 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-039 from Locals.test.inputs.txt:39 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-040 from Locals.test.inputs.txt:40 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-041 from Locals.test.inputs.txt:41 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-042 from Locals.test.inputs.txt:42 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-043 from Locals.test.inputs.txt:43 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-044 from Locals.test.inputs.txt:44 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-045 from Locals.test.inputs.txt:45 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-046 from Locals.test.inputs.txt:46 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-047 from Locals.test.inputs.txt:47 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-048 from Locals.test.inputs.txt:48 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-049 from Locals.test.inputs.txt:49 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-050 from Locals.test.inputs.txt:50 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-051 from Locals.test.inputs.txt:51 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-052 from Locals.test.inputs.txt:52 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-053 from Locals.test.inputs.txt:53 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-054 from Locals.test.inputs.txt:54 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-055 from Locals.test.inputs.txt:55 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-056 from Locals.test.inputs.txt:56 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-057 from Locals.test.inputs.txt:57 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-058 from Locals.test.inputs.txt:58 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-059 from Locals.test.inputs.txt:59 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-060 from Locals.test.inputs.txt:60 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-061 from Locals.test.inputs.txt:61 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-062 from Locals.test.inputs.txt:62 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-063 from Locals.test.inputs.txt:63 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-064 from Locals.test.inputs.txt:64 8ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-065 from Locals.test.inputs.txt:65 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-066 from Locals.test.inputs.txt:66 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.corpus.test.ts > LocalsContainer corpus coverage > parses line-067 from Locals.test.inputs.txt:67 0ms
+ Γ£ô tests/vite/main/bootstrap.test.ts > bootstrap > configures app settings with the expected persistence options 5ms
+ Γ£ô tests/vite/main/bootstrap.test.ts > bootstrap > logs settings path and display sizes 1ms
+ Γ£ô tests/vite/main/bootstrap.test.ts > bootstrap > warms system fonts and skips unreadable metadata 54ms
+ Γ£ô tests/vite/main/bootstrap.test.ts > bootstrap > installs React DevTools only in debug mode and logs failures 108ms
+ Γ£ô tests/vite/main/bootstrap.test.ts > bootstrap > collects runtime version info into the app info map 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > constructor > should create an instance with empty cache 4ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > constructor > should extend EventEmitter 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > hasSourceFile method > should return false for non-existent files 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > hasSourceFile method > should return true after file is cached 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > hasSourceFile method > should handle empty string file names 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > getSourceFileContents method > should read file from disk on first access 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > getSourceFileContents method > should return cached content on subsequent accesses 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > getSourceFileContents method > should return undefined for empty file content 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > getSourceFileContents method > should return undefined for empty file path 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > getSourceFileContents method > should emit html-stream event on file read error 3ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > getSourceFileContents method > should handle multiple different files 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > getSourceFileContents method > should use WSL Ubuntu path prefix 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > getSourceFileContents method > should cache files after successful read 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > getSourceFileContents method > should not cache files that fail to read 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > getSourceFileContents method > should handle files with special characters in path 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > getSourceFileContents method > should handle large file content 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > dump method > should log cache contents to console 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > dump method > should not log anything for empty cache 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > dump method > should format file sizes with padding 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > event emitter functionality > should allow subscribing to html-stream events 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > event emitter functionality > should allow multiple listeners 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > event emitter functionality > should allow removing listeners 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > edge cases > should handle null-like errors gracefully 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > edge cases > should handle concurrent requests for same file 20ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > edge cases > should handle very long file paths 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbSourceFileCache.test.ts > gdbSourceFileCache class > edge cases > should handle files with Unicode characters 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-connector/gdb-connector-general.test.ts > gdbConnectorIdfOnWsl > starts the shell, sets the WSL file prefix, and sends bootstrap commands in order 10ms
+ Γ£ô tests/vite/main/mi-interface/gdb-connector/gdb-connector-general.test.ts > gdbConnectorIdfOnWsl > emits data, error, and end events from the child process 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-connector/gdb-connector-general.test.ts > gdbConnectorIdfOnWsl > always emits gdb-data and gdb-error regardless of console watch state 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-connector/gdb-connector-general.test.ts > gdbConnectorIdfOnWsl > reports running state and delegates shutdown to the child process 1ms
+ ├ù tests/vite/main/menu.test.ts > GdbMenu > installs the standard app menu and wires debug and connection actions 225ms
+   ΓåÆ expected "vi.fn()" to be called with arguments: [ 'notify-render', ΓÇª(1) ]
+
+Received:
+
+  1st vi.fn() call:
+
+  [
+    "notify-render",
+    {
+-     "command": "command-entry",
++     "command": "settings-dialog",
+    },
+  ]
+
+  2nd vi.fn() call:
+
+  [
+    "notify-render",
+    {
+-     "command": "command-entry",
++     "command": "create-new-window",
+    },
+  ]
+
+  3rd vi.fn() call:
+
+  [
+    "notify-render",
+    {
+-     "command": "command-entry",
++     "command": "connection-dialog",
+    },
+  ]
+
+  4th vi.fn() call:
+
+  [
+    "notify-render",
+    {
+-     "command": "command-entry",
++     "command": "cancel-connection",
+    },
+  ]
+
+  5th vi.fn() call:
+
+  [
+    "notify-render",
+    {
+-     "command": "command-entry",
++     "command": "connections-dialog",
+    },
+  ]
+
+  6th vi.fn() call:
+
+  [
+    "notify-render",
+    {
+-     "command": "command-entry",
++     "command": "about-box",
+    },
+  ]
+
+
+Number of calls: 6
+
+ Γ£ô tests/vite/main/menu.test.ts > GdbMenu > includes macOS and debug-only menu sections when enabled 49ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > MaintPrintSymbolsParser.parse ΓÇô header > extracts source file and compilation directory 6ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > MaintPrintSymbolsParser.parse ΓÇô line table > produces entries from the line table section 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > MaintPrintSymbolsParser.parse ΓÇô line table > correctly parses a stmt entry 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > MaintPrintSymbolsParser.parse ΓÇô line table > correctly parses a non-stmt entry 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > MaintPrintSymbolsParser.parse ΓÇô line table > excludes line-0 sentinel entries 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > MaintPrintSymbolsParser.parse ΓÇô blockvector > finds function-scoped blocks 4ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > MaintPrintSymbolsParser.parse ΓÇô blockvector > finds app_main locals 3ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > MaintPrintSymbolsParser.parse ΓÇô blockvector > finds the for-loop sub-block with int i 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > MaintPrintSymbolsParser.parse ΓÇô blockvector > finds foo's parameter x 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > MaintPrintSymbolsParser.parse ΓÇô blockvector > does not include typedef-only symbols as variables 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > findDeclarationLine > finds mbs declaration 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > findDeclarationLine > finds chip_info declaration 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > findDeclarationLine > finds flash_size declaration 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > findDeclarationLine > finds for-loop variable i 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > findDeclarationLine > returns null for a name not in range 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > buildLineVarMap ΓÇô Approach B (no source) > assigns all app_main vars to the function start line (approx) 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > buildLineVarMap ΓÇô Approach B (no source) > returns a map keyed by compiled line numbers 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > buildLineVarMap ΓÇô Approach C (with source) > places mbs, chip_info, flash_size, major_rev, minor_rev on distinct lines 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > buildLineVarMap ΓÇô Approach C (with source) > places the for-loop variable i on its own line 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > findReferences > returns at least one reference for mbs within app_main 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > findReferences > includes the declaration line in the references 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > findReferences > each reference has correct colEnd = colStart + name.length 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > findReferences > does not include field accesses of mbs as references 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > findReferences > returns empty array for an unknown variable name 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > findReferences > returns empty array when range has no lines 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > buildLineVarMap ΓÇô Approach C references > each gdbVarLocation has a references array 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > buildLineVarMap ΓÇô Approach C references > mbs has multiple references in the function scope 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > buildLineVarMap ΓÇô Approach C references > Approach B produces empty references arrays 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > queryVarAtPosition > returns the variable when col hits its declaration range 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > queryVarAtPosition > returns the variable when col hits the end of its declaration range (exclusive end - 1) 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > queryVarAtPosition > returns undefined when col is at the exclusive end of the declaration range 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > queryVarAtPosition > returns the variable when col hits a reference (not the declaration position) 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > queryVarAtPosition > returns undefined for a line that has no variables 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > queryVarAtPosition > returns undefined when col is before any variable on the line 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > queryVarAtPosition > returns undefined for Approach B map (no column data) 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > findReferences ΓÇô struct base-variable references > mbs references include the mbs.ms.a usage lines 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > findReferences ΓÇô struct base-variable references > field names like ms or a are NOT included in mbs references 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > findReferences ΓÇô struct base-variable references > mbs references total count matches usage lines 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > extractFieldNames > returns empty array for a scalar type 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > extractFieldNames > extracts field names from a simple struct 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > extractFieldNames > extracts field names with pointer types 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > extractFieldNames > extracts field names including array fields 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > extractFieldNames > extracts field names from nested structs (nested content is not unwrapped) 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > extractFieldNames > extracts field names including bitfield members 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > extractFieldNames > parses the real mbs typeStr from the corpus 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > extractFieldNames > scalar variables get an empty fields array 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/maint-print-symbols-parser.test.ts > extractFieldNames > buildLineVarMap propagates fields and typeStr to gdbVarLocation 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > Local class > should create a Local with just a name and value 6ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > Local class > should create a Local with a parent fullpath 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > Local class > should add a sublocal and update its fullpath 3ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > Local class > should build correct fullpath for deeply nested locals 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should handle empty input 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should parse a simple local variable 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should parse multiple simple local variables 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should parse a simple group with sublocals 4ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should parse a complex group with nested structures 4ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should parse a complex real-world GDB MI example 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should parse hex values correctly 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should parse string values with escape sequences 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should handle optimized out values 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should parse error messages in values 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should correctly build fullpath for a 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should correctly build fullpath for a.b 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should correctly build fullpath for a.b.c 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should handle anonymous unions/structs in the input 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should parse multiple top-level variables with mixed types 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should parse rust locals payload with enum and struct values 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should preserve brace-heavy rust display values as plain strings 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should preserve numeric string values 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should handle deeply nested structures 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should preserve sibling locals when parsing array-style nested values 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > should parse mixed plain/simple/complex locals in one container 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > anonymous union/struct handling > should exclude anonymous markers from fullpath 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > anonymous union/struct handling > should handle nested anonymous unions correctly 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > anonymous union/struct handling > should handle anonymous marker at top level 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > anonymous union/struct handling > should handle anonymous marker in constructor 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > anonymous union/struct handling > should handle complex real-world case with anonymous unions 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-locals.test.ts > LocalsContainer class > anonymous union/struct handling > should handle multiple anonymous markers at same level 1ms
+ Γ£ô tests/vite/main/app-events.test.ts > registerAppEvents > sends theme-changed render notification when app resigns active 8ms
+ Γ£ô tests/vite/main/app-events.test.ts > registerAppEvents > quits the app when all windows are closed outside macOS 2ms
+ Γ£ô tests/vite/main/app-events.test.ts > registerAppEvents > sends native theme updates to the dedicated theme channel 1ms
+ Γ£ô tests/vite/main/window-manager.test.ts > window-manager > creates the main window with preload and hidden by default 8ms
+ Γ£ô tests/vite/main/window-manager.test.ts > window-manager > creates a detached debug window and attaches devtools 3ms
+ Γ£ô tests/vite/main/window-manager.test.ts > window-manager > loads renderer URL in development mode 2ms
+ Γ£ô tests/vite/main/window-manager.test.ts > window-manager > loads the built renderer file when no development URL is set 2ms
+ Γ£ô tests/vite/main/window-manager.test.ts > window-manager > restores saved window bounds and fullscreen flag 2ms
+ Γ£ô tests/vite/main/window-manager.test.ts > window-manager > closes the debug window when the main window closes 2ms
+ Γ£ô tests/vite/main/window-manager.test.ts > window-manager > does nothing on main window close when no debug window exists 3ms
+ Γ£ô tests/vite/main/window-manager.test.ts > window-manager > invokes the callback when the main window closes 2ms
+ Γ£ô tests/vite/main/window-manager.test.ts > window-manager > invokes the callback before closing the debug window 3ms
+ Γ£ô tests/vite/main/gdb-lifecycle.test.ts > createGdbInterface > runs built-in startup commands once and built-in stopped commands on each stop 9ms
+ Γ£ô tests/vite/main/gdb-lifecycle.test.ts > createGdbInterface > forwards CONSOLE_STREAM to mainWindow.webContents.send 3ms
+ Γ£ô tests/vite/main/gdb-lifecycle.test.ts > createGdbInterface > forwards LOG_STREAM to mainWindow.webContents.send 2ms
+ Γ£ô tests/vite/main/gdb-lifecycle.test.ts > createGdbInterface > forwards ERROR_STREAM to mainWindow.webContents.send 1ms
+ Γ£ô tests/vite/main/gdb-lifecycle.test.ts > createGdbInterface > forwards DEBUG_STREAM to mainWindow.webContents.send 2ms
+ Γ£ô tests/vite/main/gdb-lifecycle.test.ts > createGdbInterface > forwards HTML_STREAM to mainWindow.webContents.send 1ms
+ Γ£ô tests/vite/main/gdb-lifecycle.test.ts > createGdbInterface > handles gdb-end by disconnecting, clearing state, and notifying the renderer 5ms
+ Γ£ô tests/vite/main/gdb-lifecycle.test.ts > createGdbInterface > skips maint print symbols command when hasLineVars returns true 2ms
+ Γ£ô tests/vite/main/gdb-lifecycle.test.ts > createGdbInterface > runs maint print symbols command when hasLineVars returns false 2ms
+stderr | tests/vite/main/ipc/queries.test.ts > registerIpcQueryHandlers > getSettings handler throws after exhausting all retries
+[getSettings] Failed to get settings after all retries: Error: always locked
+    at Object.<anonymous> (C:/Users/barry/Documents/Projects/revealGDB/tests/vite/main/ipc/queries.test.ts:250:13)
+    at Object.Mock [as getSync] (file:///C:/Users/barry/Documents/Projects/revealGDB/node_modules/@vitest/spy/dist/index.js:332:34)
+    at attempt (C:/Users/barry/Documents/Projects/revealGDB/src/main/ipc/queries.ts:104:48)
+    at attempt (C:/Users/barry/Documents/Projects/revealGDB/src/main/ipc/queries.ts:126:18)
+
+ Γ£ô tests/vite/main/ipc/queries.test.ts > registerIpcQueryHandlers > registers app, environment, and debugger query channels 12ms
+ Γ£ô tests/vite/main/ipc/queries.test.ts > registerIpcQueryHandlers > resolves settings after retries, returns fonts, version info, WSL distros, and function names 11ms
+ Γ£ô tests/vite/main/ipc/queries.test.ts > registerIpcQueryHandlers > returns an empty WSL distribution list when enumeration fails 3ms
+ Γ£ô tests/vite/main/ipc/queries.test.ts > registerIpcQueryHandlers > registers all debugger query channels (varAtPosition, varByName, evaluateExpression, sections) 4ms
+ Γ£ô tests/vite/main/ipc/queries.test.ts > registerIpcQueryHandlers > queryVarAtPosition handler delegates to gdbDB.queryVarAtPosition with correct args 2ms
+ Γ£ô tests/vite/main/ipc/queries.test.ts > registerIpcQueryHandlers > getVarByName handler delegates to gdbDB.getVarByName with correct args 2ms
+ Γ£ô tests/vite/main/ipc/queries.test.ts > registerIpcQueryHandlers > evaluateExpression handler delegates to gdbInterface.evaluateExpression 2ms
+ Γ£ô tests/vite/main/ipc/queries.test.ts > registerIpcQueryHandlers > getSectionData handler returns gdbInterface.gdbDB.gdbSymbolFiles 1ms
+ Γ£ô tests/vite/main/ipc/queries.test.ts > registerIpcQueryHandlers > showSourceAt handler reads file, pushes via sourceFile channel, and returns result 3ms
+ Γ£ô tests/vite/main/ipc/queries.test.ts > registerIpcQueryHandlers > getSettings handler throws after exhausting all retries 15ms
+ Γ£ô tests/vite/main/main.test.ts > main startup wiring > registers app events and IPC handlers on import and wires the ready startup path 707ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > handles renderEnd by sending command-entry notify-render 9ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > handles save-app-theme by persisting the setting 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > handles save-app-theme 'Dark' by calling setNativeThemeFromAppTheme 1ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > handles save-app-theme 'Light' by calling setNativeThemeFromAppTheme 2ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > handles save-app-theme 'Auto' by calling setNativeThemeFromAppTheme 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > handles save-last-used-connection by persisting the setting 2ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > handles cancel-connection by disconnecting and clearing DB 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > handles valid selected connection payloads by connecting and notifying success 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > handles invalid selected connection payloads without connecting 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > persists command history, source viewer settings, and connection list 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > persists dock layout and grid columns and supports resetting grid columns 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > handles command-entry and renderStart without throwing 1ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > handles open-external with a valid https URL by calling shell.openExternal 2ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > handles open-external with a valid http URL 2ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > rejects ftp:// URLs in open-external as unsafe and logs an error 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > rejects empty string in open-external as an invalid URL 2ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > rejects non-string data in open-external as an invalid URL 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > handles save-sections-view-options by persisting both view settings 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > sends connection-failed when the connection attempt returns false 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > does not throw for unrecognised commands 11ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > handleNotifyMain > handles save-auto-symbol-loading by persisting the setting 2ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > routes ordinary commands to the gdb interface 2ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > selects a stack frame and refreshes debugger data when given a structured frame request 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > handles dot-commands for db, wsl, and screen 6ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > outputs an error for an unknown dot command 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > outputs an error for an unknown .db subcommand 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > .help sends an HTML table via GeneralInfoSender 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > .debug sends a header output via GeneralInfoSender 4ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > .db sources calls gdbSrcFileCache.list and sends an HTML block 4ms
+ Γ£ô tests/vite/main/utilities/GeneralInfoSender.test.ts > GeneralInfoSender > instance singleton > exposes a static instance 2ms
+ Γ£ô tests/vite/main/utilities/GeneralInfoSender.test.ts > GeneralInfoSender > addLine / sendOutput ΓÇö emits to self when no relay target > emits DEBUG_STREAM separator and body lines on sendOutput 3ms
+ Γ£ô tests/vite/main/utilities/GeneralInfoSender.test.ts > GeneralInfoSender > addLine / sendOutput ΓÇö emits to self when no relay target > clears outputLines after sendOutput 1ms
+ Γ£ô tests/vite/main/utilities/GeneralInfoSender.test.ts > GeneralInfoSender > addLine / sendOutput ΓÇö emits to self when no relay target > emits multiple body lines in order 1ms
+ Γ£ô tests/vite/main/utilities/GeneralInfoSender.test.ts > GeneralInfoSender > addHeader > includes header in output between separators 1ms
+ Γ£ô tests/vite/main/utilities/GeneralInfoSender.test.ts > GeneralInfoSender > addHeader > uses longest of header/lines for separator width 0ms
+ Γ£ô tests/vite/main/utilities/GeneralInfoSender.test.ts > GeneralInfoSender > addHeader > separator width based on header when header is longest 0ms
+ Γ£ô tests/vite/main/utilities/GeneralInfoSender.test.ts > GeneralInfoSender > setRelayTarget > relays DEBUG_STREAM emissions to the target emitter, not self 1ms
+ Γ£ô tests/vite/main/utilities/GeneralInfoSender.test.ts > GeneralInfoSender > sendHtmlBlock > emits HTML_STREAM on self when no relay target 1ms
+ Γ£ô tests/vite/main/utilities/GeneralInfoSender.test.ts > GeneralInfoSender > sendHtmlBlock > relays HTML_STREAM to target when relay target is set 1ms
+ Γ£ô tests/vite/main/utilities/GeneralInfoSender.test.ts > GeneralInfoSender > sendOutput with no lines and no header > emits only two separators (no body) 0ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > .db threads calls threadGroups.values and threads.values and sends HTML 6ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > .db features calls featureList and sends an HTML block 6ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > .db parameters calls paramList and sends an HTML block 4ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > .db symbols reads gdbSymbolFiles and sends an HTML block 4ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > .db stack reads gdbInterface.stackFrames from context and sends an HTML block 5ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > .db breakpoints reads gdbInterface.breakpointList from context and sends HTML 4ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > .db registers reads gdbInterface.registerList from context and sends HTML 4ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > onGdbCommand > .db functions reads gdbInterface.gdbFunctionNames from context and sends HTML 4ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > registerIpcCommandHandlers > registers app notification and debugger send channels 2ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > registerIpcCommandHandlers > notify handler dispatches messages to handleNotifyMain 2ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > registerIpcCommandHandlers > send handler routes a non-dangerous command directly to onGdbCommand 2ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > registerIpcCommandHandlers > send handler routes non-string structured command without checking dangerous entries 2ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > registerIpcCommandHandlers > send handler with defaultAnswer=yes executes without prompting 2ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > registerIpcCommandHandlers > send handler with defaultAnswer=no skips execution silently 1ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > registerIpcCommandHandlers > send handler with no entries matching the command executes without prompting 1ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > registerIpcCommandHandlers > send handler without defaultAnswer sends confirm-dangerous-command and executes when allowed 1ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > registerIpcCommandHandlers > send handler without defaultAnswer does not execute when user denies 2ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > registerIpcCommandHandlers > dangerous command response with remember=true updates existing entry in settings 3ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > registerIpcCommandHandlers > dangerous command response with remember=true pushes new entry when none exists 2ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > registerIpcCommandHandlers > dangerousCommandResponse handler is a no-op when no promise is pending 1ms
+ Γ£ô tests/vite/main/ipc/commands.test.ts > registerIpcCommandHandlers > controlD handler calls sendControlD on the gdb interface 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-output-capture.test.ts > GdbOutputCapture > captures symbol files and sections 7ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-output-capture.test.ts > GdbOutputCapture > merges file and flags for sections only in maint info sections 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-output-capture.test.ts > GdbOutputCapture > captures function names grouped by file 20ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-output-capture.test.ts > GdbOutputCapture > routes capture lines and resets state on end marker 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-output-capture.test.ts > GdbOutputCapture > captures function names via CaptureLine state 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-output-capture.test.ts > GdbOutputCapture > resets buffered capture when a new start marker appears 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-output-capture.test.ts > GdbOutputCapture > consumes end marker while inactive 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/gdb-output-capture.test.ts > GdbOutputCapture > passes through unknown marker-like lines while inactive 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-exec-handler.test.ts > MiExecAsyncHandler > handles running status 7ms
+ Γ£ô tests/vite/main/mi-interface/mi-exec-handler.test.ts > MiExecAsyncHandler > handles stopped status and emits gdb-stopped 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-exec-handler.test.ts > MiExecAsyncHandler > returns false for unknown exec record 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-exec-handler.test.ts > MiExecAsyncHandler > handles stopped with reason exited-signalled 5ms
+ Γ£ô tests/vite/main/mi-interface/mi-exec-handler.test.ts > MiExecAsyncHandler > handles stopped with reason signal-received and extracts signal fields 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-exec-handler.test.ts > MiExecAsyncHandler > handles stopped with reason exited and extracts exit-code 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-exec-handler.test.ts > MiExecAsyncHandler > handles stopped with reason exited-normally 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > constructor > should create an instance with empty collections 8ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > constructor > should extend EventEmitter 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > constructor > should have a gdbSrcFileCache instance 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > constructor > should use a provided custom notifier instead of creating a new one 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > constructor > forwards ERROR_STREAM events from gdbSrcFileCache to the database emitter 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > constructor > forwards HTML_STREAM events from gdbSrcFileCache to the database emitter 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Source File methods > should delegate hasSourceFile to cache 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Source File methods > should delegate getSourceFileContents to cache 3ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Stack Frame methods > addStackFrame > should add a stack frame 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Stack Frame methods > addStackFrame > should add multiple frames in order 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Stack Frame methods > clearStackFrames > should clear all stack frames 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Stack Frame methods > clearStackFrames > should work on empty stack 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Stack Frame methods > setActiveFrame > should set the specified frame as active 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Stack Frame methods > setActiveFrame > should deactivate all other frames 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Stack Frame methods > setActiveFrame > should handle setting first frame as active 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Stack Frame methods > setActiveFrame > should handle setting last frame as active 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Stack Frame methods > setActiveFrame > should not throw on negative index 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Stack Frame methods > setActiveFrame > should not throw on index out of bounds 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Stack Frame methods > setActiveFrame > should handle empty stack frames 3ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Breakpoint methods > createBreakpoint > should create a new breakpoint 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Breakpoint methods > createBreakpoint > should handle multiple breakpoints 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Breakpoint methods > updateBreakpoint > should update an existing breakpoint 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Breakpoint methods > updateBreakpoint > should create breakpoint if it doesn't exist 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Breakpoint methods > deleteBreakpoint > should delete an existing breakpoint 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Breakpoint methods > deleteBreakpoint > should not throw when deleting non-existent breakpoint 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Breakpoint methods > clearBreakpoints > should clear all breakpoints 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Parameter methods > addParam > should add a parameter 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Parameter methods > addParam > should overwrite existing parameter 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Parameter methods > getParam > should retrieve an existing parameter 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Parameter methods > getParam > should return undefined for non-existent parameter 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Feature methods > addFeature > should add a feature 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Feature methods > addFeature > should add multiple features 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Feature methods > removeFeature > should remove an existing feature 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Feature methods > removeFeature > should not throw when removing non-existent feature 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Feature methods > hasFeature > should return true for existing feature 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Feature methods > hasFeature > should return false for non-existent feature 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Feature methods > featureList > should return array of all features 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Feature methods > featureList > should return empty array when no features 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Register methods > addRegister > should add a new register 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Register methods > addRegister > should update name of existing register 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Register methods > addRegister > should preserve value when updating name 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Register methods > addRegisterValue > should add value to new register 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Register methods > addRegisterValue > should update existing register value 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Register methods > addRegisterValue > should mark changed as false when value unchanged 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Register methods > addRegisterValue > should mark changed as true when value changes 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Register methods > addRegisterValue > should use index as name if register not previously added 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Register methods > getRegister > should retrieve existing register 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Register methods > getRegister > should return undefined for non-existent register 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread Group methods > addThreadGroup > should add a thread group 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread Group methods > addThreadGroup > should add multiple thread groups 3ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread Group methods > removeThreadGroup > should remove an existing thread group 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread Group methods > getThreadGroup > should retrieve existing thread group 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread Group methods > getThreadGroup > should return undefined for non-existent group 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread Group methods > hasThreadGroup > should return true for existing group 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread Group methods > hasThreadGroup > should return false for non-existent group 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread Group methods > createThread > should add thread to group 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread Group methods > createThread > should handle multiple threads in group 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread Group methods > removeThreadFromGroup > should remove thread from group 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread Group methods > removeThreadFromGroup > should not throw if group doesn't exist 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread Group methods > startThreadGroup > should set all threads in group to running 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread Group methods > stopThreadGroup > should delete all threads in group 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread methods > addThread > should add a thread 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread methods > addThread > should use func as thread name 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread methods > addThread > should set frame.active to false 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread methods > addThread > should preserve thread active state 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread methods > deleteThread > should delete an existing thread 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread methods > deleteThread > should not throw when deleting non-existent thread 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread methods > clearThreadList > should clear all threads 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread methods > stopThreads > should stop all threads when stoppedThreads is 'all' 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread methods > stopThreads > should emit error for unknown stoppedThreads value 3ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread methods > startThreads > should start all threads when tid is 'all' 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Thread methods > startThreads > should emit error for unknown tid value 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > event emitter integration > should emit error-stream events 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > event emitter integration > should support multiple listeners 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > event emitter integration > should forward source file cache errors 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Line Variable methods > queryVarAtPosition returns undefined when no map exists for source file 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Line Variable methods > getVarByName returns undefined when no map exists for source file 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Line Variable methods > hasLineVars returns false when no map exists for source file 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Line Variable methods > getLineVars returns undefined when no map exists for source file 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Locals methods > parseAndStoreLocals stores parsed locals 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Locals methods > getLocals returns undefined before any locals are stored 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Locals methods > clearLocals removes stored locals 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Locals methods > localsUpdateUI delegates to notifier 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Function store methods > addFunctionNames adds a function entry for a file 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Function store methods > getFunctionNames returns functions for an existing file 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Function store methods > getFunctionNames returns undefined for a missing file 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Function store methods > getFunction returns the full function map 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Function store methods > getAllFunctionNames returns all functions sorted alphabetically 18ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Symbol File methods > addMainSymbolFile sets the main symbol file path 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Symbol File methods > addSection appends a section to symbol files 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > Symbol File methods > getSymbolFiles returns the symbol files object 0ms
+ Γ£ô tests/vite/main/utilities/logger.test.ts > logger utilities > debugLog > does not throw when called with no arguments 4ms
+ Γ£ô tests/vite/main/utilities/logger.test.ts > logger utilities > debugLog > does not throw when called with a string argument 1ms
+ Γ£ô tests/vite/main/utilities/logger.test.ts > logger utilities > debugLog > does not throw when called with multiple arguments 0ms
+ Γ£ô tests/vite/main/utilities/logger.test.ts > logger utilities > debugLog > does not throw when called with undefined 1ms
+ Γ£ô tests/vite/main/utilities/logger.test.ts > logger utilities > debugLog > does not throw when called with null 0ms
+ Γ£ô tests/vite/main/utilities/logger.test.ts > logger utilities > debugLogLines > does not throw when called with an empty array 1ms
+ Γ£ô tests/vite/main/utilities/logger.test.ts > logger utilities > debugLogLines > does not throw when called with string lines 0ms
+ Γ£ô tests/vite/main/utilities/logger.test.ts > logger utilities > debugLogLines > does not throw when called with mixed types 0ms
+ Γ£ô tests/vite/main/utilities/logger.test.ts > logger utilities > debugLogLines > does not throw with a single-element array 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles thread-group-added 7ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles cmd-param-changed 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > returns false for unknown notify command 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =library-loaded and logs parsed fields 6ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =library-unloaded and logs parsed fields 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =memory-changed without type 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =memory-changed with type=code 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =record-started with method and format 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =record-stopped 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =traceframe-changed with num and tracepoint 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =traceframe-changed end 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =thread-group-started 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =thread-group-exited 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =thread-group-removed 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =thread-group-added with no id match 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =thread-group-started with no id match 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =thread-group-exited with no id match 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > returns false for unknown thread-group-* subcommand 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =thread-created 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =thread-created with no regex match 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =thread-exited 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =thread-exited with no id match 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > returns false for unknown thread-* subcommand 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =breakpoint-created 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =breakpoint-created with no regex match ΓåÆ returns false 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =breakpoint-modified 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =breakpoint-modified with no regex match ΓåÆ returns false 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =breakpoint-deleted 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =breakpoint-deleted with no id match 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > returns false for unknown breakpoint-* subcommand 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =tsv-created 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =tsv-deleted with name 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =tsv-deleted without name 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =tsv-modified with current 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =tsv-modified without current 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-notify-handler.test.ts > MiNotifyAsyncHandler > handles =record-started without format field 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > UI update and lifecycle methods > stackUpdateUI notifies with current stack frames 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > UI update and lifecycle methods > breakpointsUpdateUI notifies with current breakpoints 7ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > UI update and lifecycle methods > breakpointList returns an array of current breakpoints 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > UI update and lifecycle methods > paramList returns an array of current parameters 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > UI update and lifecycle methods > registersUpdateUI notifies with current registers 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > UI update and lifecycle methods > registerList returns an array of current registers 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > UI update and lifecycle methods > threadUpdateUI notifies with threads and thread groups 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > UI update and lifecycle methods > clearSourceFiles calls notifier.sendSourceFile with blank source info 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > UI update and lifecycle methods > clearDatabase clears all stores 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > UI update and lifecycle methods > allDataUpdateUI calls all notifier send methods 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > addRawLineVarData and Line Variable Map with data > addRawLineVarData populates lineVarStore after async enrichment 65ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-handler.test.ts > MiResultRecordHandler > parses feature list into state database 5ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-handler.test.ts > MiResultRecordHandler > parses register names and updates UI 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-handler.test.ts > MiResultRecordHandler > returns false for unknown done-result payload 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-handler.test.ts > MiResultRecordHandler > emits gdb-running for ^running result 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-handler.test.ts > MiResultRecordHandler > emits gdb-connected for ^connected result 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-handler.test.ts > MiResultRecordHandler > emits gdb-exit for ^exit result 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-handler.test.ts > MiResultRecordHandler > logs value result from -data-evaluate-expression 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-handler.test.ts > MiResultRecordHandler > logs name result from -var-create 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-handler.test.ts > MiResultRecordHandler > logs depth result from -stack-info-depth 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-handler.test.ts > MiResultRecordHandler > logs changed-registers result 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface-commands.test.ts > miInterface command wrappers > routes continueExecution through send 6ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface-commands.test.ts > miInterface command wrappers > routes stepOver through send 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface-commands.test.ts > miInterface command wrappers > routes stepInto through send 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface-commands.test.ts > miInterface command wrappers > routes stepOut through send 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface-commands.test.ts > miInterface command wrappers > routes pauseExecution through send 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface-commands.test.ts > miInterface command wrappers > routes stopDebugging through send 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface-commands.test.ts > miInterface command wrappers > routes runCommand through send 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-strategies/mi-result-strategies.test.ts > MI result strategies > AsmResultStrategy parses disassembly rows 9ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-strategies/mi-result-strategies.test.ts > MI result strategies > MemoryResultStrategy decodes hex bytes 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-strategies/mi-result-strategies.test.ts > MI result strategies > ThreadsResultStrategy stores thread list and emits UI update 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-strategies/mi-result-strategies.test.ts > MI result strategies > RegistersResultStrategy handles names and values 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-strategies/mi-result-strategies.test.ts > MI result strategies > StackResultStrategy stores frames and publishes source file 10ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-strategies/mi-result-strategies.test.ts > MI result strategies > StackResultStrategy matches frames when file/fullname/line are absent 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-result-strategies/mi-result-strategies.test.ts > MI result strategies > StackResultStrategy safely handles an empty frame list 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.test.ts > MiOutputProcessor integration > dispatches mixed done payloads across core and strategy handlers 17ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.test.ts > MiOutputProcessor integration > routes lines to consoleCapture while the notifier is watching 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.test.ts > MiOutputProcessor integration > exits console watch mode when =thread-group-added arrives 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > addRawLineVarData and Line Variable Map with data > getLineVars returns the populated map after addRawLineVarData 58ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > addRawLineVarData and Line Variable Map with data > queryVarAtPosition does not throw when map is populated 63ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > constructor > should initialize with empty state 5ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > constructor > should be an EventEmitter 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > constructor > should forward gdbDB error-stream events 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseRawOutput > should handle empty output 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseRawOutput > should route console stream output (~) 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseRawOutput > should route target stream output (@) 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseRawOutput > should route log stream output (&) 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseRawOutput > should route result record output (^) 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseRawOutput > should route exec async record output (*) 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseRawOutput > should route notify async record output (=) 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseRawOutput > should emit gdb-idle on (gdb) prompt 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseRawOutput > should handle unknown output types 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseConsoleStream > should parse single-line console output 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseConsoleStream > should parse multi-line console output 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseConsoleStream > should handle escaped quotes 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseConsoleStream > should handle escaped tabs 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseConsoleStream > should accumulate partial lines 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseLogStream > should parse log stream output 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseLogStream > should parse multi-line log stream 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseLogStream > should not emit for non-terminated lines 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseTargetStream > should emit log-error event 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseResultRecord > should handle ^done with no data 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseResultRecord > should handle ^running 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseResultRecord > should handle ^connected 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseResultRecord > should handle ^error with message 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseResultRecord > should handle ^exit 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseResultRecord > should handle features result 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseResultRecord > should handle register-names result 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseResultRecord > should handle unknown result type 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseExecAsyncRecord > should handle *running 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseExecAsyncRecord > should handle *stopped 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseExecAsyncRecord > should handle *stopped with different reasons 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseExecAsyncRecord > should emit gdb-stopped event 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseExecAsyncRecord > should handle unknown exec async record 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseNotifyAsyncRecord > should handle thread-group-added 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseNotifyAsyncRecord > should handle thread-group-started 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseNotifyAsyncRecord > should handle thread-created 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseNotifyAsyncRecord > should handle breakpoint-created 8ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > parseNotifyAsyncRecord > should handle unknown notify async record 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > send > should pass data to connector 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > send > should emit debug-stream when debug mode enabled 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > send > should not emit debug-stream when debug mode disabled 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > streaming and line buffering > should accumulate incomplete lines across multiple calls 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > event emission > should emit events on console-stream 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > event emission > should emit events on log-stream 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > event emission > should emit events on error-stream 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > event emission > should reassemble split gdb-data chunks before parsing 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > state database integration > should add features to gdbDB 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > state database integration > should add registers to gdbDB 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > connect > should return true on successful Start 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > connect > should call Start on the connector 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > connect > should emit gdb-input events from connector gdb-input 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > connect > should handle gdb-exit event from connector without throwing 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > connect > should forward gdb-end event from connector 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > connect > should emit gdb-idle event on gdb-idle 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > connect > should route gdb-error through sendOutputToHandler 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > connect > should emit debug-stream via gdb-data when debug mode enabled 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > disconnect > should not throw when called without prior connect 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > disconnect > should call End and clear conn when connected 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > disconnect > should not throw when conn is null 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > disconnect > should call removeAllListeners on connector before End 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > command methods > continueExecution sends 'continue' 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > command methods > stepOver sends 'next' 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > command methods > stepInto sends 'step' 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > command methods > stepOut sends 'finish' 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Valid MI record type prefixes > should handle prefix '~' without crashing 5ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Valid MI record type prefixes > should handle prefix '@' without crashing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Valid MI record type prefixes > should handle prefix '&' without crashing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Valid MI record type prefixes > should handle prefix '^' without crashing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Valid MI record type prefixes > should handle prefix '*' without crashing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Valid MI record type prefixes > should handle prefix '=' without crashing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Valid MI record type prefixes > should handle prefix '+' without crashing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Valid MI record type prefixes > should handle prefix '(' without crashing 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Valid MI record type prefixes > should handle empty string 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Valid MI record type prefixes > should emit error for unknown prefix 6ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Console stream fuzz > should handle console stream: ~"simple text" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Console stream fuzz > should handle console stream: ~"text with \"quotes\"" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Console stream fuzz > should handle console stream: ~"text with \n newline" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Console stream fuzz > should handle console stream: ~"text with \t tab" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Console stream fuzz > should handle console stream: ~"text with \\nnn escape" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Console stream fuzz > should handle console stream: ~"" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Console stream fuzz > should handle console stream: ~"\n" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Console stream fuzz > should handle console stream: ~"\\n" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Console stream fuzz > should handle console stream: ~"mixed\n\t\"content" 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Console stream fuzz > should handle console stream: ~"≡ƒÜÇ unicode" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Console stream fuzz > should handle console stream: ~"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Console stream fuzz > should handle console stream: ~"incomplete 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Console stream fuzz > should handle console stream: ~missing quote 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Log stream fuzz > should handle log stream: &"debug message" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Log stream fuzz > should handle log stream: &"message with \n" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Log stream fuzz > should handle log stream: &"message with \t" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Log stream fuzz > should handle log stream: &"" 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Log stream fuzz > should handle log stream: &"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Log stream fuzz > should handle log stream: &incomplete 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Log stream fuzz > should handle log stream: &missing quote 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Log stream fuzz > should handle log stream: &no quotes 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Target stream fuzz > should handle target stream: @target message 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Target stream fuzz > should handle target stream: @ 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Target stream fuzz > should handle target stream: @cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Target stream fuzz > should handle target stream: @with special chars !@#$%^&*() 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Result record fuzz > should handle result record: ^done 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Result record fuzz > should handle result record: ^done,key=value 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Result record fuzz > should handle result record: ^error,msg=message 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Result record fuzz > should handle result record: ^running 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Result record fuzz > should handle result record: ^connected 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Result record fuzz > should handle result record: ^dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Result record fuzz > should handle result record: ^done,complex={nested={deep=value}} 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Result record fuzz > should handle result record: ^done,array=[1,2,3] 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Exec async record fuzz > should handle exec async record: *stopped 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Exec async record fuzz > should handle exec async record: *running 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Exec async record fuzz > should handle exec async record: *eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Exec async record fuzz > should handle exec async record: *stopped,reason=breakpoint-hit 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Notify async record fuzz > should handle notify async record: =thread-created 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Notify async record fuzz > should handle notify async record: =thread-exited 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Notify async record fuzz > should handle notify async record: =ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Notify async record fuzz > should handle notify async record: =thread-selected 0ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Status async record fuzz > should handle status async record: +download 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Status async record fuzz > should handle status async record: +gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Status async record fuzz > should handle status async record: +thread-created 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > GDB idle prompt fuzz > should handle gdb prompt: (gdb) 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > GDB idle prompt fuzz > should handle gdb prompt: (gdb)  1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > GDB idle prompt fuzz > should handle gdb prompt: (gdb)
+ 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > GDB idle prompt fuzz > should handle gdb prompt: (hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > GDB idle prompt fuzz > should handle gdb prompt: (gdb extra) 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Special characters and edge cases > should handle special case without throwing 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Randomized fuzz testing > should handle 100 random inputs with MI prefixes 9ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > addRawLineVarData and Line Variable Map with data > getVarByName returns a variable when its name exists in the map 57ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/gdbStateDatabase.test.ts > gdbStateDatabase class > addRawLineVarData and Line Variable Map with data > getVarByName returns undefined for an unknown variable name 54ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > command methods > pauseExecution sends 'signal SIGINT' 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > command methods > stopDebugging sends 'kill' 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > command methods > runCommand sends the given command 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > evaluateExpression > resolves with value when value-evaluated fires 5ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > evaluateExpression > resolves with undefined when expression-error fires 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > evaluateExpression > resolves with undefined on 2s timeout 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > evaluateExpression > sets evaluatingExpression true while pending 6ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > evaluateExpression > resets evaluatingExpression to false after resolution 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-interface.test.ts > miInterface > evaluateExpression > sends the correct GDB command 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Randomized fuzz testing > should handle 50 random strings without MI prefixes 5ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Randomized fuzz testing > should handle very large inputs 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Error handling robustness > should not throw on null-like characters 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Error handling robustness > should not throw on control characters 6ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Error handling robustness > should handle deeply nested JSON-like structures 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~"text without closing quote 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~"mixed\n\t content 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~"content\nwith\nescape 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~text with missing opening" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~
+missing opening quote" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~text in the middle 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~ 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~"text"with"extra"quotes" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~""empty with quotes"" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~"text with ' single quote 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~'text with double quote" 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~text with only closing" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~" " 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~"   " 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~"\n" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~"\t" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~"\u0041" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~"line1\nline2\nline3" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Console stream (~/") regex partial matches > should handle partial console regex: ~"tab\there" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &"log message without closing 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &"debug\n\terror output 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &log message with missing opening" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &
+missing opening" 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &log message in the middle 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: & 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &"log"with"extra"quotes" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &""empty with quotes"" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &"log with ' single quote 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &'log with double quote" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &log with only closing" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &" " 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &"   " 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &"\n" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &"\t" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &" 5ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &"\u0048" 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &"msg1\nmsg2\nmsg3" 7ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Log stream (&/") regex partial matches > should handle partial log regex: &"indent\there" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: ~"valid"extra 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: &"valid"extra 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: ~"" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: &"" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: ~~"text" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: &&"text" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: ~text" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: &text" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: "~text 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: "&text 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: ~"\"nested\"" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: &"\"nested\"" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: ~"text\ 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: &"text\ 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: ~"text\n" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: &"text\n" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: ~"valid" ~"another" 6ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex edge cases - boundary conditions > should handle boundary condition: &"valid" &"another" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex variations with escaped content > should handle escaped content: ~"text with \"escaped\" quotes" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex variations with escaped content > should handle escaped content: &"text with \"escaped\" quotes" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex variations with escaped content > should handle escaped content: ~"path\\to\\file" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex variations with escaped content > should handle escaped content: &"path\\to\\file" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex variations with escaped content > should handle escaped content: ~"\n\t\r\n\t" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex variations with escaped content > should handle escaped content: &"\n\t\r\n\t" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex variations with escaped content > should handle escaped content: ~"escaped\"but no close 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex variations with escaped content > should handle escaped content: &"escaped\"but no close 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex variations with escaped content > should handle escaped content: ~"text ending with\ 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex variations with escaped content > should handle escaped content: &"text ending with\ 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex variations with escaped content > should handle escaped content: ~"text\"with\nmixed\tescapes" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex variations with escaped content > should handle escaped content: &"text\"with\nmixed\tescapes" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex variations with escaped content > should handle escaped content: ~"text\x\y\z" 6ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex variations with escaped content > should handle escaped content: &"text\x\y\z" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: ~"" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: &"" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: ~"a" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: &"b" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: ~"1" 3ms
+ Γ£ô tests/vite/main/utilities/wsl-utilities.test.ts > WslUtilities > parses WSL distributions from command output 5ms
+ Γ£ô tests/vite/main/utilities/wsl-utilities.test.ts > WslUtilities > parses serial port names from WSL sysfs output 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: &"2" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: ~"\n" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: &"\t" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: ~"\" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: &"\" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: ~" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: &" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: ~""~"" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: &""&"" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: ~""" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: &""" 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: ~"""" 5ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex with zero-width and minimal content > should handle minimal/zero-width patterns: &"""" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: ~"text" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: &"text" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: @"text" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: "~text" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: "&text" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: prefix~"text" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: prefix&"text" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: ~"text"suffix 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: &"text"suffix 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: ~"~"text"" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: &"&"text"" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: ~&"text" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: &~"text" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: ~"line1\nline2" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: &"line1\nline2" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: ~"  text  " 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: &"  text  " 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: ~"first"text"last" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex pattern mutations > should handle pattern mutations: &"first"text"last" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex combined attack vectors > should handle combination of partial matches and special characters 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex combined attack vectors > should handle rapid-fire partial matches 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Partial regex match fuzz > Regex combined attack vectors > should handle regex catastrophic backtracking attempts 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Regex non-greedy matching edge cases > should handle non-greedy matching: ~"first"second"third" 6ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Regex non-greedy matching edge cases > should handle non-greedy matching: &"first"second"third" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Regex non-greedy matching edge cases > should handle non-greedy matching: ~"text with \"quote\" inside" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Regex non-greedy matching edge cases > should handle non-greedy matching: &"text with \"quote\" inside" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Regex non-greedy matching edge cases > should handle non-greedy matching: ~"\"\"\"\"" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Regex non-greedy matching edge cases > should handle non-greedy matching: &"\"\"\"\"" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Regex non-greedy matching edge cases > should handle non-greedy matching: ~"some\"escaped\"but not all"extra" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Regex non-greedy matching edge cases > should handle non-greedy matching: &"some\"escaped\"but not all"extra" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Regex non-greedy matching edge cases > should handle non-greedy matching: ~"a"b"c"d" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Regex non-greedy matching edge cases > should handle non-greedy matching: &"a"b"c"d" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: ~"\\" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: &"\\" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: ~"\\\\" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: &"\\\\" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: ~"\a\b\c\d" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: &"\a\b\c\d" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: ~"\n\x\t\y" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: &"\n\x\t\y" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: ~"text\" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: &"text\" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: ~"\\\\\\\n" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: &"\\\\\\\n" 5ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: ~"\nnn" 2ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: &"\nnn" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: ~"text\nnmore" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: &"text\nnmore" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: ~"\\\"\t\n" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Escape sequence edge cases > should handle escape sequences: &"\\\"\t\n" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Decode escape function edge cases > should handle decode edge cases: ~"test\nnninside" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Decode escape function edge cases > should handle decode edge cases: &"test\nnninside" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Decode escape function edge cases > should handle decode edge cases: ~"text\n" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Decode escape function edge cases > should handle decode edge cases: &"text\n" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Decode escape function edge cases > should handle decode edge cases: ~"\nnn\nnn\nnn" 8ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Decode escape function edge cases > should handle decode edge cases: &"\nnn\nnn\nnn" 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Decode escape function edge cases > should handle decode edge cases: ~"\nnntext" 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Decode escape function edge cases > should handle decode edge cases: &"\nnntext" 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Decode escape function edge cases > should handle decode edge cases: ~"start\nnnend" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Decode escape function edge cases > should handle decode edge cases: &"start\nnnend" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Decode escape function edge cases > should handle decode edge cases: ~"\nnn" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Decode escape function edge cases > should handle decode edge cases: &"\nnn" 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Decode escape function edge cases > should handle decode edge cases: ~"\"\nnn" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Decode escape function edge cases > should handle decode edge cases: &"\"\nnn" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Very long and deeply nested patterns > should handle extremely long quoted strings 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Very long and deeply nested patterns > should handle deeply nested escape sequences 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Very long and deeply nested patterns > should handle alternating valid patterns 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: ~" 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: &" 9ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: ~ 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: & 6ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: ~"\ 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: &"\ 8ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: ~"  "  " 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: &"  "  " 5ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: "~"text"~" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: "&"text"&" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: ~~~"text" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: &&&"text" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: ~&~"text" 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: &~&"text" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: ├â~"text" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Incomplete and malformed patterns at boundaries > should handle malformed patterns: ├â&"text" 3ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Combinations that stress the regex engine > should handle potential regex bomb patterns 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Combinations that stress the regex engine > should handle pathological case combinations 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Potential parsing issues with specific characters > should handle null bytes and control characters in quoted strings 5ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Potential parsing issues with specific characters > should handle unusual Unicode patterns 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Potential parsing issues with specific characters > should handle whitespace edge cases 4ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Statistical fuzzing with computed patterns > should survive 500 random pattern combinations 55ms
+ Γ£ô tests/vite/main/mi-interface/mi-output-processor.fuzz.test.ts > MiOutputProcessor.parseRawOutput - Fuzz Testing > Aggressive edge case fuzz testing > Statistical fuzzing with computed patterns > should handle mutation of valid patterns 13ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/orchestration/StateUpdateBroadcaster.test.ts > StateUpdateBroadcaster > forwards each store to the matching notifier method 8ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/orchestration/StateUpdateBroadcaster.test.ts > StateUpdateBroadcaster > broadcasts all data in thread-register-breakpoint-stack-locals order 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/notifiers/ElectronUINotifier.test.ts > ElectronUINotifier > sends locals payloads to the locals channel 5ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/notifiers/ElectronUINotifier.test.ts > ElectronUINotifier > sends undefined locals when no locals container exists 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/notifiers/ElectronUINotifier.test.ts > ElectronUINotifier > maps stack frame, breakpoint, register, and source notifications to their channels 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/notifiers/ElectronUINotifier.test.ts > ElectronUINotifier > packages threads and groups into the thread channel payload 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-connector/gdb-connector.test.ts > gdb-connector base class > assigns incrementing line numbers to output events 3ms
+ Γ£ô tests/vite/main/mi-interface/gdb-connector/gdb-connector.test.ts > gdb-connector base class > defaults to a no-op connector implementation 4ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/orchestration/StateLifecycleCoordinator.test.ts > StateLifecycleCoordinator > clears source files by sending a blank source info payload 6ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/orchestration/StateLifecycleCoordinator.test.ts > StateLifecycleCoordinator > clears all managed state stores and source info 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/LineVarStore.test.ts > LineVarStore > starts empty 3ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/LineVarStore.test.ts > LineVarStore > adds and retrieves a line-var map by source file 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/LineVarStore.test.ts > LineVarStore > overwrites an existing entry when added again with the same source file 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/LineVarStore.test.ts > LineVarStore > stores multiple source files independently 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/LineVarStore.test.ts > LineVarStore > returns undefined for unknown source files 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/LineVarStore.test.ts > LineVarStore > clear removes all entries 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/LineVarStore.test.ts > LineVarStore > has returns false after clear 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/RegisterStore.test.ts > RegisterStore > creates a register entry when a name is added first 4ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/RegisterStore.test.ts > RegisterStore > preserves the register name when a value is added later and tracks changes 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/RegisterStore.test.ts > RegisterStore > uses the index as a fallback name when a value arrives first and clears entries 1ms
+ Γ£ô tests/vite/main/utilities/ConnectionNotifier.test.ts > ConnectionNotifier > returns a singleton instance and tracks console watching state 5ms
+ Γ£ô tests/vite/main/utilities/ConnectionNotifier.test.ts > ConnectionNotifier > normalizes console output into startup and console-capture events 6ms
+ Γ£ô tests/vite/main/utilities/ConnectionNotifier.test.ts > ConnectionNotifier > sends explicit startup notifications 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/ThreadGroupStore.test.ts > ThreadGroupStore > creates thread groups and manages thread membership 4ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/ThreadGroupStore.test.ts > ThreadGroupStore > clears all thread groups 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/StackFrameStore.test.ts > StackFrameStore > adds and clears stack frames 5ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/StackFrameStore.test.ts > StackFrameStore > sets a single active frame when the index is valid 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/StackFrameStore.test.ts > StackFrameStore > ignores invalid active frame indexes 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-status-handler.test.ts > MiStatusAsyncHandler > handles +download section-start record (no progress fields) 7ms
+ Γ£ô tests/vite/main/mi-interface/mi-status-handler.test.ts > MiStatusAsyncHandler > handles +download progress record (with section-sent and total-sent) 1ms
+ Γ£ô tests/vite/main/mi-interface/mi-status-handler.test.ts > MiStatusAsyncHandler > logs and returns false for unknown status async record 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/ThreadStore.test.ts > ThreadStore > adds threads with normalized frame shape and supports delete and clear 6ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/ThreadStore.test.ts > ThreadStore > updates thread state for start and stop operations across groups 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/ThreadStore.test.ts > ThreadStore > removes only the threads that belong to a stopped group 1ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/LocalsStore.test.ts > LocalsStore > parses and stores locals 4ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/LocalsStore.test.ts > LocalsStore > clears stored locals 1ms
+ Γ£ô tests/vite/main/theme-support.test.ts > setNativeThemeFromAppTheme > sets themeSource to "light" for "Light" 4ms
+ Γ£ô tests/vite/main/theme-support.test.ts > setNativeThemeFromAppTheme > sets themeSource to "dark" for "Dark" 1ms
+ Γ£ô tests/vite/main/theme-support.test.ts > setNativeThemeFromAppTheme > sets themeSource to "system" for "Auto" 0ms
+ Γ£ô tests/vite/main/theme-support.test.ts > setNativeThemeFromAppTheme > sets themeSource to "system" for unknown values 0ms
+ Γ£ô tests/vite/main/mi-interface/mappers/thread-mapper.test.ts > mapRegexGroupsToAddThreadArgs > returns empty strings for all fields when groups is undefined 3ms
+ Γ£ô tests/vite/main/mi-interface/mappers/thread-mapper.test.ts > mapRegexGroupsToAddThreadArgs > uses group values when groups is defined 1ms
+ Γ£ô tests/vite/main/mi-interface/mappers/thread-mapper.test.ts > mapRegexGroupsToAddThreadArgs > falls back to empty string for undefined individual fields within groups 0ms
+ Γ£ô tests/vite/main/mi-interface/mappers/thread-mapper.test.ts > mapAddThreadArgsToThread > maps AddThreadArgs to a gdbThread with correct fields 1ms
+ Γ£ô tests/vite/main/mappers/window-pos-mapper.test.ts > mapElectronWindowToWinPos > maps window coordinates and trims the size edges 4ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/disasmParser.test.ts > parseDisasmTokens > parses addresses, functions, and parens 2ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/disasmParser.test.ts > parseDisasmTokens > keeps other tokens as text 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/disasmParser.test.ts > parseDisasmTokens > captures instruction tokens ending with a tab 0ms
+ Γ£ô tests/vite/main/mi-interface/gdb-parsers/disasmParser.test.ts > parseDisasmTokens > returns empty array for empty input 0ms
+ Γ£ô tests/vite/main/ipc/index.test.ts > registerIpcHandlers > registers query handlers before command handlers 4ms
+ Γ£ô tests/vite/main/mi-interface/gdb-state-database/stores/BreakpointStore.test.ts > BreakpointStore > creates, updates, deletes, and clears breakpoints 2ms
+ Γ£ô tests/vite/main/platform-info.test.ts > platform-info > exports boolean platform constants 2ms
+ Γ£ô tests/vite/main/platform-info.test.ts > platform-info > exactly one of isMac, isWin, or isLinux is true 0ms
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ» Failed Tests 1 ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+ FAIL  tests/vite/main/menu.test.ts > GdbMenu > installs the standard app menu and wires debug and connection actions
+AssertionError: expected "vi.fn()" to be called with arguments: [ 'notify-render', ΓÇª(1) ]
+
+Received:
+
+  1st vi.fn() call:
+
+  [
+    "notify-render",
+    {
+-     "command": "command-entry",
++     "command": "settings-dialog",
+    },
+  ]
+
+  2nd vi.fn() call:
+
+  [
+    "notify-render",
+    {
+-     "command": "command-entry",
++     "command": "create-new-window",
+    },
+  ]
+
+  3rd vi.fn() call:
+
+  [
+    "notify-render",
+    {
+-     "command": "command-entry",
++     "command": "connection-dialog",
+    },
+  ]
+
+  4th vi.fn() call:
+
+  [
+    "notify-render",
+    {
+-     "command": "command-entry",
++     "command": "cancel-connection",
+    },
+  ]
+
+  5th vi.fn() call:
+
+  [
+    "notify-render",
+    {
+-     "command": "command-entry",
++     "command": "connections-dialog",
+    },
+  ]
+
+  6th vi.fn() call:
+
+  [
+    "notify-render",
+    {
+-     "command": "command-entry",
++     "command": "about-box",
+    },
+  ]
+
+
+Number of calls: 6
+
+ Γ¥» tests/vite/main/menu.test.ts:221:28
+    219|     expect(mainMocks.gdbInterface.gdbDB.clearDatabase).toHaveBeenCalleΓÇª
+    220|     expect(mainMocks.gdbInterface.gdbDB.allDataUpdateUI).toHaveBeenCalΓÇª
+    221|     expect(sendToRenderer).toHaveBeenCalledWith("notify-render", {
+       |                            ^
+    222|       command: "command-entry",
+    223|     });
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/1]ΓÄ»
+
+
+ Test Files  1 failed | 44 passed (45)
+      Tests  1 failed | 859 passed (860)
+   Start at  19:12:32
+   Duration  7.79s (transform 12.35s, setup 2.67s, import 17.38s, tests 3.31s, environment 85.57s)
+
+

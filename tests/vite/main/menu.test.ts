@@ -88,104 +88,105 @@ describe("GdbMenu", () => {
     const debugMenu = template.find((item) => item.label === "&Debug");
     const connectionsMenu = template.find((item) => item.label === "Connections");
     const helpMenu = template.find((item) => item.role === "help");
-/**
- * Performs preferencesItem as part of this module's internal workflow.
- *
- * @param fileMenu?.submenu as Array<{ click? - fileMenu?.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs preferencesItem as part of this module's internal workflow.
+     *
+     * @param fileMenu?.submenu as Array<{ click? - fileMenu?.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
 
     const preferencesItem = (fileMenu?.submenu as Array<{ click?: () => void }>)[0];
-/**
- * Performs fileExitItem as part of this module's internal workflow.
- *
- * @param fileMenu?.submenu as Array<{ click? - fileMenu?.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs fileExitItem as part of this module's internal workflow.
+     *
+     * @param fileMenu?.submenu as Array<{ click? - fileMenu?.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
     const fileExitItem = (fileMenu?.submenu as Array<{ click?: () => void }>)[2];
-/**
- * Performs commandEntryItem as part of this module's internal workflow.
- *
- * @param viewMenu?.submenu as Array<{ click? - viewMenu?.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
-    const commandEntryItem = (viewMenu?.submenu as Array<{ click?: () => void }>)[3];
-/**
- * Performs continueItem as part of this module's internal workflow.
- *
- * @param debugMenu?.submenu as Array<{ click? - debugMenu?.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs commandEntryItem as part of this module's internal workflow.
+     *
+     * @param viewMenu?.submenu as Array<{ click? - viewMenu?.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
+    const newWindowItem = (viewMenu?.submenu as Array<{ click?: () => void }>)[3];
+    const commandEntryItem = (viewMenu?.submenu as Array<{ click?: () => void }>)[4];
+    /**
+     * Performs continueItem as part of this module's internal workflow.
+     *
+     * @param debugMenu?.submenu as Array<{ click? - debugMenu?.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
     const continueItem = (debugMenu?.submenu as Array<{ click?: () => void }>)[0];
-/**
- * Performs stepOverItem as part of this module's internal workflow.
- *
- * @param debugMenu?.submenu as Array<{ click? - debugMenu?.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs stepOverItem as part of this module's internal workflow.
+     *
+     * @param debugMenu?.submenu as Array<{ click? - debugMenu?.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
     const stepOverItem = (debugMenu?.submenu as Array<{ click?: () => void }>)[1];
-/**
- * Performs stepIntoItem as part of this module's internal workflow.
- *
- * @param debugMenu?.submenu as Array<{ click? - debugMenu?.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs stepIntoItem as part of this module's internal workflow.
+     *
+     * @param debugMenu?.submenu as Array<{ click? - debugMenu?.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
     const stepIntoItem = (debugMenu?.submenu as Array<{ click?: () => void }>)[2];
-/**
- * Performs stepOutItem as part of this module's internal workflow.
- *
- * @param debugMenu?.submenu as Array<{ click? - debugMenu?.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs stepOutItem as part of this module's internal workflow.
+     *
+     * @param debugMenu?.submenu as Array<{ click? - debugMenu?.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
     const stepOutItem = (debugMenu?.submenu as Array<{ click?: () => void }>)[3];
-/**
- * Performs pauseItem as part of this module's internal workflow.
- *
- * @param debugMenu?.submenu as Array<{ click? - debugMenu?.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs pauseItem as part of this module's internal workflow.
+     *
+     * @param debugMenu?.submenu as Array<{ click? - debugMenu?.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
     const pauseItem = (debugMenu?.submenu as Array<{ click?: () => void }>)[5];
-/**
- * Performs stopItem as part of this module's internal workflow.
- *
- * @param debugMenu?.submenu as Array<{ click? - debugMenu?.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs stopItem as part of this module's internal workflow.
+     *
+     * @param debugMenu?.submenu as Array<{ click? - debugMenu?.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
     const stopItem = (debugMenu?.submenu as Array<{ click?: () => void }>)[6];
-/**
- * Performs connectItem as part of this module's internal workflow.
- *
- * @param connectionsMenu?.submenu as Array<{ click? - connectionsMenu?.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs connectItem as part of this module's internal workflow.
+     *
+     * @param connectionsMenu?.submenu as Array<{ click? - connectionsMenu?.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
     const connectItem = (connectionsMenu?.submenu as Array<{ click?: () => void }>)[0];
-/**
- * Performs disconnectItem as part of this module's internal workflow.
- *
- * @param connectionsMenu?.submenu as Array<{ click? - connectionsMenu?.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs disconnectItem as part of this module's internal workflow.
+     *
+     * @param connectionsMenu?.submenu as Array<{ click? - connectionsMenu?.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
     const disconnectItem = (connectionsMenu?.submenu as Array<{ click?: () => void }>)[1];
-/**
- * Performs configureConnectionsItem as part of this module's internal workflow.
- *
- * @param connectionsMenu?.submenu as Array<{ click? - connectionsMenu?.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs configureConnectionsItem as part of this module's internal workflow.
+     *
+     * @param connectionsMenu?.submenu as Array<{ click? - connectionsMenu?.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
     const configureConnectionsItem = (connectionsMenu?.submenu as Array<{ click?: () => void }>)[3];
-/**
- * Performs aboutItem as part of this module's internal workflow.
- *
- * @param helpMenu?.submenu as Array<{ click? - helpMenu?.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs aboutItem as part of this module's internal workflow.
+     *
+     * @param helpMenu?.submenu as Array<{ click? - helpMenu?.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
     const aboutItem = (helpMenu?.submenu as Array<{ click?: () => void }>)[2];
-/**
- * Performs learnMoreItem as part of this module's internal workflow.
- *
- * @param helpMenu?.submenu as Array<{ click? - helpMenu?.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs learnMoreItem as part of this module's internal workflow.
+     *
+     * @param helpMenu?.submenu as Array<{ click? - helpMenu?.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
     const learnMoreItem = (helpMenu?.submenu as Array<{ click?: () => Promise<void> }>)[0];
 
     expect(editMenu?.submenu).toHaveLength(9);
@@ -255,19 +256,19 @@ describe("GdbMenu", () => {
       submenu?: unknown[];
     }>;
     const appMenu = template[0];
-/**
- * Performs macAboutItem as part of this module's internal workflow.
- *
- * @param appMenu.submenu as Array<{ click? - appMenu.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs macAboutItem as part of this module's internal workflow.
+     *
+     * @param appMenu.submenu as Array<{ click? - appMenu.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
     const macAboutItem = (appMenu.submenu as Array<{ click?: () => void }>)[0];
-/**
- * Performs macExitItem as part of this module's internal workflow.
- *
- * @param appMenu.submenu as Array<{ click? - appMenu.submenu as Array<{ click? parameter.
- * @returns The computed result produced by this operation.
- */
+    /**
+     * Performs macExitItem as part of this module's internal workflow.
+     *
+     * @param appMenu.submenu as Array<{ click? - appMenu.submenu as Array<{ click? parameter.
+     * @returns The computed result produced by this operation.
+     */
     const macExitItem = (appMenu.submenu as Array<{ click?: () => void }>)[8];
     const debugMenu = template.find((item) => item.label === "Electron_Debug");
 

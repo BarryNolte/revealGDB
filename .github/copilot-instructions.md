@@ -20,6 +20,17 @@ Single-test examples:
 - Single Playwright spec: `npx playwright test tests/playwright/<spec>.spec.ts`
 - Single Playwright test by name: `npx playwright test tests/playwright/<spec>.spec.ts -g "test name"`
 
+## Quality assurance before completing tasks
+
+**Always check for and fix build/lint errors before declaring work complete:**
+
+1. After making code changes, run `npm run build` to verify TypeScript compilation and bundling succeeds with exit code 0
+2. Check for any TypeScript errors, bundle errors, or lint warnings in the output
+3. If errors are found, fix them before moving on to the next task
+4. Do not declare a task complete until the build passes cleanly with no errors
+
+This ensures code quality and prevents broken builds from being committed.
+
 ## High-level architecture
 
 revealGDB is an Electron + React + TypeScript app with strict process boundaries:

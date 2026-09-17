@@ -152,6 +152,24 @@ export default function RevealToolbar(props: RevealToolbarProps): JSX.Element {
         select={ctrl.onSelectWindow}
         open={ctrl.onOpenWindow}
       />
+      <button
+        onClick={ctrl.onCreateNewWindow}
+        className="toolbar-new-window-btn"
+        title="Create a new window"
+        style={{
+          padding: "4px 8px",
+          marginLeft: "4px",
+          backgroundColor: "#007ACC",
+          color: "white",
+          border: "1px solid #005A9E",
+          borderRadius: "3px",
+          cursor: "pointer",
+          fontSize: "12px",
+          fontWeight: "500",
+        }}
+      >
+        + New Window
+      </button>
     </div>
   );
 }

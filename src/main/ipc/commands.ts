@@ -14,14 +14,14 @@ import {
   NotifyMainRequest,
   NotifyRenderMessage,
 } from "../../common/ipc-contracts";
-import { mapElectronWindowToWinPos } from "../mappers/window-pos-mapper";
 import { setNativeThemeFromAppTheme } from "../theme-support";
 import { disconnectAndResetApplication } from "../utilities/disconnect-helper";
+import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
+import { formatGeneralError } from "../utilities/html-error-formatter";
 import { debugLog } from "../utilities/logger";
 import { onGdbCommand, onGdbControlD } from "./on-gdb-command";
 import { IpcRegistrationContext } from "./types";
-import { formatGeneralError } from "../utilities/html-error-formatter";
-import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
+import { registerWorkspaceCommandHandlers } from "./workspace";
 export { onGdbCommand } from "./on-gdb-command";
 
 /**
@@ -169,10 +169,17 @@ type SaveSettingsRequest = Extract<
       | "save-source-viewer-font-size"
       | "save-source-viewer-font-name"
       | "save-dock-layout"
+      | "save-floating-windows-state"
       | "save-grid-columns"
       | "reset-grid-columns"
       | "save-sections-view-options"
-      | "save-auto-symbol-loading";
+      | "save-auto-symbol-loading"
+      | "save-workspace"
+      | "workspace-create-host"
+      | "workspace-delete-host"
+      | "workspace-move-pane"
+      | "workspace-save-host-layout"
+      | "workspace-open-host";
   }
 >;
 /**
@@ -183,9 +190,7 @@ type SaveSettingsRequest = Extract<
  * @returns The computed result produced by this operation.
  */
 
-function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationContext): void {
-  const mainWindow = context.getMainWindow();
-
+function handleConnectionSettings(msg: SaveSettingsRequest, context: IpcRegistrationContext): void {
   switch (msg.command) {
     case "save-connections":
       context.appSettings.setSync("gdb.connections", msg.data.connections as never);
@@ -193,29 +198,29 @@ function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationCo
     case "save-last-used-connection":
       context.appSettings.setSync("gdb.lastUsedConnection", msg.data as never);
       break;
+  }
+}
+
+function handleAppearanceSettings(msg: SaveSettingsRequest, context: IpcRegistrationContext): void {
+  switch (msg.command) {
     case "save-app-show-debug-info":
       context.appSettings.setSync(`${GDB_GUI_PREFIX}showDebugInfo`, msg.data as never);
       break;
     case "save-auto-symbol-loading":
       context.appSettings.setSync(`${GDB_GUI_PREFIX}disableAutoSymbolLoading`, msg.data as never);
       break;
-    case "save-sections-view-options":
-      context.appSettings.setSync(
-        `${GDB_GUI_PREFIX}sectionsView.showEmptySpace`,
-        msg.data.showEmptySpace as never,
-      );
-      context.appSettings.setSync(
-        `${GDB_GUI_PREFIX}sectionsView.showLegend`,
-        msg.data.showLegend as never,
-      );
-      break;
     case "save-app-theme":
       context.appSettings.setSync(`${GDB_GUI_PREFIX}applicationTheme`, msg.data as never);
       setNativeThemeFromAppTheme(msg.data);
       break;
-    case "save-cmd-history":
-      context.appSettings.setSync("gdb.command.history", msg.data as never);
-      break;
+  }
+}
+
+function handleSourceViewerSettings(
+  msg: SaveSettingsRequest,
+  context: IpcRegistrationContext,
+): void {
+  switch (msg.command) {
     case "save-source-viewer-theme":
       context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerTheme`, msg.data as never);
       break;
@@ -225,13 +230,11 @@ function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationCo
     case "save-source-viewer-font-name":
       context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerFontName`, msg.data as never);
       break;
-    case "save-dock-layout":
-      context.appSettings.setSync(`${GDB_GUI_PREFIX}dockLayout`, msg.data as never);
-      context.appSettings.setSync(
-        `${GDB_GUI_PREFIX}windowSize`,
-        mapElectronWindowToWinPos(mainWindow),
-      );
-      break;
+  }
+}
+
+function handleGridSettings(msg: SaveSettingsRequest, context: IpcRegistrationContext): void {
+  switch (msg.command) {
     case "save-grid-columns":
       context.appSettings.setSync(
         `${GDB_GUI_PREFIX}gridColumns.${msg.data.gridName}`,
@@ -245,6 +248,72 @@ function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationCo
         context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns`);
       }
       break;
+  }
+}
+
+function handleLayoutSettings(msg: SaveSettingsRequest, context: IpcRegistrationContext): void {
+  switch (msg.command) {
+    case "save-dock-layout": {
+      // Legacy no-op: authoritative dock layout persistence lives in workspace.saveHostLayout.
+      break;
+    }
+    case "save-floating-windows-state":
+      context.appSettings.setSync(`${GDB_GUI_PREFIX}floatingWindows`, msg.data as never);
+      break;
+  }
+}
+
+function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationContext): void {
+  // Use a map-based dispatch to reduce complexity
+  const connectionCommands = new Set(["save-connections", "save-last-used-connection"]);
+  const appearanceCommands = new Set([
+    "save-app-show-debug-info",
+    "save-auto-symbol-loading",
+    "save-app-theme",
+  ]);
+  const sourceViewerCommands = new Set([
+    "save-source-viewer-theme",
+    "save-source-viewer-font-size",
+    "save-source-viewer-font-name",
+  ]);
+  const gridCommands = new Set(["save-grid-columns", "reset-grid-columns"]);
+  const layoutCommands = new Set(["save-dock-layout", "save-floating-windows-state"]);
+  const workspaceCommands = new Set([
+    "workspace-create-host",
+    "workspace-delete-host",
+    "workspace-move-pane",
+    "workspace-save-host-layout",
+    "workspace-open-host",
+  ]);
+
+  if (connectionCommands.has(msg.command)) {
+    handleConnectionSettings(msg, context);
+  } else if (appearanceCommands.has(msg.command)) {
+    handleAppearanceSettings(msg, context);
+  } else if (sourceViewerCommands.has(msg.command)) {
+    handleSourceViewerSettings(msg, context);
+  } else if (gridCommands.has(msg.command)) {
+    handleGridSettings(msg, context);
+  } else if (layoutCommands.has(msg.command)) {
+    handleLayoutSettings(msg, context);
+  } else if (workspaceCommands.has(msg.command)) {
+    // Workspace commands are handled through IPC handlers in workspace.ts
+    // These notification messages should be routed through the workspaceService instead
+    debugLog(`Workspace command received through notification channel: ${msg.command}`);
+  } else if (msg.command === "save-cmd-history") {
+    context.appSettings.setSync("gdb.command.history", msg.data as never);
+  } else if (msg.command === "save-sections-view-options") {
+    const data = msg.data as { showEmptySpace: unknown; showLegend: unknown };
+    context.appSettings.setSync(
+      `${GDB_GUI_PREFIX}sectionsView.showEmptySpace`,
+      data.showEmptySpace as never,
+    );
+    context.appSettings.setSync(
+      `${GDB_GUI_PREFIX}sectionsView.showLegend`,
+      data.showLegend as never,
+    );
+  } else if (msg.command === "save-workspace") {
+    context.appSettings.setSync(`${GDB_GUI_PREFIX}workspace`, msg.data as never);
   }
 }
 
@@ -266,6 +335,9 @@ function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationCo
  */
 export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
   switch (msg?.command) {
+    case "connections-dialog":
+      sendNotifyRender(context, { command: "connections-dialog" });
+      break;
     case "connect-selected-connection":
       handleConnectSelectedConnection(msg, context);
       break;
@@ -348,12 +420,11 @@ function saveDangerousCommandDefault(
  * @param context - Dependency container used to register handlers and access shared services.
  */
 /**
- * Performs registerIpcCommandHandlers as part of this module's internal workflow.
+ * Registers app-level commands
  *
- * @param context - context parameter.
- * @returns The computed result produced by this operation.
+ * @param context - IPC registration context
  */
-export function registerIpcCommandHandlers(context: IpcRegistrationContext): void {
+function registerAppCommands(context: IpcRegistrationContext): void {
   context.ipcMain.on(
     IPC_CHANNELS.rendererToMain.commands.app.notify,
     (_event: IpcMainEvent, msg: NotifyMainRequest) => {
@@ -361,6 +432,20 @@ export function registerIpcCommandHandlers(context: IpcRegistrationContext): voi
     },
   );
 
+  context.ipcMain.on(
+    IPC_CHANNELS.rendererSend.appLog,
+    (_event: IpcMainEvent, payload: { message: string }) => {
+      console.log(payload.message);
+    },
+  );
+}
+
+/**
+ * Registers debugger commands
+ *
+ * @param context - IPC registration context
+ */
+function registerDebuggerCommands(context: IpcRegistrationContext): void {
   context.ipcMain.handle(
     IPC_CHANNELS.rendererToMain.commands.debugger.send,
     async (_event: IpcMainInvokeEvent, command: DebuggerCommand) => {
@@ -409,4 +494,19 @@ export function registerIpcCommandHandlers(context: IpcRegistrationContext): voi
   context.ipcMain.on(IPC_CHANNELS.rendererToMain.commands.debugger.sendControlD, () => {
     onGdbControlD(context);
   });
+}
+
+/**
+ * Performs registerIpcCommandHandlers as part of this module's internal workflow.
+ *
+ * @param context - context parameter.
+ * @returns The computed result produced by this operation.
+ */
+export function registerIpcCommandHandlers(context: IpcRegistrationContext): void {
+  registerAppCommands(context);
+  registerDebuggerCommands(context);
+
+  if (context.workspaceService) {
+    registerWorkspaceCommandHandlers(context, context.workspaceService);
+  }
 }

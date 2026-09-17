@@ -151,14 +151,14 @@ The application uses Electron's standard three-layer split:
 
 The main startup path is centered in `src/main/main.ts` and runs in this order:
 
-1. `app.on("ready")` records startup milestones and configures persistent settings storage.
-2. `configureAppSettings()` in `src/main/bootstrap.ts` configures `electron-settings` to write a prettified `settings.json` with atomic saves.
+1. `app.on("ready")` records startup milestones and begins main-process initialization.
+2. `AppSettings` is already initialized in `src/main/app-settings.ts` with `electron-store`, while `applyDefaultSettings()` seeds missing defaults and `logStartupDiagnostics()` reports the resolved `settings.json` path.
 3. Saved theme information is applied before window creation to reduce theme flash.
 4. `createMainWindow(resolvePreloadPath())` creates the hidden `BrowserWindow` and attaches the preload bundle from `out/preload/preload.js`.
 5. `loadMainWindow()` loads either `ELECTRON_RENDERER_URL` during development or `out/renderer/index.html` in built mode.
-6. On `ready-to-show`, persisted bounds are restored, the window is shown, font warming is deferred, and React DevTools may be installed in debug builds.
-7. `GdbMenu.installMenu()` installs the application menu and debugger accelerators.
-8. `createGdbInterface()` creates the main-process debugger interface after the UI is available.
+6. On `ready-to-show`, persisted bounds are restored from `gdb.gui.windowConfigs`, the window is shown, font warming is deferred, and React DevTools may be installed in debug builds.
+7. `createGdbInterface()` creates the main-process debugger interface after the UI is available.
+8. `GdbMenu.installMenu()` installs the application menu and debugger accelerators.
 9. `registerIpcHandlers()` wires renderer-to-main commands, queries, and notifications defined in `src/common/ipc-contracts.ts`.
 
 ### IPC and Settings
@@ -172,10 +172,10 @@ The renderer never talks directly to Node.js APIs. Instead, `src/preload/preload
 The persisted settings shape can be inspected in `settings.json.sample.json`. Current examples include:
 
 - `connections`: available debug connection profiles.
-- `gdb.gui`: editor theme, font size, window bounds, and dock layout.
+- `gdb.gui`: editor theme, font size, and unified per-window bounds and dock layout under `windowConfigs`.
 - `gdb.run`: startup command lists and stop-time debugger actions.
 
-`electron-settings` stores the active file as `settings.json`, and `logStartupDiagnostics()` prints the resolved path during startup.
+`electron-store` stores the active file as `settings.json` in the platform app-data location, and `logStartupDiagnostics()` prints the resolved path during startup.
 
 ### Testing and Generated Docs
 

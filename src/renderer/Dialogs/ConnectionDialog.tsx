@@ -21,7 +21,7 @@ export type WhileConnectingDialogHandle = {
 };
 
 export type ConnectionDialogProps = {
-  connectionsRef?: RefObject<ConnectionManagerHandle>;
+  connectionsRef?: RefObject<ConnectionManagerHandle | null>;
 };
 
 export const ConnectionDialog = forwardRef<WhileConnectingDialogHandle, ConnectionDialogProps>(

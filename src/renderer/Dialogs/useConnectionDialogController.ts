@@ -14,11 +14,11 @@ import {
   useMemo,
   useState,
 } from "react";
+import type { NormalizedConnection } from "../../common/connection-types";
 import { Step, StepAndState } from "../../common/gdb-common";
 import type { NotifyRenderMessage } from "../../common/ipc-contracts";
 import type { ConnectionStatusPayload } from "../../common/ipc-data-types";
 import type { ConnectionConfig, GdbSettings } from "../../common/settings-types";
-import type { NormalizedConnection } from "../../common/connection-types";
 import type { ConnectionManagerHandle } from "./ConnectionManager";
 
 const states: Record<Step, StepAndState> = {
@@ -41,7 +41,7 @@ const createPendingStates = (): Record<Step, StepAndState> => ({
 export type DefinedConnection = ConnectionConfig & { name: string };
 
 export type UseConnectionDialogControllerArgs = {
-  connectionsRef?: RefObject<ConnectionManagerHandle>;
+  connectionsRef?: RefObject<ConnectionManagerHandle | null>;
   connDlgRef: RefObject<DialogComponent | null>;
   outputRef: RefObject<HTMLDivElement | null>;
 };
@@ -71,13 +71,33 @@ function normalizeConnections(settingsConnections: unknown): DefinedConnection[]
     }));
 }
 
+// eslint-disable-next-line complexity
 async function fetchConnectionSettings(
   setDefinedConnections: Dispatch<SetStateAction<DefinedConnection[]>>,
   setSelectedConnection: Dispatch<SetStateAction<DefinedConnection | null>>,
 ): Promise<void> {
   try {
     const settings = (await window.ipcToMain.queries.app.getSettings()) as GdbSettings;
+    if (__REVEALGDB_DEBUG__) {
+      console.log("[fetchConnectionSettings] Received settings:", {
+        hasSettings: !!settings,
+        hasConnections: !!settings?.connections,
+        connectionsCount: settings?.connections?.length ?? 0,
+        connections: settings?.connections,
+        settingsKeys: settings ? Object.keys(settings) : [],
+      });
+    }
     const normalizedConnections = normalizeConnections(settings?.connections);
+    if (
+      __REVEALGDB_DEBUG__ &&
+      normalizedConnections.length === 0 &&
+      settings?.connections !== undefined
+    ) {
+      console.warn(
+        "[fetchConnectionSettings] No connections were normalized from settings.connections:",
+        settings.connections,
+      );
+    }
     const lastUsedConnectionName =
       typeof settings?.lastUsedConnection === "string" ? settings.lastUsedConnection : undefined;
     const restoredConnection = lastUsedConnectionName
@@ -86,7 +106,8 @@ async function fetchConnectionSettings(
       : null;
     setDefinedConnections(normalizedConnections);
     setSelectedConnection(restoredConnection);
-  } catch {
+  } catch (error) {
+    console.error("[fetchConnectionSettings] Error fetching connection settings:", error);
     setDefinedConnections([]);
     setSelectedConnection(null);
   }
@@ -149,7 +170,7 @@ function handleConnectionStatusUpdate(
 
 function useConnectionSubscriptions(
   connDlgRef: RefObject<DialogComponent | null>,
-  connectionsRef: RefObject<ConnectionManagerHandle> | undefined,
+  connectionsRef: RefObject<ConnectionManagerHandle | null> | undefined,
   outputRef: RefObject<HTMLDivElement | null>,
   loadConnectionsFromSettings: () => Promise<void>,
   setDisconnectAvailable: Dispatch<SetStateAction<boolean>>,
@@ -192,7 +213,6 @@ function useConnectionSubscriptions(
         handleConnectionStatusUpdate(status, outputRef, connDlgRef, setConnectionState);
       },
     );
-    connDlgRef.current?.show();
     return () => {
       window.clearTimeout(initialLoadTimer);
       unsubscribeNotify();

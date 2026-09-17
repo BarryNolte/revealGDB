@@ -11,6 +11,7 @@ const mainMocks = vi.hoisted(() => {
   let readyToShowHandler: (() => void) | undefined;
 
   const mainWindow = {
+    on: vi.fn(),
     once: vi.fn((event: string, handler: () => void) => {
       if (event === "ready-to-show") {
         readyToShowHandler = handler;
@@ -33,9 +34,7 @@ const mainMocks = vi.hoisted(() => {
     app,
     ipcMain: { on: vi.fn(), handle: vi.fn() },
     nativeTheme: { themeSource: "system" },
-    settings: { getSync: vi.fn(() => "Dark") },
     registerAppEvents: vi.fn(),
-    configureAppSettings: vi.fn(),
     logStartupDiagnostics: vi.fn(),
     collectVersionInfo: vi.fn(),
     applyDefaultSettings: vi.fn(),
@@ -66,9 +65,27 @@ vi.mock("electron", () => ({
   nativeTheme: mainMocks.nativeTheme,
 }));
 
-vi.mock("electron-settings", () => ({
-  default: mainMocks.settings,
-}));
+vi.mock("electron-store", () => {
+  const storeMock = {
+    getSync: vi.fn((key: string) => {
+      // Return appropriate values based on the key
+      if (key === "gdb.gui.applicationTheme") return "Dark";
+      // For window bounds and other keys, return undefined
+      return undefined;
+    }),
+    setSync: vi.fn(),
+    delete: vi.fn(),
+    has: vi.fn(),
+    path: "/mock/settings.json",
+  };
+  // Return a constructor function that properly handles new keyword
+  const StoreMock = function () {
+    return storeMock;
+  } as any;
+  return {
+    default: StoreMock,
+  };
+});
 
 vi.mock("../../../src/main/app-events", () => ({
   registerAppEvents: mainMocks.registerAppEvents,
@@ -77,7 +94,6 @@ vi.mock("../../../src/main/app-events", () => ({
 vi.mock("../../../src/main/bootstrap", () => ({
   collectVersionInfo: mainMocks.collectVersionInfo,
   applyDefaultSettings: mainMocks.applyDefaultSettings,
-  configureAppSettings: mainMocks.configureAppSettings,
   logStartupDiagnostics: mainMocks.logStartupDiagnostics,
   maybeInstallDevTools: mainMocks.maybeInstallDevTools,
   warmSystemFonts: mainMocks.warmSystemFonts,
@@ -101,14 +117,35 @@ vi.mock("../../../src/main/theme-support", () => ({
   setNativeThemeFromAppTheme: mainMocks.setNativeThemeFromAppTheme,
 }));
 
-vi.mock("../../../src/main/window-manager", () => ({
-  createDebugWindow: mainMocks.createDebugWindow,
-  createMainWindow: mainMocks.createMainWindow,
-  loadMainWindow: mainMocks.loadMainWindow,
-  resolvePreloadPath: mainMocks.resolvePreloadPath,
-  restoreWindowBounds: mainMocks.restoreWindowBounds,
-  wireWindowCloseHandlers: mainMocks.wireWindowCloseHandlers,
-}));
+vi.mock("../../../src/main/window-manager", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../../src/main/window-manager")>();
+  return {
+    ...actual,
+    createDebugWindow: mainMocks.createDebugWindow,
+    createMainWindow: mainMocks.createMainWindow,
+    loadMainWindow: mainMocks.loadMainWindow,
+    resolvePreloadPath: mainMocks.resolvePreloadPath,
+    restoreWindowBounds: mainMocks.restoreWindowBounds,
+    restorePerHostWindowBounds: mainMocks.restoreWindowBounds,
+    wireWindowCloseHandlers: mainMocks.wireWindowCloseHandlers,
+  };
+});
+
+vi.mock("../../../src/main/multi-window-manager", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../../src/main/multi-window-manager")>();
+  return {
+    ...actual,
+    createSatelliteWindow: vi.fn(),
+    createFloatingWindow: vi.fn(),
+    closeAllSatelliteWindows: vi.fn(),
+    closeAllFloatingWindows: vi.fn(),
+    getAllSatelliteWindows: vi.fn(() => []),
+    getAllFloatingWindows: vi.fn(() => []),
+    registerSatelliteWindowClosedCallback: vi.fn(),
+    registerSatelliteWindowCreatedCallback: vi.fn(),
+    restoreSatelliteWindows: vi.fn(),
+  };
+});
 
 describe("main startup wiring", () => {
   afterEach(() => {
@@ -129,26 +166,37 @@ describe("main startup wiring", () => {
       mainMocks.nativeTheme,
       expect.any(Function),
     );
+
+    // registerIpcHandlers is called inside the ready listener, not on import
+    expect(mainMocks.registerIpcHandlers).not.toHaveBeenCalled();
+
+    expect(mainMocks.readyHandlers).toHaveLength(1);
+    mainMocks.readyHandlers[0]();
+
+    // Now registerIpcHandlers should have been called from within the ready listener
     expect(mainMocks.registerIpcHandlers).toHaveBeenCalledWith(
       expect.objectContaining({
         ipcMain: mainMocks.ipcMain,
-        appSettings: mainMocks.settings,
         gdbAppInfo: mainModule.gdbAppInfo,
+        workspaceService: expect.any(Object),
+        workspaceStateStore: expect.any(Object),
       }),
     );
 
     const context = mainMocks.registerIpcHandlers.mock.calls[0][0];
-    expect(context.getMainWindow()).toBeUndefined();
+    expect(context.getMainWindow()).toBe(mainMocks.mainWindow);
     expect(context.isSelectedConnection({ name: "ok", shell: "bash", commands: ["gdb"] })).toBe(
       true,
     );
     expect(context.isSelectedConnection({ name: "bad", shell: "bash", commands: [1] })).toBe(false);
 
-    expect(mainMocks.readyHandlers).toHaveLength(1);
-    mainMocks.readyHandlers[0]();
-
-    expect(mainMocks.configureAppSettings).toHaveBeenCalledWith(mainMocks.settings);
-    expect(mainMocks.logStartupDiagnostics).toHaveBeenCalledWith(mainMocks.settings);
+    expect(mainMocks.logStartupDiagnostics).toHaveBeenCalledWith(
+      expect.objectContaining({
+        getSync: expect.any(Function),
+        setSync: expect.any(Function),
+        delete: expect.any(Function),
+      }),
+    );
     expect(mainMocks.collectVersionInfo).toHaveBeenCalledWith(mainModule.gdbAppInfo);
     expect(mainMocks.setNativeThemeFromAppTheme).toHaveBeenCalledWith("Dark");
     expect(mainMocks.resolvePreloadPath).toHaveBeenCalledTimes(1);
@@ -157,9 +205,17 @@ describe("main startup wiring", () => {
     expect(mainMocks.installMenu).toHaveBeenCalledTimes(1);
     expect(mainMocks.createGdbInterface).toHaveBeenCalledWith(
       mainMocks.mainWindow,
-      mainMocks.settings,
+      expect.objectContaining({
+        getSync: expect.any(Function),
+        setSync: expect.any(Function),
+        delete: expect.any(Function),
+      }),
     );
-    expect(mainMocks.wireWindowCloseHandlers).toHaveBeenCalledWith(mainMocks.mainWindow, undefined);
+    expect(mainMocks.wireWindowCloseHandlers).toHaveBeenCalledWith(
+      mainMocks.mainWindow,
+      undefined,
+      expect.any(Function),
+    );
     expect(mainModule.mainWindow).toBe(mainMocks.mainWindow);
     expect(mainModule.gdbInterface).toBe(mainMocks.gdbInterface);
 
@@ -170,8 +226,15 @@ describe("main startup wiring", () => {
     await new Promise<void>((resolve) => setImmediate(resolve));
 
     expect(mainMocks.restoreWindowBounds).toHaveBeenCalledWith(
+      "main",
       mainMocks.mainWindow,
-      mainMocks.settings,
+      expect.objectContaining({
+        getSync: expect.any(Function),
+        setSync: expect.any(Function),
+        delete: expect.any(Function),
+        has: expect.any(Function),
+        path: expect.any(String),
+      }),
     );
     expect(mainMocks.mainWindow.show).toHaveBeenCalledTimes(1);
     expect(mainMocks.warmSystemFonts).toHaveBeenCalledWith(expect.any(Map));

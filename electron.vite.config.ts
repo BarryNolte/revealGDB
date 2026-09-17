@@ -41,6 +41,8 @@ const rendererInputs = {
   connectionmanager: resolve(__dirname, "src/renderer/connectionmanager-test.html"),
   connectiondialog: resolve(__dirname, "src/renderer/connectiondialog-test.html"),
   settings: resolve(__dirname, "src/renderer/settings-test.html"),
+  workspace: resolve(__dirname, "src/renderer/workspace-test.html"),
+  multiwindow: resolve(__dirname, "src/renderer/multiwindow-test.html"),
 };
 
 // For bundle analysis, exclude test HTML entries to focus on production code

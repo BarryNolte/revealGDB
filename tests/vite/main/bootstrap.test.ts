@@ -60,7 +60,6 @@ vi.mock("node:os", () => ({
 
 import {
   collectVersionInfo,
-  configureAppSettings,
   logStartupDiagnostics,
   maybeInstallDevTools,
   warmSystemFonts,
@@ -70,22 +69,6 @@ describe("bootstrap", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.clearAllMocks();
-  });
-
-  it("configures app settings with the expected persistence options", () => {
-    const appSettings = {
-      configure: vi.fn(),
-      file: vi.fn(),
-    };
-
-    configureAppSettings(appSettings);
-
-    expect(appSettings.configure).toHaveBeenCalledWith({
-      atomicSave: true,
-      fileName: "settings.json",
-      numSpaces: 2,
-      prettify: true,
-    });
   });
 
   it("logs settings path and display sizes", () => {

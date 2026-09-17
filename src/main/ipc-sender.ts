@@ -34,3 +34,18 @@ export function setIpcWindow(w: BrowserWindow): void {
 export function sendToRenderer(channel: string, ...args: unknown[]): void {
   browserWindow?.webContents.send(channel, ...args);
 }
+
+/**
+ * Broadcasts a message to all open windows (main + satellites).
+ *
+ * @param channel - IPC channel name.
+ * @param args - Data payload.
+ */
+export function broadcastToAllWindows(channel: string, ...args: unknown[]): void {
+  const windows = BrowserWindow.getAllWindows();
+  for (const window of windows) {
+    if (!window.isDestroyed()) {
+      window.webContents.send(channel, ...args);
+    }
+  }
+}

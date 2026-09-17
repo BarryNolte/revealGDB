@@ -21,7 +21,9 @@ const appMocks = vi.hoisted(() => {
     loadState: vi.fn().mockResolvedValue(undefined),
     dockFill: vi.fn().mockReturnValue("fillNode"),
     dockRight: vi.fn().mockReturnValue("rightNode"),
+    dockDown: vi.fn().mockReturnValue("downNode"),
     dockUp: vi.fn().mockReturnValue("upNode"),
+    getPanels: vi.fn().mockReturnValue([{ title: "panel" }]),
     resize: vi.fn(),
     saveState: vi.fn().mockReturnValue('{"layout":"test"}'),
   };
@@ -65,7 +67,9 @@ vi.mock("../../../node_modules/dock-spawn-ts/lib/js/DockManager.js", () => ({
     loadState = appMocks.dmSpies.loadState;
     dockFill = appMocks.dmSpies.dockFill;
     dockRight = appMocks.dmSpies.dockRight;
+    dockDown = appMocks.dmSpies.dockDown;
     dockUp = appMocks.dmSpies.dockUp;
+    getPanels = appMocks.dmSpies.getPanels;
     resize = appMocks.dmSpies.resize;
     saveState = appMocks.dmSpies.saveState;
     constructor() {
@@ -229,11 +233,21 @@ let unsubThemeMock: ReturnType<typeof vi.fn>;
 
 function buildIpc(settingsData: unknown = { gui: {} }) {
   unsubThemeMock = vi.fn();
+  const workspace = {
+    version: 1,
+    windows: [],
+    groups: [],
+    hosts: [{ id: "main", label: "Main Window", isVisible: true }],
+    hostLayouts: {},
+  };
   return {
     queries: {
       app: {
         getVersionInfo: vi.fn().mockResolvedValue({ version: "1.0.0" }),
         getSettings: vi.fn().mockResolvedValue(settingsData),
+      },
+      workspace: {
+        getWorkspace: vi.fn().mockResolvedValue(workspace),
       },
     },
     notifications: {
@@ -247,6 +261,12 @@ function buildIpc(settingsData: unknown = { gui: {} }) {
     },
     commands: {
       app: { notifyMain: vi.fn() },
+      workspace: {
+        saveHostLayout: vi.fn().mockResolvedValue(undefined),
+        createHost: vi.fn().mockResolvedValue("satellite-test"),
+        openHost: vi.fn().mockResolvedValue(undefined),
+        splitPane: vi.fn().mockResolvedValue(undefined),
+      },
     },
   };
 }
@@ -267,13 +287,13 @@ async function renderApp(settingsData: unknown = { gui: {} }) {
 // =============================================================================
 
 describe("App module-level save-dock-layout listener (no dock init)", () => {
-  it("returns early without calling notifyMain when dockManager is not yet set", () => {
-    const notifyMain = vi.fn();
+  it("returns early without calling saveHostLayout when dockManager is not yet set", () => {
+    const saveHostLayout = vi.fn();
     (window as Record<string, unknown>).ipcToMain = {
-      commands: { app: { notifyMain } },
+      commands: { workspace: { saveHostLayout } },
     };
     window.dispatchEvent(new Event("save-dock-layout"));
-    expect(notifyMain).not.toHaveBeenCalled();
+    expect(saveHostLayout).not.toHaveBeenCalled();
   });
 });
 
@@ -283,14 +303,22 @@ describe("App module-level save-dock-layout listener (no dock init)", () => {
 
 describe("App component", () => {
   beforeEach(() => {
+    window.history.replaceState({}, "", "/");
     appMocks.dmSpies.ctor.mockClear();
     appMocks.dmSpies.initialize.mockClear();
     appMocks.dmSpies.addLayoutListener.mockClear();
     appMocks.dmSpies.loadState.mockReset();
     appMocks.dmSpies.loadState.mockResolvedValue(undefined);
+    appMocks.dmSpies.dockFill.mockClear();
     appMocks.dmSpies.dockFill.mockReturnValue("fillNode");
+    appMocks.dmSpies.dockRight.mockClear();
     appMocks.dmSpies.dockRight.mockReturnValue("rightNode");
+    appMocks.dmSpies.dockDown.mockClear();
+    appMocks.dmSpies.dockDown.mockReturnValue("downNode");
+    appMocks.dmSpies.dockUp.mockClear();
     appMocks.dmSpies.dockUp.mockReturnValue("upNode");
+    appMocks.dmSpies.getPanels.mockReturnValue([{ title: "panel" }]);
+    appMocks.dmSpies.saveState.mockClear();
     appMocks.dmSpies.saveState.mockReturnValue('{"layout":"test"}');
     appMocks.dmSpies.resize.mockClear();
     appMocks.dcSpies.ctor.mockClear();
@@ -458,15 +486,122 @@ describe("App component", () => {
 
   // --- Saved layout path ---
 
-  it("calls loadState when gdb.gui.dockLayout is present", async () => {
-    const saved = { panels: ["a"] };
-    await renderApp({ gui: { dockLayout: saved } });
-    expect(appMocks.dmSpies.loadState).toHaveBeenCalledWith(JSON.stringify(saved));
+  it("prefers workspace hostLayouts over settings dockLayout when available", async () => {
+    const workspaceLayout = { panels: ["workspace"] };
+    const ipc = buildIpc({
+      gui: { windowConfigs: { main: { dockLayout: { panels: ["settings"] } } } },
+    });
+    ipc.queries.workspace.getWorkspace = vi.fn().mockResolvedValue({
+      version: 1,
+      windows: [],
+      groups: [],
+      hostLayouts: { main: workspaceLayout },
+    });
+    (window as Record<string, unknown>).ipcToMain = ipc;
+
+    await act(async () => {
+      render(<App />);
+      await new Promise((r) => setTimeout(r, 0));
+    });
+
+    expect(appMocks.dmSpies.loadState).toHaveBeenCalledWith(JSON.stringify(workspaceLayout));
   });
 
-  it("does NOT create default layout when saved layout loads successfully", async () => {
-    await renderApp({ gui: { dockLayout: { panels: [] } } });
+  it("falls back to the hard-coded default layout when only settings dockLayout is present", async () => {
+    const saved = { panels: ["a"] };
+    await renderApp({ gui: { windowConfigs: { main: { dockLayout: saved } } } });
+    expect(appMocks.dmSpies.loadState).not.toHaveBeenCalledWith(JSON.stringify(saved));
+    expect(appMocks.dcSpies.createAllWindows).toHaveBeenCalledTimes(1);
+  });
+
+  it("falls back to the hard-coded default layout when workspace host layout is empty", async () => {
+    const ipc = buildIpc({
+      gui: { windowConfigs: { main: { dockLayout: { panels: ["settings"] } } } },
+    });
+    ipc.queries.workspace.getWorkspace = vi.fn().mockResolvedValue({
+      version: 1,
+      windows: [],
+      groups: [],
+      hostLayouts: { main: {} },
+    });
+    (window as Record<string, unknown>).ipcToMain = ipc;
+
+    await act(async () => {
+      render(<App />);
+      await new Promise((r) => setTimeout(r, 0));
+    });
+
+    expect(appMocks.dmSpies.loadState).not.toHaveBeenCalled();
+    expect(appMocks.dcSpies.createAllWindows).toHaveBeenCalledTimes(1);
+  });
+
+  it("does NOT create default layout when workspace host layout loads successfully", async () => {
+    const workspaceLayout = { panels: [] };
+    const ipc = buildIpc({ gui: {} });
+    ipc.queries.workspace.getWorkspace = vi.fn().mockResolvedValue({
+      version: 1,
+      windows: [],
+      groups: [],
+      hostLayouts: { main: workspaceLayout },
+    });
+    (window as Record<string, unknown>).ipcToMain = ipc;
+
+    await act(async () => {
+      render(<App />);
+      await new Promise((r) => setTimeout(r, 0));
+    });
+
     expect(appMocks.dcSpies.createAllWindows).not.toHaveBeenCalled();
+  });
+
+  it("loads the current satellite host layout when dockHost is set in the URL", async () => {
+    window.history.replaceState({}, "", "/?dockHost=satellite-test");
+    const satelliteLayout = { panels: ["satellite"] };
+    const ipc = buildIpc({ gui: {} });
+    ipc.queries.workspace.getWorkspace = vi.fn().mockResolvedValue({
+      version: 1,
+      windows: [],
+      groups: [],
+      hosts: [
+        { id: "main", label: "Main Window", isVisible: true },
+        { id: "satellite-test", label: "Satellite", isVisible: true },
+      ],
+      hostLayouts: { "satellite-test": satelliteLayout },
+    });
+    (window as Record<string, unknown>).ipcToMain = ipc;
+
+    await act(async () => {
+      render(<App />);
+      await new Promise((r) => setTimeout(r, 0));
+    });
+
+    expect(appMocks.dmSpies.loadState).toHaveBeenCalledWith(JSON.stringify(satelliteLayout));
+    window.history.replaceState({}, "", "/");
+  });
+
+  it("does not create the main default layout for an empty satellite host", async () => {
+    window.history.replaceState({}, "", "/?dockHost=satellite-test");
+    const ipc = buildIpc({ gui: {} });
+    ipc.queries.workspace.getWorkspace = vi.fn().mockResolvedValue({
+      version: 1,
+      windows: [],
+      groups: [],
+      hosts: [
+        { id: "main", label: "Main Window", isVisible: true },
+        { id: "satellite-test", label: "Satellite", isVisible: true },
+      ],
+      hostLayouts: {},
+    });
+    (window as Record<string, unknown>).ipcToMain = ipc;
+
+    await act(async () => {
+      render(<App />);
+      await new Promise((r) => setTimeout(r, 0));
+    });
+
+    expect(appMocks.dcSpies.createAllWindows).not.toHaveBeenCalled();
+    expect(appMocks.dmSpies.dockFill).not.toHaveBeenCalled();
+    window.history.replaceState({}, "", "/");
   });
 
   // --- Default layout path ---
@@ -476,11 +611,11 @@ describe("App component", () => {
     expect(appMocks.dcSpies.createAllWindows).toHaveBeenCalledTimes(1);
   });
 
-  it("calls dockFill, dockRight, and dockUp for default layout wiring", async () => {
+  it("calls dockFill, dockRight, and dockDown for default layout wiring", async () => {
     await renderApp({ gui: {} });
     expect(appMocks.dmSpies.dockFill).toHaveBeenCalled();
     expect(appMocks.dmSpies.dockRight).toHaveBeenCalled();
-    expect(appMocks.dmSpies.dockUp).toHaveBeenCalled();
+    expect(appMocks.dmSpies.dockDown).toHaveBeenCalled();
   });
 
   // --- Corrupt saved layout ---
@@ -488,7 +623,7 @@ describe("App component", () => {
   it("falls back to default layout when loadState throws", async () => {
     vi.spyOn(console, "warn").mockImplementation(() => undefined);
     appMocks.dmSpies.loadState.mockRejectedValue(new Error("corrupt layout"));
-    await renderApp({ gui: { dockLayout: { bad: true } } });
+    await renderApp({ gui: { windowConfigs: { main: { dockLayout: { bad: true } } } } });
     expect(appMocks.dcSpies.createAllWindows).toHaveBeenCalledTimes(1);
   });
 
@@ -500,10 +635,15 @@ describe("App component", () => {
       onContainerResized: () => void;
     };
     const spy = vi.spyOn(window, "dispatchEvent");
+    vi.useFakeTimers();
     listener.onContainerResized();
-    const types = spy.mock.calls.map((c) => (c[0] as Event).type);
+    let types = spy.mock.calls.map((c) => (c[0] as Event).type);
     expect(types).toContain("update-window-list");
+    expect(types).not.toContain("save-dock-layout");
+    vi.advanceTimersByTime(1000);
+    types = spy.mock.calls.map((c) => (c[0] as Event).type);
     expect(types).toContain("save-dock-layout");
+    vi.useRealTimers();
   });
 
   it("onTabChanged dispatches update-window-list and save-dock-layout", async () => {
@@ -512,10 +652,112 @@ describe("App component", () => {
       onTabChanged: () => void;
     };
     const spy = vi.spyOn(window, "dispatchEvent");
+    vi.useFakeTimers();
     listener.onTabChanged();
-    const types = spy.mock.calls.map((c) => (c[0] as Event).type);
+    let types = spy.mock.calls.map((c) => (c[0] as Event).type);
     expect(types).toContain("update-window-list");
+    expect(types).not.toContain("save-dock-layout");
+    vi.advanceTimersByTime(1000);
+    types = spy.mock.calls.map((c) => (c[0] as Event).type);
     expect(types).toContain("save-dock-layout");
+    vi.useRealTimers();
+  });
+
+  it("save-dock-layout persists the current host layout to the workspace command surface", async () => {
+    const ipc = buildIpc({ gui: {} });
+    (window as Record<string, unknown>).ipcToMain = ipc;
+
+    await act(async () => {
+      render(<App />);
+      await new Promise((r) => setTimeout(r, 0));
+    });
+
+    window.dispatchEvent(new Event("save-dock-layout"));
+
+    expect(ipc.commands.workspace.saveHostLayout).toHaveBeenCalledWith({
+      hostId: "main",
+      layout: { layout: "test" },
+    });
+  });
+
+  it("Ctrl+Shift+C opens the connections dialog", async () => {
+    const ipc = buildIpc();
+    (window as Record<string, unknown>).ipcToMain = ipc;
+    await act(async () => {
+      render(<App />);
+      await new Promise((r) => setTimeout(r, 0));
+    });
+
+    expect(() => {
+      window.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "C", ctrlKey: true, shiftKey: true }),
+      );
+    }).not.toThrow();
+  });
+
+  it("Ctrl+Shift+N creates a new window", async () => {
+    const ipc = buildIpc();
+    (window as Record<string, unknown>).ipcToMain = ipc;
+    await act(async () => {
+      render(<App />);
+      await new Promise((r) => setTimeout(r, 0));
+    });
+
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "N", ctrlKey: true, shiftKey: true }));
+
+    expect(ipc.commands.workspace.createHost).toHaveBeenCalledWith({ label: "New Window" });
+  });
+
+  it("Ctrl+Shift+N is ignored when focus is in an editable field", async () => {
+    const ipc = buildIpc();
+    (window as Record<string, unknown>).ipcToMain = ipc;
+    await act(async () => {
+      render(<App />);
+      await new Promise((r) => setTimeout(r, 0));
+    });
+
+    const input = document.createElement("input");
+    document.body.appendChild(input);
+    input.focus();
+    input.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "N", ctrlKey: true, shiftKey: true, bubbles: true }),
+    );
+
+    expect(ipc.commands.workspace.createHost).not.toHaveBeenCalled();
+    input.remove();
+  });
+
+  it("pane context menu supports keyboard navigation and Escape closes it", async () => {
+    const ipc = buildIpc();
+    (window as Record<string, unknown>).ipcToMain = ipc;
+    await act(async () => {
+      render(<App />);
+      await new Promise((r) => setTimeout(r, 0));
+    });
+
+    const panelTitle = document.createElement("div");
+    panelTitle.className = "ps-panel-title";
+    panelTitle.textContent = "Breakpoints";
+    document.body.appendChild(panelTitle);
+
+    panelTitle.dispatchEvent(
+      new MouseEvent("contextmenu", {
+        bubbles: true,
+        cancelable: true,
+        clientX: 20,
+        clientY: 30,
+      }),
+    );
+
+    const menu = document.getElementById("pane-context-menu");
+    expect(menu).not.toBeNull();
+    expect(menu?.getAttribute("role")).toBe("menu");
+    expect(document.activeElement).toBe(menu?.querySelector("#float-item"));
+
+    menu?.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    expect(menu?.style.display).toBe("none");
+
+    panelTitle.remove();
   });
 
   // --- changeApplication event ---
@@ -640,10 +882,8 @@ describe("App component", () => {
 
   // --- Module-level save-dock-layout listener (after dock init) ---
 
-  it("save-dock-layout event calls saveState and notifyMain after dock init", async () => {
-    const notifyMain = vi.fn();
+  it("save-dock-layout event calls saveState and saveHostLayout after dock init", async () => {
     const ipc = buildIpc();
-    (ipc as Record<string, unknown>).commands = { app: { notifyMain } };
     (window as Record<string, unknown>).ipcToMain = ipc;
     await act(async () => {
       render(<App />);
@@ -651,8 +891,8 @@ describe("App component", () => {
     });
     window.dispatchEvent(new Event("save-dock-layout"));
     expect(appMocks.dmSpies.saveState).toHaveBeenCalled();
-    expect(notifyMain).toHaveBeenCalledWith(
-      expect.objectContaining({ command: "save-dock-layout" }),
+    expect(ipc.commands.workspace.saveHostLayout).toHaveBeenCalledWith(
+      expect.objectContaining({ hostId: "main", layout: { layout: "test" } }),
     );
   });
 
