@@ -382,7 +382,7 @@ function useRegisterTooltip() {
       if (!anchor || !sfTip) return;
       anchor.style.left = `${clientX}px`;
       anchor.style.top = `${clientY}px`;
-      const dispValue = "0x" + Number.parseInt(value, 16).toString();
+      const dispValue = "0x" + (Number.parseInt(value, 10) >>> 0).toString(16);
       sfTip.content = buildTooltipHtml(regName, dispValue, "register");
       sfTip.open(anchor);
     });

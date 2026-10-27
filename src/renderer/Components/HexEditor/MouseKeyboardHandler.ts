@@ -27,7 +27,7 @@ type ViewType = "d" | "t";
  * Configuration object for each view type.
  * Defines how input is validated, normalized, and converted to byte values.
  */
-export type ViewInfo = {
+type ViewInfo = {
   /** Maximum characters allowed per cell */
   numAllowedChars: number;
   /** Element ID prefix for routing events */

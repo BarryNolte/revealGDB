@@ -47,6 +47,7 @@ configureAceBasePath();
  * @param col - col parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function getMemberExpression(
   line: string,
   col: number,
@@ -76,6 +77,7 @@ export function getMemberExpression(
 }
 
 /** Derive a short display type name from a GDB typeStr (which may be a full struct definition). */
+/** @public */
 export function getDisplayTypeName(typeStr: string, varName: string): string {
   // typeStr ends with the variable name (e.g. "unsigned long flash_size").
   // Strip it to get the type part.
@@ -107,6 +109,7 @@ export function buildTooltipHtml(
   return `${valueLine}${typeLine}`;
 }
 
+/** @public */
 export type TooltipContext = {
   anchor: HTMLDivElement;
   sfTip: Tooltip;
@@ -114,6 +117,7 @@ export type TooltipContext = {
 };
 
 /** Creates the ace HoverTooltip data provider function, driving a Syncfusion Tooltip for display. */
+/** @public */
 export function makeTooltipDataProvider(ctx: TooltipContext) {
   return function (e: ace.Ace.MouseEvent, editor: ace.Ace.Editor) {
     const pos = editor.renderer.screenToTextCoordinates(e.clientX, e.clientY);
@@ -184,6 +188,7 @@ export function makeTooltipDataProvider(ctx: TooltipContext) {
  * @param session - session parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function wireTooltipCloseHandlers(
   sfTip: Tooltip,
   container: HTMLElement,
@@ -258,6 +263,7 @@ export function wireTooltipCloseHandlers(
  * @returns The computed result produced by this operation.
  */
 
+/** @public */
 export function useSourceTooltip(
   editorRef: RefObject<AceEditor | null>,
   fullFilePathRef: RefObject<string>,
@@ -332,6 +338,7 @@ export type GdbSourceWindowController = {
 };
 
 /** Detects gutter vs. editor area on right-click and opens the appropriate context menu. */
+/** @public */
 export function useContextMenuDispatcher(
   editorRef: RefObject<AceEditor | null>,
   rightClickedRowRef: RefObject<number>,

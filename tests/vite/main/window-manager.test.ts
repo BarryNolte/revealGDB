@@ -119,15 +119,15 @@ describe("window-manager", () => {
     const appSettings = createMockAppSettings({
       getSync: vi.fn((key: string) => {
         switch (key) {
-          case "gdb.gui.windowSize.x":
+          case "gdb.gui.layout.main.windowSize.x":
             return 10;
-          case "gdb.gui.windowSize.y":
+          case "gdb.gui.layout.main.windowSize.y":
             return 20;
-          case "gdb.gui.windowSize.width":
+          case "gdb.gui.layout.main.windowSize.width":
             return 1200;
-          case "gdb.gui.windowSize.height":
+          case "gdb.gui.layout.main.windowSize.height":
             return 800;
-          case "gdb.gui.windowSize.fullscreen":
+          case "gdb.gui.layout.main.windowSize.fullscreen":
             return true;
           default:
             return undefined;

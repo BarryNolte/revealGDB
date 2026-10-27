@@ -6,6 +6,7 @@
  */
 import type { JSX, MouseEvent } from "react";
 import type { MouseCallback } from "./MouseKeyboardHandler";
+import HexEditorHeader from "./HexEditorHeader";
 
 export interface HexOffsetViewProps {
   offset: number;
@@ -93,13 +94,7 @@ export default function HexOffsetView({
   return (
     <div className="he-column-sticky" data-testid="hex-offset-view">
       <table className="he-table he-table-sticky" data-testid="hex-offset-table">
-        <thead
-          className="he-table-header"
-          onMouseOver={(e: MouseEvent) => mouseCallback("Over", (e.target as Element).id)}
-          onMouseLeave={(e: MouseEvent) => mouseCallback("Leave", (e.target as Element).id)}
-        >
-          <OffsetHeader />
-        </thead>
+        <HexEditorHeader header={<OffsetHeader />} mouseCallback={mouseCallback}></HexEditorHeader>
         <tbody
           data-testid="hex-offset-body"
           onMouseOver={(e: MouseEvent) => mouseCallback("Over", (e.target as Element).id)}

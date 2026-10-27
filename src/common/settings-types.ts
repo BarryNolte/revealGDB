@@ -2,22 +2,27 @@
  * Shared application settings types used across renderer and main processes.
  *
  * @remarks
- * These types model the `gdb` subtree returned by `getSettings()` (electron-settings `getSync("gdb")`).
+ * These types model the `gdb` subtree returned by `getSettings()` from the main-process settings store.
  * `ConnectionConfig` represents the loose, pre-normalization shape of connection entries that may
  * originate from older settings files before being converted to `NormalizedConnection`.
  */
 
 export interface GdbSettings {
   gui?: {
+    layout?: Record<
+      string,
+      {
+        dockLayout?: unknown;
+        windowSize?: unknown;
+      }
+    >;
     sourceViewerTheme?: string;
     sourceViewerFontSize?: string;
     sourceViewerFontName?: string;
     applicationTheme?: string;
-    dockLayout?: unknown;
     showDebugInfo?: boolean;
     disableAutoSymbolLoading?: boolean;
     gridColumns?: Record<string, unknown>;
-    windowSize?: unknown;
     sectionsView?: {
       showEmptySpace?: boolean;
       showLegend?: boolean;

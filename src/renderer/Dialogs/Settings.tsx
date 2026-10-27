@@ -24,9 +24,7 @@ import { editorThemes } from "../ToolWindows/GdbSourceWindow";
 import "./Settings.css";
 
 /** Props for settings dialog (currently unused) */
-export interface SettingsProps {
-  center?: boolean;
-}
+export type SettingsProps = Record<string, never>;
 
 /** Available application themes */
 const themes = ["Light", "Dark", "Auto"];

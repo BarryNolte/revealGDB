@@ -141,9 +141,22 @@ function getToolbarItems(ctrl: ToolbarController): ItemModel[] {
  */
 export default function RevealToolbar(props: RevealToolbarProps): JSX.Element {
   const ctrl = useToolbarController(props);
+
+  const handleNewWindowClick = (): void => {
+    window.ipcToMain.commands.app.notifyMain({ command: "new-window" });
+  };
+
   return (
     <div className="flex-container-row" data-testid="toolbar-root">
       <ToolbarComponent id="toolbar" className="flex-item-grow" items={getToolbarItems(ctrl)} />
+      <button
+        id="toolbar-new-window-button"
+        className="toolbar-new-window-button"
+        type="button"
+        aria-label="New Window"
+        title="New Window"
+        onClick={handleNewWindowClick}
+      />
       <SplitButtonComponent
         id="toolbar-window-menu"
         className="flex-item-grow"

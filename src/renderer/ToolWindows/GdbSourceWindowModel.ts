@@ -64,6 +64,7 @@ export function createInitialSourceWindowState(): SourceWindowState {
  * @param filePath - filePath parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function getBaseFilename(filePath: string): string {
   return filePath.replace(/^.*[\\/]/, "");
 }
@@ -117,6 +118,7 @@ export function getEditorModeForFile(
  * @param line - line parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function createMarkerForLine(line: string): { currentMarker: number; markers: IMarker[] } {
   const currentMarker = Number.parseInt(line, 10) - 1;
   if (!Number.isFinite(currentMarker) || currentMarker < 0) {

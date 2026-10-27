@@ -14,14 +14,15 @@ import {
   NotifyMainRequest,
   NotifyRenderMessage,
 } from "../../common/ipc-contracts";
-import { mapElectronWindowToWinPos } from "../mappers/window-pos-mapper";
 import { setNativeThemeFromAppTheme } from "../theme-support";
 import { disconnectAndResetApplication } from "../utilities/disconnect-helper";
 import { debugLog } from "../utilities/logger";
+import { createSecondaryWindow, loadSecondaryWindow, resolvePreloadPath } from "../window-manager";
 import { onGdbCommand, onGdbControlD } from "./on-gdb-command";
 import { IpcRegistrationContext } from "./types";
 import { formatGeneralError } from "../utilities/html-error-formatter";
 import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
+import { multiWindowHub } from "../main";
 export { onGdbCommand } from "./on-gdb-command";
 
 /**
@@ -99,6 +100,8 @@ function doConnection(
 }
 
 const GDB_GUI_PREFIX = "gdb.gui.";
+export const MAIN_WINDOW_LAYOUT_PREFIX = `${GDB_GUI_PREFIX}layouts.`;
+
 /**
  * Performs handleConnectSelectedConnection as part of this module's internal workflow.
  *
@@ -156,6 +159,15 @@ function handleCancelConnection(context: IpcRegistrationContext): void {
   disconnectAndResetApplication(mainWindow, gdbInterface);
 }
 
+function handleNewWindow(): void {
+  const window = createSecondaryWindow(resolvePreloadPath());
+  loadSecondaryWindow(window);
+
+  window.once("ready-to-show", () => {
+    window.show();
+  });
+}
+
 type SaveSettingsRequest = Extract<
   NotifyMainRequest,
   {
@@ -184,8 +196,6 @@ type SaveSettingsRequest = Extract<
  */
 
 function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationContext): void {
-  const mainWindow = context.getMainWindow();
-
   switch (msg.command) {
     case "save-connections":
       context.appSettings.setSync("gdb.connections", msg.data.connections as never);
@@ -226,11 +236,7 @@ function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationCo
       context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerFontName`, msg.data as never);
       break;
     case "save-dock-layout":
-      context.appSettings.setSync(`${GDB_GUI_PREFIX}dockLayout`, msg.data as never);
-      context.appSettings.setSync(
-        `${GDB_GUI_PREFIX}windowSize`,
-        mapElectronWindowToWinPos(mainWindow),
-      );
+      multiWindowHub.saveWindowInfo(msg.data as never);
       break;
     case "save-grid-columns":
       context.appSettings.setSync(
@@ -272,6 +278,9 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
     case "cancel-connection":
       handleCancelConnection(context);
       break;
+    case "new-window":
+      handleNewWindow();
+      break;
     case "command-entry":
       sendNotifyRender(context, { command: "command-entry" });
       break;
@@ -286,6 +295,9 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       debugLog("[startup] renderer-end");
       debugLog("Notifying GDB Interface that rendering is complete.");
       sendNotifyRender(context, { command: "command-entry" });
+      break;
+    case "secondary-window-loaded":
+      debugLog("Secondary window has loaded.");
       break;
     default:
       handleSaveSettings(msg, context);

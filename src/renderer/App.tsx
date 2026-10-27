@@ -136,6 +136,7 @@ import iconLocal from "./icons/icons8-local-48.png?asset";
 import iconSrc from "./icons/icons8-source-code-48.png?asset";
 import iconStack from "./icons/icons8-stack-48.png?asset";
 import iconThread from "./icons/icons8-thread-48.png?asset";
+//import { mapElectronWindowToWinPos } from "../main/mappers/window-pos-mapper.js";
 
 /* Application Version Info */
 /**
@@ -292,11 +293,12 @@ async function initializeDockManager(gdb: GdbSettings): Promise<void> {
   registerAllPanels(dockMenuConnector);
   setupLayoutListeners(dockManager);
   let loadedFromState = false;
-  if (gdb.gui?.dockLayout) {
+  const mainWindowLayout = gdb.gui?.layout?.main?.dockLayout;
+  if (mainWindowLayout) {
     try {
       // loadState is async in dock-spawn-ts; must await before resizing or
       // all panels stay hidden (resize fires before deserialization completes).
-      await dockManager.loadState(JSON.stringify(gdb.gui?.dockLayout));
+      await dockManager.loadState(JSON.stringify(mainWindowLayout));
       loadedFromState = true;
     } catch (e) {
       // Saved layout is corrupt or incompatible — fall through to default layout.
@@ -609,6 +611,13 @@ window.addEventListener(SAVE_DOCK_LAYOUT, () => {
     return;
   }
 
-  const layout = JSON.parse(dockManager.saveState());
-  window.ipcToMain.commands.app.notifyMain({ command: "save-dock-layout", data: layout });
+  const lo = JSON.parse(dockManager.saveState());
+  window.ipcToMain.commands.app.notifyMain({
+    command: "save-dock-layout",
+    data: {
+      windowName: "main",
+      layout: lo,
+      sizeAndPosition: null,
+    },
+  });
 });

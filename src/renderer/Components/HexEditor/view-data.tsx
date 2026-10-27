@@ -6,6 +6,7 @@
  */
 import type { JSX, MouseEvent } from "react";
 import type { MouseCallback } from "./MouseKeyboardHandler";
+import HexEditorHeader from "./HexEditorHeader";
 
 /** Props for the HexDataView component */
 export interface HexDataViewProps {
@@ -103,13 +104,7 @@ export default function HexDataView({ datasource, mouseCallback }: HexDataViewPr
   return (
     <div data-testid="hex-data-view">
       <table className="he-table he-table-sticky" data-testid="hex-data-table">
-        <thead
-          className="he-table-header"
-          onMouseOver={(e: MouseEvent) => mouseCallback("Over", (e.target as Element).id)}
-          onMouseLeave={(e: MouseEvent) => mouseCallback("Leave", (e.target as Element).id)}
-        >
-          <DataHeader />
-        </thead>
+        <HexEditorHeader header={<DataHeader />} mouseCallback={mouseCallback}></HexEditorHeader>
         <tbody
           data-testid="hex-data-body"
           onMouseOver={(e: MouseEvent) => mouseCallback("Over", (e.target as Element).id)}

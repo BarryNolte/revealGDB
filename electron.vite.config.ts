@@ -26,6 +26,7 @@ const buildVariant = process.env.REVEALGDB_BUILD === "debug" ? "debug" : "releas
 const isDebugBuild =
   process.env.REVEALGDB_DEBUG === "true" ||
   (process.env.REVEALGDB_BUILD === undefined && process.env.NODE_ENV === "development");
+const isDevWatchMode = process.env.NODE_ENV === "development" || process.argv.includes("--watch");
 const shouldAnalyzeBundle = process.env.REVEALGDB_ANALYZE_BUNDLE === "true";
 
 const buildDefines = {
@@ -35,6 +36,7 @@ const buildDefines = {
 
 const rendererInputs = {
   main: resolve(__dirname, "src/renderer/index.html"),
+  secondary: resolve(__dirname, "src/renderer/secondary.html"),
   hexeditor: resolve(__dirname, "src/renderer/hexeditor-test.html"),
   gdbcommand: resolve(__dirname, "src/renderer/gdbcommand-test.html"),
   toolbar: resolve(__dirname, "src/renderer/toolbar-test.html"),
@@ -46,6 +48,7 @@ const rendererInputs = {
 // For bundle analysis, exclude test HTML entries to focus on production code
 const productionInputs = {
   main: resolve(__dirname, "src/renderer/index.html"),
+  secondary: resolve(__dirname, "src/renderer/secondary.html"),
 };
 
 export default defineConfig({
@@ -65,14 +68,12 @@ export default defineConfig({
       : [],
     build: {
       outDir: "out/preload",
-      emptyOutDir: true,
+      emptyOutDir: !isDevWatchMode,
       sourcemap: true,
       reportCompressedSize: shouldAnalyzeBundle,
       rollupOptions: {},
       watch: {
-        // Rollup WatcherOptions can be configured here
-        // For example, to ignore specific files:
-        // ignored: ['**/node_modules/**', '**/dist/**'],
+        exclude: ["**/node_modules/**", "**/out/**", "**/dist/**"],
       },
     },
     resolve: {
@@ -97,14 +98,12 @@ export default defineConfig({
       : [],
     build: {
       outDir: "out/main",
-      emptyOutDir: true,
+      emptyOutDir: !isDevWatchMode,
       sourcemap: true,
       reportCompressedSize: shouldAnalyzeBundle,
       rollupOptions: {},
       watch: {
-        // Rollup WatcherOptions can be configured here
-        // For example, to ignore specific files:
-        // ignored: ['**/node_modules/**', '**/dist/**'],
+        exclude: ["**/node_modules/**", "**/out/**", "**/dist/**"],
       },
     },
     resolve: {
@@ -131,7 +130,7 @@ export default defineConfig({
     assetsInclude: ["**/*.gif"],
     build: {
       outDir: "out/renderer",
-      emptyOutDir: true,
+      emptyOutDir: !isDevWatchMode,
       sourcemap: true,
       reportCompressedSize: shouldAnalyzeBundle,
       rollupOptions: {
@@ -150,6 +149,9 @@ export default defineConfig({
             return "vendor";
           },
         },
+      },
+      watch: {
+        exclude: ["**/node_modules/**", "**/out/**", "**/dist/**"],
       },
     },
     server: {

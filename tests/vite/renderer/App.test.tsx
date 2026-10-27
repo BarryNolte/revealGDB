@@ -458,20 +458,20 @@ describe("App component", () => {
 
   // --- Saved layout path ---
 
-  it("calls loadState when gdb.gui.dockLayout is present", async () => {
+  it("calls loadState when gdb.gui.layout.main.dockLayout is present", async () => {
     const saved = { panels: ["a"] };
-    await renderApp({ gui: { dockLayout: saved } });
+    await renderApp({ gui: { layout: { main: { dockLayout: saved } } } });
     expect(appMocks.dmSpies.loadState).toHaveBeenCalledWith(JSON.stringify(saved));
   });
 
   it("does NOT create default layout when saved layout loads successfully", async () => {
-    await renderApp({ gui: { dockLayout: { panels: [] } } });
+    await renderApp({ gui: { layout: { main: { dockLayout: { panels: [] } } } } });
     expect(appMocks.dcSpies.createAllWindows).not.toHaveBeenCalled();
   });
 
   // --- Default layout path ---
 
-  it("creates default layout (createAllWindows) when no dockLayout in settings", async () => {
+  it("creates default layout (createAllWindows) when no gdb.gui.layout.main.dockLayout in settings", async () => {
     await renderApp({ gui: {} });
     expect(appMocks.dcSpies.createAllWindows).toHaveBeenCalledTimes(1);
   });
@@ -488,7 +488,7 @@ describe("App component", () => {
   it("falls back to default layout when loadState throws", async () => {
     vi.spyOn(console, "warn").mockImplementation(() => undefined);
     appMocks.dmSpies.loadState.mockRejectedValue(new Error("corrupt layout"));
-    await renderApp({ gui: { dockLayout: { bad: true } } });
+    await renderApp({ gui: { layout: { main: { dockLayout: { bad: true } } } } });
     expect(appMocks.dcSpies.createAllWindows).toHaveBeenCalledTimes(1);
   });
 

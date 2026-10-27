@@ -12,7 +12,6 @@ import { AppSettings } from "./app-settings";
 import {
   applyDefaultSettings,
   collectVersionInfo,
-  configureAppSettings,
   logStartupDiagnostics,
   maybeInstallDevTools,
   warmSystemFonts,
@@ -33,6 +32,8 @@ import {
   restoreWindowBounds,
   wireWindowCloseHandlers,
 } from "./window-manager";
+import { WindowDockManager } from "../renderer/utilities/window-dock-manager";
+import { MultiWindowHub } from "./multi-window-hub";
 
 // Re-export for backward compatibility
 export { AppSettings, isDebug, isLinux, isMac, isWin };
@@ -53,6 +54,18 @@ function logStartupMilestone(label: string): void {
   const elapsedMs = Date.now() - startupEpochMs;
   debugLog(`[startup] ${label}: ${elapsedMs}ms`);
 }
+
+/**
+ * Performs initialization of the multi-window hub as part of this module's internal workflow.
+ * This is where all multi-window related state and behavior is managed.
+ */
+export const multiWindowHub = new MultiWindowHub();
+
+/**
+ * Performs initialization of the dock window manager as part of this module's internal workflow.
+ * This is where all dock window related state and behavior is managed.
+ */
+export const dockWindowManager: WindowDockManager = new WindowDockManager();
 
 export let mainWindow: BrowserWindow;
 let debugWindow: BrowserWindow | undefined;
@@ -91,7 +104,7 @@ function isSelectedConnection(value: unknown): value is NormalizedConnection {
 app.on("ready", () => {
   logStartupMilestone("app.ready");
 
-  configureAppSettings(AppSettings);
+  AppSettings.initialize();
   applyDefaultSettings(AppSettings);
   logStartupDiagnostics(AppSettings);
   collectVersionInfo(gdbAppInfo);
@@ -101,6 +114,10 @@ app.on("ready", () => {
   setNativeThemeFromAppTheme(savedTheme ?? "Auto");
 
   mainWindow = createMainWindow(resolvePreloadPath());
+
+  mainWindow.on("closed", () => {
+    multiWindowHub.closeAllSecondaryWindows();
+  });
 
   setIpcWindow(mainWindow);
 

@@ -165,6 +165,7 @@ describe("RevealToolbar", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Connect" }));
+    fireEvent.click(screen.getByRole("button", { name: "New Window" }));
     fireEvent.click(screen.getByRole("button", { name: "Connections" }));
     fireEvent.click(screen.getByRole("button", { name: "Settings" }));
 
@@ -193,6 +194,9 @@ describe("RevealToolbar", () => {
     fireEvent.click(screen.getByRole("button", { name: "Step In" }));
     fireEvent.click(screen.getByRole("button", { name: "Step Out" }));
 
+    expect(window.ipcToMain.commands.app.notifyMain).toHaveBeenCalledWith({
+      command: "newWindow",
+    });
     expect(window.ipcToMain.commands.app.notifyMain).toHaveBeenCalledWith({
       command: "cancel-connection",
     });

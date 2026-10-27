@@ -26,6 +26,20 @@ const gissMocks = vi.hoisted(() => ({
   sendOutput: vi.fn(),
 }));
 
+const windowManagerMocks = vi.hoisted(() => {
+  const once = vi.fn();
+  const show = vi.fn();
+  const window = { once, show } as never;
+  return {
+    createMainWindow: vi.fn(() => window),
+    loadMainWindow: vi.fn(),
+    resolvePreloadPath: vi.fn(() => "mock-preload-path"),
+    window,
+    once,
+    show,
+  };
+});
+
 vi.mock("../../../../src/main/utilities/GeneralInfoSender", () => ({
   GeneralInfoSender: {
     instance: gissMocks,
@@ -41,6 +55,12 @@ vi.mock("../../../../src/main/utilities/wsl-utilities", () => ({
     getWslDistributions: vi.fn(() => [{ name: "Ubuntu", state: "Running", version: "2" }]),
     getWslSerialPorts: vi.fn(() => ["ttyS0", "ttyUSB0"]),
   },
+}));
+
+vi.mock("../../../../src/main/window-manager", () => ({
+  createMainWindow: windowManagerMocks.createMainWindow,
+  loadMainWindow: windowManagerMocks.loadMainWindow,
+  resolvePreloadPath: windowManagerMocks.resolvePreloadPath,
 }));
 
 import { screen, shell } from "electron";
@@ -220,9 +240,11 @@ describe("handleNotifyMain", () => {
     );
     handleNotifyMain({ command: "reset-grid-columns" } as NotifyMainRequest, context);
 
-    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.dockLayout", { nodes: [] });
+    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.layout.main.dockLayout", {
+      nodes: [],
+    });
     expect(appSettings.setSync).toHaveBeenCalledWith(
-      "gdb.gui.windowSize",
+      "gdb.gui.layout.main.windowSize",
       expect.objectContaining({ x: 100, y: 200, width: 798, height: 598, fullscreen: false }),
     );
     expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.gridColumns.locals", [
@@ -241,6 +263,21 @@ describe("handleNotifyMain", () => {
     expect(send).toHaveBeenCalledWith(IPC_CHANNELS.mainToRenderer.notifications.render, {
       command: "command-entry",
     });
+  });
+
+  it("handles newWindow by creating and showing a BrowserWindow", () => {
+    const { context } = createIpcRegistrationHarness();
+
+    handleNotifyMain({ command: "newWindow" }, context);
+
+    expect(windowManagerMocks.resolvePreloadPath).toHaveBeenCalledTimes(1);
+    expect(windowManagerMocks.createMainWindow).toHaveBeenCalledWith("mock-preload-path");
+    expect(windowManagerMocks.loadMainWindow).toHaveBeenCalledWith(windowManagerMocks.window);
+    expect(windowManagerMocks.once).toHaveBeenCalledWith("ready-to-show", expect.any(Function));
+
+    const readyToShowHandler = windowManagerMocks.once.mock.calls[0]?.[1] as (() => void) | undefined;
+    readyToShowHandler?.();
+    expect(windowManagerMocks.show).toHaveBeenCalledTimes(1);
   });
 
   it("handles open-external with a valid https URL by calling shell.openExternal", () => {

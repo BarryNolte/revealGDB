@@ -7,6 +7,7 @@
 import { JSX } from "react";
 import { DisasmToken } from "../../common/gdb-state-types";
 
+/** @public */
 export type DisasmInstructionPart = {
   className: string;
   value: string;
@@ -89,6 +90,7 @@ function toInstructionPart(token: DisasmToken): DisasmInstructionPart {
  * @param tokens - tokens parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function toInstructionParts(tokens: DisasmToken[]): DisasmInstructionPart[] {
   return tokens.map((token) => toInstructionPart(token));
 }
@@ -108,6 +110,7 @@ export function toInstructionParts(tokens: DisasmToken[]): DisasmInstructionPart
  * @param groupKey? - groupKey? parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function extractFunctionName(groupKey?: string): string {
   return groupKey?.replace(/.*-/, "") || "Unknown Function";
 }

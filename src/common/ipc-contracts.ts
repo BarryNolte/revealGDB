@@ -138,6 +138,7 @@ export type NotifyRenderMessage = {
 export type NotifyMainCommand =
   | "connect-selected-connection"
   | "cancel-connection"
+  | "new-window"
   | "command-entry"
   | "save-connections"
   | "save-last-used-connection"
@@ -154,7 +155,8 @@ export type NotifyMainCommand =
   | "save-auto-symbol-loading"
   | "open-external"
   | "renderStart"
-  | "renderEnd";
+  | "renderEnd"
+  | "secondary-window-loaded";
 
 /**
  * Maps each `NotifyMainCommand` to the shape of its `data` payload.
@@ -163,6 +165,7 @@ export type NotifyMainCommand =
 export type NotifyMainPayloadMap = {
   "connect-selected-connection": { connection: NormalizedConnection };
   "cancel-connection": undefined;
+  "new-window": undefined;
   "command-entry": undefined;
   "save-connections": { connections: NormalizedConnection[] };
   "save-last-used-connection": string | null;
@@ -180,6 +183,7 @@ export type NotifyMainPayloadMap = {
   "open-external": string;
   renderStart: undefined;
   renderEnd: undefined;
+  "secondary-window-loaded": undefined;
 };
 
 /**

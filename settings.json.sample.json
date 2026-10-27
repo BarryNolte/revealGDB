@@ -12,210 +12,149 @@
       "sourceViewerTheme": "chaos",
       "sourceViewerFontSize": "14",
       "mainTheme": "dark",
-      "windowSize": {
-        "x": 0,
-        "y": 0,
-        "width": 1625,
-        "height": 1406,
-        "fullscreen": false
-      },
-      "dockLayout": {
-        "type": "split",
-        "orientation": "horizontal",
-        "id": 0,
-        "parentId": -1,
-        "sizes": [
-          0.4153750774953503,
-          0.5846249225046497
-        ],
-        "areas": [
-          {
-            "type": "split",
-            "orientation": "vertical",
-            "id": 1,
-            "parentId": 0,
-            "sizes": [
-              0.6502003205128205,
-              0.18313301282051278,
-              0.16666666666666669
-            ],
-            "areas": [
-              {
-                "type": "tab",
-                "parentId": 1,
-                "widgets": [
-                  {
-                    "className": "GdbSourceWindow",
-                    "index": 0,
-                    "depth": 2
-                  }
-                ]
-              },
-              {
-                "type": "tab",
-                "parentId": 1,
-                "widgets": [
-                  {
-                    "className": "GdbThreadsWindow",
-                    "index": 0,
-                    "metadata": {
-                      "data": [
-                        48,
-                        45,
-                        74,
-                        282,
-                        125,
-                        300
-                      ]
-                    },
-                    "depth": 2
-                  },
-                  {
-                    "className": "GdbBreakPointWindow",
-                    "index": 1,
-                    "metadata": {
-                      "data": [
-                        25,
-                        60,
-                        48,
-                        42,
-                        60,
-                        62,
-                        38,
-                        74,
-                        77,
-                        80,
-                        35,
-                        205
-                      ]
-                    },
-                    "depth": 2
-                  }
-                ]
-              },
-              {
-                "type": "tab",
-                "parentId": 1,
-                "widgets": [
-                  {
-                    "className": "GdbCallStackWindow",
-                    "index": 0,
-                    "metadata": {
-                      "data": [
-                        64,
-                        155,
-                        89,
-                        64,
-                        85,
-                        64,
-                        60,
-                        87
-                      ]
-                    },
-                    "depth": 2
-                  }
-                ]
-              }
-            ]
+      "layout": {
+        "main": {
+          "windowSize": {
+            "x": 0,
+            "y": 0,
+            "width": 1625,
+            "height": 1406,
+            "fullscreen": false
           },
-          {
+          "dockLayout": {
             "type": "split",
-            "orientation": "vertical",
-            "id": 2,
-            "parentId": 0,
-            "sizes": [
-              0.504601226993865,
-              0.495398773006135
-            ],
+            "orientation": "horizontal",
+            "id": 0,
+            "parentId": -1,
+            "sizes": [0.4153750774953503, 0.5846249225046497],
             "areas": [
               {
                 "type": "split",
-                "orientation": "horizontal",
-                "id": 3,
-                "parentId": 2,
-                "sizes": [
-                  0.7595846645367412,
-                  0.24041533546325877
-                ],
+                "orientation": "vertical",
+                "id": 1,
+                "parentId": 0,
+                "sizes": [0.6502003205128205, 0.18313301282051278, 0.16666666666666669],
                 "areas": [
                   {
                     "type": "tab",
-                    "parentId": 3,
+                    "parentId": 1,
                     "widgets": [
                       {
-                        "className": "GdbLocalsWindow",
+                        "className": "GdbSourceWindow",
                         "index": 0,
-                        "depth": 3
-                      },
-                      {
-                        "className": "GdbMemoryWindow",
-                        "index": 1,
-                        "metadata": {
-                          "data": [
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            32,
-                            135
-                          ]
-                        },
-                        "depth": 3
+                        "depth": 2
                       }
                     ]
                   },
                   {
                     "type": "tab",
-                    "parentId": 3,
+                    "parentId": 1,
                     "widgets": [
                       {
-                        "className": "GdbRegisterWindow",
+                        "className": "GdbThreadsWindow",
                         "index": 0,
                         "metadata": {
-                          "data": [
-                            90,
-                            200
-                          ]
+                          "data": [48, 45, 74, 282, 125, 300]
                         },
-                        "depth": 3
+                        "depth": 2
+                      },
+                      {
+                        "className": "GdbBreakPointWindow",
+                        "index": 1,
+                        "metadata": {
+                          "data": [25, 60, 48, 42, 60, 62, 38, 74, 77, 80, 35, 205]
+                        },
+                        "depth": 2
+                      }
+                    ]
+                  },
+                  {
+                    "type": "tab",
+                    "parentId": 1,
+                    "widgets": [
+                      {
+                        "className": "GdbCallStackWindow",
+                        "index": 0,
+                        "metadata": {
+                          "data": [64, 155, 89, 64, 85, 64, 60, 87]
+                        },
+                        "depth": 2
                       }
                     ]
                   }
                 ]
               },
               {
-                "type": "tab",
-                "parentId": 2,
-                "widgets": [
+                "type": "split",
+                "orientation": "vertical",
+                "id": 2,
+                "parentId": 0,
+                "sizes": [0.504601226993865, 0.495398773006135],
+                "areas": [
                   {
-                    "className": "GdbCommandWindow",
-                    "index": 0,
-                    "depth": 2
+                    "type": "split",
+                    "orientation": "horizontal",
+                    "id": 3,
+                    "parentId": 2,
+                    "sizes": [0.7595846645367412, 0.24041533546325877],
+                    "areas": [
+                      {
+                        "type": "tab",
+                        "parentId": 3,
+                        "widgets": [
+                          {
+                            "className": "GdbLocalsWindow",
+                            "index": 0,
+                            "depth": 3
+                          },
+                          {
+                            "className": "GdbMemoryWindow",
+                            "index": 1,
+                            "metadata": {
+                              "data": [
+                                32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 135
+                              ]
+                            },
+                            "depth": 3
+                          }
+                        ]
+                      },
+                      {
+                        "type": "tab",
+                        "parentId": 3,
+                        "widgets": [
+                          {
+                            "className": "GdbRegisterWindow",
+                            "index": 0,
+                            "metadata": {
+                              "data": [90, 200]
+                            },
+                            "depth": 3
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "tab",
+                    "parentId": 2,
+                    "widgets": [
+                      {
+                        "className": "GdbCommandWindow",
+                        "index": 0,
+                        "depth": 2
+                      }
+                    ]
                   }
                 ]
               }
             ]
           }
-        ]
+        }
       }
     },
     "run": {
-      "onStartup": [
-        "-list-features",
-        "-data-list-register-names",
-        "source ~/perftool/mygdbinit"
-      ],
+      "onStartup": ["-list-features", "-data-list-register-names", "source ~/perftool/mygdbinit"],
       "onStopped": [
         "-data-list-register-values x",
         "-stack-list-frames",
@@ -329,11 +268,7 @@
       "metas": [
         {
           "Name": "Geezer",
-          "Commands": [
-            "echo meta_dis_start\n",
-            "disassemble _mcount",
-            "echo meta_dis_end\n"
-          ]
+          "Commands": ["echo meta_dis_start\n", "disassemble _mcount", "echo meta_dis_end\n"]
         }
       ]
     }

@@ -10,3 +10,5 @@ bundle-report.html
 test-results/.last-run.json
 coverage/
 .nyc_output/
+.cache/tsconfig.main.tsbuildinfo
+.fallow/

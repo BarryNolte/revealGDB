@@ -2,42 +2,22 @@
  * Implements bootstrap for revealGDB runtime behavior.
  *
  * @remarks
- * Exported symbols include `SettingsLike`, `configureAppSettings`, `logStartupDiagnostics`, `warmSystemFonts`, `maybeInstallDevTools`, `collectVersionInfo`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ * Exported symbols include `SettingsLike`, `applyDefaultSettings`, `logStartupDiagnostics`, `warmSystemFonts`, `maybeInstallDevTools`, `collectVersionInfo`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { screen } from "electron";
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import { fontace } from "fontace";
 import getSystemFonts from "get-system-fonts";
-import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import type { Display } from "electron";
-import { AppSettings } from "./app-settings";
 import { debugLog } from "./utilities/logger";
 
 export type SettingsLike = {
-  configure: (opts: {
-    atomicSave: boolean;
-    fileName: string;
-    numSpaces: number;
-    prettify: boolean;
-  }) => void;
   file: () => string;
+  hasSync: (key: string) => boolean;
+  setSync: (key: string, value: unknown) => void;
 };
-
-/**
- * Performs configure app settings as part of this module's public API.
- *
- * @param appSettings - Value for `appSettings` consumed by this operation.
- */
-export function configureAppSettings(appSettings: SettingsLike): void {
-  appSettings.configure({
-    atomicSave: true,
-    fileName: "settings.json",
-    numSpaces: 2,
-    prettify: true,
-  });
-}
 /**
  * Performs applyDefaultSettings as part of this module's internal workflow.
  *
@@ -45,8 +25,8 @@ export function configureAppSettings(appSettings: SettingsLike): void {
  * @returns The computed result produced by this operation.
  */
 
-export function applyDefaultSettings(appSettings: typeof AppSettings): void {
-  if (!fsSync.existsSync(appSettings.file())) {
+export function applyDefaultSettings(appSettings: SettingsLike): void {
+  if (!appSettings.hasSync("gdb.gui.disableAutoSymbolLoading")) {
     appSettings.setSync("gdb.gui.disableAutoSymbolLoading", false);
   }
   if (!appSettings.hasSync("gdb.dangerousCommands")) {

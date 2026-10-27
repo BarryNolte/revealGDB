@@ -68,6 +68,7 @@ export default defineConfig(async () => {
       rollupOptions: {
         input: {
           main: resolve(__dirname, "src/renderer/index.html"),
+          secondary: resolve(__dirname, "src/renderer/secondary.html"),
           hexeditor: resolve(__dirname, "src/renderer/hexeditor-test.html"),
           gdbcommand: resolve(__dirname, "src/renderer/gdbcommand-test.html"),
           toolbar: resolve(__dirname, "src/renderer/toolbar-test.html"),

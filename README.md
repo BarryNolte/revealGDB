@@ -62,6 +62,8 @@ Install project dependencies:
 npm install
 ```
 
+Tooling note: this repo intentionally installs `typescript` as the `@typescript/typescript6` compatibility package so ESLint (`@typescript-eslint/*`) can use the TypeScript 6 API. Native TypeScript 7 builds continue to run through `tsgo` from `@typescript/native-preview`.
+
 Install Playwright browsers when needed:
 
 ```powershell
@@ -76,7 +78,7 @@ npm run dev
 
 `npm run dev` sets `REVEALGDB_BUILD=debug` and `REVEALGDB_DEBUG=true`, then starts three cooperating processes:
 
-- `electron-vite build` compiles the Electron main and preload bundles.
+- `electron-vite dev` watches and incrementally rebuilds the Electron main and preload bundles.
 - `vite` serves the renderer on port `5173`.
 - `electron .` launches the app after the renderer URL is reachable.
 
@@ -112,7 +114,7 @@ npm run dev
 
 `npm run dev` sets `REVEALGDB_BUILD=debug` and `REVEALGDB_DEBUG=true`, then starts three cooperating processes:
 
-- `electron-vite build` compiles the Electron main and preload bundles.
+- `electron-vite dev` watches and incrementally rebuilds the Electron main and preload bundles.
 - `vite` serves the renderer on port `5173`.
 - `electron .` launches the app after the renderer URL is reachable.
 
@@ -151,8 +153,8 @@ The application uses Electron's standard three-layer split:
 
 The main startup path is centered in `src/main/main.ts` and runs in this order:
 
-1. `app.on("ready")` records startup milestones and configures persistent settings storage.
-2. `configureAppSettings()` in `src/main/bootstrap.ts` configures `electron-settings` to write a prettified `settings.json` with atomic saves.
+1. `app.on("ready")` records startup milestones and initializes the persistent settings store and in-memory settings cache.
+2. `applyDefaultSettings()` in `src/main/bootstrap.ts` ensures required default keys exist.
 3. Saved theme information is applied before window creation to reduce theme flash.
 4. `createMainWindow(resolvePreloadPath())` creates the hidden `BrowserWindow` and attaches the preload bundle from `out/preload/preload.js`.
 5. `loadMainWindow()` loads either `ELECTRON_RENDERER_URL` during development or `out/renderer/index.html` in built mode.
@@ -175,7 +177,7 @@ The persisted settings shape can be inspected in `settings.json.sample.json`. Cu
 - `gdb.gui`: editor theme, font size, window bounds, and dock layout.
 - `gdb.run`: startup command lists and stop-time debugger actions.
 
-`electron-settings` stores the active file as `settings.json`, and `logStartupDiagnostics()` prints the resolved path during startup.
+The settings service stores data in `settings.json` using atomic writes, and `logStartupDiagnostics()` prints the resolved path during startup.
 
 ### Testing and Generated Docs
 

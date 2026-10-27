@@ -4,8 +4,13 @@
  * @remarks
  * Exported symbols include `createMainWindow`, `createDebugWindow`, `loadMainWindow`, `restoreWindowBounds`, `wireWindowCloseHandlers`, `resolvePreloadPath`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
+
 import { BrowserWindow } from "electron";
 import path, { join } from "path";
+import { multiWindowHub } from "./main";
+//import { dockWindowManager } from "../renderer/utilities/window-dock-manager";
+
+const MAIN_WINDOW_SIZE_PREFIX = "gdb.gui.layout.main.windowSize";
 
 export type WindowSizeSettings = {
   getSync: (key: string) => unknown;
@@ -17,6 +22,7 @@ export type WindowSizeSettings = {
  * @param preloadPath - Filesystem or source path used to locate the target resource.
  * @returns The computed result produced by this operation.
  */
+
 /**
  * Performs createMainWindow as part of this module's internal workflow.
  *
@@ -24,12 +30,42 @@ export type WindowSizeSettings = {
  * @returns The computed result produced by this operation.
  */
 export function createMainWindow(preloadPath: string): BrowserWindow {
-  return new BrowserWindow({
+  const window = new BrowserWindow({
     webPreferences: {
       preload: preloadPath,
     },
     show: false,
   });
+
+  window.on("move", () => {
+    multiWindowHub.saveWindowInfo(null);
+  });
+
+  return window;
+}
+
+/**
+ * Performs createSecondaryWindow as part of this module's internal workflow.
+ *
+ * @param preloadPath - preloadPath parameter.
+ * @returns The computed result produced by this operation.
+ */
+export function createSecondaryWindow(preloadPath: string): BrowserWindow {
+  const window = new BrowserWindow({
+    webPreferences: {
+      preload: preloadPath,
+    },
+    show: false,
+    autoHideMenuBar: true,
+  });
+  const uniqueNumber = Date.now();
+  multiWindowHub.add(window, uniqueNumber.toString(20));
+
+  window.on("move", () => {
+    multiWindowHub.saveWindowInfo(null);
+  });
+
+  return window;
 }
 
 /**
@@ -58,6 +94,10 @@ export function createDebugWindow(mainWindow: BrowserWindow): BrowserWindow {
     title: "revealGDB - I'm Special, I know how to debug...",
   });
 
+  debugWindow.on("move", () => {
+    multiWindowHub.saveWindowInfo(null);
+  });
+
   return debugWindow;
 }
 
@@ -80,36 +120,42 @@ export function loadMainWindow(mainWindow: BrowserWindow): void {
 }
 
 /**
+ * Performs load main window as part of this module's public API.
+ *
+ * @param secondaryWindow - Value for `mainWindow` consumed by this operation.
+ */
+export function loadSecondaryWindow(secondaryWindow: BrowserWindow): void {
+  const devUrl = join(__dirname, "..", "..", "out", "renderer", "secondary.html");
+  secondaryWindow.loadURL(devUrl);
+}
+/**
  * Performs restore window bounds as part of this module's public API.
  *
- * @param mainWindow - Value for `mainWindow` consumed by this operation.
+ * @param window - Value for `mainWindow` consumed by this operation.
  * @param appSettings - Value for `appSettings` consumed by this operation.
  */
 /**
  * Performs restoreWindowBounds as part of this module's internal workflow.
  *
- * @param mainWindow - mainWindow parameter.
+ * @param window - mainWindow parameter.
  * @param appSettings - appSettings parameter.
  * @returns The computed result produced by this operation.
  */
-export function restoreWindowBounds(
-  mainWindow: BrowserWindow,
-  appSettings: WindowSizeSettings,
-): void {
-  const x = appSettings.getSync("gdb.gui.windowSize.x") as number;
-  const y = appSettings.getSync("gdb.gui.windowSize.y") as number;
-  const w = appSettings.getSync("gdb.gui.windowSize.width") as number;
-  const h = appSettings.getSync("gdb.gui.windowSize.height") as number;
+export function restoreWindowBounds(window: BrowserWindow, appSettings: WindowSizeSettings): void {
+  const x = appSettings.getSync(`${MAIN_WINDOW_SIZE_PREFIX}.x`) as number;
+  const y = appSettings.getSync(`${MAIN_WINDOW_SIZE_PREFIX}.y`) as number;
+  const w = appSettings.getSync(`${MAIN_WINDOW_SIZE_PREFIX}.width`) as number;
+  const h = appSettings.getSync(`${MAIN_WINDOW_SIZE_PREFIX}.height`) as number;
 
   if (x && y) {
-    mainWindow.setPosition(x, y);
+    window.setPosition(x, y);
   }
 
   if (w && h) {
-    mainWindow.setSize(w, h);
+    window.setSize(w, h);
   }
 
-  mainWindow.fullScreen = appSettings.getSync("gdb.gui.windowSize.fullscreen") as boolean;
+  window.fullScreen = appSettings.getSync(`${MAIN_WINDOW_SIZE_PREFIX}.fullscreen`) as boolean;
 }
 
 /**

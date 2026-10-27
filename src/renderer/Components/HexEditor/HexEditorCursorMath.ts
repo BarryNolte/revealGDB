@@ -2,9 +2,9 @@
  * Provides hex editor cursor math behavior for hex editor rendering, navigation, and input handling.
  *
  * @remarks
- * Exported symbols include `HEX_EDITOR_ROW_WIDTH`, `clampIndex`, `parseIndexFromId`, `getRowFromIndex`, `getColumnFromIndex`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
+ * Exported symbols include `clampIndex`, `parseIndexFromId`, `getRowFromIndex`, `getColumnFromIndex`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-export const HEX_EDITOR_ROW_WIDTH = 16;
+const HEX_EDITOR_ROW_WIDTH = 16;
 
 /**
  * Performs clamp index as part of this module's public API.
