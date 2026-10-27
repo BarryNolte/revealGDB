@@ -7,7 +7,6 @@
 
 import { BrowserWindow } from "electron";
 import path, { join } from "path";
-import { multiWindowHub } from "./main";
 //import { dockWindowManager } from "../renderer/utilities/window-dock-manager";
 
 const MAIN_WINDOW_SIZE_PREFIX = "gdb.gui.layout.main.windowSize";
@@ -15,6 +14,8 @@ const MAIN_WINDOW_SIZE_PREFIX = "gdb.gui.layout.main.windowSize";
 export type WindowSizeSettings = {
   getSync: (key: string) => unknown;
 };
+
+export type OnWindowMoved = () => void;
 
 /**
  * Creates main window for downstream use.
@@ -29,7 +30,10 @@ export type WindowSizeSettings = {
  * @param preloadPath - preloadPath parameter.
  * @returns The computed result produced by this operation.
  */
-export function createMainWindow(preloadPath: string): BrowserWindow {
+export function createMainWindow(
+  preloadPath: string,
+  onWindowMoved?: OnWindowMoved,
+): BrowserWindow {
   const window = new BrowserWindow({
     webPreferences: {
       preload: preloadPath,
@@ -37,9 +41,11 @@ export function createMainWindow(preloadPath: string): BrowserWindow {
     show: false,
   });
 
-  window.on("move", () => {
-    multiWindowHub.saveWindowInfo(null);
-  });
+  if (typeof window.on === "function") {
+    window.on("move", () => {
+      onWindowMoved?.();
+    });
+  }
 
   return window;
 }
@@ -50,7 +56,10 @@ export function createMainWindow(preloadPath: string): BrowserWindow {
  * @param preloadPath - preloadPath parameter.
  * @returns The computed result produced by this operation.
  */
-export function createSecondaryWindow(preloadPath: string): BrowserWindow {
+export function createSecondaryWindow(
+  preloadPath: string,
+  onWindowMoved?: OnWindowMoved,
+): BrowserWindow {
   const window = new BrowserWindow({
     webPreferences: {
       preload: preloadPath,
@@ -58,12 +67,11 @@ export function createSecondaryWindow(preloadPath: string): BrowserWindow {
     show: false,
     autoHideMenuBar: true,
   });
-  const uniqueNumber = Date.now();
-  multiWindowHub.add(window, uniqueNumber.toString(20));
-
-  window.on("move", () => {
-    multiWindowHub.saveWindowInfo(null);
-  });
+  if (typeof window.on === "function") {
+    window.on("move", () => {
+      onWindowMoved?.();
+    });
+  }
 
   return window;
 }
@@ -80,7 +88,10 @@ export function createSecondaryWindow(preloadPath: string): BrowserWindow {
  * @param mainWindow - mainWindow parameter.
  * @returns The computed result produced by this operation.
  */
-export function createDebugWindow(mainWindow: BrowserWindow): BrowserWindow {
+export function createDebugWindow(
+  mainWindow: BrowserWindow,
+  onWindowMoved?: OnWindowMoved,
+): BrowserWindow {
   const debugWindow = new BrowserWindow({
     x: 0,
     y: 0,
@@ -94,9 +105,11 @@ export function createDebugWindow(mainWindow: BrowserWindow): BrowserWindow {
     title: "revealGDB - I'm Special, I know how to debug...",
   });
 
-  debugWindow.on("move", () => {
-    multiWindowHub.saveWindowInfo(null);
-  });
+  if (typeof debugWindow.on === "function") {
+    debugWindow.on("move", () => {
+      onWindowMoved?.();
+    });
+  }
 
   return debugWindow;
 }

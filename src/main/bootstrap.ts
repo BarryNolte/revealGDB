@@ -5,7 +5,6 @@
  * Exported symbols include `SettingsLike`, `applyDefaultSettings`, `logStartupDiagnostics`, `warmSystemFonts`, `maybeInstallDevTools`, `collectVersionInfo`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { screen } from "electron";
-import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import { fontace } from "fontace";
 import getSystemFonts from "get-system-fonts";
 import fs from "node:fs/promises";
@@ -17,7 +16,22 @@ export type SettingsLike = {
   file: () => string;
   hasSync: (key: string) => boolean;
   setSync: (key: string, value: unknown) => void;
+  configure?: (options: {
+    atomicSave: boolean;
+    fileName: string;
+    numSpaces: number;
+    prettify: boolean;
+  }) => void;
 };
+
+export function configureAppSettings(appSettings: SettingsLike): void {
+  appSettings.configure?.({
+    atomicSave: true,
+    fileName: "settings.json",
+    numSpaces: 2,
+    prettify: true,
+  });
+}
 /**
  * Performs applyDefaultSettings as part of this module's internal workflow.
  *
@@ -92,9 +106,27 @@ export function maybeInstallDevTools(isDebug: boolean): void {
     return;
   }
 
-  installExtension(REACT_DEVELOPER_TOOLS)
+  void import("electron-devtools-installer")
+    .then((module) => {
+      const installExtension =
+        typeof module.default === "function"
+          ? module.default
+          : typeof module.installExtension === "function"
+            ? module.installExtension
+            : null;
+      const reactDevToolsId = module.REACT_DEVELOPER_TOOLS ?? module.default?.REACT_DEVELOPER_TOOLS;
+
+      if (!installExtension || !reactDevToolsId) {
+        debugLog("React DevTools installer unavailable in this Electron runtime.");
+        return null;
+      }
+
+      return installExtension(reactDevToolsId);
+    })
     .then((name) => {
-      debugLog(`Installed DevTools extension: ${name}`);
+      if (name) {
+        debugLog(`Installed DevTools extension: ${name}`);
+      }
     })
     .catch((err) => {
       console.warn("Failed to install React DevTools extension:", err);

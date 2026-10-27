@@ -8,6 +8,7 @@ import { BrowserWindow, IpcMain } from "electron";
 import type { NormalizedConnection } from "../../common/connection-types";
 import type { AppSettingsLike } from "../app-settings";
 import { miInterface } from "../mi-interface/mi-interface";
+import type { MultiWindowHub } from "../multi-window-hub";
 
 export type IsSelectedConnection = (value: unknown) => value is NormalizedConnection;
 
@@ -16,6 +17,7 @@ export type IpcRegistrationContext = {
   appSettings: AppSettingsLike;
   fontList: Map<string, string>;
   gdbAppInfo: Map<string, unknown>;
+  multiWindowHub?: MultiWindowHub;
   getMainWindow: () => BrowserWindow;
   getGdbInterface: () => miInterface;
   isSelectedConnection: IsSelectedConnection;

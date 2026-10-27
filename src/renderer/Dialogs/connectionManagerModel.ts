@@ -110,6 +110,7 @@ export function mergeUniqueDistros(...lists: string[][]): string[] {
  * @param commandsValue - commandsValue parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function toCommandStrings(commandsValue: unknown): string[] {
   if (Array.isArray(commandsValue)) {
     return commandsValue.map((value) => String(value).trim()).filter((value) => value.length > 0);
@@ -158,6 +159,7 @@ export function toDragAndDropItems(commandsValue: unknown): DragAndDropListItem[
  * @param items - items parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function dragAndDropItemsToCommandStrings(items: DragAndDropListItem[]): string[] {
   return items
     .map((item) => String(typeof item === "string" ? item : item.text).trim())
@@ -209,6 +211,7 @@ export function normalizeShellKey(shellValue: string, fallbackKey: string): stri
  * @param fallbackKey - fallbackKey parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function getShellKeyFromConnection(
   connection: ConnectionConfig,
   fallbackKey: string,
@@ -237,6 +240,7 @@ export function getShellKeyFromConnection(
  * @param shellKey - shellKey parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function getShellLabel(shellKey: string): string {
   return shells[shellKey]?.type ?? shellKey;
 }

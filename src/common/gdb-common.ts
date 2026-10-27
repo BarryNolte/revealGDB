@@ -16,6 +16,7 @@ export type { NormalizedConnection as SelectedConnection } from "./connection-ty
  *
  * @param ms - Value for `ms` consumed by this operation.
  */
+/** @public */
 export function wait(ms: number): void {
   // Busy-wait helper to simulate timing delays during debugging.
   // console.log("Start waiting for " + ms + " milliseconds...");

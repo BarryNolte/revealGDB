@@ -24,6 +24,7 @@ const SYNCFUSION_DARK_STYLE_ID = "syncfusion-dark-style";
  * @param systemDark? - systemDark? parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function shouldUseDark(theme: AppTheme, systemDark?: boolean): boolean {
   if (theme === "Dark") return true;
   if (theme === "Light") return false;
@@ -63,6 +64,7 @@ export function applyTheme(theme: AppTheme, systemDark?: boolean): void {
  *
  * @param dark - Value for `dark` consumed by this operation.
  */
+/** @public */
 export function setSyncfusionDark(dark: boolean): void {
   const existing = document.getElementById(SYNCFUSION_DARK_STYLE_ID);
 
@@ -81,6 +83,7 @@ export function setSyncfusionDark(dark: boolean): void {
  *
  * @returns True when the operation succeeds; otherwise false.
  */
+/** @public */
 export function getSystemDarkMode(): boolean {
   if (typeof window === "undefined" || !window.matchMedia) return false;
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -98,6 +101,7 @@ export function getSystemDarkMode(): boolean {
  * @param theme - theme parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function toNativeThemeSource(theme: AppTheme): "light" | "dark" | "system" {
   switch (theme) {
     case "Light":

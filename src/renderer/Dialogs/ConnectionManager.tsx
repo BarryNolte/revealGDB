@@ -7,10 +7,8 @@
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import "./ConnectionManager.css";
 import ConnectionManagerView from "./ConnectionManagerView";
-import {
-  useConnectionManagerController,
-  type ConnectionGridRow,
-} from "./useConnectionManagerController";
+import { useConnectionManagerController } from "./useConnectionManagerController";
+import type { ConnectionGridRow } from "./connectionManagerModel";
 
 export interface ConnectionManagerHandle {
   /** Opens the manager dialog and optionally invokes callback when closed. */

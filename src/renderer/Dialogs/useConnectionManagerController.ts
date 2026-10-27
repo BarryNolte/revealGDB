@@ -33,23 +33,6 @@ import {
   type ConnectionGridRow,
   type NormalizedConnection,
 } from "./connectionManagerModel";
-// Re-export model surface so existing consumers keep working.
-export {
-  DEFAULT_WSL_DISTRO,
-  getShellKeyFromConnection,
-  mergeUniqueDistros,
-  normalizeConnectionForStorage,
-  normalizeDistroName,
-  normalizeShellKey,
-  shells,
-  toCommandStrings,
-  toDragAndDropItems,
-  type ConnectionGridRow,
-  type NormalizedConnection,
-  type Platform,
-  type ShellOption,
-} from "./connectionManagerModel";
-
 export type UseConnectionManagerControllerArgs = {
   onCloseCallbackRef: RefObject<(() => void) | null>;
 };

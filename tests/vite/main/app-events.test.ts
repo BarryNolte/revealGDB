@@ -28,7 +28,12 @@ describe("registerAppEvents", () => {
       isDestroyed: vi.fn().mockReturnValue(false),
     } as never);
 
-    registerAppEvents(appInstance as never, nativeTheme as never, () => mainWindow as never);
+    registerAppEvents(
+      appInstance as never,
+      nativeTheme as never,
+      () => mainWindow as never,
+      vi.fn(),
+    );
 
     appInstance.emit("did-resign-active");
 
@@ -50,10 +55,12 @@ describe("registerAppEvents", () => {
 
     const platformSpy = vi.spyOn(process, "platform", "get").mockReturnValue("win32");
 
-    registerAppEvents(appInstance as never, nativeTheme as never, () => undefined);
+    const closeSecondaryWindows = vi.fn();
+    registerAppEvents(appInstance as never, nativeTheme as never, () => undefined, closeSecondaryWindows);
 
     appInstance.emit("window-all-closed");
 
+    expect(closeSecondaryWindows).toHaveBeenCalledTimes(1);
     expect(appInstance.quit).toHaveBeenCalledTimes(1);
     platformSpy.mockRestore();
   });
@@ -68,7 +75,12 @@ describe("registerAppEvents", () => {
       isDestroyed: vi.fn().mockReturnValue(false),
     } as never);
 
-    registerAppEvents(appInstance as never, nativeTheme as never, () => mainWindow as never);
+    registerAppEvents(
+      appInstance as never,
+      nativeTheme as never,
+      () => mainWindow as never,
+      vi.fn(),
+    );
 
     nativeTheme.emit("updated");
 

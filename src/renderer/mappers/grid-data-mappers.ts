@@ -39,6 +39,7 @@ export type CallstackGridRow = {
  * @param frame - frame parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function mapStackFrameToGridRow(frame: gdbStackFrame): CallstackGridRow {
   return {
     active: frame.active ? "*" : "",
@@ -97,6 +98,7 @@ export type ThreadGridRow = {
  * @param groupId - groupId parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function mapThreadToGridRow(thread: gdbThread, groupId: string): ThreadGridRow {
   return {
     groupId,
@@ -162,6 +164,7 @@ export type RegisterGridRow = {
  * @param reg - reg parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function mapRegisterToGridRow(reg: gdbRegisters): RegisterGridRow {
   return {
     name: reg.name,
@@ -220,6 +223,7 @@ export type BreakpointGridRow = {
  * @param bp - bp parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function mapBreakpointToGridRow(bp: gdbBreakpoint): BreakpointGridRow {
   return {
     number: bp.number,

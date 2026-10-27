@@ -38,6 +38,7 @@ const createPendingStates = (): Record<Step, StepAndState> => ({
   "target-running": { ...states["target-running"] },
 });
 
+/** @public */
 export type DefinedConnection = ConnectionConfig & { name: string };
 
 export type UseConnectionDialogControllerArgs = {

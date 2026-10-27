@@ -135,9 +135,11 @@ export type NotifyRenderMessage = {
   data?: unknown;
 };
 
+/** @public */
 export type NotifyMainCommand =
   | "connect-selected-connection"
   | "cancel-connection"
+  | "newWindow"
   | "new-window"
   | "command-entry"
   | "save-connections"
@@ -165,6 +167,7 @@ export type NotifyMainCommand =
 export type NotifyMainPayloadMap = {
   "connect-selected-connection": { connection: NormalizedConnection };
   "cancel-connection": undefined;
+  newWindow: undefined;
   "new-window": undefined;
   "command-entry": undefined;
   "save-connections": { connections: NormalizedConnection[] };

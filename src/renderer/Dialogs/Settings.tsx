@@ -409,5 +409,4 @@ const Settings = forwardRef<SettingsHandle, SettingsProps>((_props, ref): JSX.El
 });
 
 Settings.displayName = "Settings";
-export { Settings };
 export default Settings;

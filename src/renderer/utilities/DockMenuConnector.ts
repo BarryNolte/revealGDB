@@ -161,6 +161,7 @@ export class DockMenuConnector {
    * @param displayName - Value for `displayName` consumed by this operation.
    * @returns True when the operation succeeds; otherwise false.
    */
+  // fallow-ignore-next-line unused-class-member
   public isVisible(displayName: string): boolean {
     const di = this.panelMap.get(displayName);
     if (di?.dialog) {

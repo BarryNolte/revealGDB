@@ -2,22 +2,39 @@
   // This file is JSONC: fallow reads these comments; generic JSON tools may not.
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
   "ignorePatterns": [
-    "**/out/**",
     "**/docs/**",
     "**/scripts/**",
     "**/tests/**",
     "**/*.config.ts",
     "**/tools/**",
-    "src/renderer/Components/**/*-test.css",
     "src/renderer/Components/**/editor-entry-form.*",
-    "src/renderer/Components/HexEditor/common.ts",
-    "src/renderer/ToolWindows/gdb-value-formatter.ts"
+    "src/renderer/Components/HexEditor/common.ts"
   ],
   "entry": [
     "src/index.{ts,tsx,js,jsx}",
     "src/main.{ts,tsx,js,jsx}",
     "src/renderer/main.{ts,tsx,js,jsx}",
+    "src/renderer/secondary.tsx",
     "src/renderer/*-test.{ts,tsx,js,jsx}"
+  ],
+  "ignoreDependencies": [
+    "@syncfusion/ej2-base",
+    "@syncfusion/ej2-buttons",
+    "@syncfusion/ej2-dropdowns",
+    "@syncfusion/ej2-grids",
+    "@syncfusion/ej2-inputs",
+    "@syncfusion/ej2-navigations",
+    "@syncfusion/ej2-notifications",
+    "@syncfusion/ej2-popups",
+    "@syncfusion/ej2-splitbuttons",
+    "globals",
+    "@types/babel__core",
+    "istanbul-lib-coverage",
+    "istanbul-lib-report",
+    "istanbul-reports",
+    "rollup-plugin-visualizer",
+    "tslib",
+    "vite-plugin-istanbul"
   ],
   "duplicates": {
     // Hide pair-only clones; focus on widespread copy-paste

@@ -22,7 +22,6 @@ import { onGdbCommand, onGdbControlD } from "./on-gdb-command";
 import { IpcRegistrationContext } from "./types";
 import { formatGeneralError } from "../utilities/html-error-formatter";
 import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
-import { multiWindowHub } from "../main";
 export { onGdbCommand } from "./on-gdb-command";
 
 /**
@@ -100,7 +99,6 @@ function doConnection(
 }
 
 const GDB_GUI_PREFIX = "gdb.gui.";
-export const MAIN_WINDOW_LAYOUT_PREFIX = `${GDB_GUI_PREFIX}layouts.`;
 
 /**
  * Performs handleConnectSelectedConnection as part of this module's internal workflow.
@@ -159,8 +157,12 @@ function handleCancelConnection(context: IpcRegistrationContext): void {
   disconnectAndResetApplication(mainWindow, gdbInterface);
 }
 
-function handleNewWindow(): void {
-  const window = createSecondaryWindow(resolvePreloadPath());
+function handleNewWindow(context: IpcRegistrationContext): void {
+  const window = createSecondaryWindow(resolvePreloadPath(), () =>
+    context.multiWindowHub?.saveWindowInfo(null),
+  );
+  const uniqueNumber = Date.now();
+  context.multiWindowHub?.add(window, uniqueNumber.toString(20));
   loadSecondaryWindow(window);
 
   window.once("ready-to-show", () => {
@@ -195,62 +197,84 @@ type SaveSettingsRequest = Extract<
  * @returns The computed result produced by this operation.
  */
 
+type SaveSettingsData<K extends SaveSettingsRequest["command"]> = Extract<
+  SaveSettingsRequest,
+  { command: K }
+>["data"];
+
+type SaveSettingsHandler<K extends SaveSettingsRequest["command"]> = (
+  data: SaveSettingsData<K>,
+  context: IpcRegistrationContext,
+) => void;
+
+const saveSettingsHandlers: {
+  [K in SaveSettingsRequest["command"]]: SaveSettingsHandler<K>;
+} = {
+  "save-connections": (data, context) => {
+    context.appSettings.setSync("gdb.connections", data.connections as never);
+  },
+  "save-last-used-connection": (data, context) => {
+    context.appSettings.setSync("gdb.lastUsedConnection", data as never);
+  },
+  "save-app-show-debug-info": (data, context) => {
+    context.appSettings.setSync(`${GDB_GUI_PREFIX}showDebugInfo`, data as never);
+  },
+  "save-auto-symbol-loading": (data, context) => {
+    context.appSettings.setSync(`${GDB_GUI_PREFIX}disableAutoSymbolLoading`, data as never);
+  },
+  "save-sections-view-options": (data, context) => {
+    context.appSettings.setSync(
+      `${GDB_GUI_PREFIX}sectionsView.showEmptySpace`,
+      data.showEmptySpace as never,
+    );
+    context.appSettings.setSync(
+      `${GDB_GUI_PREFIX}sectionsView.showLegend`,
+      data.showLegend as never,
+    );
+  },
+  "save-app-theme": (data, context) => {
+    context.appSettings.setSync(`${GDB_GUI_PREFIX}applicationTheme`, data as never);
+    setNativeThemeFromAppTheme(data);
+  },
+  "save-cmd-history": (data, context) => {
+    context.appSettings.setSync("gdb.command.history", data as never);
+  },
+  "save-source-viewer-theme": (data, context) => {
+    context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerTheme`, data as never);
+  },
+  "save-source-viewer-font-size": (data, context) => {
+    context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerFontSize`, data as never);
+  },
+  "save-source-viewer-font-name": (data, context) => {
+    context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerFontName`, data as never);
+  },
+  "save-dock-layout": (data, context) => {
+    context.appSettings.setSync("gdb.gui.layout.main.dockLayout", data as never);
+    context.appSettings.setSync("gdb.gui.layout.main.windowSize", {
+      ...context.getMainWindow().getBounds(),
+      fullscreen: context.getMainWindow().fullScreen,
+    } as never);
+    context.multiWindowHub?.saveWindowInfo(data as never);
+  },
+  "save-grid-columns": (data, context) => {
+    context.appSettings.setSync(
+      `${GDB_GUI_PREFIX}gridColumns.${data.gridName}`,
+      data.columns as never,
+    );
+  },
+  "reset-grid-columns": (data, context) => {
+    if (data) {
+      context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns.${data}`);
+    } else {
+      context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns`);
+    }
+  },
+};
+
 function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationContext): void {
-  switch (msg.command) {
-    case "save-connections":
-      context.appSettings.setSync("gdb.connections", msg.data.connections as never);
-      break;
-    case "save-last-used-connection":
-      context.appSettings.setSync("gdb.lastUsedConnection", msg.data as never);
-      break;
-    case "save-app-show-debug-info":
-      context.appSettings.setSync(`${GDB_GUI_PREFIX}showDebugInfo`, msg.data as never);
-      break;
-    case "save-auto-symbol-loading":
-      context.appSettings.setSync(`${GDB_GUI_PREFIX}disableAutoSymbolLoading`, msg.data as never);
-      break;
-    case "save-sections-view-options":
-      context.appSettings.setSync(
-        `${GDB_GUI_PREFIX}sectionsView.showEmptySpace`,
-        msg.data.showEmptySpace as never,
-      );
-      context.appSettings.setSync(
-        `${GDB_GUI_PREFIX}sectionsView.showLegend`,
-        msg.data.showLegend as never,
-      );
-      break;
-    case "save-app-theme":
-      context.appSettings.setSync(`${GDB_GUI_PREFIX}applicationTheme`, msg.data as never);
-      setNativeThemeFromAppTheme(msg.data);
-      break;
-    case "save-cmd-history":
-      context.appSettings.setSync("gdb.command.history", msg.data as never);
-      break;
-    case "save-source-viewer-theme":
-      context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerTheme`, msg.data as never);
-      break;
-    case "save-source-viewer-font-size":
-      context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerFontSize`, msg.data as never);
-      break;
-    case "save-source-viewer-font-name":
-      context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerFontName`, msg.data as never);
-      break;
-    case "save-dock-layout":
-      multiWindowHub.saveWindowInfo(msg.data as never);
-      break;
-    case "save-grid-columns":
-      context.appSettings.setSync(
-        `${GDB_GUI_PREFIX}gridColumns.${msg.data.gridName}`,
-        msg.data.columns as never,
-      );
-      break;
-    case "reset-grid-columns":
-      if (msg.data) {
-        context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns.${msg.data}`);
-      } else {
-        context.appSettings.unsetSync(`${GDB_GUI_PREFIX}gridColumns`);
-      }
-      break;
+  const handler = saveSettingsHandlers[msg.command];
+  if (handler) {
+    handler(msg.data as never, context);
   }
 }
 
@@ -278,8 +302,9 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
     case "cancel-connection":
       handleCancelConnection(context);
       break;
+    case "newWindow":
     case "new-window":
-      handleNewWindow();
+      handleNewWindow(context);
       break;
     case "command-entry":
       sendNotifyRender(context, { command: "command-entry" });

@@ -7,7 +7,6 @@
 export enum ValueType {
   DollarPrefix = "DollarPrefix",
   Hexadecimal = "Hexadecimal",
-  Base10 = "Base10",
 }
 
 /**
@@ -72,6 +71,7 @@ export function validateValue(input: string | undefined): ValidationResult {
  * @param input - input parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function isValidValue(input: string | undefined): boolean {
   const result = validateValue(input);
   return result.isValid;
@@ -89,6 +89,7 @@ export function isValidValue(input: string | undefined): boolean {
  * @param input - input parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function getValueType(input: string | undefined): ValueType | null {
   const result = validateValue(input);
   return result.isValid ? result.valueType : null;

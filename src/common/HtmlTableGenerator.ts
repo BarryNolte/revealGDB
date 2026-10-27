@@ -128,6 +128,7 @@ export class HTMLTableGenerator<Row extends Record<string, unknown>> {
     );
   }
 
+  // fallow-ignore-next-line unused-class-member
   sortRows(column: string, order: "asc" | "desc" = "asc"): void {
     if (!this.data.header.includes(column)) {
       throw new Error(`Invalid column name: ${column}`);
@@ -144,6 +145,7 @@ export class HTMLTableGenerator<Row extends Record<string, unknown>> {
     });
   }
 
+  // fallow-ignore-next-line unused-class-member
   filterRows(column: string, value: unknown): void {
     if (!this.data.header.includes(column)) {
       throw new Error(`Invalid column name: ${column}`);
@@ -151,6 +153,7 @@ export class HTMLTableGenerator<Row extends Record<string, unknown>> {
     this.data.content = this.data.content.filter((row) => row[column] === value);
   }
 
+  // fallow-ignore-next-line unused-class-member
   addColumn(columnName: string, valueFunction: (row: Row) => unknown): void {
     if (typeof columnName !== "string") {
       throw new Error("Column name must be a string");

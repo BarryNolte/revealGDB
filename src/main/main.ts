@@ -12,6 +12,7 @@ import { AppSettings } from "./app-settings";
 import {
   applyDefaultSettings,
   collectVersionInfo,
+  configureAppSettings,
   logStartupDiagnostics,
   maybeInstallDevTools,
   warmSystemFonts,
@@ -59,7 +60,7 @@ function logStartupMilestone(label: string): void {
  * Performs initialization of the multi-window hub as part of this module's internal workflow.
  * This is where all multi-window related state and behavior is managed.
  */
-export const multiWindowHub = new MultiWindowHub();
+export const multiWindowHub = new MultiWindowHub(AppSettings);
 
 /**
  * Performs initialization of the dock window manager as part of this module's internal workflow.
@@ -106,6 +107,7 @@ app.on("ready", () => {
 
   AppSettings.initialize();
   applyDefaultSettings(AppSettings);
+  configureAppSettings(AppSettings);
   logStartupDiagnostics(AppSettings);
   collectVersionInfo(gdbAppInfo);
 
@@ -114,15 +116,27 @@ app.on("ready", () => {
   setNativeThemeFromAppTheme(savedTheme ?? "Auto");
 
   mainWindow = createMainWindow(resolvePreloadPath());
+  if (typeof mainWindow.on === "function") {
+    mainWindow.on("move", () => {
+      multiWindowHub.saveWindowInfo(null);
+    });
+  }
 
-  mainWindow.on("closed", () => {
-    multiWindowHub.closeAllSecondaryWindows();
-  });
+  if (typeof mainWindow.on === "function") {
+    mainWindow.on("closed", () => {
+      multiWindowHub.closeAllSecondaryWindows();
+    });
+  }
 
   setIpcWindow(mainWindow);
 
   if (isDebug) {
     debugWindow = createDebugWindow(mainWindow);
+    if (debugWindow && typeof debugWindow.on === "function") {
+      debugWindow.on("move", () => {
+        multiWindowHub.saveWindowInfo(null);
+      });
+    }
   }
 
   logStartupMilestone("main-window-created");
@@ -162,6 +176,7 @@ registerIpcHandlers({
   appSettings: AppSettings,
   fontList,
   gdbAppInfo,
+  multiWindowHub,
   getMainWindow: () => mainWindow,
   getGdbInterface: () => gdbInterface,
   isSelectedConnection,

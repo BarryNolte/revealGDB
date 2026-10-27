@@ -6,7 +6,6 @@
  */
 import { App, BrowserWindow, NativeTheme } from "electron";
 import { IPC_CHANNELS } from "../common/ipc-contracts";
-import { multiWindowHub } from "./main";
 
 /**
  * Registers app events for the active runtime context.
@@ -27,6 +26,7 @@ export function registerAppEvents(
   appInstance: App,
   nativeTheme: NativeTheme,
   getMainWindow: () => BrowserWindow | undefined,
+  closeSecondaryWindows?: () => void,
 ): void {
   appInstance.on("did-resign-active", () => {
     const mainWindow = getMainWindow();
@@ -40,7 +40,7 @@ export function registerAppEvents(
   });
 
   appInstance.on("window-all-closed", () => {
-    multiWindowHub.closeAllSecondaryWindows();
+    closeSecondaryWindows?.();
 
     if (process.platform !== "darwin") {
       appInstance.quit();

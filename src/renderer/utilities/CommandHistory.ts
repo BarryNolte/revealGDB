@@ -25,6 +25,7 @@ export class CommandHistory {
   /**
    * Performs dispose as part of this module's public API.
    */
+  // fallow-ignore-next-line unused-class-member
   dispose(): void {
     this.history = [];
     this.historyIndex = 0;
@@ -78,6 +79,7 @@ export class CommandHistory {
    *
    * @returns The computed result produced by this operation.
    */
+  // fallow-ignore-next-line unused-class-member
   public getPrevious(): string | undefined {
     if (this.historyIndex > 0) {
       this.historyIndex--;
@@ -91,6 +93,7 @@ export class CommandHistory {
    *
    * @returns The computed result produced by this operation.
    */
+  // fallow-ignore-next-line unused-class-member
   public getNext(): string | undefined {
     if (this.historyIndex < this.history.length - 1) {
       this.historyIndex++;

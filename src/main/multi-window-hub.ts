@@ -1,8 +1,8 @@
 import { BrowserWindow } from "electron";
 import { mapElectronWindowToWinPos } from "./mappers/window-pos-mapper";
-import { MAIN_WINDOW_LAYOUT_PREFIX } from "./ipc/commands";
-import { AppSettings } from "./main";
+import { MAIN_WINDOW_LAYOUT_PREFIX } from "./layout-keys";
 import { GdbAny } from "../common/gdb-common";
+import type { AppSettingsLike } from "./app-settings";
 
 export type WindowInfo = {
   window: BrowserWindow;
@@ -10,9 +10,10 @@ export type WindowInfo = {
 };
 export class MultiWindowHub {
   private windows: WindowInfo[] = [];
+  private readonly appSettings: AppSettingsLike;
 
-  constructor() {
-    // Initialize the multi-window hub
+  constructor(appSettings: AppSettingsLike) {
+    this.appSettings = appSettings;
   }
 
   add(win: BrowserWindow, uniqueId?: string): void {
@@ -50,14 +51,14 @@ export class MultiWindowHub {
       const winPos = mapElectronWindowToWinPos(win);
       win.title = winId;
 
-      AppSettings.setSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${winId}.windowSize`, winPos);
+      this.appSettings.setSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${winId}.windowSize`, winPos);
       //AppSettings.setSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${winId}`, data.layout);
     });
   }
 
   deleteUnusedLayouts(): void {
     const browserWindows = BrowserWindow.getAllWindows();
-    const savedWindowLayoutRoot = AppSettings.getSync(
+    const savedWindowLayoutRoot = this.appSettings.getSync(
       `${MAIN_WINDOW_LAYOUT_PREFIX}`.slice(0, -1),
     ) as Record<string, unknown> | undefined;
     const savedKeys = Object.keys(savedWindowLayoutRoot ?? {});
@@ -69,7 +70,7 @@ export class MultiWindowHub {
         return win.title === key;
       });
       if (!foundWindow) {
-        AppSettings.unsetSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${key}`);
+        this.appSettings.unsetSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${key}`);
         continue;
       }
     }

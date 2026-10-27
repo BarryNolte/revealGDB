@@ -31,8 +31,8 @@ const windowManagerMocks = vi.hoisted(() => {
   const show = vi.fn();
   const window = { once, show } as never;
   return {
-    createMainWindow: vi.fn(() => window),
-    loadMainWindow: vi.fn(),
+    createSecondaryWindow: vi.fn(() => window),
+    loadSecondaryWindow: vi.fn(),
     resolvePreloadPath: vi.fn(() => "mock-preload-path"),
     window,
     once,
@@ -58,8 +58,8 @@ vi.mock("../../../../src/main/utilities/wsl-utilities", () => ({
 }));
 
 vi.mock("../../../../src/main/window-manager", () => ({
-  createMainWindow: windowManagerMocks.createMainWindow,
-  loadMainWindow: windowManagerMocks.loadMainWindow,
+  createSecondaryWindow: windowManagerMocks.createSecondaryWindow,
+  loadSecondaryWindow: windowManagerMocks.loadSecondaryWindow,
   resolvePreloadPath: windowManagerMocks.resolvePreloadPath,
 }));
 
@@ -245,7 +245,7 @@ describe("handleNotifyMain", () => {
     });
     expect(appSettings.setSync).toHaveBeenCalledWith(
       "gdb.gui.layout.main.windowSize",
-      expect.objectContaining({ x: 100, y: 200, width: 798, height: 598, fullscreen: false }),
+      expect.objectContaining({ x: 100, y: 200, width: 800, height: 600, fullscreen: false }),
     );
     expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.gridColumns.locals", [
       { field: "name", visible: true },
@@ -271,8 +271,11 @@ describe("handleNotifyMain", () => {
     handleNotifyMain({ command: "newWindow" }, context);
 
     expect(windowManagerMocks.resolvePreloadPath).toHaveBeenCalledTimes(1);
-    expect(windowManagerMocks.createMainWindow).toHaveBeenCalledWith("mock-preload-path");
-    expect(windowManagerMocks.loadMainWindow).toHaveBeenCalledWith(windowManagerMocks.window);
+    expect(windowManagerMocks.createSecondaryWindow).toHaveBeenCalledWith(
+      "mock-preload-path",
+      expect.any(Function),
+    );
+    expect(windowManagerMocks.loadSecondaryWindow).toHaveBeenCalledWith(windowManagerMocks.window);
     expect(windowManagerMocks.once).toHaveBeenCalledWith("ready-to-show", expect.any(Function));
 
     const readyToShowHandler = windowManagerMocks.once.mock.calls[0]?.[1] as (() => void) | undefined;

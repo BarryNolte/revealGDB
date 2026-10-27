@@ -16,12 +16,6 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   buildConnectionFromForm,
-  dragAndDropItemsToCommandStrings,
-  extractSettingsConnections,
-  getShellLabel,
-  mapConnectionToGridRow,
-} from "../../../../src/renderer/Dialogs/connectionManagerModel";
-import {
   DEFAULT_WSL_DISTRO,
   getShellKeyFromConnection,
   mergeUniqueDistros,
@@ -30,8 +24,12 @@ import {
   normalizeShellKey,
   toCommandStrings,
   toDragAndDropItems,
-  useConnectionManagerController,
-} from "../../../../src/renderer/Dialogs/useConnectionManagerController";
+  dragAndDropItemsToCommandStrings,
+  extractSettingsConnections,
+  getShellLabel,
+  mapConnectionToGridRow,
+} from "../../../../src/renderer/Dialogs/connectionManagerModel";
+import { useConnectionManagerController } from "../../../../src/renderer/Dialogs/useConnectionManagerController";
 
 type IpcStub = {
   queries: {

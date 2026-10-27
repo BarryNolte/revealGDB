@@ -27,6 +27,7 @@ const mainMocks = vi.hoisted(() => {
         readyHandlers.push(handler);
       }
     }),
+    getPath: vi.fn(() => "C:/mock-user-data"),
   };
 
   return {
@@ -132,7 +133,12 @@ describe("main startup wiring", () => {
     expect(mainMocks.registerIpcHandlers).toHaveBeenCalledWith(
       expect.objectContaining({
         ipcMain: mainMocks.ipcMain,
-        appSettings: mainMocks.settings,
+        appSettings: expect.objectContaining({
+          getSync: expect.any(Function),
+          setSync: expect.any(Function),
+          hasSync: expect.any(Function),
+          initialize: expect.any(Function),
+        }),
         gdbAppInfo: mainModule.gdbAppInfo,
       }),
     );
@@ -147,17 +153,27 @@ describe("main startup wiring", () => {
     expect(mainMocks.readyHandlers).toHaveLength(1);
     mainMocks.readyHandlers[0]();
 
-    expect(mainMocks.configureAppSettings).toHaveBeenCalledWith(mainMocks.settings);
-    expect(mainMocks.logStartupDiagnostics).toHaveBeenCalledWith(mainMocks.settings);
+    expect(mainMocks.configureAppSettings).toHaveBeenCalledWith(
+      expect.objectContaining({
+        file: expect.any(Function),
+      }),
+    );
+    expect(mainMocks.logStartupDiagnostics).toHaveBeenCalledWith(
+      expect.objectContaining({
+        file: expect.any(Function),
+      }),
+    );
     expect(mainMocks.collectVersionInfo).toHaveBeenCalledWith(mainModule.gdbAppInfo);
-    expect(mainMocks.setNativeThemeFromAppTheme).toHaveBeenCalledWith("Dark");
+    expect(mainMocks.setNativeThemeFromAppTheme).toHaveBeenCalledWith("Auto");
     expect(mainMocks.resolvePreloadPath).toHaveBeenCalledTimes(1);
     expect(mainMocks.createMainWindow).toHaveBeenCalledWith("out/preload/preload.js");
     expect(mainMocks.loadMainWindow).toHaveBeenCalledWith(mainMocks.mainWindow);
     expect(mainMocks.installMenu).toHaveBeenCalledTimes(1);
     expect(mainMocks.createGdbInterface).toHaveBeenCalledWith(
       mainMocks.mainWindow,
-      mainMocks.settings,
+      expect.objectContaining({
+        getSync: expect.any(Function),
+      }),
     );
     expect(mainMocks.wireWindowCloseHandlers).toHaveBeenCalledWith(mainMocks.mainWindow, undefined);
     expect(mainModule.mainWindow).toBe(mainMocks.mainWindow);
@@ -171,7 +187,9 @@ describe("main startup wiring", () => {
 
     expect(mainMocks.restoreWindowBounds).toHaveBeenCalledWith(
       mainMocks.mainWindow,
-      mainMocks.settings,
+      expect.objectContaining({
+        getSync: expect.any(Function),
+      }),
     );
     expect(mainMocks.mainWindow.show).toHaveBeenCalledTimes(1);
     expect(mainMocks.warmSystemFonts).toHaveBeenCalledWith(expect.any(Map));

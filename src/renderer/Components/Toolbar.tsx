@@ -143,7 +143,7 @@ export default function RevealToolbar(props: RevealToolbarProps): JSX.Element {
   const ctrl = useToolbarController(props);
 
   const handleNewWindowClick = (): void => {
-    window.ipcToMain.commands.app.notifyMain({ command: "new-window" });
+    window.ipcToMain.commands.app.notifyMain({ command: "newWindow" });
   };
 
   return (

@@ -4,7 +4,8 @@
  * @remarks
  * Exported symbols include `clampIndex`, `parseIndexFromId`, `getRowFromIndex`, `getColumnFromIndex`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
-const HEX_EDITOR_ROW_WIDTH = 16;
+/** @public */
+export const HEX_EDITOR_ROW_WIDTH = 16;
 
 /**
  * Performs clamp index as part of this module's public API.

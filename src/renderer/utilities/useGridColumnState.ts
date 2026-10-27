@@ -82,6 +82,7 @@ function extractColumnState(columns: Column[]): GridColumnState[] {
  * @param savedColumns - savedColumns parameter.
  * @returns The computed result produced by this operation.
  */
+/** @public */
 export function applySavedColumnsToGrid(
   grid: GridComponent | TreeGridComponent,
   savedColumns: GridColumnState[],
@@ -248,6 +249,7 @@ export function useGridColumnState(
 /**
  * Performs reset all grid column defaults as part of this module's public API.
  */
+/** @public */
 export function resetAllGridColumnDefaults(): void {
   window.ipcToMain.commands.app.notifyMain({
     command: "reset-grid-columns",
