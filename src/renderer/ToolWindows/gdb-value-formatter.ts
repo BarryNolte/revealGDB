@@ -16,7 +16,7 @@
  */
 
 /** A parsed GDB value node. */
-export type GdbValueNode =
+type GdbValueNode =
   | { kind: "scalar"; text: string }
   | { kind: "struct"; fields: Array<{ key: string; value: GdbValueNode }> }
   | { kind: "array"; items: GdbValueNode[] };
@@ -116,7 +116,7 @@ const STRUCT_FIELD_RE = /^(\w+)\s*=\s*([\s\S]*)$/;
  *
  * @param raw - The raw string from GDB (e.g. `{bar = 3, xax = {har = 3}}`).
  */
-export function parseGdbValue(raw: string): GdbValueNode {
+function parseGdbValue(raw: string): GdbValueNode {
   const trimmed = raw.trim();
 
   // Non-struct scalar, OR function pointer `{type} address <symbol>` (starts

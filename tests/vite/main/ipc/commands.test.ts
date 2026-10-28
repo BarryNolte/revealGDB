@@ -267,6 +267,7 @@ describe("handleNotifyMain", () => {
 
   it("handles newWindow by creating and showing a BrowserWindow", () => {
     const { context } = createIpcRegistrationHarness();
+    const dateNowSpy = vi.spyOn(Date, "now").mockReturnValue(1000);
 
     handleNotifyMain({ command: "newWindow" }, context);
 
@@ -274,6 +275,7 @@ describe("handleNotifyMain", () => {
     expect(windowManagerMocks.createSecondaryWindow).toHaveBeenCalledWith(
       "mock-preload-path",
       expect.any(Function),
+      "Secondary Window 2a0",
     );
     expect(windowManagerMocks.loadSecondaryWindow).toHaveBeenCalledWith(windowManagerMocks.window);
     expect(windowManagerMocks.once).toHaveBeenCalledWith("ready-to-show", expect.any(Function));
@@ -281,6 +283,21 @@ describe("handleNotifyMain", () => {
     const readyToShowHandler = windowManagerMocks.once.mock.calls[0]?.[1] as (() => void) | undefined;
     readyToShowHandler?.();
     expect(windowManagerMocks.show).toHaveBeenCalledTimes(1);
+    dateNowSpy.mockRestore();
+  });
+
+  it("handles new-window payload title by passing title to creation", () => {
+    const { context } = createIpcRegistrationHarness();
+    const dateNowSpy = vi.spyOn(Date, "now").mockReturnValue(2000);
+
+    handleNotifyMain({ command: "new-window", data: { title: "Memory View" } }, context);
+
+    expect(windowManagerMocks.createSecondaryWindow).toHaveBeenCalledWith(
+      "mock-preload-path",
+      expect.any(Function),
+      "Memory View",
+    );
+    dateNowSpy.mockRestore();
   });
 
   it("handles open-external with a valid https URL by calling shell.openExternal", () => {

@@ -167,8 +167,8 @@ export type NotifyMainCommand =
 export type NotifyMainPayloadMap = {
   "connect-selected-connection": { connection: NormalizedConnection };
   "cancel-connection": undefined;
-  newWindow: undefined;
-  "new-window": undefined;
+  newWindow: { title?: string } | undefined;
+  "new-window": { title?: string } | undefined;
   "command-entry": undefined;
   "save-connections": { connections: NormalizedConnection[] };
   "save-last-used-connection": string | null;
@@ -194,8 +194,8 @@ export type NotifyMainPayloadMap = {
  * Each variant carries a strongly-typed `data` payload derived from `NotifyMainPayloadMap`.
  */
 export type NotifyMainRequest = {
-  [K in keyof NotifyMainPayloadMap]: NotifyMainPayloadMap[K] extends undefined
-    ? { command: K; data?: undefined }
+  [K in keyof NotifyMainPayloadMap]: undefined extends NotifyMainPayloadMap[K]
+    ? { command: K; data?: Exclude<NotifyMainPayloadMap[K], undefined> }
     : { command: K; data: NotifyMainPayloadMap[K] };
 }[keyof NotifyMainPayloadMap];
 

@@ -15,6 +15,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createDebugWindow,
   createMainWindow,
+  createSecondaryWindow,
   loadMainWindow,
   restoreWindowBounds,
   wireWindowCloseHandlers,
@@ -83,6 +84,21 @@ describe("window-manager", () => {
     expect(mainWindow.webContents.openDevTools).toHaveBeenCalledWith({
       mode: "detach",
       title: "revealGDB - I'm Special, I know how to debug...",
+    });
+  });
+
+  it("creates a secondary window with a provided title", () => {
+    const browserWindowMock = vi.mocked(BrowserWindow);
+
+    createSecondaryWindow("C:/preload.js", undefined, "Memory View");
+
+    expect(browserWindowMock).toHaveBeenCalledWith({
+      webPreferences: {
+        preload: "C:/preload.js",
+      },
+      show: false,
+      autoHideMenuBar: true,
+      title: "Memory View",
     });
   });
 

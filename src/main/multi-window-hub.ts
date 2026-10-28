@@ -7,6 +7,7 @@ import type { AppSettingsLike } from "./app-settings";
 export type WindowInfo = {
   window: BrowserWindow;
   uniqueId?: string;
+  title?: string;
 };
 export class MultiWindowHub {
   private windows: WindowInfo[] = [];
@@ -16,8 +17,8 @@ export class MultiWindowHub {
     this.appSettings = appSettings;
   }
 
-  add(win: BrowserWindow, uniqueId?: string): void {
-    const windowInfo: WindowInfo = { window: win, uniqueId: uniqueId };
+  add(win: BrowserWindow, uniqueId?: string, title?: string): void {
+    const windowInfo: WindowInfo = { window: win, uniqueId: uniqueId, title: title };
     this.windows.push(windowInfo);
   }
 
@@ -39,19 +40,18 @@ export class MultiWindowHub {
     const browserWindows = BrowserWindow.getAllWindows();
 
     browserWindows.forEach((win) => {
-      console.log(win.title);
-
       let winId = "";
       const winInfo: WindowInfo | undefined = this.windows.find((w) => w.window === win);
       if (!winInfo) {
         winId = win.title;
       } else {
-        winId = winInfo.uniqueId!;
+        winId = winInfo.uniqueId ?? win.title;
       }
+      const winTitle = winInfo?.title ?? win.title;
       const winPos = mapElectronWindowToWinPos(win);
-      win.title = winId;
 
       this.appSettings.setSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${winId}.windowSize`, winPos);
+      this.appSettings.setSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${winId}.title`, winTitle);
       //AppSettings.setSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${winId}`, data.layout);
     });
   }
@@ -64,10 +64,10 @@ export class MultiWindowHub {
     const savedKeys = Object.keys(savedWindowLayoutRoot ?? {});
 
     for (const key of savedKeys) {
-      console.log(key);
-
       const foundWindow = browserWindows.find((win) => {
-        return win.title === key;
+        const winInfo: WindowInfo | undefined = this.windows.find((w) => w.window === win);
+        const trackedKey = winInfo?.uniqueId ?? win.title;
+        return trackedKey === key;
       });
       if (!foundWindow) {
         this.appSettings.unsetSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${key}`);

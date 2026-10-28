@@ -157,12 +157,26 @@ function handleCancelConnection(context: IpcRegistrationContext): void {
   disconnectAndResetApplication(mainWindow, gdbInterface);
 }
 
-function handleNewWindow(context: IpcRegistrationContext): void {
-  const window = createSecondaryWindow(resolvePreloadPath(), () =>
-    context.multiWindowHub?.saveWindowInfo(null),
+function createDefaultSecondaryWindowTitle(uniqueId: string): string {
+  return `Secondary Window ${uniqueId}`;
+}
+
+function handleNewWindow(
+  msg: Extract<NotifyMainRequest, { command: "newWindow" | "new-window" }>,
+  context: IpcRegistrationContext,
+): void {
+  const uniqueId = Date.now().toString(20);
+  const requestedTitle =
+    typeof msg.data?.title === "string" && msg.data.title.trim().length > 0
+      ? msg.data.title.trim()
+      : undefined;
+  const title = requestedTitle ?? createDefaultSecondaryWindowTitle(uniqueId);
+  const window = createSecondaryWindow(
+    resolvePreloadPath(),
+    () => context.multiWindowHub?.saveWindowInfo(null),
+    title,
   );
-  const uniqueNumber = Date.now();
-  context.multiWindowHub?.add(window, uniqueNumber.toString(20));
+  context.multiWindowHub?.add(window, uniqueId, title);
   loadSecondaryWindow(window);
 
   window.once("ready-to-show", () => {
@@ -304,7 +318,7 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       break;
     case "newWindow":
     case "new-window":
-      handleNewWindow(context);
+      handleNewWindow(msg, context);
       break;
     case "command-entry":
       sendNotifyRender(context, { command: "command-entry" });

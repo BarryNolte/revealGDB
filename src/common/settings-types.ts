@@ -14,6 +14,7 @@ export interface GdbSettings {
       {
         dockLayout?: unknown;
         windowSize?: unknown;
+        title?: string;
       }
     >;
     sourceViewerTheme?: string;

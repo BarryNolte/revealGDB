@@ -59,6 +59,7 @@ export function createMainWindow(
 export function createSecondaryWindow(
   preloadPath: string,
   onWindowMoved?: OnWindowMoved,
+  title?: string,
 ): BrowserWindow {
   const window = new BrowserWindow({
     webPreferences: {
@@ -66,6 +67,7 @@ export function createSecondaryWindow(
     },
     show: false,
     autoHideMenuBar: true,
+    title,
   });
   if (typeof window.on === "function") {
     window.on("move", () => {
