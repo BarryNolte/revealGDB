@@ -34,7 +34,11 @@ import {
   wireWindowCloseHandlers,
 } from "./window-manager";
 import { WindowDockManager } from "../renderer/utilities/window-dock-manager";
-import { MultiWindowHub } from "./multi-window-hub";
+import {
+  DEVTOOLS_WINDOW_UNIQUE_ID,
+  MAIN_WINDOW_UNIQUE_ID,
+  MultiWindowHub,
+} from "./multi-window-hub";
 
 // Re-export for backward compatibility
 export { AppSettings, isDebug, isLinux, isMac, isWin };
@@ -116,6 +120,7 @@ app.on("ready", () => {
   setNativeThemeFromAppTheme(savedTheme ?? "Auto");
 
   mainWindow = createMainWindow(resolvePreloadPath());
+  multiWindowHub.add(mainWindow, MAIN_WINDOW_UNIQUE_ID);
   if (typeof mainWindow.on === "function") {
     mainWindow.on("move", () => {
       multiWindowHub.saveWindowInfo(null);
@@ -132,6 +137,11 @@ app.on("ready", () => {
 
   if (isDebug) {
     debugWindow = createDebugWindow(mainWindow);
+    multiWindowHub.add(
+      debugWindow,
+      DEVTOOLS_WINDOW_UNIQUE_ID,
+      debugWindow.title || "Developer Tools",
+    );
     if (debugWindow && typeof debugWindow.on === "function") {
       debugWindow.on("move", () => {
         multiWindowHub.saveWindowInfo(null);

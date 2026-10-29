@@ -12,7 +12,7 @@
       "sourceViewerTheme": "chaos",
       "sourceViewerFontSize": "14",
       "mainTheme": "dark",
-      "layout": {
+      "layouts": {
         "main": {
           "windowSize": {
             "x": 0,

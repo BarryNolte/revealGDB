@@ -240,11 +240,11 @@ describe("handleNotifyMain", () => {
     );
     handleNotifyMain({ command: "reset-grid-columns" } as NotifyMainRequest, context);
 
-    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.layout.main.dockLayout", {
+    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.layouts.main.dockLayout", {
       nodes: [],
     });
     expect(appSettings.setSync).toHaveBeenCalledWith(
-      "gdb.gui.layout.main.windowSize",
+      "gdb.gui.layouts.main.windowSize",
       expect.objectContaining({ x: 100, y: 200, width: 800, height: 600, fullscreen: false }),
     );
     expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.gridColumns.locals", [
@@ -252,6 +252,27 @@ describe("handleNotifyMain", () => {
     ]);
     expect(appSettings.unsetSync).toHaveBeenCalledWith("gdb.gui.gridColumns.locals");
     expect(appSettings.unsetSync).toHaveBeenCalledWith("gdb.gui.gridColumns");
+  });
+
+  it("persists dock layout without window bounds when the main window is destroyed", () => {
+    const { context, appSettings } = createIpcRegistrationHarness({
+      mainWindow: {
+        isDestroyed: vi.fn(() => true),
+      },
+    });
+    const saveWindowInfo = vi.fn();
+    context.multiWindowHub = { saveWindowInfo } as never;
+
+    handleNotifyMain({ command: "save-dock-layout", data: { nodes: [] } }, context);
+
+    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.layouts.main.dockLayout", {
+      nodes: [],
+    });
+    const wroteMainWindowSize = appSettings.setSync.mock.calls.some(
+      ([key]) => key === "gdb.gui.layouts.main.windowSize",
+    );
+    expect(wroteMainWindowSize).toBe(false);
+    expect(saveWindowInfo).not.toHaveBeenCalled();
   });
 
   it("handles command-entry and renderStart without throwing", () => {

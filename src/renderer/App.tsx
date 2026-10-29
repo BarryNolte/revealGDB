@@ -293,7 +293,7 @@ async function initializeDockManager(gdb: GdbSettings): Promise<void> {
   registerAllPanels(dockMenuConnector);
   setupLayoutListeners(dockManager);
   let loadedFromState = false;
-  const mainWindowLayout = gdb.gui?.layout?.main?.dockLayout;
+  const mainWindowLayout = gdb.gui?.layouts?.main?.dockLayout;
   if (mainWindowLayout) {
     try {
       // loadState is async in dock-spawn-ts; must await before resizing or

@@ -9,7 +9,7 @@
 
 export interface GdbSettings {
   gui?: {
-    layout?: Record<
+    layouts?: Record<
       string,
       {
         dockLayout?: unknown;

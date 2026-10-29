@@ -4,6 +4,9 @@ import { MAIN_WINDOW_LAYOUT_PREFIX } from "./layout-keys";
 import { GdbAny } from "../common/gdb-common";
 import type { AppSettingsLike } from "./app-settings";
 
+export const MAIN_WINDOW_UNIQUE_ID = "main";
+export const DEVTOOLS_WINDOW_UNIQUE_ID = "devtools";
+
 export type WindowInfo = {
   window: BrowserWindow;
   uniqueId?: string;
@@ -30,8 +33,12 @@ export class MultiWindowHub {
     const browserWindows = BrowserWindow.getAllWindows();
     for (const win of browserWindows) {
       const winInfo: WindowInfo | undefined = this.windows.find((w) => w.window === win);
-      if (winInfo && winInfo.uniqueId) {
-        win.close(); // only close secondary windows
+      if (
+        winInfo?.uniqueId &&
+        winInfo.uniqueId !== MAIN_WINDOW_UNIQUE_ID &&
+        winInfo.uniqueId !== DEVTOOLS_WINDOW_UNIQUE_ID
+      ) {
+        win.close(); // only close secondary windows, not the main or devtools windows
       }
     }
   }
@@ -40,18 +47,25 @@ export class MultiWindowHub {
     const browserWindows = BrowserWindow.getAllWindows();
 
     browserWindows.forEach((win) => {
-      let winId = "";
       const winInfo: WindowInfo | undefined = this.windows.find((w) => w.window === win);
-      if (!winInfo) {
-        winId = win.title;
-      } else {
-        winId = winInfo.uniqueId ?? win.title;
+      const winId = winInfo?.uniqueId ?? win.title;
+      if (!winId) {
+        return;
       }
-      const winTitle = winInfo?.title ?? win.title;
+
+      const trackedTitle = winInfo?.title ?? win.title;
       const winPos = mapElectronWindowToWinPos(win);
 
       this.appSettings.setSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${winId}.windowSize`, winPos);
-      this.appSettings.setSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${winId}.title`, winTitle);
+      this.appSettings.setSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${winId}.title`, trackedTitle);
+
+      if (
+        winInfo?.uniqueId === MAIN_WINDOW_UNIQUE_ID &&
+        win.title &&
+        win.title !== MAIN_WINDOW_UNIQUE_ID
+      ) {
+        this.appSettings.unsetSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${win.title}`);
+      }
       //AppSettings.setSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${winId}`, data.layout);
     });
   }

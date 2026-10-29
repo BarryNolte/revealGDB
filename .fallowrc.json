@@ -27,7 +27,6 @@
     "@syncfusion/ej2-notifications",
     "@syncfusion/ej2-popups",
     "@syncfusion/ej2-splitbuttons",
-    "globals",
     "@types/babel__core",
     "istanbul-lib-coverage",
     "istanbul-lib-report",

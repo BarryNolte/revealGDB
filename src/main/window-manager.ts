@@ -9,7 +9,7 @@ import { BrowserWindow } from "electron";
 import path, { join } from "path";
 //import { dockWindowManager } from "../renderer/utilities/window-dock-manager";
 
-const MAIN_WINDOW_SIZE_PREFIX = "gdb.gui.layout.main.windowSize";
+const MAIN_WINDOW_SIZE_PREFIX = "gdb.gui.layouts.main.windowSize";
 
 export type WindowSizeSettings = {
   getSync: (key: string) => unknown;
@@ -170,7 +170,10 @@ export function restoreWindowBounds(window: BrowserWindow, appSettings: WindowSi
     window.setSize(w, h);
   }
 
-  window.fullScreen = appSettings.getSync(`${MAIN_WINDOW_SIZE_PREFIX}.fullscreen`) as boolean;
+  const fullscreen = appSettings.getSync(`${MAIN_WINDOW_SIZE_PREFIX}.fullscreen`);
+  if (typeof fullscreen === "boolean") {
+    window.fullScreen = fullscreen;
+  }
 }
 
 /**

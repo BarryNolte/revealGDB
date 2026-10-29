@@ -124,6 +124,7 @@ describe("main startup wiring", () => {
     vi.doUnmock("../../../src/main/main");
 
     const mainModule = await import("../../../src/main/main");
+    const addWindowSpy = vi.spyOn(mainModule.multiWindowHub, "add");
 
     expect(mainMocks.registerAppEvents).toHaveBeenCalledWith(
       mainMocks.app,
@@ -152,6 +153,7 @@ describe("main startup wiring", () => {
 
     expect(mainMocks.readyHandlers).toHaveLength(1);
     mainMocks.readyHandlers[0]();
+    expect(addWindowSpy).toHaveBeenCalledWith(mainMocks.mainWindow, "main");
 
     expect(mainMocks.configureAppSettings).toHaveBeenCalledWith(
       expect.objectContaining({

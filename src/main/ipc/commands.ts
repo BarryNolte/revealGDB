@@ -263,10 +263,15 @@ const saveSettingsHandlers: {
     context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerFontName`, data as never);
   },
   "save-dock-layout": (data, context) => {
-    context.appSettings.setSync("gdb.gui.layout.main.dockLayout", data as never);
-    context.appSettings.setSync("gdb.gui.layout.main.windowSize", {
-      ...context.getMainWindow().getBounds(),
-      fullscreen: context.getMainWindow().fullScreen,
+    context.appSettings.setSync("gdb.gui.layouts.main.dockLayout", data as never);
+    const mainWindow = context.getMainWindow();
+    if (!mainWindow || (typeof mainWindow.isDestroyed === "function" && mainWindow.isDestroyed())) {
+      return;
+    }
+
+    context.appSettings.setSync("gdb.gui.layouts.main.windowSize", {
+      ...mainWindow.getBounds(),
+      fullscreen: mainWindow.fullScreen,
     } as never);
     context.multiWindowHub?.saveWindowInfo(data as never);
   },

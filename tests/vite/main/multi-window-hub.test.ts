@@ -1,6 +1,6 @@
 import { BrowserWindow } from "electron";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { MultiWindowHub } from "../../../src/main/multi-window-hub";
+import { MAIN_WINDOW_UNIQUE_ID, MultiWindowHub } from "../../../src/main/multi-window-hub";
 
 const browserWindowMocks = vi.hoisted(() => ({
   getAllWindows: vi.fn<() => unknown[]>(),
@@ -52,7 +52,7 @@ describe("MultiWindowHub", () => {
     );
   });
 
-  it("uses runtime title when window is not tracked in the hub", () => {
+  it("persists main window under canonical main key and removes title-key duplicate", () => {
     const appSettings = {
       initialize: vi.fn(),
       setSync: vi.fn(),
@@ -70,12 +70,44 @@ describe("MultiWindowHub", () => {
 
     browserWindowMocks.getAllWindows.mockReturnValue([windowMock]);
     const hub = new MultiWindowHub(appSettings);
+    hub.add(windowMock as unknown as BrowserWindow, MAIN_WINDOW_UNIQUE_ID);
 
     hub.saveWindowInfo(null);
 
     expect(appSettings.setSync).toHaveBeenCalledWith(
-      "gdb.gui.layouts.revealGDB - The new old way to debug.title",
+      "gdb.gui.layouts.main.title",
       "revealGDB - The new old way to debug",
+    );
+    expect(appSettings.unsetSync).toHaveBeenCalledWith(
+      "gdb.gui.layouts.revealGDB - The new old way to debug",
+    );
+  });
+
+  it("prefers tracked title metadata over the default runtime title when persisting the main window", () => {
+    const appSettings = {
+      initialize: vi.fn(),
+      setSync: vi.fn(),
+      getSync: vi.fn(),
+      unsetSync: vi.fn(),
+      hasSync: vi.fn(() => false),
+      file: vi.fn(() => "settings.json"),
+    };
+    const windowMock = {
+      title: "revealGDB - The new old way to debug",
+      getPosition: vi.fn(() => [20, 40]),
+      getSize: vi.fn(() => [900, 700]),
+      fullScreen: false,
+    };
+
+    browserWindowMocks.getAllWindows.mockReturnValue([windowMock]);
+    const hub = new MultiWindowHub(appSettings);
+    hub.add(windowMock as unknown as BrowserWindow, MAIN_WINDOW_UNIQUE_ID, "Custom debug title");
+
+    hub.saveWindowInfo(null);
+
+    expect(appSettings.setSync).toHaveBeenCalledWith("gdb.gui.layouts.main.title", "Custom debug title");
+    expect(appSettings.unsetSync).toHaveBeenCalledWith(
+      "gdb.gui.layouts.revealGDB - The new old way to debug",
     );
   });
 
@@ -105,5 +137,44 @@ describe("MultiWindowHub", () => {
 
     expect(appSettings.unsetSync).toHaveBeenCalledWith("gdb.gui.layouts.stale");
     expect(appSettings.unsetSync).not.toHaveBeenCalledWith("gdb.gui.layouts.secondary-1");
+  });
+
+  it("closes tracked secondary windows but keeps tracked main window open", () => {
+    const appSettings = {
+      initialize: vi.fn(),
+      setSync: vi.fn(),
+      getSync: vi.fn(),
+      unsetSync: vi.fn(),
+      hasSync: vi.fn(() => false),
+      file: vi.fn(() => "settings.json"),
+    };
+    const mainWindowMock = {
+      title: "revealGDB - The new old way to debug",
+      close: vi.fn(),
+    };
+    const secondaryWindowMock = {
+      title: "secondary-runtime-title",
+      close: vi.fn(),
+    };
+    const devtoolsWindowMock = {
+      title: "Developer Tools",
+      close: vi.fn(),
+    };
+    browserWindowMocks.getAllWindows.mockReturnValue([
+      mainWindowMock,
+      secondaryWindowMock,
+      devtoolsWindowMock,
+    ]);
+
+    const hub = new MultiWindowHub(appSettings);
+    hub.add(mainWindowMock as unknown as BrowserWindow, MAIN_WINDOW_UNIQUE_ID);
+    hub.add(secondaryWindowMock as unknown as BrowserWindow, "secondary-1", "Memory View");
+    hub.add(devtoolsWindowMock as unknown as BrowserWindow, "devtools", "Developer Tools");
+
+    hub.closeAllSecondaryWindows();
+
+    expect(mainWindowMock.close).not.toHaveBeenCalled();
+    expect(devtoolsWindowMock.close).not.toHaveBeenCalled();
+    expect(secondaryWindowMock.close).toHaveBeenCalledTimes(1);
   });
 });
