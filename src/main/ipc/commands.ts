@@ -4,7 +4,7 @@
  * @remarks
  * Exported symbols include `handleNotifyMain`, `registerIpcCommandHandlers`. It is responsible for channel registration, payload marshalling, and returning data to renderer callers.
  */
-import { IpcMainEvent, IpcMainInvokeEvent, shell } from "electron";
+import { BrowserWindow, IpcMainEvent, IpcMainInvokeEvent, shell } from "electron";
 import type { NormalizedConnection } from "../../common/connection-types";
 import {
   DangerousCommandEntry,
@@ -22,6 +22,7 @@ import { onGdbCommand, onGdbControlD } from "./on-gdb-command";
 import { IpcRegistrationContext } from "./types";
 import { formatGeneralError } from "../utilities/html-error-formatter";
 import { GeneralInfoSender } from "../utilities/GeneralInfoSender";
+import { MAIN_WINDOW_LAYOUT_PREFIX } from "../layout-keys";
 export { onGdbCommand } from "./on-gdb-command";
 
 /**
@@ -219,6 +220,7 @@ type SaveSettingsData<K extends SaveSettingsRequest["command"]> = Extract<
 type SaveSettingsHandler<K extends SaveSettingsRequest["command"]> = (
   data: SaveSettingsData<K>,
   context: IpcRegistrationContext,
+  event?: IpcMainEvent,
 ) => void;
 
 const saveSettingsHandlers: {
@@ -262,16 +264,50 @@ const saveSettingsHandlers: {
   "save-source-viewer-font-name": (data, context) => {
     context.appSettings.setSync(`${GDB_GUI_PREFIX}sourceViewerFontName`, data as never);
   },
-  "save-dock-layout": (data, context) => {
-    context.appSettings.setSync("gdb.gui.layouts.main.dockLayout", data as never);
-    const mainWindow = context.getMainWindow();
-    if (!mainWindow || (typeof mainWindow.isDestroyed === "function" && mainWindow.isDestroyed())) {
+  "save-dock-layout": (data, context, event) => {
+    const payload = (data ?? {}) as {
+      windowName?: string;
+      layout?: unknown;
+      sizeAndPosition?: unknown;
+    };
+    const layoutValue = payload.layout !== undefined ? payload.layout : (data as unknown);
+    const senderWindow = event
+      ? (BrowserWindow.fromWebContents(event.sender) ?? undefined)
+      : undefined;
+    const trackedWindowInfo = senderWindow
+      ? (
+          (
+            context.multiWindowHub as unknown as
+              | { windows?: Array<{ window: BrowserWindow; uniqueId?: string; title?: string }> }
+              | undefined
+          )?.windows ?? []
+        ).find((entry) => entry.window === senderWindow)
+      : undefined;
+    const layoutKey = trackedWindowInfo?.uniqueId ?? payload.windowName ?? "main";
+    const layoutRoot = `${MAIN_WINDOW_LAYOUT_PREFIX}${layoutKey}`;
+
+    if (layoutValue !== undefined) {
+      context.appSettings.setSync(`${layoutRoot}.dockLayout`, layoutValue as never);
+    }
+
+    if (payload.windowName && payload.windowName !== layoutKey && layoutValue !== undefined) {
+      context.appSettings.setSync(
+        `${MAIN_WINDOW_LAYOUT_PREFIX}${payload.windowName}.dockLayout`,
+        layoutValue as never,
+      );
+    }
+
+    const targetWindow = senderWindow ?? context.getMainWindow();
+    if (
+      !targetWindow ||
+      (typeof targetWindow.isDestroyed === "function" && targetWindow.isDestroyed())
+    ) {
       return;
     }
 
-    context.appSettings.setSync("gdb.gui.layouts.main.windowSize", {
-      ...mainWindow.getBounds(),
-      fullscreen: mainWindow.fullScreen,
+    context.appSettings.setSync(`${layoutRoot}.windowSize`, {
+      ...targetWindow.getBounds(),
+      fullscreen: targetWindow.fullScreen,
     } as never);
     context.multiWindowHub?.saveWindowInfo(data as never);
   },
@@ -290,10 +326,14 @@ const saveSettingsHandlers: {
   },
 };
 
-function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationContext): void {
+function handleSaveSettings(
+  msg: SaveSettingsRequest,
+  context: IpcRegistrationContext,
+  event?: IpcMainEvent,
+): void {
   const handler = saveSettingsHandlers[msg.command];
   if (handler) {
-    handler(msg.data as never, context);
+    handler(msg.data as never, context, event);
   }
 }
 
@@ -313,7 +353,11 @@ function handleSaveSettings(msg: SaveSettingsRequest, context: IpcRegistrationCo
  * @param context - context parameter.
  * @returns The computed result produced by this operation.
  */
-export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistrationContext): void {
+export function handleNotifyMain(
+  msg: NotifyMainRequest,
+  context: IpcRegistrationContext,
+  event?: IpcMainEvent,
+): void {
   switch (msg?.command) {
     case "connect-selected-connection":
       handleConnectSelectedConnection(msg, context);
@@ -344,7 +388,7 @@ export function handleNotifyMain(msg: NotifyMainRequest, context: IpcRegistratio
       debugLog("Secondary window has loaded.");
       break;
     default:
-      handleSaveSettings(msg, context);
+      handleSaveSettings(msg, context, event);
       break;
   }
 }
@@ -412,8 +456,8 @@ function saveDangerousCommandDefault(
 export function registerIpcCommandHandlers(context: IpcRegistrationContext): void {
   context.ipcMain.on(
     IPC_CHANNELS.rendererToMain.commands.app.notify,
-    (_event: IpcMainEvent, msg: NotifyMainRequest) => {
-      handleNotifyMain(msg, context);
+    (event: IpcMainEvent, msg: NotifyMainRequest) => {
+      handleNotifyMain(msg, context, event);
     },
   );
 

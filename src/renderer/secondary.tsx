@@ -5,6 +5,7 @@
  * This file primarily contains internal declarations and implementation details. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 import { registerLicense } from "@syncfusion/ej2-base";
+import { DockManager } from "../../node_modules/dock-spawn-ts/lib/js/DockManager.js";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import "./syncfusion.css";
@@ -14,7 +15,6 @@ import { SAVE_DOCK_LAYOUT } from "./utilities/renderer-events";
 import { ToolWindowsHostErrorBoundary } from "./Errors/ToolWindowsHostErrorBoundary";
 import { AppTheme, applyTheme } from "./theme-manager";
 //import { NotifyRenderMessage } from "../common/ipc-contracts";
-// import { DockManager } from "dock-spawn-ts";
 
 // Register Syncfusion component license
 // Required for Syncfusion UI components (Grid, Docking, Dialog, etc.)
@@ -30,26 +30,55 @@ window.revealGdbBuild = {
   mode: __REVEALGDB_BUILD__,
 };
 
-// let dockManager: DockManager;
+let dockManager: DockManager;
 
-// const dockManagerElement = document.getElementById("revealDockManager")!;
-// dockManager = new DockManager(dockManagerElement);
-// dockManager.initialize();
+function resizeDockManager(): void {
+  if (!dockManager) {
+    return;
+  }
+
+  const divDockManager = document.getElementById("revealDockDiv")!;
+  dockManager.resize(
+    window.innerWidth - (divDockManager.clientLeft + divDockManager.offsetLeft),
+    window.innerHeight - (divDockManager.clientTop + divDockManager.offsetTop),
+  );
+}
+
+async function initializeDockManager(gdb: GdbSettings): Promise<void> {
+  const dockManagerElement = document.getElementById("revealDockManager")!;
+  dockManager = new DockManager(dockManagerElement);
+  dockManager.config.dialogRootElement = dockManagerElement;
+  dockManager.config.enableBrowserWindows = false;
+  dockManager.initialize();
+
+  const savedLayoutKey = window.document.title.trim() || "secondary";
+  const savedLayout = gdb.gui?.layouts?.[savedLayoutKey]?.dockLayout;
+  if (savedLayout) {
+    try {
+      await dockManager.loadState(JSON.stringify(savedLayout));
+    } catch (error) {
+      console.warn("dock-spawn-ts: failed to restore saved secondary window layout", error);
+    }
+  }
+
+  resizeDockManager();
+}
 
 function handleResize() {
-  //   const divDockManager = document.getElementById("revealDockDiv")!;
-  //   dockManager.resize(
-  //     window.innerWidth - (divDockManager.clientLeft + divDockManager.offsetLeft),
-  //     window.innerHeight - (divDockManager.clientTop + divDockManager.offsetTop),
-  //   );
+  if (!dockManager) {
+    return;
+  }
+
+  resizeDockManager();
   window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
 }
 
 export default function SecondaryWindow(): JSX.Element {
   useEffect(() => {
-    window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings) => {
+    window.ipcToMain.queries.app.getSettings().then(async (gdb: GdbSettings) => {
       const savedTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
       applyTheme(savedTheme);
+      await initializeDockManager(gdb);
     });
 
     const unsubTheme = window.ipcToMain.notifications.themeChanged?.((data) => {
@@ -115,15 +144,16 @@ window.ipcToMain.commands.app.notifyMain({ command: "renderEnd" });
  * Serializes the current layout and sends it to the main process for persistence.
  */
 window.addEventListener(SAVE_DOCK_LAYOUT, () => {
-  const lo = JSON.parse(
-    //dockManager.saveState());
-    '{ "layout": "Hello World" }',
-  );
+  if (!dockManager) {
+    return;
+  }
+
+  const layout = JSON.parse(dockManager.saveState());
   window.ipcToMain.commands.app.notifyMain({
     command: "save-dock-layout",
     data: {
       windowName: window.document.title,
-      layout: lo,
+      layout,
     },
   });
 });

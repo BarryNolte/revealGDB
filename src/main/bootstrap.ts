@@ -121,7 +121,7 @@ export function maybeInstallDevTools(isDebug: boolean): void {
         return null;
       }
 
-      return installExtension(reactDevToolsId);
+      return (installExtension as typeof module.installExtension)(reactDevToolsId);
     })
     .then((name) => {
       if (name) {

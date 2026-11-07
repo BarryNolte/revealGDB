@@ -157,6 +157,23 @@ describe("handleNotifyMain", () => {
     });
   });
 
+  it("persists secondary dock layouts using the sender window name", () => {
+    const { context, appSettings } = createIpcRegistrationHarness();
+
+    handleNotifyMain(
+      {
+        command: "save-dock-layout",
+        data: { windowName: "Memory View", layout: { root: "empty" } },
+      },
+      context,
+    );
+
+    expect(appSettings.setSync).toHaveBeenCalledWith(
+      "gdb.gui.layouts.Memory View.dockLayout",
+      { root: "empty" },
+    );
+  });
+
   it("handles valid selected connection payloads by connecting and notifying success", () => {
     const { context, gdbInterface, send } = createIpcRegistrationHarness({
       isSelectedConnection: ((value: unknown) => {
