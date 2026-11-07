@@ -7,6 +7,20 @@
 import { App, BrowserWindow, NativeTheme } from "electron";
 import { IPC_CHANNELS } from "../common/ipc-contracts";
 
+function broadcastThemeChange(nativeTheme: NativeTheme): void {
+  const payload = {
+    shouldUseDarkColors: nativeTheme.shouldUseDarkColors,
+  };
+
+  for (const win of BrowserWindow.getAllWindows()) {
+    if (!win || win.isDestroyed()) {
+      continue;
+    }
+
+    win.webContents.send(IPC_CHANNELS.mainToRenderer.notifications.themeChanged, payload);
+  }
+}
+
 /**
  * Registers app events for the active runtime context.
  *
@@ -48,12 +62,6 @@ export function registerAppEvents(
   });
 
   nativeTheme.on("updated", () => {
-    const mainWindow = getMainWindow();
-    if (!mainWindow || mainWindow.isDestroyed()) {
-      return;
-    }
-    mainWindow.webContents.send(IPC_CHANNELS.mainToRenderer.notifications.themeChanged, {
-      shouldUseDarkColors: nativeTheme.shouldUseDarkColors,
-    });
+    broadcastThemeChange(nativeTheme);
   });
 }

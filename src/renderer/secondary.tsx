@@ -9,8 +9,10 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import "./syncfusion.css";
 import { JSX, useEffect } from "react";
+import type { GdbSettings } from "../common/settings-types";
 import { SAVE_DOCK_LAYOUT } from "./utilities/renderer-events";
 import { ToolWindowsHostErrorBoundary } from "./Errors/ToolWindowsHostErrorBoundary";
+import { AppTheme, applyTheme } from "./theme-manager";
 //import { NotifyRenderMessage } from "../common/ipc-contracts";
 // import { DockManager } from "dock-spawn-ts";
 
@@ -45,9 +47,27 @@ function handleResize() {
 
 export default function SecondaryWindow(): JSX.Element {
   useEffect(() => {
+    window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings) => {
+      const savedTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
+      applyTheme(savedTheme);
+    });
+
+    const unsubTheme = window.ipcToMain.notifications.themeChanged?.((data) => {
+      window.ipcToMain.queries.app.getSettings().then((gdb: GdbSettings) => {
+        const currentTheme = (gdb.gui?.applicationTheme ?? "Auto") as AppTheme;
+        if (currentTheme === "Auto") {
+          applyTheme("Auto", data?.shouldUseDarkColors ?? false);
+          return;
+        }
+
+        applyTheme(currentTheme);
+      });
+    });
+
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
+      if (unsubTheme) unsubTheme();
     };
   }, []);
 
