@@ -144,15 +144,19 @@ import iconThread from "./icons/icons8-thread-48.png?asset";
  * Populated asynchronously from the main process and displayed in the About dialog.
  */
 
-function handleResize(): void {
-  if (!dockMenuConnector) {
-    return;
-  }
+function resizeDockManager(): void {
   const divDockManager = document.getElementById("revealDockDiv")!;
   dockManager.resize(
     window.innerWidth - (divDockManager.clientLeft + divDockManager.offsetLeft),
     window.innerHeight - (divDockManager.clientTop + divDockManager.offsetTop),
   );
+}
+
+function handleResize(): void {
+  if (!dockMenuConnector || !dockManager) {
+    return;
+  }
+  resizeDockManager();
   window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
 }
 /**
@@ -252,10 +256,18 @@ function registerAllPanels(connector: DockMenuConnector): void {
  * @param connector - connector parameter.
  * @returns The computed result produced by this operation.
  */
+const DEFAULT_RIGHT_PANEL_ORDER = [
+  TOOL_WINDOW_TITLES.threads,
+  TOOL_WINDOW_TITLES.callstack,
+  TOOL_WINDOW_TITLES.memory,
+  TOOL_WINDOW_TITLES.breakpoints,
+  TOOL_WINDOW_TITLES.registers,
+  TOOL_WINDOW_TITLES.disassembly,
+] as const;
 
 function createDefaultLayout(dm: DockManager, connector: DockMenuConnector): void {
-  if (!connector) return;
   connector.createAllWindows();
+  const initialSplitRatio = 0.5;
   const documentNode = dm.context.model.documentManagerNode;
   const srcNode = dm.dockFill(
     documentNode,
@@ -264,17 +276,20 @@ function createDefaultLayout(dm: DockManager, connector: DockMenuConnector): voi
   const localsNode = dm.dockRight(
     srcNode,
     connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.locals),
-    0.5,
+    initialSplitRatio,
   );
 
-  // dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.threads));
-  // dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.callstack));
-  // dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.memory));
-  // dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.breakpoints));
-  // dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.registers));
-  // dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.disassembly));
+  DEFAULT_RIGHT_PANEL_ORDER.forEach((panelName) => {
+    dm.dockFill(localsNode, connector.getPanelByDisplayName(panelName));
+  });
 
-  dm.dockDown(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.command), 0.5);
+  dm.dockDown(
+    localsNode,
+    connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.command),
+    initialSplitRatio,
+  );
+
+  connector.activatePanel(TOOL_WINDOW_TITLES.locals);
 }
 
 async function initializeDockManager(gdb: GdbSettings): Promise<void> {
@@ -288,8 +303,10 @@ async function initializeDockManager(gdb: GdbSettings): Promise<void> {
     console.error("Failed to initialize DockMenuConnector");
     return;
   }
+
   registerAllPanels(dockMenuConnector);
   setupLayoutListeners(dockManager);
+
   let loadedFromState = false;
   const mainWindowLayout = gdb.gui?.layouts?.main?.dockLayout;
   if (mainWindowLayout) {
@@ -303,126 +320,88 @@ async function initializeDockManager(gdb: GdbSettings): Promise<void> {
       console.warn("dock-spawn-ts: failed to restore saved layout, using default", e);
     }
   }
+
   if (!loadedFromState) {
+    resizeDockManager();
     createDefaultLayout(dockManager, dockMenuConnector);
   }
+
   dockMenuConnector.reconsilePanels();
   window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
   // Trigger initial sizing only after dock manager exists.
-  window.dispatchEvent(new Event("resize"));
+  resizeDockManager();
 }
-/**
- * Performs PrimaryToolWindows as part of this module's internal workflow.
- *
- * @returns The computed result produced by this operation.
- */
+type ToolWindowDefinition = {
+  id: string;
+  title: string;
+  icon: string;
+  WindowComponent: ComponentType;
+};
 
-function PrimaryToolWindows(): JSX.Element {
-  return (
-    <>
-      <div
-        id="sourceWindow"
-        data-panel-caption={TOOL_WINDOW_TITLES.source}
-        hidden={true}
-        data-panel-icon={iconSrc}
-      >
-        <DeferredWindow title={TOOL_WINDOW_TITLES.source}>
-          <GdbSourceWindow />
-        </DeferredWindow>
-      </div>
-      <div
-        id="localsWindow"
-        data-panel-caption={TOOL_WINDOW_TITLES.locals}
-        hidden={true}
-        data-panel-icon={iconLocal}
-      >
-        <DeferredWindow title={TOOL_WINDOW_TITLES.locals}>
-          <GdbLocalsWindow />
-        </DeferredWindow>
-      </div>
-      <div
-        id="threadsWindow"
-        data-panel-caption={TOOL_WINDOW_TITLES.threads}
-        data-panel-icon={iconThread}
-        hidden={true}
-      >
-        <DeferredWindow title={TOOL_WINDOW_TITLES.threads}>
-          <GdbThreadsWindow />
-        </DeferredWindow>
-      </div>
-      <div
-        id="registersWindow"
-        data-panel-caption={TOOL_WINDOW_TITLES.registers}
-        hidden={true}
-        data-panel-icon={iconRegister}
-      >
-        <DeferredWindow title={TOOL_WINDOW_TITLES.registers}>
-          <GdbRegistersWindow />
-        </DeferredWindow>
-      </div>
-    </>
-  );
-}
-/**
- * Performs SecondaryToolWindows as part of this module's internal workflow.
- *
- * @returns The computed result produced by this operation.
- */
+const TOOL_WINDOWS: ToolWindowDefinition[] = [
+  {
+    id: "sourceWindow",
+    title: TOOL_WINDOW_TITLES.source,
+    icon: iconSrc,
+    WindowComponent: GdbSourceWindow,
+  },
+  {
+    id: "localsWindow",
+    title: TOOL_WINDOW_TITLES.locals,
+    icon: iconLocal,
+    WindowComponent: GdbLocalsWindow,
+  },
+  {
+    id: "threadsWindow",
+    title: TOOL_WINDOW_TITLES.threads,
+    icon: iconThread,
+    WindowComponent: GdbThreadsWindow,
+  },
+  {
+    id: "registersWindow",
+    title: TOOL_WINDOW_TITLES.registers,
+    icon: iconRegister,
+    WindowComponent: GdbRegistersWindow,
+  },
+  {
+    id: "disassemblyWindow",
+    title: TOOL_WINDOW_TITLES.disassembly,
+    icon: iconDisa,
+    WindowComponent: GdbDisassemblerWindow,
+  },
+  {
+    id: "commandWindow",
+    title: TOOL_WINDOW_TITLES.command,
+    icon: iconCmd,
+    WindowComponent: GdbCommandWindow,
+  },
+  {
+    id: "memoryWindow",
+    title: TOOL_WINDOW_TITLES.memory,
+    icon: iconHex,
+    WindowComponent: GdbMemoryWindow,
+  },
+  {
+    id: "callstackWindow",
+    title: TOOL_WINDOW_TITLES.callstack,
+    icon: iconStack,
+    WindowComponent: GdbCallStackWindow,
+  },
+  {
+    id: "bpWindow",
+    title: TOOL_WINDOW_TITLES.breakpoints,
+    icon: iconBp,
+    WindowComponent: GdbBreakPointWindow,
+  },
+];
 
-function SecondaryToolWindows(): JSX.Element {
+function renderToolWindow({ id, title, icon, WindowComponent }: ToolWindowDefinition): JSX.Element {
   return (
-    <>
-      <div
-        id="disassemblyWindow"
-        data-panel-caption={TOOL_WINDOW_TITLES.disassembly}
-        hidden={true}
-        data-panel-icon={iconDisa}
-      >
-        <DeferredWindow title={TOOL_WINDOW_TITLES.disassembly}>
-          <GdbDisassemblerWindow />
-        </DeferredWindow>
-      </div>
-      <div
-        id="commandWindow"
-        data-panel-caption={TOOL_WINDOW_TITLES.command}
-        hidden={true}
-        data-panel-icon={iconCmd}
-      >
-        <DeferredWindow title={TOOL_WINDOW_TITLES.command}>
-          <GdbCommandWindow />
-        </DeferredWindow>
-      </div>
-      <div
-        id="memoryWindow"
-        data-panel-caption={TOOL_WINDOW_TITLES.memory}
-        hidden={true}
-        data-panel-icon={iconHex}
-      >
-        <DeferredWindow title={TOOL_WINDOW_TITLES.memory}>
-          <GdbMemoryWindow />
-        </DeferredWindow>
-      </div>
-      <div
-        id="callstackWindow"
-        data-panel-caption={TOOL_WINDOW_TITLES.callstack}
-        hidden={true}
-        data-panel-icon={iconStack}
-      >
-        <DeferredWindow title={TOOL_WINDOW_TITLES.callstack}>
-          <GdbCallStackWindow />
-        </DeferredWindow>
-      </div>
-      <div
-        id="bpWindow"
-        data-panel-caption={TOOL_WINDOW_TITLES.breakpoints}
-        hidden={true}
-        data-panel-icon={iconBp}
-      >
-        <DeferredWindow title={TOOL_WINDOW_TITLES.breakpoints}>
-          <GdbBreakPointWindow />
-        </DeferredWindow>
-      </div>
-    </>
+    <div id={id} data-panel-caption={title} hidden={true} data-panel-icon={icon} key={id}>
+      <DeferredWindow title={title}>
+        <WindowComponent />
+      </DeferredWindow>
+    </div>
   );
 }
 /**
@@ -436,8 +415,7 @@ function DockLayout(): JSX.Element {
     <div id="revealDockDiv" className="full-size">
       <div id="revealDockManager" className="revealDockManager"></div>
       <ToolWindowsHostErrorBoundary>
-        <PrimaryToolWindows />
-        <SecondaryToolWindows />
+        {TOOL_WINDOWS.map(renderToolWindow)}
       </ToolWindowsHostErrorBoundary>
     </div>
   );

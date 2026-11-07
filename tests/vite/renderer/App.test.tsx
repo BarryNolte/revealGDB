@@ -21,6 +21,7 @@ const appMocks = vi.hoisted(() => {
     loadState: vi.fn().mockResolvedValue(undefined),
     dockFill: vi.fn().mockReturnValue("fillNode"),
     dockRight: vi.fn().mockReturnValue("rightNode"),
+    dockDown: vi.fn().mockReturnValue("downNode"),
     dockUp: vi.fn().mockReturnValue("upNode"),
     resize: vi.fn(),
     saveState: vi.fn().mockReturnValue('{"layout":"test"}'),
@@ -58,6 +59,7 @@ const appMocks = vi.hoisted(() => {
 
 vi.mock("../../../node_modules/dock-spawn-ts/lib/js/DockManager.js", () => ({
   DockManager: class {
+    element: { clientWidth: number; clientHeight: number };
     config = { dialogRootElement: null as unknown, enableBrowserWindows: true };
     context = { model: { documentManagerNode: "docNode" } };
     initialize = appMocks.dmSpies.initialize;
@@ -65,10 +67,15 @@ vi.mock("../../../node_modules/dock-spawn-ts/lib/js/DockManager.js", () => ({
     loadState = appMocks.dmSpies.loadState;
     dockFill = appMocks.dmSpies.dockFill;
     dockRight = appMocks.dmSpies.dockRight;
+    dockDown = appMocks.dmSpies.dockDown;
     dockUp = appMocks.dmSpies.dockUp;
     resize = appMocks.dmSpies.resize;
     saveState = appMocks.dmSpies.saveState;
-    constructor() {
+    constructor(element?: { clientWidth?: number; clientHeight?: number }) {
+      this.element = {
+        clientWidth: element?.clientWidth ?? 0,
+        clientHeight: element?.clientHeight ?? 0,
+      };
       appMocks.dmSpies.ctor();
     }
   },
@@ -288,8 +295,13 @@ describe("App component", () => {
     appMocks.dmSpies.addLayoutListener.mockClear();
     appMocks.dmSpies.loadState.mockReset();
     appMocks.dmSpies.loadState.mockResolvedValue(undefined);
+    appMocks.dmSpies.dockFill.mockClear();
     appMocks.dmSpies.dockFill.mockReturnValue("fillNode");
+    appMocks.dmSpies.dockRight.mockClear();
     appMocks.dmSpies.dockRight.mockReturnValue("rightNode");
+    appMocks.dmSpies.dockDown.mockClear();
+    appMocks.dmSpies.dockDown.mockReturnValue("downNode");
+    appMocks.dmSpies.dockUp.mockClear();
     appMocks.dmSpies.dockUp.mockReturnValue("upNode");
     appMocks.dmSpies.saveState.mockReturnValue('{"layout":"test"}');
     appMocks.dmSpies.resize.mockClear();
@@ -476,11 +488,34 @@ describe("App component", () => {
     expect(appMocks.dcSpies.createAllWindows).toHaveBeenCalledTimes(1);
   });
 
-  it("calls dockFill, dockRight, and dockUp for default layout wiring", async () => {
+  it("calls dockFill, dockRight, and dockDown for default layout wiring", async () => {
     await renderApp({ gui: {} });
     expect(appMocks.dmSpies.dockFill).toHaveBeenCalled();
-    expect(appMocks.dmSpies.dockRight).toHaveBeenCalled();
-    expect(appMocks.dmSpies.dockUp).toHaveBeenCalled();
+    expect(appMocks.dmSpies.dockRight).toHaveBeenCalledWith(
+      "fillNode",
+      expect.objectContaining({ title: "panel" }),
+      0.5,
+    );
+    expect(appMocks.dmSpies.dockDown).toHaveBeenCalledWith(
+      "rightNode",
+      expect.objectContaining({ title: "panel" }),
+      0.5,
+    );
+  });
+
+  it("sizes the dock manager before applying default split ratios", async () => {
+    await renderApp({ gui: {} });
+    expect(appMocks.dmSpies.resize).toHaveBeenCalled();
+    const firstResizeOrder = appMocks.dmSpies.resize.mock.invocationCallOrder[0];
+    const dockRightOrder = appMocks.dmSpies.dockRight.mock.invocationCallOrder[0];
+    const dockDownOrder = appMocks.dmSpies.dockDown.mock.invocationCallOrder[0];
+    expect(firstResizeOrder).toBeLessThan(dockRightOrder);
+    expect(firstResizeOrder).toBeLessThan(dockDownOrder);
+  });
+
+  it("does not invoke the default-layout dockDown path when a saved layout is restored", async () => {
+    await renderApp({ gui: { layouts: { main: { dockLayout: { panels: ["a"] } } } } });
+    expect(appMocks.dmSpies.dockDown).not.toHaveBeenCalled();
   });
 
   // --- Corrupt saved layout ---
