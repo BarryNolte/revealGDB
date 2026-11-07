@@ -100,6 +100,68 @@ function doConnection(
 }
 
 const GDB_GUI_PREFIX = "gdb.gui.";
+type TrackedWindowEntry = { window: BrowserWindow; uniqueId?: string; title?: string };
+
+function getTrackedWindowEntry(
+  context: IpcRegistrationContext,
+  senderWindow: BrowserWindow | undefined,
+): TrackedWindowEntry | undefined {
+  if (!senderWindow) {
+    return undefined;
+  }
+
+  const senderWebContentsId = senderWindow.webContents.id;
+  const trackedWindows = ((
+    context.multiWindowHub as unknown as { windows?: TrackedWindowEntry[] } | undefined
+  )?.windows ?? []) as TrackedWindowEntry[];
+  return trackedWindows.find((entry) => {
+    if (entry.window === senderWindow) {
+      return true;
+    }
+
+    if (typeof entry.window.isDestroyed === "function" && entry.window.isDestroyed()) {
+      return false;
+    }
+
+    return entry.window.webContents.id === senderWebContentsId;
+  });
+}
+
+function resolveSavedLayoutTitle(
+  context: IpcRegistrationContext,
+  uniqueId: string,
+): string | undefined {
+  const savedTitle = context.appSettings.getSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${uniqueId}.title`);
+  return typeof savedTitle === "string" && savedTitle.trim().length > 0
+    ? savedTitle.trim()
+    : undefined;
+}
+
+function applySavedSecondaryWindowTitle(
+  context: IpcRegistrationContext,
+  event: IpcMainEvent | undefined,
+): void {
+  if (!event) {
+    return;
+  }
+
+  const senderWindow = BrowserWindow.fromWebContents(event.sender) ?? undefined;
+  const trackedWindowInfo = getTrackedWindowEntry(context, senderWindow);
+  const uniqueId = trackedWindowInfo?.uniqueId;
+  if (!senderWindow || !uniqueId || uniqueId === "main" || uniqueId === "devtools") {
+    return;
+  }
+
+  const savedTitle = resolveSavedLayoutTitle(context, uniqueId);
+  if (!savedTitle) {
+    return;
+  }
+
+  senderWindow.setTitle(savedTitle);
+  if (trackedWindowInfo) {
+    trackedWindowInfo.title = savedTitle;
+  }
+}
 
 /**
  * Performs handleConnectSelectedConnection as part of this module's internal workflow.
@@ -274,15 +336,7 @@ const saveSettingsHandlers: {
     const senderWindow = event
       ? (BrowserWindow.fromWebContents(event.sender) ?? undefined)
       : undefined;
-    const trackedWindowInfo = senderWindow
-      ? (
-          (
-            context.multiWindowHub as unknown as
-              | { windows?: Array<{ window: BrowserWindow; uniqueId?: string; title?: string }> }
-              | undefined
-          )?.windows ?? []
-        ).find((entry) => entry.window === senderWindow)
-      : undefined;
+    const trackedWindowInfo = getTrackedWindowEntry(context, senderWindow);
     const layoutKey = trackedWindowInfo?.uniqueId ?? payload.windowName ?? "main";
     const layoutRoot = `${MAIN_WINDOW_LAYOUT_PREFIX}${layoutKey}`;
 
@@ -290,11 +344,8 @@ const saveSettingsHandlers: {
       context.appSettings.setSync(`${layoutRoot}.dockLayout`, layoutValue as never);
     }
 
-    if (payload.windowName && payload.windowName !== layoutKey && layoutValue !== undefined) {
-      context.appSettings.setSync(
-        `${MAIN_WINDOW_LAYOUT_PREFIX}${payload.windowName}.dockLayout`,
-        layoutValue as never,
-      );
+    if (payload.windowName && trackedWindowInfo?.uniqueId && payload.windowName !== layoutKey) {
+      context.appSettings.unsetSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${payload.windowName}`);
     }
 
     const targetWindow = senderWindow ?? context.getMainWindow();
@@ -386,6 +437,7 @@ export function handleNotifyMain(
       break;
     case "secondary-window-loaded":
       debugLog("Secondary window has loaded.");
+      applySavedSecondaryWindowTitle(context, event);
       break;
     default:
       handleSaveSettings(msg, context, event);

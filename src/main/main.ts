@@ -165,7 +165,9 @@ app.on("ready", () => {
         title,
       );
       onReadyToShow(window);
-      loadSecondaryWindow(window);
+      setImmediate(() => {
+        loadSecondaryWindow(window);
+      });
       return window;
     }),
   );
