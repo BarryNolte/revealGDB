@@ -5,7 +5,7 @@
  * Exported symbols include `createMainWindow`, `createDebugWindow`, `loadMainWindow`, `restoreWindowBounds`, `wireWindowCloseHandlers`, `resolvePreloadPath`. Keep this module focused on one cohesive concern to reduce cross-layer coupling.
  */
 
-import { BrowserWindow } from "electron";
+import { BrowserWindow, screen } from "electron";
 import path, { join } from "path";
 //import { dockWindowManager } from "../renderer/utilities/window-dock-manager";
 
@@ -17,6 +17,16 @@ export type WindowSizeSettings = {
 };
 
 export type OnWindowMoved = () => void;
+
+function getDefaultWindowSize(fraction: number): { width: number; height: number } {
+  const { width: screenWidth = 1280, height: screenHeight = 720 } =
+    screen?.getPrimaryDisplay?.().workAreaSize ?? {};
+
+  return {
+    width: Math.max(1, Math.round(screenWidth * fraction)),
+    height: Math.max(1, Math.round(screenHeight * fraction)),
+  };
+}
 
 /**
  * Creates main window for downstream use.
@@ -35,10 +45,13 @@ export function createMainWindow(
   preloadPath: string,
   onWindowMoved?: OnWindowMoved,
 ): BrowserWindow {
+  const defaultSize = getDefaultWindowSize(0.8);
   const window = new BrowserWindow({
     webPreferences: {
       preload: preloadPath,
     },
+    width: defaultSize.width,
+    height: defaultSize.height,
     show: false,
   });
 
@@ -62,10 +75,13 @@ export function createSecondaryWindow(
   onWindowMoved?: OnWindowMoved,
   title?: string,
 ): BrowserWindow {
+  const defaultSize = getDefaultWindowSize(0.6);
   const window = new BrowserWindow({
     webPreferences: {
       preload: preloadPath,
     },
+    width: defaultSize.width,
+    height: defaultSize.height,
     show: false,
     autoHideMenuBar: true,
     title,

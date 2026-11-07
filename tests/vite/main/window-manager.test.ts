@@ -31,6 +31,9 @@ vi.mock("electron", () => ({
   BrowserWindow: vi.fn(function BrowserWindowMock(options: unknown) {
     return browserWindowFactory(options);
   }),
+  screen: {
+    getPrimaryDisplay: () => ({ workAreaSize: { width: 1920, height: 1080 } }),
+  },
 }));
 
 describe("window-manager", () => {
@@ -51,6 +54,8 @@ describe("window-manager", () => {
       webPreferences: {
         preload: "C:/preload.js",
       },
+      width: 1536,
+      height: 864,
       show: false,
     });
   });
@@ -96,6 +101,8 @@ describe("window-manager", () => {
       webPreferences: {
         preload: "C:/preload.js",
       },
+      width: 1152,
+      height: 648,
       show: false,
       autoHideMenuBar: true,
       title: "Memory View",
