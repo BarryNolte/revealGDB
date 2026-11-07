@@ -29,11 +29,14 @@ export function mapElectronWindowToWinPos(window: {
   getSize(): number[];
   fullScreen: boolean;
 }): WinPos {
+  const [x, y] = window.getPosition();
+  const [width, height] = window.getSize();
+
   return {
-    x: window.getPosition()[0],
-    y: window.getPosition()[1],
-    width: window.getSize()[0] - 2,
-    height: window.getSize()[1] - 2,
+    x,
+    y,
+    width,
+    height,
     fullscreen: window.fullScreen,
   };
 }

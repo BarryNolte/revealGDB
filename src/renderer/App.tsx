@@ -261,22 +261,20 @@ function createDefaultLayout(dm: DockManager, connector: DockMenuConnector): voi
     documentNode,
     connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.source),
   );
-  const cmdNode = dm.dockRight(
+  const localsNode = dm.dockRight(
     srcNode,
-    connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.command),
-    0.5,
-  );
-  const localsNode = dm.dockUp(
-    cmdNode,
     connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.locals),
     0.5,
   );
-  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.threads));
-  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.callstack));
-  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.memory));
-  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.breakpoints));
-  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.registers));
-  dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.disassembly));
+
+  // dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.threads));
+  // dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.callstack));
+  // dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.memory));
+  // dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.breakpoints));
+  // dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.registers));
+  // dm.dockFill(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.disassembly));
+
+  dm.dockDown(localsNode, connector.getPanelByDisplayName(TOOL_WINDOW_TITLES.command), 0.5);
 }
 
 async function initializeDockManager(gdb: GdbSettings): Promise<void> {

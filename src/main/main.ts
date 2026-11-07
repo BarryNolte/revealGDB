@@ -28,7 +28,9 @@ import { debugLog } from "./utilities/logger";
 import {
   createDebugWindow,
   createMainWindow,
+  createSecondaryWindow,
   loadMainWindow,
+  loadSecondaryWindow,
   resolvePreloadPath,
   restoreWindowBounds,
   wireWindowCloseHandlers,
@@ -121,6 +123,9 @@ app.on("ready", () => {
 
   mainWindow = createMainWindow(resolvePreloadPath());
   multiWindowHub.add(mainWindow, MAIN_WINDOW_UNIQUE_ID);
+  multiWindowHub.withPersistencePaused(() => {
+    restoreWindowBounds(mainWindow, AppSettings);
+  });
   if (typeof mainWindow.on === "function") {
     mainWindow.on("move", () => {
       multiWindowHub.saveWindowInfo(null);
@@ -142,6 +147,9 @@ app.on("ready", () => {
       DEVTOOLS_WINDOW_UNIQUE_ID,
       debugWindow.title || "Developer Tools",
     );
+    multiWindowHub.withPersistencePaused(() => {
+      restoreWindowBounds(debugWindow, AppSettings, "gdb.gui.layouts.devtools.windowSize");
+    });
     if (debugWindow && typeof debugWindow.on === "function") {
       debugWindow.on("move", () => {
         multiWindowHub.saveWindowInfo(null);
@@ -149,19 +157,33 @@ app.on("ready", () => {
     }
   }
 
-  logStartupMilestone("main-window-created");
-  loadMainWindow(mainWindow);
-  logStartupMilestone("main-window-load-started");
+  const restoredSecondaryWindows = multiWindowHub.withPersistencePaused(() =>
+    multiWindowHub.restoreSavedSecondaryWindows((title, uniqueId, onReadyToShow) => {
+      const window = createSecondaryWindow(
+        resolvePreloadPath(),
+        () => multiWindowHub.saveWindowInfo(null),
+        title,
+      );
+      onReadyToShow(window);
+      loadSecondaryWindow(window);
+      return window;
+    }),
+  );
 
-  // Restore persisted window bounds on first show.
+  if (restoredSecondaryWindows.length > 0) {
+    logStartupMilestone(`secondary-windows-restored:${restoredSecondaryWindows.length}`);
+  }
+
+  logStartupMilestone("main-window-created");
+  // Register before load so the event is not missed if the page becomes ready immediately.
   mainWindow.once("ready-to-show", () => {
     logStartupMilestone("main-window-ready-to-show");
-    restoreWindowBounds(mainWindow, AppSettings);
-
+    multiWindowHub.withPersistencePaused(() => {
+      restoreWindowBounds(mainWindow, AppSettings);
+    });
     mainWindow.show();
     logStartupMilestone("main-window-shown");
 
-    // Keep non-critical font metadata warming off the startup critical path.
     setImmediate(() => {
       warmSystemFonts(fontList);
 
@@ -170,6 +192,8 @@ app.on("ready", () => {
       }
     });
   });
+  loadMainWindow(mainWindow);
+  logStartupMilestone("main-window-load-started");
 
   /**
    * UI is now up and running, now we can interact with GDB

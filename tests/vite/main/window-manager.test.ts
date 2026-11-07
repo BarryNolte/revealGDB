@@ -158,6 +158,62 @@ describe("window-manager", () => {
     expect(mainWindow.fullScreen).toBe(true);
   });
 
+  it("restores window bounds even when the saved position starts at origin", () => {
+    const mainWindow = createMockBrowserWindow({
+      setPosition: vi.fn(),
+      setSize: vi.fn(),
+    } as never);
+    const appSettings = createMockAppSettings({
+      getSync: vi.fn((key: string) => {
+        switch (key) {
+          case "gdb.gui.layouts.main.windowSize.x":
+            return 0;
+          case "gdb.gui.layouts.main.windowSize.y":
+            return 0;
+          case "gdb.gui.layouts.main.windowSize.width":
+            return 900;
+          case "gdb.gui.layouts.main.windowSize.height":
+            return 700;
+          default:
+            return undefined;
+        }
+      }),
+    });
+
+    restoreWindowBounds(mainWindow as never, appSettings);
+
+    expect(mainWindow.setPosition).toHaveBeenCalledWith(0, 0);
+    expect(mainWindow.setSize).toHaveBeenCalledWith(900, 700);
+  });
+
+  it("restores a custom window layout prefix such as the devtools window", () => {
+    const devtoolsWindow = createMockBrowserWindow({
+      setPosition: vi.fn(),
+      setSize: vi.fn(),
+    } as never);
+    const appSettings = createMockAppSettings({
+      getSync: vi.fn((key: string) => {
+        switch (key) {
+          case "gdb.gui.layouts.devtools.windowSize.x":
+            return 42;
+          case "gdb.gui.layouts.devtools.windowSize.y":
+            return 24;
+          case "gdb.gui.layouts.devtools.windowSize.width":
+            return 1100;
+          case "gdb.gui.layouts.devtools.windowSize.height":
+            return 900;
+          default:
+            return undefined;
+        }
+      }),
+    });
+
+    restoreWindowBounds(devtoolsWindow as never, appSettings, "gdb.gui.layouts.devtools.windowSize");
+
+    expect(devtoolsWindow.setPosition).toHaveBeenCalledWith(42, 24);
+    expect(devtoolsWindow.setSize).toHaveBeenCalledWith(1100, 900);
+  });
+
   it("closes the debug window when the main window closes", () => {
     const mainWindowEvents = createEventEmitterHarness();
     const debugWindowEvents = createEventEmitterHarness();

@@ -105,7 +105,9 @@ vi.mock("../../../src/main/theme-support", () => ({
 vi.mock("../../../src/main/window-manager", () => ({
   createDebugWindow: mainMocks.createDebugWindow,
   createMainWindow: mainMocks.createMainWindow,
+  createSecondaryWindow: vi.fn(() => ({ once: vi.fn(), show: vi.fn() })),
   loadMainWindow: mainMocks.loadMainWindow,
+  loadSecondaryWindow: vi.fn(),
   resolvePreloadPath: mainMocks.resolvePreloadPath,
   restoreWindowBounds: mainMocks.restoreWindowBounds,
   wireWindowCloseHandlers: mainMocks.wireWindowCloseHandlers,
@@ -169,6 +171,9 @@ describe("main startup wiring", () => {
     expect(mainMocks.setNativeThemeFromAppTheme).toHaveBeenCalledWith("Auto");
     expect(mainMocks.resolvePreloadPath).toHaveBeenCalledTimes(1);
     expect(mainMocks.createMainWindow).toHaveBeenCalledWith("out/preload/preload.js");
+    expect(mainMocks.mainWindow.once.mock.invocationCallOrder[0]).toBeLessThan(
+      mainMocks.loadMainWindow.mock.invocationCallOrder[0],
+    );
     expect(mainMocks.loadMainWindow).toHaveBeenCalledWith(mainMocks.mainWindow);
     expect(mainMocks.installMenu).toHaveBeenCalledTimes(1);
     expect(mainMocks.createGdbInterface).toHaveBeenCalledWith(

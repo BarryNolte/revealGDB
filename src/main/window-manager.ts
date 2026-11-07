@@ -9,7 +9,8 @@ import { BrowserWindow } from "electron";
 import path, { join } from "path";
 //import { dockWindowManager } from "../renderer/utilities/window-dock-manager";
 
-const MAIN_WINDOW_SIZE_PREFIX = "gdb.gui.layouts.main.windowSize";
+//const MAIN_WINDOW_SIZE_PREFIX = "gdb.gui.layouts.main.windowSize";
+const DEFAULT_WINDOW_SIZE_PREFIX = "gdb.gui.layouts.main.windowSize";
 
 export type WindowSizeSettings = {
   getSync: (key: string) => unknown;
@@ -156,21 +157,52 @@ export function loadSecondaryWindow(secondaryWindow: BrowserWindow): void {
  * @param appSettings - appSettings parameter.
  * @returns The computed result produced by this operation.
  */
-export function restoreWindowBounds(window: BrowserWindow, appSettings: WindowSizeSettings): void {
-  const x = appSettings.getSync(`${MAIN_WINDOW_SIZE_PREFIX}.x`) as number;
-  const y = appSettings.getSync(`${MAIN_WINDOW_SIZE_PREFIX}.y`) as number;
-  const w = appSettings.getSync(`${MAIN_WINDOW_SIZE_PREFIX}.width`) as number;
-  const h = appSettings.getSync(`${MAIN_WINDOW_SIZE_PREFIX}.height`) as number;
+export function restoreWindowBounds(
+  window: BrowserWindow,
+  appSettings: WindowSizeSettings,
+  sizePrefix = DEFAULT_WINDOW_SIZE_PREFIX,
+): void {
+  const x = appSettings.getSync(`${sizePrefix}.x`) as number | undefined;
+  const y = appSettings.getSync(`${sizePrefix}.y`) as number | undefined;
+  const w = appSettings.getSync(`${sizePrefix}.width`) as number | undefined;
+  const h = appSettings.getSync(`${sizePrefix}.height`) as number | undefined;
 
-  if (x && y) {
-    window.setPosition(x, y);
+  if (
+    typeof x === "number" &&
+    typeof y === "number" &&
+    typeof w === "number" &&
+    typeof h === "number" &&
+    Number.isFinite(x) &&
+    Number.isFinite(y) &&
+    Number.isFinite(w) &&
+    Number.isFinite(h)
+  ) {
+    if (typeof window.setBounds === "function") {
+      window.setBounds({ x, y, width: w, height: h });
+    } else {
+      window.setPosition(x, y);
+      window.setSize(w, h);
+    }
+  } else {
+    if (
+      typeof x === "number" &&
+      typeof y === "number" &&
+      Number.isFinite(x) &&
+      Number.isFinite(y)
+    ) {
+      window.setPosition(x, y);
+    }
+    if (
+      typeof w === "number" &&
+      typeof h === "number" &&
+      Number.isFinite(w) &&
+      Number.isFinite(h)
+    ) {
+      window.setSize(w, h);
+    }
   }
 
-  if (w && h) {
-    window.setSize(w, h);
-  }
-
-  const fullscreen = appSettings.getSync(`${MAIN_WINDOW_SIZE_PREFIX}.fullscreen`);
+  const fullscreen = appSettings.getSync(`${sizePrefix}.fullscreen`);
   if (typeof fullscreen === "boolean") {
     window.fullScreen = fullscreen;
   }
