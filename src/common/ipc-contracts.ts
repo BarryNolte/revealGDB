@@ -41,6 +41,7 @@ const RENDERER_TO_MAIN_CHANNEL_GROUPS = {
       settings: "getSettings",
       systemFonts: "getSystemFonts",
       versionInfo: "getVersionInfo",
+      openWindowTitles: "getOpenWindowTitles",
     },
     environment: {
       wslDistributions: "getWslDistrobutions",
@@ -95,6 +96,7 @@ export const IPC_CHANNELS = {
     getSettings: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.app.settings,
     getSystemFonts: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.app.systemFonts,
     getVersionInfo: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.app.versionInfo,
+    getOpenWindowTitles: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.app.openWindowTitles,
     getWslDistrobutions: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.environment.wslDistributions,
     getFunctionNames: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.debugger.functionNames,
     getVarByName: RENDERER_TO_MAIN_CHANNEL_GROUPS.queries.debugger.varByName,
@@ -128,7 +130,10 @@ export type NotifyRenderCommand =
   | "settings-dialog"
   | "connections-dialog"
   | "sections-view"
-  | "confirm-dangerous-command";
+  | "confirm-dangerous-command"
+  | "secondary-window-closing"
+  | "move-panel-to-window"
+  | "move-panel-from-window";
 
 export type NotifyRenderMessage = {
   command: NotifyRenderCommand;
@@ -141,6 +146,8 @@ export type NotifyMainCommand =
   | "cancel-connection"
   | "newWindow"
   | "new-window"
+  | "move-panel-to-new-window"
+  | "move-panel-to-window"
   | "command-entry"
   | "save-connections"
   | "save-last-used-connection"
@@ -169,6 +176,8 @@ export type NotifyMainPayloadMap = {
   "cancel-connection": undefined;
   newWindow: { title?: string } | undefined;
   "new-window": { title?: string } | undefined;
+  "move-panel-to-new-window": { panelTitle: string };
+  "move-panel-to-window": { panelTitle: string; targetUniqueId: string };
   "command-entry": undefined;
   "save-connections": { connections: NormalizedConnection[] };
   "save-last-used-connection": string | null;

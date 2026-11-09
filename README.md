@@ -124,6 +124,7 @@ Common maintenance commands:
 | ----------------------- | -------------------------------------------------------------------------------------- |
 | `npm run lint`          | Run ESLint with `--fix` across the source tree and Vite config.                        |
 | `npm run format`        | Run Prettier over source, JSON, CSS, and Markdown files.                               |
+| `npm run settings:clear-layouts` | Remove the persisted `gdb.gui.layouts` node from the active Electron `userData` `settings.json`. |
 | `npm run build`         | Alias for the release build.                                                           |
 | `npm run build:debug`   | Build main and renderer bundles with debug flags enabled.                              |
 | `npm run build:release` | Build optimized release bundles without debug tooling.                                 |

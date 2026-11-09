@@ -32,6 +32,8 @@ import GdbSourceWindow from "./ToolWindows/GdbSourceWindow";
 import { TOOL_WINDOW_TITLES } from "./ToolWindows/toolWindowTitles";
 import { DockMenuConnector } from "./utilities/DockMenuConnector.js";
 import { dockMenuConnector, setDockMenuConnector } from "./utilities/dock-menu-state";
+import { handleMovePanelFromWindow, handleMovePanelToWindow } from "./utilities/panel-transfer";
+import { installPanelTabContextMenu } from "./utilities/panel-tab-context-menu";
 import { SAVE_DOCK_LAYOUT, UPDATE_WINDOW_LIST } from "./utilities/renderer-events";
 
 const AboutBox = lazy(() =>
@@ -93,6 +95,7 @@ const GdbThreadsWindow = lazyWindow(() => import("./ToolWindows/GdbThreadsWindow
  * Handles window layout, docking, undocking, and resizing operations.
  */
 let dockManager: DockManager;
+let cleanupPanelTabContextMenu: (() => void) | undefined;
 
 /**
  * Performs deferred window as part of this module's internal workflow.
@@ -306,6 +309,8 @@ async function initializeDockManager(gdb: GdbSettings): Promise<void> {
 
   registerAllPanels(dockMenuConnector);
   setupLayoutListeners(dockManager);
+  cleanupPanelTabContextMenu?.();
+  cleanupPanelTabContextMenu = installPanelTabContextMenu(dockManager);
 
   let loadedFromState = false;
   const mainWindowLayout = gdb.gui?.layouts?.main?.dockLayout;
@@ -512,6 +517,12 @@ export default function App(): JSX.Element {
         case "sections-view":
           sectionsViewRef.current?.ShowDialog();
           break;
+        case "move-panel-from-window":
+          handleMovePanelFromWindow(msg.data);
+          break;
+        case "move-panel-to-window":
+          handleMovePanelToWindow(msg.data);
+          break;
       }
     });
 
@@ -543,6 +554,8 @@ export default function App(): JSX.Element {
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("changeApplication", handleAppChange);
+      cleanupPanelTabContextMenu?.();
+      cleanupPanelTabContextMenu = undefined;
       if (unsubTheme) unsubTheme();
     };
   }, []);

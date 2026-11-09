@@ -43,6 +43,7 @@ export function initIpcMock(): Window["ipcToMain"] {
       getSettings: () => Promise.resolve({}),
       getSystemFonts: () => Promise.resolve([]),
       getVersionInfo: () => Promise.resolve(new Map()),
+      getOpenWindowTitles: () => Promise.resolve([]),
     },
     environment: {
       getWslDistrobutions: () => Promise.resolve([]),
@@ -93,6 +94,7 @@ export function setIpcFullLegacyAliases(ipc: Window["ipcToMain"]): void {
   ipc.getSettings = ipc.queries.app.getSettings;
   ipc.getSystemFonts = ipc.queries.app.getSystemFonts;
   ipc.getVersionInfo = ipc.queries.app.getVersionInfo;
+  ipc.getOpenWindowTitles = ipc.queries.app.getOpenWindowTitles;
   ipc.getWslDistrobutions = ipc.queries.environment.getWslDistrobutions;
   ipc.getFunctionNames = ipc.queries.debugger.getFunctionNames;
   ipc.sendGdbCommand = ipc.commands.debugger.sendGdbCommand;

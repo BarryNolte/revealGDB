@@ -7,6 +7,7 @@
 
 import { BrowserWindow, screen } from "electron";
 import path, { join } from "path";
+import { pathToFileURL } from "url";
 //import { dockWindowManager } from "../renderer/utilities/window-dock-manager";
 
 //const MAIN_WINDOW_SIZE_PREFIX = "gdb.gui.layouts.main.windowSize";
@@ -156,9 +157,13 @@ export function loadMainWindow(mainWindow: BrowserWindow): void {
  *
  * @param secondaryWindow - Value for `mainWindow` consumed by this operation.
  */
-export function loadSecondaryWindow(secondaryWindow: BrowserWindow): void {
-  const devUrl = join(__dirname, "..", "..", "out", "renderer", "secondary.html");
-  secondaryWindow.loadURL(devUrl);
+export function loadSecondaryWindow(secondaryWindow: BrowserWindow, layoutId?: string): void {
+  const secondaryRendererPath = join(__dirname, "..", "..", "out", "renderer", "secondary.html");
+  const secondaryRendererUrl = pathToFileURL(secondaryRendererPath).toString();
+  const targetUrl = layoutId
+    ? `${secondaryRendererUrl}?layoutId=${encodeURIComponent(layoutId)}`
+    : secondaryRendererUrl;
+  secondaryWindow.loadURL(targetUrl);
 }
 /**
  * Performs restore window bounds as part of this module's public API.

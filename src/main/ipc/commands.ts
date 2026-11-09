@@ -101,6 +101,9 @@ function doConnection(
 
 const GDB_GUI_PREFIX = "gdb.gui.";
 type TrackedWindowEntry = { window: BrowserWindow; uniqueId?: string; title?: string };
+type PendingPanelMove = { sourceWebContentsId: number; panelTitle: string };
+const pendingPanelMoves = new Map<string, PendingPanelMove>();
+const secondaryWindowPendingClose = new WeakSet<BrowserWindow>();
 
 function getTrackedWindowEntry(
   context: IpcRegistrationContext,
@@ -109,22 +112,7 @@ function getTrackedWindowEntry(
   if (!senderWindow) {
     return undefined;
   }
-
-  const senderWebContentsId = senderWindow.webContents.id;
-  const trackedWindows = ((
-    context.multiWindowHub as unknown as { windows?: TrackedWindowEntry[] } | undefined
-  )?.windows ?? []) as TrackedWindowEntry[];
-  return trackedWindows.find((entry) => {
-    if (entry.window === senderWindow) {
-      return true;
-    }
-
-    if (typeof entry.window.isDestroyed === "function" && entry.window.isDestroyed()) {
-      return false;
-    }
-
-    return entry.window.webContents.id === senderWebContentsId;
-  });
+  return context.multiWindowHub?.getWindowEntryByWebContentsId(senderWindow.webContents.id);
 }
 
 function resolveSavedLayoutTitle(
@@ -152,15 +140,12 @@ function applySavedSecondaryWindowTitle(
     return;
   }
 
-  const savedTitle = resolveSavedLayoutTitle(context, uniqueId);
-  if (!savedTitle) {
+  const preferredTitle = trackedWindowInfo?.title ?? resolveSavedLayoutTitle(context, uniqueId);
+  if (!preferredTitle) {
     return;
   }
 
-  senderWindow.setTitle(savedTitle);
-  if (trackedWindowInfo) {
-    trackedWindowInfo.title = savedTitle;
-  }
+  context.multiWindowHub?.setWindowTitle(uniqueId, preferredTitle);
 }
 
 /**
@@ -224,6 +209,47 @@ function createDefaultSecondaryWindowTitle(uniqueId: string): string {
   return `Secondary Window ${uniqueId}`;
 }
 
+function createAndLoadSecondaryWindow(
+  context: IpcRegistrationContext,
+  uniqueId: string,
+  title: string,
+): { uniqueId: string; window: BrowserWindow } {
+  const window = createSecondaryWindow(
+    resolvePreloadPath(),
+    () => context.multiWindowHub?.saveWindowInfo(null),
+    title,
+  );
+  context.multiWindowHub?.add(window, uniqueId, title);
+  loadSecondaryWindow(window, uniqueId);
+
+  window.on("close", (event) => {
+    const trackedEntry = context.multiWindowHub?.getWindowEntryByWebContentsId(
+      window.webContents.id,
+    );
+    const isSecondaryWindow =
+      trackedEntry && trackedEntry.uniqueId !== "main" && trackedEntry.uniqueId !== "devtools";
+    if (!isSecondaryWindow || context.multiWindowHub?.shouldSkipTransferOnClose(window)) {
+      return;
+    }
+    if (secondaryWindowPendingClose.has(window)) {
+      secondaryWindowPendingClose.delete(window);
+      return;
+    }
+
+    event.preventDefault();
+    secondaryWindowPendingClose.add(window);
+    window.webContents.send(IPC_CHANNELS.mainToRenderer.notifications.render, {
+      command: "secondary-window-closing",
+    });
+  });
+
+  window.once("ready-to-show", () => {
+    window.show();
+  });
+
+  return { uniqueId, window };
+}
+
 function handleNewWindow(
   msg: Extract<NotifyMainRequest, { command: "newWindow" | "new-window" }>,
   context: IpcRegistrationContext,
@@ -234,17 +260,65 @@ function handleNewWindow(
       ? msg.data.title.trim()
       : undefined;
   const title = requestedTitle ?? createDefaultSecondaryWindowTitle(uniqueId);
-  const window = createSecondaryWindow(
-    resolvePreloadPath(),
-    () => context.multiWindowHub?.saveWindowInfo(null),
-    title,
-  );
-  context.multiWindowHub?.add(window, uniqueId, title);
-  loadSecondaryWindow(window);
+  createAndLoadSecondaryWindow(context, uniqueId, title);
+}
 
-  window.once("ready-to-show", () => {
-    window.show();
+function handleMovePanelToNewWindow(
+  msg: Extract<NotifyMainRequest, { command: "move-panel-to-new-window" }>,
+  context: IpcRegistrationContext,
+  event?: IpcMainEvent,
+): void {
+  const panelTitle = msg.data.panelTitle.trim();
+  if (panelTitle.length === 0 || !event) {
+    return;
+  }
+
+  const uniqueId = Date.now().toString(20);
+  createAndLoadSecondaryWindow(context, uniqueId, panelTitle);
+  pendingPanelMoves.set(uniqueId, {
+    sourceWebContentsId: event.sender.id,
+    panelTitle,
   });
+}
+
+function handleMovePanelToWindow(
+  msg: Extract<NotifyMainRequest, { command: "move-panel-to-window" }>,
+  context: IpcRegistrationContext,
+  event?: IpcMainEvent,
+): void {
+  const panelTitle = msg.data.panelTitle.trim();
+  const targetUniqueId = msg.data.targetUniqueId.trim();
+  if (panelTitle.length === 0 || targetUniqueId.length === 0 || !event) {
+    return;
+  }
+
+  const sourceEntry = context.multiWindowHub?.getWindowEntryByWebContentsId(event.sender.id);
+  const targetEntry = context.multiWindowHub?.getWindowEntryByUniqueId(targetUniqueId);
+  if (!sourceEntry || !targetEntry || sourceEntry.uniqueId === targetUniqueId) {
+    return;
+  }
+
+  const sourceIsPendingClose = secondaryWindowPendingClose.has(sourceEntry.window);
+  if (!sourceIsPendingClose) {
+    sendNotifyRenderToWindow(sourceEntry.window, {
+      command: "move-panel-from-window",
+      data: { panelTitle },
+    });
+  }
+  sendNotifyRenderToWindow(targetEntry.window, {
+    command: "move-panel-to-window",
+    data: { panelTitle },
+  });
+}
+
+function sendNotifyRenderToWindow(
+  window: BrowserWindow | undefined,
+  payload: NotifyRenderMessage,
+): void {
+  if (!window || (typeof window.isDestroyed === "function" && window.isDestroyed())) {
+    return;
+  }
+  window.webContents.send(IPC_CHANNELS.mainToRenderer.notifications.render, payload);
 }
 
 type SaveSettingsRequest = Extract<
@@ -420,6 +494,12 @@ export function handleNotifyMain(
     case "new-window":
       handleNewWindow(msg, context);
       break;
+    case "move-panel-to-new-window":
+      handleMovePanelToNewWindow(msg, context, event);
+      break;
+    case "move-panel-to-window":
+      handleMovePanelToWindow(msg, context, event);
+      break;
     case "command-entry":
       sendNotifyRender(context, { command: "command-entry" });
       break;
@@ -438,6 +518,28 @@ export function handleNotifyMain(
     case "secondary-window-loaded":
       debugLog("Secondary window has loaded.");
       applySavedSecondaryWindowTitle(context, event);
+      if (event) {
+        const senderWindow = BrowserWindow.fromWebContents(event.sender) ?? undefined;
+        const trackedTargetEntry = getTrackedWindowEntry(context, senderWindow);
+        const targetUniqueId = trackedTargetEntry?.uniqueId;
+        if (targetUniqueId) {
+          const pendingMove = pendingPanelMoves.get(targetUniqueId);
+          if (pendingMove) {
+            const sourceEntry = context.multiWindowHub?.getWindowEntryByWebContentsId(
+              pendingMove.sourceWebContentsId,
+            );
+            sendNotifyRenderToWindow(sourceEntry?.window, {
+              command: "move-panel-from-window",
+              data: { panelTitle: pendingMove.panelTitle },
+            });
+            sendNotifyRenderToWindow(senderWindow, {
+              command: "move-panel-to-window",
+              data: { panelTitle: pendingMove.panelTitle },
+            });
+            pendingPanelMoves.delete(targetUniqueId);
+          }
+        }
+      }
       break;
     default:
       handleSaveSettings(msg, context, event);

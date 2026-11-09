@@ -5,8 +5,10 @@
  * Exported symbols include `registerIpcQueryHandlers`. It is responsible for channel registration, payload marshalling, and returning data to renderer callers.
  */
 import { gdbShowSourceInfo, gdbSymbolFiles } from "../../common/gdb-state-types";
+import type { OpenWindowTitle } from "../../common/ipc-data-types";
 import { IPC_CHANNELS } from "../../common/ipc-contracts";
 import { gdbFunction, gdbVarLocation } from "../mi-interface/gdb-state-database/gdbStateDatabase";
+import { DEVTOOLS_WINDOW_UNIQUE_ID } from "../multi-window-hub";
 import { WslUtilities, type WslDistro } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
 /**
@@ -57,6 +59,23 @@ function registerAppAndEnvironmentQueryHandlers(context: IpcRegistrationContext)
   context.ipcMain.handle(IPC_CHANNELS.rendererToMain.queries.app.versionInfo, () => {
     return Promise.resolve(context.gdbAppInfo);
   });
+
+  context.ipcMain.handle(
+    IPC_CHANNELS.rendererToMain.queries.app.openWindowTitles,
+    (event): Promise<OpenWindowTitle[]> => {
+      const senderWebContentsId = event.sender.id;
+      const openWindows = context.multiWindowHub?.listOpenWindows() ?? [];
+      return Promise.resolve(
+        openWindows
+          .filter(
+            (entry) =>
+              entry.webContentsId !== senderWebContentsId &&
+              entry.uniqueId !== DEVTOOLS_WINDOW_UNIQUE_ID,
+          )
+          .map((entry) => ({ uniqueId: entry.uniqueId, title: entry.title })),
+      );
+    },
+  );
 
   context.ipcMain.handle(
     IPC_CHANNELS.rendererToMain.queries.environment.wslDistributions,

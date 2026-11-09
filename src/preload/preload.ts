@@ -123,6 +123,7 @@ const ipcApi: IpcApiCore = {
       getSettings: () => invoke(IPC_CHANNELS.rendererToMain.queries.app.settings),
       getSystemFonts: () => invoke(IPC_CHANNELS.rendererToMain.queries.app.systemFonts),
       getVersionInfo: () => invoke(IPC_CHANNELS.rendererToMain.queries.app.versionInfo),
+      getOpenWindowTitles: () => invoke(IPC_CHANNELS.rendererToMain.queries.app.openWindowTitles),
     },
     environment: {
       getWslDistrobutions: () =>
@@ -190,6 +191,7 @@ contextBridge.exposeInMainWorld("ipcToMain", {
   getSettings: ipcApi.queries.app.getSettings,
   getSystemFonts: ipcApi.queries.app.getSystemFonts,
   getVersionInfo: ipcApi.queries.app.getVersionInfo,
+  getOpenWindowTitles: ipcApi.queries.app.getOpenWindowTitles,
   getWslDistrobutions: ipcApi.queries.environment.getWslDistrobutions,
   getFunctionNames: ipcApi.queries.debugger.getFunctionNames,
   sendGdbCommand: ipcApi.commands.debugger.sendGdbCommand,

@@ -33,6 +33,27 @@ export class DockMenuConnector {
   private dockManager: DockManager;
   private panelMap: Map<string, DockPanelInfo> = new Map<string, DockPanelInfo>();
 
+  private ensurePanelInitialized(displayName: string): PanelContainer | undefined {
+    const panelInfo = this.panelMap.get(displayName);
+    if (!panelInfo) {
+      return undefined;
+    }
+
+    if (panelInfo.panel) {
+      return panelInfo.panel;
+    }
+
+    const element = document.getElementById(panelInfo.id);
+    if (!element) {
+      return undefined;
+    }
+
+    const panel = new PanelContainer(element, this.dockManager, panelInfo.displayName);
+    panel.hideCloseButton(true);
+    panelInfo.panel = panel;
+    return panel;
+  }
+
   /**
    * Creates a new dock menu connector.
    *
@@ -44,30 +65,13 @@ export class DockMenuConnector {
     // Listen for window visibility toggle requests from toolbar
     window.addEventListener(TOGGLE_WINDOW, (data: Event) => {
       const ev = data as CustomEvent;
-      const di = this.getDockPanelInfoByDisplayName(ev.detail);
-      if (di) {
-        di.visible = !di.visible;
-        if (!di.visible) {
-          // Hide panel by converting to dialog and moving off-screen
-          if (!di.panel?.isDialog) {
-            di.dialog = di.panel?.performUndockToDialog(undefined, { x: 0, y: 0 });
-            di.dialog?.setPosition(-100000, 0);
-            di.dialog?.hide();
-          } else {
-            di.panel?.floatingDialog?.setPosition(-100000, 0);
-            di.panel?.floatingDialog?.hide();
-          }
-        } else {
-          // Show panel by docking dialog back into layout
-          if (di.panel && di.dialog) {
-            this.dockManager.dockDialogUp(this.dockManager.context.model.rootNode, di.dialog);
-            di.dialog = undefined;
-          }
-        }
+      const displayName = String(ev.detail ?? "");
+      const di = this.getDockPanelInfoByDisplayName(displayName);
+      if (di && di.visible) {
+        this.hidePanel(displayName);
+      } else if (di) {
+        this.showPanel(displayName);
       }
-      // Update UI and save layout
-      window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
-      window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
     });
   }
 
@@ -76,12 +80,7 @@ export class DockMenuConnector {
    */
   public createAllWindows(): void {
     this.panelMap.forEach((di) => {
-      const el = document.getElementById(di.id);
-      if (el) {
-        const panel = new PanelContainer(el, this.dockManager, di.displayName);
-        panel.hideCloseButton(true); // Disable close button (use visibility toggle instead)
-        di.panel = panel;
-      }
+      this.ensurePanelInitialized(di.displayName);
     });
   }
 
@@ -148,11 +147,60 @@ export class DockMenuConnector {
    * @returns The computed result produced by this operation.
    */
   public getPanelByDisplayName(dn: string): PanelContainer {
-    const panel = this.panelMap.get(dn)?.panel;
+    const panel = this.ensurePanelInitialized(dn);
     if (!panel) {
       throw new Error(`Panel '${dn}' is not registered or not initialized`);
     }
     return panel;
+  }
+
+  public ensurePanelDockedInRoot(displayName: string): void {
+    const panel = this.getPanelByDisplayName(displayName);
+    if (!panel.tabPage) {
+      this.dockManager.dockFill(this.dockManager.context.model.documentManagerNode, panel);
+    }
+  }
+
+  public hidePanel(displayName: string): void {
+    const di = this.getDockPanelInfoByDisplayName(displayName);
+    if (!di) {
+      return;
+    }
+    const panel = this.ensurePanelInitialized(displayName);
+    if (!panel) {
+      return;
+    }
+    di.visible = false;
+    if (!panel.isDialog) {
+      di.dialog = panel.performUndockToDialog(undefined, { x: 0, y: 0 });
+      di.dialog?.setPosition(-100000, 0);
+      di.dialog?.hide();
+    } else {
+      panel.floatingDialog?.setPosition(-100000, 0);
+      panel.floatingDialog?.hide();
+    }
+    window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
+    window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
+  }
+
+  public showPanel(displayName: string): void {
+    const di = this.getDockPanelInfoByDisplayName(displayName);
+    if (!di) {
+      return;
+    }
+    const panel = this.ensurePanelInitialized(displayName);
+    if (!panel) {
+      return;
+    }
+    di.visible = true;
+    if (di.dialog) {
+      this.dockManager.dockDialogUp(this.dockManager.context.model.rootNode, di.dialog);
+      di.dialog = undefined;
+    } else if (!panel.tabPage) {
+      this.dockManager.dockFill(this.dockManager.context.model.documentManagerNode, panel);
+    }
+    window.dispatchEvent(new Event(UPDATE_WINDOW_LIST));
+    window.dispatchEvent(new Event(SAVE_DOCK_LAYOUT));
   }
 
   /**

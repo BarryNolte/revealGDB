@@ -17,6 +17,7 @@ import {
   createMainWindow,
   createSecondaryWindow,
   loadMainWindow,
+  loadSecondaryWindow,
   restoreWindowBounds,
   wireWindowCloseHandlers,
 } from "../../../src/main/window-manager";
@@ -132,6 +133,19 @@ describe("window-manager", () => {
     expect(vi.mocked(mainWindow.loadFile).mock.calls[0]?.[0]).toContain("out");
     expect(vi.mocked(mainWindow.loadFile).mock.calls[0]?.[0]).toContain("renderer");
     expect(vi.mocked(mainWindow.loadFile).mock.calls[0]?.[0]).toContain("index.html");
+  });
+
+  it("loads the secondary renderer URL with layout id when provided", () => {
+    const secondaryWindow = createMockBrowserWindow({
+      loadURL: vi.fn(),
+    } as never);
+
+    loadSecondaryWindow(secondaryWindow as never, "secondary-123");
+
+    expect(secondaryWindow.loadURL).toHaveBeenCalledTimes(1);
+    const targetUrl = vi.mocked(secondaryWindow.loadURL).mock.calls[0]?.[0];
+    expect(targetUrl).toContain("secondary.html");
+    expect(targetUrl).toContain("layoutId=secondary-123");
   });
 
   it("restores saved window bounds and fullscreen flag", () => {

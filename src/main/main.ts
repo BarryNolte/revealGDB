@@ -7,6 +7,7 @@
 import { app, BrowserWindow, ipcMain, nativeTheme } from "electron";
 // import path from "path";
 import type { NormalizedConnection } from "../common/connection-types";
+import { WindowDockManager } from "../renderer/utilities/window-dock-manager";
 import { registerAppEvents } from "./app-events";
 import { AppSettings } from "./app-settings";
 import {
@@ -22,6 +23,11 @@ import { registerIpcHandlers } from "./ipc";
 import { setIpcWindow } from "./ipc-sender";
 import { GdbMenu } from "./menu";
 import { miInterface } from "./mi-interface/mi-interface";
+import {
+  DEVTOOLS_WINDOW_UNIQUE_ID,
+  MAIN_WINDOW_UNIQUE_ID,
+  MultiWindowHub,
+} from "./multi-window-hub";
 import { isDebug, isLinux, isMac, isWin } from "./platform-info";
 import { setNativeThemeFromAppTheme } from "./theme-support";
 import { debugLog } from "./utilities/logger";
@@ -35,12 +41,6 @@ import {
   restoreWindowBounds,
   wireWindowCloseHandlers,
 } from "./window-manager";
-import { WindowDockManager } from "../renderer/utilities/window-dock-manager";
-import {
-  DEVTOOLS_WINDOW_UNIQUE_ID,
-  MAIN_WINDOW_UNIQUE_ID,
-  MultiWindowHub,
-} from "./multi-window-hub";
 
 // Re-export for backward compatibility
 export { AppSettings, isDebug, isLinux, isMac, isWin };
@@ -108,19 +108,13 @@ function isSelectedConnection(value: unknown): value is NormalizedConnection {
   );
 }
 
-app.on("ready", () => {
-  logStartupMilestone("app.ready");
-
-  AppSettings.initialize();
-  applyDefaultSettings(AppSettings);
-  configureAppSettings(AppSettings);
-  logStartupDiagnostics(AppSettings);
-  collectVersionInfo(gdbAppInfo);
-
+function configureSavedAppTheme(): void {
   // Apply saved theme to Electron chrome before creating windows to avoid flash.
   const savedTheme = AppSettings.getSync("gdb.gui.applicationTheme") as string | undefined;
   setNativeThemeFromAppTheme(savedTheme ?? "Auto");
+}
 
+function createAndConfigureMainWindow(): void {
   mainWindow = createMainWindow(resolvePreloadPath());
   multiWindowHub.add(mainWindow, MAIN_WINDOW_UNIQUE_ID);
   multiWindowHub.withPersistencePaused(() => {
@@ -130,33 +124,15 @@ app.on("ready", () => {
     mainWindow.on("move", () => {
       multiWindowHub.saveWindowInfo(null);
     });
-  }
-
-  if (typeof mainWindow.on === "function") {
     mainWindow.on("closed", () => {
       multiWindowHub.closeAllSecondaryWindows();
     });
   }
 
   setIpcWindow(mainWindow);
+}
 
-  if (isDebug) {
-    debugWindow = createDebugWindow(mainWindow);
-    multiWindowHub.add(
-      debugWindow,
-      DEVTOOLS_WINDOW_UNIQUE_ID,
-      debugWindow.title || "Developer Tools",
-    );
-    multiWindowHub.withPersistencePaused(() => {
-      restoreWindowBounds(debugWindow, AppSettings, "gdb.gui.layouts.devtools.windowSize");
-    });
-    if (debugWindow && typeof debugWindow.on === "function") {
-      debugWindow.on("move", () => {
-        multiWindowHub.saveWindowInfo(null);
-      });
-    }
-  }
-
+function restoreSavedSecondaryWindows(): void {
   const restoredSecondaryWindows = multiWindowHub.withPersistencePaused(() =>
     multiWindowHub.restoreSavedSecondaryWindows((title, uniqueId, onReadyToShow) => {
       const window = createSecondaryWindow(
@@ -166,7 +142,7 @@ app.on("ready", () => {
       );
       onReadyToShow(window);
       setImmediate(() => {
-        loadSecondaryWindow(window);
+        loadSecondaryWindow(window, uniqueId);
       });
       return window;
     }),
@@ -175,8 +151,9 @@ app.on("ready", () => {
   if (restoredSecondaryWindows.length > 0) {
     logStartupMilestone(`secondary-windows-restored:${restoredSecondaryWindows.length}`);
   }
+}
 
-  logStartupMilestone("main-window-created");
+function registerMainWindowReadyHandlers(): void {
   // Register before load so the event is not missed if the page becomes ready immediately.
   mainWindow.once("ready-to-show", () => {
     logStartupMilestone("main-window-ready-to-show");
@@ -194,6 +171,40 @@ app.on("ready", () => {
       }
     });
   });
+}
+
+app.on("ready", () => {
+  logStartupMilestone("app.ready");
+
+  AppSettings.initialize();
+  applyDefaultSettings(AppSettings);
+  configureAppSettings(AppSettings);
+  logStartupDiagnostics(AppSettings);
+  collectVersionInfo(gdbAppInfo);
+  configureSavedAppTheme();
+  createAndConfigureMainWindow();
+
+  if (isDebug) {
+    const createdDebugWindow = createDebugWindow(mainWindow);
+    debugWindow = createdDebugWindow;
+    multiWindowHub.add(
+      createdDebugWindow,
+      DEVTOOLS_WINDOW_UNIQUE_ID,
+      createdDebugWindow.title || "Developer Tools",
+    );
+    multiWindowHub.withPersistencePaused(() => {
+      restoreWindowBounds(createdDebugWindow, AppSettings, "gdb.gui.layouts.devtools.windowSize");
+    });
+    if (typeof createdDebugWindow.on === "function") {
+      createdDebugWindow.on("move", () => {
+        multiWindowHub.saveWindowInfo(null);
+      });
+    }
+  }
+
+  restoreSavedSecondaryWindows();
+  logStartupMilestone("main-window-created");
+  registerMainWindowReadyHandlers();
   loadMainWindow(mainWindow);
   logStartupMilestone("main-window-load-started");
 

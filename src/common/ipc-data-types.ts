@@ -24,6 +24,11 @@ export type SectionsViewOptions = {
   showLegend: boolean;
 };
 
+export type OpenWindowTitle = {
+  uniqueId: string;
+  title: string;
+};
+
 export type ConnectionCapturePayload = ["console-capture", { error: boolean; line: string }];
 export type ConnectionStartupPayload = ["gdb-startup", string, string];
 export type ConnectionStatusPayload = ConnectionCapturePayload | ConnectionStartupPayload;

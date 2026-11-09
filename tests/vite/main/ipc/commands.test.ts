@@ -28,15 +28,25 @@ const gissMocks = vi.hoisted(() => ({
 
 const windowManagerMocks = vi.hoisted(() => {
   const once = vi.fn();
+  const on = vi.fn();
   const show = vi.fn();
-  const window = { once, show } as never;
+  const webContentsSend = vi.fn();
+  const window = {
+    once,
+    on,
+    show,
+    webContents: { id: 1001, send: webContentsSend },
+    isDestroyed: vi.fn(() => false),
+  } as never;
   return {
     createSecondaryWindow: vi.fn(() => window),
     loadSecondaryWindow: vi.fn(),
     resolvePreloadPath: vi.fn(() => "mock-preload-path"),
     window,
     once,
+    on,
     show,
+    webContentsSend,
   };
 });
 
@@ -315,7 +325,10 @@ describe("handleNotifyMain", () => {
       expect.any(Function),
       "Secondary Window 2a0",
     );
-    expect(windowManagerMocks.loadSecondaryWindow).toHaveBeenCalledWith(windowManagerMocks.window);
+    expect(windowManagerMocks.loadSecondaryWindow).toHaveBeenCalledWith(
+      windowManagerMocks.window,
+      "2a0",
+    );
     expect(windowManagerMocks.once).toHaveBeenCalledWith("ready-to-show", expect.any(Function));
 
     const readyToShowHandler = windowManagerMocks.once.mock.calls[0]?.[1] as (() => void) | undefined;
@@ -336,6 +349,67 @@ describe("handleNotifyMain", () => {
       "Memory View",
     );
     dateNowSpy.mockRestore();
+  });
+
+  it("skips move-panel-from-window when the source secondary window is closing", () => {
+    const { context } = createIpcRegistrationHarness();
+    const closePreventDefault = vi.fn();
+    const sourceSend = vi.fn();
+    const targetSend = vi.fn();
+    const sourceWindow = {
+      once: vi.fn(),
+      on: vi.fn(),
+      show: vi.fn(),
+      webContents: { id: 2001, send: sourceSend },
+      isDestroyed: vi.fn(() => false),
+    };
+    const targetWindow = {
+      webContents: { id: 1, send: targetSend },
+      isDestroyed: vi.fn(() => false),
+    };
+    const getWindowEntryByWebContentsId = vi.fn((webContentsId: number) => {
+      if (webContentsId === 2001) {
+        return { uniqueId: "secondary-1", window: sourceWindow };
+      }
+      return undefined;
+    });
+
+    context.multiWindowHub = {
+      add: vi.fn(),
+      shouldSkipTransferOnClose: vi.fn(() => false),
+      getWindowEntryByWebContentsId,
+      getWindowEntryByUniqueId: vi.fn((uniqueId: string) =>
+        uniqueId === "main" ? { uniqueId: "main", window: targetWindow } : undefined,
+      ),
+    } as never;
+
+    windowManagerMocks.createSecondaryWindow.mockReturnValueOnce(sourceWindow as never);
+    handleNotifyMain({ command: "newWindow" }, context);
+
+    const closeHandler = sourceWindow.on.mock.calls.find((call) => call[0] === "close")?.[1] as
+      | ((event: { preventDefault: () => void }) => void)
+      | undefined;
+    expect(closeHandler).toBeDefined();
+    closeHandler?.({ preventDefault: closePreventDefault });
+
+    handleNotifyMain(
+      {
+        command: "move-panel-to-window",
+        data: { panelTitle: "Memory", targetUniqueId: "main" },
+      },
+      context,
+      { sender: { id: 2001 } } as never,
+    );
+
+    expect(closePreventDefault).toHaveBeenCalledTimes(1);
+    expect(targetSend).toHaveBeenCalledWith(IPC_CHANNELS.mainToRenderer.notifications.render, {
+      command: "move-panel-to-window",
+      data: { panelTitle: "Memory" },
+    });
+    expect(sourceSend).not.toHaveBeenCalledWith(IPC_CHANNELS.mainToRenderer.notifications.render, {
+      command: "move-panel-from-window",
+      data: { panelTitle: "Memory" },
+    });
   });
 
   it("handles open-external with a valid https URL by calling shell.openExternal", () => {

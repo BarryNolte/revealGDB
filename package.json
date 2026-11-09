@@ -35,6 +35,7 @@
     "lint": "eslint \"src/**/*.{ts,tsx,js,jsx,cjs}\" \"./vite.config.ts\"  --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md,cjs}\"",
     "format-build-tools": "prettier --write \"./vite.config.ts\"",
+    "settings:clear-layouts": "node scripts/clear-gui-layouts.cjs",
     "prepare": "husky",
     "postinstall": "node scripts/fix-electron.cjs",
     "dist": "npm run dist:release",

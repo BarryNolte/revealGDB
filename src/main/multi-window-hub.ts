@@ -12,6 +12,12 @@ export type WindowInfo = {
   uniqueId?: string;
   title?: string;
 };
+
+export type OpenWindowInfo = {
+  uniqueId: string;
+  title: string;
+  webContentsId: number;
+};
 export class MultiWindowHub {
   private windows: WindowInfo[] = [];
   private readonly appSettings: AppSettingsLike;
@@ -111,8 +117,56 @@ export class MultiWindowHub {
     }
   }
 
+  setWindowTitle(uniqueId: string, title: string): void {
+    const entry = this.getWindowEntryByUniqueId(uniqueId);
+    if (!entry) {
+      return;
+    }
+
+    const normalizedTitle = title.trim();
+    if (normalizedTitle.length === 0) {
+      return;
+    }
+
+    entry.title = normalizedTitle;
+    if (typeof entry.window.isDestroyed === "function" && entry.window.isDestroyed()) {
+      return;
+    }
+    entry.window.setTitle(normalizedTitle);
+  }
+
   delete(uniqueId: string): void {
     this.windows = this.windows.filter((w) => w.uniqueId !== uniqueId);
+  }
+
+  getWindowEntryByUniqueId(uniqueId: string): WindowInfo | undefined {
+    return this.windows.find((entry) => entry.uniqueId === uniqueId);
+  }
+
+  getWindowEntryByWebContentsId(webContentsId: number): WindowInfo | undefined {
+    return this.windows.find((entry) => entry.window.webContents.id === webContentsId);
+  }
+
+  listOpenWindows(): OpenWindowInfo[] {
+    const results: OpenWindowInfo[] = [];
+    this.windows.forEach((entry) => {
+      if (
+        !entry.uniqueId ||
+        (typeof entry.window.isDestroyed === "function" && entry.window.isDestroyed())
+      ) {
+        return;
+      }
+
+      const browserTitle = (entry.window.title ?? "").trim();
+      const trackedTitle = (entry.title ?? "").trim();
+      const title = (browserTitle.length > 0 ? browserTitle : trackedTitle).trim();
+      results.push({
+        uniqueId: entry.uniqueId,
+        title: title.length > 0 ? title : entry.uniqueId,
+        webContentsId: entry.window.webContents.id,
+      });
+    });
+    return results;
   }
 
   private isSecondaryWindow(uniqueId: string | undefined): uniqueId is string {
@@ -152,6 +206,10 @@ export class MultiWindowHub {
     }
   }
 
+  shouldSkipTransferOnClose(win: BrowserWindow): boolean {
+    return this.windowsClosedDuringShutdown.has(win);
+  }
+
   saveWindowInfo(_data: GdbAny): void {
     if (this.persistSuspended > 0) {
       return;
@@ -166,11 +224,19 @@ export class MultiWindowHub {
         return;
       }
 
-      const trackedTitle = winInfo?.title ?? win.title;
+      const browserTitle = (win.title ?? "").trim();
+      const trackedTitle = (winInfo?.title ?? "").trim();
+      const persistedTitle = trackedTitle.length > 0 ? trackedTitle : browserTitle;
+
+      if (winInfo && trackedTitle.length === 0 && browserTitle.length > 0) {
+        winInfo.title = browserTitle;
+      }
       const winPos = mapElectronWindowToWinPos(win);
 
       this.appSettings.setSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${winId}.windowSize`, winPos);
-      this.appSettings.setSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${winId}.title`, trackedTitle);
+      if (persistedTitle.length > 0) {
+        this.appSettings.setSync(`${MAIN_WINDOW_LAYOUT_PREFIX}${winId}.title`, persistedTitle);
+      }
 
       if (
         winInfo?.uniqueId === MAIN_WINDOW_UNIQUE_ID &&

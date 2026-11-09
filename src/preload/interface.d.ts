@@ -22,7 +22,12 @@ import {
   NotifyMainRequest,
   NotifyRenderMessage,
 } from "../common/ipc-contracts";
-import { MemoryData, WslDistro, ConnectionStatusPayload } from "../common/ipc-data-types";
+import {
+  MemoryData,
+  WslDistro,
+  ConnectionStatusPayload,
+  OpenWindowTitle,
+} from "../common/ipc-data-types";
 import { ILocal } from "../common/local-view";
 import { GdbSettings } from "../common/settings-types";
 
@@ -69,6 +74,7 @@ export interface IElectronAPI {
       getSettings: () => Promise<GdbSettings>;
       getSystemFonts: () => Promise<string[]>;
       getVersionInfo: () => Promise<Map<string, unknown>>;
+      getOpenWindowTitles: () => Promise<OpenWindowTitle[]>;
     };
     environment: {
       getWslDistrobutions: () => Promise<WslDistro[]>;
@@ -233,6 +239,12 @@ export interface IElectronAPI {
    * @returns Promise resolving to a map of version data
    */
   getVersionInfo: () => Promise<Map<string, unknown>>;
+
+  /**
+   * Retrieves titles for open application windows excluding the current window context.
+   * @returns Promise resolving to open-window title entries
+   */
+  getOpenWindowTitles: () => Promise<OpenWindowTitle[]>;
 
   /**
    * Retrieves available WSL distributions from the main process.
