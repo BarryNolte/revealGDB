@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .vscode/
+.cache/
 *.log
 /.idea/
 dist_electron/
@@ -11,5 +12,4 @@ test-results/.last-run.json
 coverage/
 .nyc_output/
 .fallow/
-.cache/tsconfig.tsbuildinfo
-.cache/tsconfig.main.tsbuildinfo
+

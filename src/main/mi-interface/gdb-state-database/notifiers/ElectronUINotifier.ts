@@ -5,7 +5,7 @@
  * Exported symbols include `ElectronUINotifier`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { IPC_CHANNELS } from "../../../../common/ipc-contracts";
-import { sendToRenderer } from "../../../ipc-sender";
+import { sendToAllRenderers } from "../../../ipc-sender";
 import { LocalsContainer } from "../../gdb-parsers/gdb-locals";
 import {
   gdbBreakpoint,
@@ -27,7 +27,7 @@ export class ElectronUINotifier implements UINotifier {
    * @param locals - Value for `locals` consumed by this operation.
    */
   sendLocals(locals: LocalsContainer | undefined): void {
-    sendToRenderer(IPC_CHANNELS.mainToRenderer.debuggerData.locals, locals?.locals);
+    sendToAllRenderers(IPC_CHANNELS.mainToRenderer.debuggerData.locals, locals?.locals);
   }
 
   /**
@@ -39,7 +39,7 @@ export class ElectronUINotifier implements UINotifier {
    * @param frames - Value for `frames` consumed by this operation.
    */
   sendStackFrames(frames: gdbStackFrame[]): void {
-    sendToRenderer(IPC_CHANNELS.mainToRenderer.debuggerData.stackFrames, frames);
+    sendToAllRenderers(IPC_CHANNELS.mainToRenderer.debuggerData.stackFrames, frames);
   }
 
   /**
@@ -51,7 +51,7 @@ export class ElectronUINotifier implements UINotifier {
    * @param bkpts - Map of keyed values consumed or updated by this operation.
    */
   sendBreakpoints(bkpts: Map<string, gdbBreakpoint>): void {
-    sendToRenderer(IPC_CHANNELS.mainToRenderer.debuggerData.breakpoints, bkpts);
+    sendToAllRenderers(IPC_CHANNELS.mainToRenderer.debuggerData.breakpoints, bkpts);
   }
 
   /**
@@ -63,7 +63,7 @@ export class ElectronUINotifier implements UINotifier {
    * @param regs - Map of keyed values consumed or updated by this operation.
    */
   sendRegisters(regs: Map<string, gdbRegisters>): void {
-    sendToRenderer(IPC_CHANNELS.mainToRenderer.debuggerData.registers, regs);
+    sendToAllRenderers(IPC_CHANNELS.mainToRenderer.debuggerData.registers, regs);
   }
 
   /**
@@ -76,7 +76,7 @@ export class ElectronUINotifier implements UINotifier {
    * @param groups - Map of keyed values consumed or updated by this operation.
    */
   sendThreads(threads: Map<string, gdbThread>, groups: Map<string, gdbThreadGroup>): void {
-    sendToRenderer(IPC_CHANNELS.mainToRenderer.debuggerData.threads, {
+    sendToAllRenderers(IPC_CHANNELS.mainToRenderer.debuggerData.threads, {
       th: threads,
       grp: groups,
     });
@@ -91,6 +91,6 @@ export class ElectronUINotifier implements UINotifier {
    * @param info - Value for `info` consumed by this operation.
    */
   sendSourceFile(info: gdbShowSourceInfo): void {
-    sendToRenderer(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, info);
+    sendToAllRenderers(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, info);
   }
 }

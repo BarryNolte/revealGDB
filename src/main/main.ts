@@ -20,7 +20,7 @@ import {
 } from "./bootstrap";
 import { createGdbInterface } from "./gdb-lifecycle";
 import { registerIpcHandlers } from "./ipc";
-import { setIpcWindow } from "./ipc-sender";
+import { setIpcWindow, setIpcWindowsProvider } from "./ipc-sender";
 import { GdbMenu } from "./menu";
 import { miInterface } from "./mi-interface/mi-interface";
 import {
@@ -117,6 +117,13 @@ function configureSavedAppTheme(): void {
 function createAndConfigureMainWindow(): void {
   mainWindow = createMainWindow(resolvePreloadPath());
   multiWindowHub.add(mainWindow, MAIN_WINDOW_UNIQUE_ID);
+  setIpcWindowsProvider(() =>
+    multiWindowHub
+      .listOpenWindows()
+      .filter((entry) => entry.uniqueId !== DEVTOOLS_WINDOW_UNIQUE_ID)
+      .map((entry) => multiWindowHub.getWindowEntryByUniqueId(entry.uniqueId)?.window)
+      .filter((window): window is BrowserWindow => Boolean(window && !window.isDestroyed())),
+  );
   multiWindowHub.withPersistencePaused(() => {
     restoreWindowBounds(mainWindow, AppSettings);
   });

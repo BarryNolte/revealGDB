@@ -169,6 +169,7 @@ The main startup path is centered in `src/main/main.ts` and runs in this order:
 The renderer never talks directly to Node.js APIs. Instead, `src/preload/preload.ts` exposes a constrained API on `window.ipcToMain` with three interaction styles:
 
 - `messages` and `notifications` subscribe to main-to-renderer events.
+- Debugger data events are broadcast to every open revealGDB renderer window (main + secondary windows) so docked panels stay in sync after undocking or moving between windows.
 - `queries` use `ipcRenderer.invoke()` for request/response calls such as settings, system fonts, and function names.
 - `commands` use `ipcRenderer.send()` for fire-and-forget actions such as GDB commands and persisted UI updates.
 

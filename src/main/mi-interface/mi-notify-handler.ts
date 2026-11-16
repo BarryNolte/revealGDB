@@ -5,7 +5,7 @@
  * Exported symbols include `MiNotifyAsyncHandler`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { IPC_CHANNELS } from "../../common/ipc-contracts";
-import { sendToRenderer } from "../ipc-sender";
+import { sendToAllRenderers } from "../ipc-sender";
 import { formatGeneralError } from "../utilities/html-error-formatter";
 import { mapRegexGroupsToBreakpoint } from "./mappers/breakpoint-mapper";
 import { MiOutputHost /*, gdbShowSourceInfo */ } from "./mi-output-types";
@@ -131,7 +131,7 @@ export class MiNotifyAsyncHandler {
     if (groups?.filename && groups?.line) {
       void (async () => {
         const contents = await this.host.gdbDB.getSourceFileContents(groups.filename);
-        sendToRenderer(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, {
+        sendToAllRenderers(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, {
           fileName: groups.filename,
           line: parseInt(groups.line, 10),
           contents,

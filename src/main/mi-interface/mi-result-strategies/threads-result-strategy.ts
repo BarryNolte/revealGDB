@@ -4,7 +4,7 @@
  * @remarks
  * Exported symbols include `ThreadsResultStrategy`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
-import { sendToRenderer } from "../../ipc-sender";
+import { sendToAllRenderers } from "../../ipc-sender";
 import { MiOutputHost } from "../mi-output-types";
 import { MiDoneResultStrategy } from "./mi-result-strategy-types";
 import { getRegexGroups, getRegexMatches } from "./regex-parsing-helpers";
@@ -59,7 +59,7 @@ export class ThreadsResultStrategy implements MiDoneResultStrategy {
       });
     });
 
-    sendToRenderer("data-threads", {
+    sendToAllRenderers("data-threads", {
       th: host.gdbDB.threads,
       grp: host.gdbDB.threadGroups,
     });

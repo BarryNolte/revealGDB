@@ -6,6 +6,7 @@
  */
 import { BrowserWindow, IpcMainEvent, IpcMainInvokeEvent, shell } from "electron";
 import type { NormalizedConnection } from "../../common/connection-types";
+import type { gdbShowSourceInfo } from "../../common/gdb-state-types";
 import {
   DangerousCommandEntry,
   DangerousCommandResponse,
@@ -14,6 +15,7 @@ import {
   NotifyMainRequest,
   NotifyRenderMessage,
 } from "../../common/ipc-contracts";
+import { sendToAllRenderers } from "../ipc-sender";
 import { setNativeThemeFromAppTheme } from "../theme-support";
 import { disconnectAndResetApplication } from "../utilities/disconnect-helper";
 import { debugLog } from "../utilities/logger";
@@ -309,6 +311,7 @@ function handleMovePanelToWindow(
     command: "move-panel-to-window",
     data: { panelTitle },
   });
+  refreshDebuggerDataAfterPanelMove(context);
 }
 
 function sendNotifyRenderToWindow(
@@ -319,6 +322,32 @@ function sendNotifyRenderToWindow(
     return;
   }
   window.webContents.send(IPC_CHANNELS.mainToRenderer.notifications.render, payload);
+}
+
+function refreshDebuggerDataAfterPanelMove(context: IpcRegistrationContext): void {
+  const gdbDB = context.getGdbInterface().gdbDB;
+  gdbDB.allDataUpdateUI();
+
+  const activeFrame = gdbDB.stackFrames.find((frame) => frame.active) ?? gdbDB.stackFrames[0];
+  if (!activeFrame) {
+    return;
+  }
+
+  const fileName = (activeFrame.fullName || activeFrame.file || "").trim();
+  const line = (activeFrame.line || "").trim();
+  if (!fileName || !line) {
+    return;
+  }
+
+  void gdbDB
+    .getSourceFileContents(fileName)
+    .then((contents) => {
+      const sourceInfo: gdbShowSourceInfo = { fileName, line, contents };
+      sendToAllRenderers(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, sourceInfo);
+    })
+    .catch((error: unknown) => {
+      debugLog(`Failed to refresh source data after panel move: ${String(error)}`);
+    });
 }
 
 type SaveSettingsRequest = Extract<
@@ -540,6 +569,7 @@ export function handleNotifyMain(
           }
         }
       }
+      refreshDebuggerDataAfterPanelMove(context);
       break;
     default:
       handleSaveSettings(msg, context, event);

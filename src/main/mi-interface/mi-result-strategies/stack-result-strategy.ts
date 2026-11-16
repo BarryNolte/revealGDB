@@ -4,7 +4,7 @@
  * @remarks
  * Exported symbols include `StackResultStrategy`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
-import { sendToRenderer } from "../../ipc-sender";
+import { sendToAllRenderers } from "../../ipc-sender";
 import { MiOutputHost, gdbShowSourceInfo } from "../mi-output-types";
 import { MiDoneResultStrategy } from "./mi-result-strategy-types";
 import { getRegexMatches } from "./regex-parsing-helpers";
@@ -63,7 +63,7 @@ export class StackResultStrategy implements MiDoneResultStrategy {
       contents: await host.gdbDB.getSourceFileContents(srcFileName),
     };
 
-    sendToRenderer("source-file", showSourceInfo);
+    sendToAllRenderers("source-file", showSourceInfo);
     return true;
   }
 }

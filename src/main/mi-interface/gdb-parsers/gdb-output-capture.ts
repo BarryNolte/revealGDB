@@ -5,7 +5,7 @@
  * Exported symbols include `CaptureType`, `GdbOutputCapture`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import type { gdbSection } from "../../../common/gdb-state-types";
-import { sendToRenderer } from "../../ipc-sender";
+import { sendToAllRenderers } from "../../ipc-sender";
 import { gdbStateDatabase } from "../gdb-state-database/gdbStateDatabase";
 
 export type CaptureType = "" | "file-info" | "function-names" | "source-files" | "line-vars";
@@ -226,7 +226,7 @@ export class GdbOutputCapture {
         }
       }
     });
-    sendToRenderer("data-disasm-functions", this.gdbDB.getAllFunctionNames());
+    sendToAllRenderers("data-disasm-functions", this.gdbDB.getAllFunctionNames());
   }
 
   CaptureLineVars(capArray: string[]): void {

@@ -9,6 +9,7 @@ import type { OpenWindowTitle } from "../../common/ipc-data-types";
 import { IPC_CHANNELS } from "../../common/ipc-contracts";
 import { gdbFunction, gdbVarLocation } from "../mi-interface/gdb-state-database/gdbStateDatabase";
 import { DEVTOOLS_WINDOW_UNIQUE_ID } from "../multi-window-hub";
+import { sendToAllRenderers } from "../ipc-sender";
 import { WslUtilities, type WslDistro } from "../utilities/wsl-utilities";
 import { IpcRegistrationContext } from "./types";
 /**
@@ -144,9 +145,7 @@ function registerDebuggerQueryHandlers(context: IpcRegistrationContext): void {
     async (_: unknown, fileName: string, line: string): Promise<gdbShowSourceInfo> => {
       const contents = await context.getGdbInterface().gdbDB.getSourceFileContents(fileName);
       const result: gdbShowSourceInfo = { fileName, line, contents };
-      context
-        .getMainWindow()
-        .webContents.send(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, result);
+      sendToAllRenderers(IPC_CHANNELS.mainToRenderer.debuggerData.sourceFile, result);
       return result;
     },
   );

@@ -8,6 +8,7 @@
 import { BrowserWindow } from "electron";
 
 let browserWindow: BrowserWindow | null = null;
+let rendererWindowsProvider: (() => BrowserWindow[]) | undefined;
 
 /**
  * Sets the target BrowserWindow for IPC sends. Call once from main.ts.
@@ -16,6 +17,15 @@ let browserWindow: BrowserWindow | null = null;
  */
 export function setIpcWindow(w: BrowserWindow): void {
   browserWindow = w;
+}
+
+/**
+ * Sets the provider used to resolve renderer windows for broadcast sends.
+ *
+ * @param provider - Callback returning all revealGDB renderer BrowserWindows.
+ */
+export function setIpcWindowsProvider(provider: () => BrowserWindow[]): void {
+  rendererWindowsProvider = provider;
 }
 
 /**
@@ -33,4 +43,25 @@ export function setIpcWindow(w: BrowserWindow): void {
  */
 export function sendToRenderer(channel: string, ...args: unknown[]): void {
   browserWindow?.webContents.send(channel, ...args);
+}
+
+/**
+ * Sends a message to every active renderer BrowserWindow.
+ *
+ * @param channel - IPC channel name.
+ * @param args - Data payload.
+ */
+export function sendToAllRenderers(channel: string, ...args: unknown[]): void {
+  const windows = rendererWindowsProvider?.().filter(
+    (window) => !window.isDestroyed() && !window.webContents.isDestroyed(),
+  );
+
+  if (!windows || windows.length === 0) {
+    sendToRenderer(channel, ...args);
+    return;
+  }
+
+  windows.forEach((window) => {
+    window.webContents.send(channel, ...args);
+  });
 }

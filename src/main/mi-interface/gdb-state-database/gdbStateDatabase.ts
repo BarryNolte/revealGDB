@@ -5,7 +5,7 @@
  * Exported symbols include `gdbStateDatabase`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
 import { EventEmitter } from "stream";
-import { sendToRenderer } from "../../ipc-sender";
+import { sendToAllRenderers } from "../../ipc-sender";
 import {
   buildLineVarMap,
   MaintPrintSymbolsParser,
@@ -745,7 +745,7 @@ export class gdbStateDatabase extends EventEmitter {
     const map = buildLineVarMap(blocks, lineTable, header, sourceLines);
     this.lineVarStore.add(map);
     //console.log("Built line var map", JSON.stringify(map));
-    sendToRenderer("data-line-vars", this.serializeLineVarMap(map));
+    sendToAllRenderers("data-line-vars", this.serializeLineVarMap(map));
   }
 
   getLineVars(sourceFile: string): gdbLineVarMap | undefined {

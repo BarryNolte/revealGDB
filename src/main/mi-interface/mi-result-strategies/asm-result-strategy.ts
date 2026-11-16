@@ -4,7 +4,7 @@
  * @remarks
  * Exported symbols include `AsmResultStrategy`. It sits on the debugger data path that translates MI records into typed stores and notifications.
  */
-import { sendToRenderer } from "../../ipc-sender";
+import { sendToAllRenderers } from "../../ipc-sender";
 import { parseDisasmTokens } from "../gdb-parsers/disasmParser";
 import { MiOutputHost } from "../mi-output-types";
 import { parseAsmRows } from "./asm-parsing-helpers";
@@ -42,7 +42,7 @@ export class AsmResultStrategy implements MiDoneResultStrategy {
   handle(_host: MiOutputHost, output: string, _resList: string): Promise<boolean> {
     const asmRowsText = parseAsmRows(output, this.rgxAsmData, this.rgxAsmRow, parseDisasmTokens);
 
-    sendToRenderer("data-disasm", asmRowsText);
+    sendToAllRenderers("data-disasm", asmRowsText);
     return Promise.resolve(true);
   }
 }
